@@ -319,10 +319,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 #pragma endregion
 
-	// コマンドリストの内容を確定させる。すべてのコマンドを積んでからCloseすること
-	hr = commandList->Close();
-	assert(SUCCEEDED(hr));
-	Log("Complete comandlist Close!!!\n");// 生成完了のログをだす
 
 
 	// GPUにコマンドリストの実行を行わせる
