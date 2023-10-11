@@ -86,7 +86,14 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="DirectX.cpp" />
+    <ClCompile Include="Draw.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MainCamera.cpp" />
+    <ClCompile Include="Matrix4x4.cpp" />
+    <ClCompile Include="MatrixCamera.cpp" />
+    <ClCompile Include="WinAPI.cpp" />
+    <ClCompile Include="WorldTransform.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Object3d.PS.hlsl">
@@ -105,6 +112,17 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">6.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">6.0</ShaderModel>
     </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="DirectX.h" />
+    <ClInclude Include="Draw.h" />
+    <ClInclude Include="MainCamera.h" />
+    <ClInclude Include="Math.h" />
+    <ClInclude Include="Matrix4x4.h" />
+    <ClInclude Include="MatrixCamera.h" />
+    <ClInclude Include="System.h" />
+    <ClInclude Include="WinAPI.h" />
+    <ClInclude Include="WorldTransform.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

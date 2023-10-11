@@ -13,14 +13,80 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Engine">
+      <UniqueIdentifier>{79a475c8-effe-474c-9b0b-adea0da283f8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Obj">
+      <UniqueIdentifier>{e466fe93-9190-4fb3-ab34-ab026ab0e249}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Obj\WorldTransform">
+      <UniqueIdentifier>{7080e14c-228e-4d3f-929d-d845c5b3f007}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Obj\Camera">
+      <UniqueIdentifier>{23a8e57e-719a-435a-9bf4-559d53aaa05a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\base">
+      <UniqueIdentifier>{7efa9ed3-11ab-466c-ac46-781d56dca699}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\math">
+      <UniqueIdentifier>{8366f130-0620-4bdd-a003-4d85064dbb9e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>ソース ファイル</Filter>
+    <ClCompile Include="Matrix4x4.cpp">
+      <Filter>Engine\math</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="MainCamera.cpp">
+      <Filter>Engine\Obj\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="MatrixCamera.cpp">
+      <Filter>Engine\Obj\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldTransform.cpp">
+      <Filter>Engine\Obj\WorldTransform</Filter>
+    </ClCompile>
+    <ClCompile Include="WinAPI.cpp">
+      <Filter>Engine\base</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectX.cpp">
+      <Filter>Engine\base</Filter>
+    </ClCompile>
+    <ClCompile Include="Draw.cpp">
+      <Filter>Engine\base</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Object3d.VS.hlsl" />
     <FxCompile Include="Object3d.PS.hlsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Math.h">
+      <Filter>Engine\math</Filter>
+    </ClInclude>
+    <ClInclude Include="Matrix4x4.h">
+      <Filter>Engine\math</Filter>
+    </ClInclude>
+    <ClInclude Include="MainCamera.h">
+      <Filter>Engine\Obj\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="MatrixCamera.h">
+      <Filter>Engine\Obj\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldTransform.h">
+      <Filter>Engine\Obj\WorldTransform</Filter>
+    </ClInclude>
+    <ClInclude Include="WinAPI.h">
+      <Filter>Engine\base</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectX.h">
+      <Filter>Engine\base</Filter>
+    </ClInclude>
+    <ClInclude Include="Draw.h">
+      <Filter>Engine\base</Filter>
+    </ClInclude>
+    <ClInclude Include="System.h">
+      <Filter>Engine\base</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
