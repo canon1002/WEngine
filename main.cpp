@@ -1,5 +1,8 @@
-#include "Draw.h"
-#include "MatrixCamera.h"
+#include "./Engine/base/DirectX.h"
+#include "./Engine/obj/camera/MatrixCamera.h"
+#include "./Engine/primitive/Triangle.h"
+
+#include <d3d12.h>
 
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
@@ -8,14 +11,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	WinAPI* win = WinAPI::GetInstance();
 	// DirectX
 	DirectX* dx = DirectX::GetInstance();
-	// Draw
-	Draw* draw = Draw::GetInstance();
-
 	// カメラ
-	MatrixCamera* mainCamera = new MatrixCamera({ (float)win->kClientWidth ,(float)win->kClientHeight });
+	MatrixCamera* mainCamera = MatrixCamera::GetInstance();
 
 	// デバッグレイヤーでエラーと警告を受け取る
-	#ifdef _DEBUG
+#ifdef _DEBUG
 	ID3D12Debug1* debugController = nullptr;
 	if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController)))) {
 		// デバッグレイヤーを有効化する
@@ -23,16 +23,25 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		// さらにGPU側でもチェックを行うようにする
 		debugController->SetEnableGPUBasedValidation(TRUE);
 	}
-	#endif // _DEBUG
-
+#endif // _DEBUG
 
 	// 初期化
 	win->Initialize();
-	dx->Initialize(win);
-	draw->Initialize(win, dx, mainCamera);
+	dx->Initialize(win, mainCamera);
+	mainCamera->Initialize();
+
+
+	// 三角形
+	Triangle* triangle = new Triangle;
+	triangle->Initialize();
+
+	Triangle* triangle2 = new Triangle;
+	triangle->Initialize();
+	triangle2->SetColor({ 0.0f,1.0f,0.0f,1.0f });
+	triangle2->SetPos({ 1.0f,0.0f,0.0f });
 
 	// 警告やエラーが発生した際に停止させる
-	#ifdef _DEBUG
+#ifdef _DEBUG
 	ID3D12InfoQueue* infoQueue = nullptr;
 	if (SUCCEEDED(dx->device->QueryInterface(IID_PPV_ARGS(&infoQueue)))) {
 		// やばいエラー時に止まる
@@ -61,11 +70,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		infoQueue->Release();
 
 	}
-	#endif // _DEBUG
-
+#endif // _DEBUG
 
 	// 開始前にTransform変数を作る
-	Transform transform = { {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f }, {0.0f,0.0f,0.0f} };
+	Math::Transform transform = { {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f }, {0.0f,0.0f,0.0f} };
 	// ワールド行列の生成
 	Matrix4x4 worldMatrix = W::Math::MakeAffineMatrix(transform.scale, transform.rotate, transform.translate);
 
@@ -86,15 +94,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			/// 更新処理(推定)
 			///
 
-			// 三角形のY軸回転
-			transform.rotate.y += 0.03f;
-			mainCamera->SetWorldAffine(transform.scale, transform.rotate, transform.translate);
+			//// 三角形のY軸回転
+			//transform.rotate.y += 0.03f;
+			//mainCamera->SetWorldAffine(transform.scale, transform.rotate, transform.translate);
 			mainCamera->Update();
-			*(draw->wvpData) = mainCamera->GetWorldViewProjection();
-			
-			draw->vertexData[0] = mainCamera->GetNdcPos({ -0.5f,-0.5f,0.0f,1.0f });
-			draw->vertexData[1] = mainCamera->GetNdcPos({ 0.0f,0.5f,0.0f,1.0f });
-			draw->vertexData[2] = mainCamera->GetNdcPos({ 0.5f,-0.5f,0.0f,1.0f });
+			triangle->Update();
+			triangle2->Update();
 
 			///
 			/// 描画処理(推定) 
@@ -102,14 +107,17 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 			// 描画前処理
 			dx->DrawBegin();
-			draw->DrawBegin();
+
+			triangle->Draw();
+			triangle2->Draw();
+		
 
 			// 描画!(DrawCall/ドローコール)。3頂点で1つのインスタンス。インスタンスについては今後
-			dx->commandList->DrawInstanced(3, 1, 0, 0);
+			//dx->commandList->DrawInstanced(3, 1, 0, 0);
 
 			// 描画後処理
 			dx->DrawEnd();
-			
+
 		}
 
 	}
@@ -120,40 +128,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 #pragma region リソースリークチェック 01_03 P.5~6
 
-	// 開放処理 P.7
-	// P.5のチェックよりも前に行う
-
-	// 生成順と逆の順番で開放していく
-	//CloseHandle(fenceEvent);
-	//fence->Release();
-	//// リソース
-	//wvpResource->Release();
-	//materialResource->Release();
-	//vertexResource->Release();
-
-	//graphicsPipelineState->Release();
-	//signatureBlob->Release();
-	//if (errorBlob) {
-	//	errorBlob->Release();
-	//}
-	//rootSignature->Release();
-	//pixelShaderBlob->Release();
-	//vertexShaderBlob->Release();
-	////
-	//rtvDescriptorHeap->Release();
-	//swapChainResources[0]->Release();
-	//swapChainResources[1]->Release();
-	//swapChain->Release();
-	//commandList->Release();
-	//commandAllocator->Release();
-	//commandQueue->Release();
-	//device->Release();
-	//useAdapter->Release();
-	//dxgiFactory->Release();
-
 	// 解放処理
-	delete mainCamera;
-	draw->Delete();
+	delete triangle2;
+	delete triangle;
 	dx->Delete();
 
 #ifdef _DEBUG
@@ -161,7 +138,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 #endif // _DEBUG
 
 	win->Delete();
-	
+
 	/*CloseWindow(hwnd);*/
 
 	// リソースリークチェック P.5

@@ -1,5 +1,6 @@
 #include "DirectX.h"
-#include "WinAPI.h"
+
+#include "../math/Math.h"
 
 DirectX::DirectX()
 {
@@ -16,9 +17,10 @@ DirectX* DirectX::GetInstance() {
 }
 
 
-void DirectX::Initialize(WinAPI* win) {
+void DirectX::Initialize(WinAPI* win,MatrixCamera* mainCamera) {
 
 	win_ = win;
+	mainCamera_ = mainCamera;
 
 	// デバイスの初期化
 	InitializeDXGIDevice();
@@ -41,8 +43,11 @@ void DirectX::Initialize(WinAPI* win) {
 void DirectX::Delete() {
 
 	// 生成順と逆の順番で開放していく
+
 	CloseHandle(fenceEvent);
 	fence->Release();
+	includeHandler->Release();
+	dxcUtils->Release();
 	graphicsPipelineState->Release();
 	rtvDescriptorHeap->Release();
 	swapChainResources[0]->Release();
@@ -329,9 +334,11 @@ void DirectX::InitializePSO() {
 	rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; // CBVを使う // b0のbと一致
 	rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
 	rootParameters[0].Descriptor.ShaderRegister = 0; // レジスタ番号とバインド // b0のと一致
+
 	rootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; // CBVを使う // b0のbと一致
 	rootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX; // VertexShaderで使う
 	rootParameters[1].Descriptor.ShaderRegister = 0; // レジスタ番号とバインド // b0のと一致
+
 	descriptionRootSignature.pParameters = rootParameters; // ルートパラメータ配列へのポインタ
 	descriptionRootSignature.NumParameters = _countof(rootParameters); // 配列の長さ
 	// シリアライズしてバイナリにする
@@ -435,4 +442,50 @@ void DirectX::InitializeViewPort() {
 	scissorRect.right = win_->kClientWidth;
 	scissorRect.top = 0;
 	scissorRect.bottom = win_->kClientHeight;
+}
+
+
+// バッファリソースの生成
+Microsoft::WRL::ComPtr<ID3D12Resource> DirectX::CreateBufferResource(ID3D12Device* device, size_t sizeInBytes) {
+
+	// デバッグレイヤーでエラーと警告を受け取る
+#ifdef _DEBUG
+	ID3D12Debug1* debugController = nullptr;
+	if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController)))) {
+		// デバッグレイヤーを有効化する
+		debugController->EnableDebugLayer();
+		// さらにGPU側でもチェックを行うようにする
+		debugController->SetEnableGPUBasedValidation(TRUE);
+	}
+#endif // _DEBUG
+	dxgiFactory = nullptr;
+	hr = CreateDXGIFactory(IID_PPV_ARGS(&dxgiFactory));
+	assert(SUCCEEDED(hr));
+
+	// 返す用の変数を宣言
+	Microsoft::WRL::ComPtr<ID3D12Resource> result = nullptr;
+
+	// VertexResourceを生成する(P.42)
+	// 頂点リソース用のヒープ設定
+	D3D12_HEAP_PROPERTIES uploadHeapProperties{};
+	uploadHeapProperties.Type = D3D12_HEAP_TYPE_UPLOAD;// UploadHeapを使う
+	// 頂点リソースの設定
+	D3D12_RESOURCE_DESC vertexResouceDesc{};
+	// バッファリソース。テクスチャの場合はまた別の設定をする
+	vertexResouceDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
+	vertexResouceDesc.Width = sizeInBytes;// リソースのサイズ。今回はVector4を3頂点分
+	// バッファの場合はこれらは1にする決まり
+	vertexResouceDesc.Height = 1;
+	vertexResouceDesc.DepthOrArraySize = 1;
+	vertexResouceDesc.MipLevels = 1;
+	vertexResouceDesc.SampleDesc.Count = 1;
+	// バッファの場合はこれにする決まり
+	vertexResouceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+
+	hr = device->CreateCommittedResource(&uploadHeapProperties, D3D12_HEAP_FLAG_NONE,
+		&vertexResouceDesc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr,
+		IID_PPV_ARGS(&result));
+	assert(SUCCEEDED(hr));
+
+	return result;
 }

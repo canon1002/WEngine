@@ -86,14 +86,14 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="DirectX.cpp" />
-    <ClCompile Include="Draw.cpp" />
+    <ClCompile Include="Engine\base\DirectX.cpp" />
+    <ClCompile Include="Engine\base\ImGuiManager.cpp" />
+    <ClCompile Include="Engine\base\WinAPI.cpp" />
+    <ClCompile Include="Engine\math\Matrix4x4.cpp" />
+    <ClCompile Include="Engine\obj\camera\MainCamera.cpp" />
+    <ClCompile Include="Engine\obj\camera\MatrixCamera.cpp" />
+    <ClCompile Include="Engine\primitive\Triangle.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="MainCamera.cpp" />
-    <ClCompile Include="Matrix4x4.cpp" />
-    <ClCompile Include="MatrixCamera.cpp" />
-    <ClCompile Include="WinAPI.cpp" />
-    <ClCompile Include="WorldTransform.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Object3d.PS.hlsl">
@@ -114,15 +114,15 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="DirectX.h" />
-    <ClInclude Include="Draw.h" />
-    <ClInclude Include="MainCamera.h" />
-    <ClInclude Include="Math.h" />
-    <ClInclude Include="Matrix4x4.h" />
-    <ClInclude Include="MatrixCamera.h" />
-    <ClInclude Include="System.h" />
-    <ClInclude Include="WinAPI.h" />
-    <ClInclude Include="WorldTransform.h" />
+    <ClInclude Include="Engine\base\DirectX.h" />
+    <ClInclude Include="Engine\base\ImGuiManager.h" />
+    <ClInclude Include="Engine\base\System.h" />
+    <ClInclude Include="Engine\base\WinAPI.h" />
+    <ClInclude Include="Engine\math\Math.h" />
+    <ClInclude Include="Engine\math\Matrix4x4.h" />
+    <ClInclude Include="Engine\obj\camera\MainCamera.h" />
+    <ClInclude Include="Engine\obj\camera\MatrixCamera.h" />
+    <ClInclude Include="Engine\primitive\Triangle.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

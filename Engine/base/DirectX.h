@@ -1,10 +1,18 @@
 #pragma once
 #include "WinAPI.h"
+#include <wrl.h>
+
+using namespace Microsoft::WRL;
+
+// 前方宣言
+class MatrixCamera;
+struct Vector4;
+struct Matrix4x4;
 
 class DirectX
 {
 private:
-
+	
 	DirectX();
 	~DirectX();
 
@@ -21,8 +29,16 @@ public: // ** 静的メンバ関数 ** //
 
 public: // ** メンバ関数 ** //
 
-	void Initialize(WinAPI* win);
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="win"></param>
+	/// <param name="mainCamera"></param>
+	void Initialize(WinAPI* win, MatrixCamera* mainCamera);
 
+	/// <summary>
+	/// 
+	/// </summary>
 	void Delete();
 
 	/// <summary>
@@ -55,18 +71,40 @@ public: // ** メンバ関数 ** //
 	/// </summary>
 	void CreateFence();
 
+	/// <summary>
+	/// 
+	/// </summary>
 	void InitializeDXC();
+	
+	/// <summary>
+	/// 
+	/// </summary>
 	void InitializePSO();
+	
+	/// <summary>
+	/// 
+	/// </summary>
 	void InitializeViewPort();
 
+	/// <summary>
+	/// 
+	/// </summary>
 	void DrawBegin();
 
+	/// <summary>
+	/// 
+	/// </summary>
 	void DrawEnd();
 
+	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(ID3D12Device* device, size_t sizeInBytes);
+
 public: // ** メンバ変数 ** //
-
+	
+	//
 	WinAPI* win_ = nullptr;
+	MatrixCamera* mainCamera_ = nullptr;
 
+	
 	// DXGIファクトリーの生成
 	IDXGIFactory7* dxgiFactory = nullptr;
 	// D3D12Deviceの生成

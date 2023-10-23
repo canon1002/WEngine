@@ -1,0 +1,62 @@
+#pragma once
+#include "../math/Math.h"
+#include "../base/DirectX.h"
+
+// 前方宣言
+class MatrixCamera;
+
+class Triangle
+{
+public:
+	Triangle();
+	~Triangle();
+
+	void Initialize();
+	void Update();
+	void Draw();
+
+	void CreateVertexResource();
+	void CreateTransformationRsource();
+	void CreateBufferView();
+	void DrawBeginResource();
+
+	void SetPos(Vector3 pos) { 
+		translate_.x = pos.x; 
+		translate_.y = pos.y; 
+		translate_.z = pos.z; 
+	}
+
+	void SetColor(Vector4 color) {
+		// 指定した色に書き込む
+		*materialDate = Vector4(color.x, color.y, color.z, color.w);
+	}
+
+	const D3D12_VERTEX_BUFFER_VIEW& GetVBV() const { return vertexBufferView; }
+	auto* GetMaterial() {return  materialResource.Get();}
+	auto* GetWVP() {return wvpResource.Get();}
+
+private:
+
+	// 外部ポインタ
+	MatrixCamera* mainCamera_ = nullptr;
+	DirectX* dx_ = nullptr;
+
+	Vector4 translate_;
+
+	// VertexResourceを生成する(P.42)
+	// 実際に頂点リソースを作る
+	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource = nullptr;
+	// マテリアル用のResourceを作る
+	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource = nullptr;
+	// Transformation用のResourceを作る
+	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource = nullptr;
+	// データを書き込む
+	Matrix4x4* wvpData = nullptr;
+	// 頂点リソースにデータを書き込む
+	Vector4* vertexData = nullptr;
+	// 頂点バッファビューを作成する
+	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
+	// マテリアルデータ
+	Vector4* materialDate = nullptr;
+};
+

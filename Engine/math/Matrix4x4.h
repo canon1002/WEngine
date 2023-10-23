@@ -4,13 +4,23 @@ struct Vector2 { float x, y; };
 
 struct Vector3 { float x, y, z; };
 
-struct Vector4 { float x, y, z, w; };
+Vector3 operator+(Vector3 obj);
+Vector3 operator-(Vector3 obj);
 
-struct Transform {
-    Vector3 scale;
-    Vector3 rotate;
-    Vector3 translate;
-};
+struct Vector4 { float x, y, z, w; };
+Vector4 operator+(Vector4 obj);
+Vector4 operator-(Vector4 obj);
+
+namespace Math {
+    struct Transform {
+        Vector3 scale;
+        Vector3 rotate;
+        Vector3 translate;
+    };
+
+    Transform operator+(Transform obj);
+    Transform operator-(Transform obj);
+}
 
 struct Matrix4x4 final { float m[4][4]; };
 
