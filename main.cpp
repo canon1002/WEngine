@@ -30,6 +30,18 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	dx->Initialize(win, mainCamera);
 	mainCamera->Initialize();
 
+	// ImGuiの初期化
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGui::StyleColorsDark();
+	ImGui_ImplWin32_Init(win->hwnd);
+	ImGui_ImplDX12_Init(dx->device,
+		dx->swapChainDesc.BufferCount,
+		dx->rtvDesc.Format,
+		dx->srvDescriptorHeap,
+		dx->srvDescriptorHeap->GetCPUDescriptorHandleForHeapStart(),
+		dx->srvDescriptorHeap->GetGPUDescriptorHandleForHeapStart()
+	);
 
 	// 三角形
 	Triangle* triangle = new Triangle;
@@ -88,11 +100,20 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			DispatchMessage(&win->msg);
 		}
 		else {
+
+			// フレームの先頭でImGuiに、ここからフレームが始まる旨を伝える
+			ImGui_ImplDX12_NewFrame();
+			ImGui_ImplWin32_NewFrame();
+			ImGui::NewFrame();
+
 			// ゲーム用の処理
 
 			///
 			/// 更新処理(推定)
 			///
+
+			// 開発用UIの表示
+			ImGui::ShowDemoWindow();
 
 			//// 三角形のY軸回転
 			//transform.rotate.y += 0.03f;
@@ -100,6 +121,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			mainCamera->Update();
 			triangle->Update();
 			triangle2->Update();
+
+			// 描画処理に入る前に、ImGui内部のコマンドを生成する
+			ImGui::Render();
 
 			///
 			/// 描画処理(推定) 
@@ -131,12 +155,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	// 解放処理
 	delete triangle2;
 	delete triangle;
+	ImGui_ImplDX12_Shutdown();
 	dx->Delete();
 
 #ifdef _DEBUG
 	debugController->Release();
 #endif // _DEBUG
-
+	
 	win->Delete();
 
 	/*CloseWindow(hwnd);*/

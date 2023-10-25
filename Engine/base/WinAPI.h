@@ -15,6 +15,15 @@
 #pragma comment(lib,"dxguid.lib")
 #pragma comment(lib,"dxcompiler.lib")
 
+// ImGui
+#include "../../../externals/imgui/imgui.h"
+#include "../../../externals/imgui/imgui_impl_dx12.h"
+#include "../../../externals/imgui/imgui_impl_win32.h"
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
+// Comポインタ
+#include <memory>
+
 	class WinAPI final
 	{
 	private: // ** メンバ関数 ** //

@@ -96,7 +96,12 @@ public: // ** メンバ関数 ** //
 	/// </summary>
 	void DrawEnd();
 
+	/// バッファリソースの生成
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(ID3D12Device* device, size_t sizeInBytes);
+
+	/// ディスクリプタヒープの生成
+	ID3D12DescriptorHeap* CreateDescriptorHeap(
+		ID3D12Device* device, D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors, bool shaderVisible);
 
 public: // ** メンバ変数 ** //
 	
@@ -121,20 +126,32 @@ public: // ** メンバ変数 ** //
 
 	// スワップチェインを生成する
 	IDXGISwapChain4* swapChain = nullptr;
+	// スワップチェーンデスク
+	DXGI_SWAP_CHAIN_DESC1 swapChainDesc{};
 	// SwapChainからResourceを引っ張ってくる
 	ID3D12Resource* swapChainResources[2] = { nullptr };
 
 	// TransitionBarrierの設定
 	D3D12_RESOURCE_BARRIER barrier{};
-	// RTVを2つ作るのでディスクリプタを２つ用意
-	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandles[2];
-	
+
 	// ビューポート
 	D3D12_VIEWPORT viewport = {};
 	// シザー矩形
 	D3D12_RECT scissorRect = {};
-	// ディスクリプタヒープ
+	
+	// RTVを2つ作るのでディスクリプタを２つ用意
+	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandles[2];
+	// RTVの設定
+	D3D12_RENDER_TARGET_VIEW_DESC rtvDesc{};
+	// RTV用ディスクリプタヒープ
 	ID3D12DescriptorHeap* rtvDescriptorHeap = nullptr;
+
+	// SRVはディスクリプタを128つ
+	D3D12_CPU_DESCRIPTOR_HANDLE srtHandles[128];
+	// SRV用ディスクリプタヒープ
+	ID3D12DescriptorHeap* srvDescriptorHeap = nullptr;
+	
+
 	// グラフィックパイプライン
 	ID3D12PipelineState* graphicsPipelineState = nullptr;
 	// ルートシグネチャー
