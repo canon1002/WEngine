@@ -22,6 +22,7 @@
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 // Comポインタ
+#include <wrl.h>
 #include <memory>
 
 	class WinAPI final
@@ -55,15 +56,15 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg
 		// 出力ウィンドウに文字を出す
 		static void Log(const std::string& messege);
 		// シェーダーをコンパイルする
-		static IDxcBlob* CompileShader(
+		static Microsoft::WRL::ComPtr<IDxcBlob> CompileShader(
 			// CompilerするShederファイルへのパス
 			const std::wstring& filePath,
 			// Compilerに使用するProfile
 			const wchar_t* profile,
 			// 初期化で生成したものを3つ
-			IDxcUtils* dxcUtils,
-			IDxcCompiler3* dxcCompiler,
-			IDxcIncludeHandler* includeHandler);
+			Microsoft::WRL::ComPtr < IDxcUtils> dxcUtils,
+			Microsoft::WRL::ComPtr < IDxcCompiler3> dxcCompiler,
+			Microsoft::WRL::ComPtr < IDxcIncludeHandler> includeHandler);
 		// ** 変換 ** //
 
 		// string->wstring
@@ -89,6 +90,8 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg
 		// メッセージ
 		MSG msg{};
 
-	};
+	private:
+		static WinAPI* instance;
+ 	};
 
 

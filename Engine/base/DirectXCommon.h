@@ -1,30 +1,30 @@
 #pragma once
 #include "WinAPI.h"
-#include <wrl.h>
-
-using namespace Microsoft::WRL;
+#include "../../../Externals/DirectXTex/DirectXTex.h"
 
 // 前方宣言
 class MatrixCamera;
 struct Vector4;
 struct Matrix4x4;
 
-class DirectX
+class DirectXCommon
 {
 private:
 	
-	DirectX();
-	~DirectX();
+	DirectXCommon();
+	~DirectXCommon();
 
 public: // ** 静的メンバ関数 ** //
 
 	// コピーコンストラクタと演算子オーバーロードの禁止
-	DirectX(const DirectX& obj) = delete;
-	DirectX& operator=(const DirectX& obj) = delete;
+	DirectXCommon(const DirectXCommon& obj) = delete;
+	DirectXCommon& operator=(const DirectXCommon& obj) = delete;
 
 	// インスタンスを取得
-	static DirectX* GetInstance();
+	static DirectXCommon* GetInstance();
 
+	// 開放する
+	static void Relese();
 
 
 public: // ** メンバ関数 ** //
@@ -62,6 +62,11 @@ public: // ** メンバ関数 ** //
 	void CreateFinalRenderTargets();
 
 	/// <summary>
+	/// シェーダーリソースビュー生成
+	/// </summary>
+	void CreateShaderResourceView();
+
+	/// <summary>
 	/// 深度バッファ生成
 	/// </summary>
 	void CreateDepthBuffer();
@@ -96,12 +101,14 @@ public: // ** メンバ関数 ** //
 	/// </summary>
 	void DrawEnd();
 
+	DirectX::ScratchImage LoadTexture(const std::string& filePath);
+
 	/// バッファリソースの生成
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(ID3D12Device* device, size_t sizeInBytes);
 
 	/// ディスクリプタヒープの生成
-	ID3D12DescriptorHeap* CreateDescriptorHeap(
-		ID3D12Device* device, D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors, bool shaderVisible);
+	Microsoft::WRL::ComPtr <ID3D12DescriptorHeap> CreateDescriptorHeap(
+		Microsoft::WRL::ComPtr <ID3D12Device> device, D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors, bool shaderVisible);
 
 public: // ** メンバ変数 ** //
 	
@@ -111,25 +118,25 @@ public: // ** メンバ変数 ** //
 
 	
 	// DXGIファクトリーの生成
-	IDXGIFactory7* dxgiFactory = nullptr;
+	Microsoft::WRL::ComPtr <IDXGIFactory7> dxgiFactory = nullptr;
 	// D3D12Deviceの生成
-	ID3D12Device* device = nullptr;
+	Microsoft::WRL::ComPtr <ID3D12Device> device = nullptr;
 
 	HRESULT hr;
 
 	// コマンドアロケータ
-	ID3D12CommandAllocator* commandAllocator = nullptr;
+	Microsoft::WRL::ComPtr < ID3D12CommandAllocator> commandAllocator = nullptr;
 	// コマンドキュー
-	ID3D12CommandQueue* commandQueue = nullptr;
+	Microsoft::WRL::ComPtr < ID3D12CommandQueue> commandQueue = nullptr;
 	// コマンドリスト
-	ID3D12GraphicsCommandList* commandList = nullptr;
+	Microsoft::WRL::ComPtr < ID3D12GraphicsCommandList> commandList = nullptr;
 
 	// スワップチェインを生成する
-	IDXGISwapChain4* swapChain = nullptr;
+	Microsoft::WRL::ComPtr < IDXGISwapChain4> swapChain = nullptr;
 	// スワップチェーンデスク
 	DXGI_SWAP_CHAIN_DESC1 swapChainDesc{};
 	// SwapChainからResourceを引っ張ってくる
-	ID3D12Resource* swapChainResources[2] = { nullptr };
+	Microsoft::WRL::ComPtr < ID3D12Resource> swapChainResources[2] = { nullptr };
 
 	// TransitionBarrierの設定
 	D3D12_RESOURCE_BARRIER barrier{};
@@ -144,28 +151,37 @@ public: // ** メンバ変数 ** //
 	// RTVの設定
 	D3D12_RENDER_TARGET_VIEW_DESC rtvDesc{};
 	// RTV用ディスクリプタヒープ
-	ID3D12DescriptorHeap* rtvDescriptorHeap = nullptr;
+	Microsoft::WRL::ComPtr < ID3D12DescriptorHeap> rtvDescriptorHeap = nullptr;
 
 	// SRVはディスクリプタを128つ
 	D3D12_CPU_DESCRIPTOR_HANDLE srtHandles[128];
 	// SRV用ディスクリプタヒープ
-	ID3D12DescriptorHeap* srvDescriptorHeap = nullptr;
+	Microsoft::WRL::ComPtr <ID3D12DescriptorHeap> srvDescriptorHeap = nullptr;
 	
+	//SRVを制作するDescriptorHeapの場所を決める
+	Microsoft::WRL::ComPtr<ID3D12Resource> textureResource_;
+	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU_;
+	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU_;
 
 	// グラフィックパイプライン
-	ID3D12PipelineState* graphicsPipelineState = nullptr;
+	Microsoft::WRL::ComPtr < ID3D12PipelineState> graphicsPipelineState = nullptr;
 	// ルートシグネチャー
-	ID3D12RootSignature* rootSignature = nullptr;
+	Microsoft::WRL::ComPtr < ID3D12RootSignature> rootSignature = nullptr;
 
 	// dxCompilerを初期化
-	IDxcUtils* dxcUtils = nullptr;
-	IDxcCompiler3* dxcCompiler = nullptr;
+	Microsoft::WRL::ComPtr < IDxcUtils> dxcUtils = nullptr;
+	Microsoft::WRL::ComPtr < IDxcCompiler3> dxcCompiler = nullptr;
 	// 現時点では#includeしないが、includeに対応するための設定を行っておく
-	IDxcIncludeHandler* includeHandler = nullptr;
+	Microsoft::WRL::ComPtr < IDxcIncludeHandler> includeHandler = nullptr;
 
 	// フェンス
-	ID3D12Fence* fence = nullptr;
+	Microsoft::WRL::ComPtr < ID3D12Fence> fence = nullptr;
 	uint64_t fenceValue = 0;
 	HANDLE fenceEvent;
+
+private:
+
+	//
+	static DirectXCommon* instance;
 
 };

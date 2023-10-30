@@ -1,6 +1,7 @@
 #pragma once
 #include "../math/Math.h"
-#include "../base/DirectX.h"
+#include "../base/DirectXCommon.h"
+#include "../resources/Section/Resource.h"
 
 // 前方宣言
 class MatrixCamera;
@@ -39,7 +40,7 @@ private:
 
 	// 外部ポインタ
 	MatrixCamera* mainCamera_ = nullptr;
-	DirectX* dx_ = nullptr;
+	DirectXCommon* dx_ = nullptr;
 
 	Vector4 translate_;
 
@@ -53,7 +54,7 @@ private:
 	// データを書き込む
 	Matrix4x4* wvpData = nullptr;
 	// 頂点リソースにデータを書き込む
-	Vector4* vertexData = nullptr;
+	VertexData* vertexData = nullptr;
 	// 頂点バッファビューを作成する
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
 	// マテリアルデータ

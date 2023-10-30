@@ -1,14 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="ソース ファイル">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="ヘッダー ファイル">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
     <Filter Include="リソース ファイル">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
@@ -16,44 +8,83 @@
     <Filter Include="Engine">
       <UniqueIdentifier>{79a475c8-effe-474c-9b0b-adea0da283f8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engine\Obj">
-      <UniqueIdentifier>{e466fe93-9190-4fb3-ab34-ab026ab0e249}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\Obj\WorldTransform">
-      <UniqueIdentifier>{7080e14c-228e-4d3f-929d-d845c5b3f007}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\Obj\Camera">
-      <UniqueIdentifier>{23a8e57e-719a-435a-9bf4-559d53aaa05a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Engine\base">
       <UniqueIdentifier>{7efa9ed3-11ab-466c-ac46-781d56dca699}</UniqueIdentifier>
     </Filter>
     <Filter Include="Engine\math">
       <UniqueIdentifier>{8366f130-0620-4bdd-a003-4d85064dbb9e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine\object">
+      <UniqueIdentifier>{e466fe93-9190-4fb3-ab34-ab026ab0e249}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\object\WorldTransform">
+      <UniqueIdentifier>{7080e14c-228e-4d3f-929d-d845c5b3f007}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\object\Camera">
+      <UniqueIdentifier>{23a8e57e-719a-435a-9bf4-559d53aaa05a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\resouces">
+      <UniqueIdentifier>{f83658ba-df8f-4545-b3ec-e574ed48a7c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="externals">
+      <UniqueIdentifier>{074ac247-b9d9-4334-bed3-ebe0b9ace192}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="externals\Imgui">
+      <UniqueIdentifier>{570d4e9d-5889-4822-8227-8574bbb894c9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\primitive">
+      <UniqueIdentifier>{0512642e-ded2-4cf3-bd3a-15c74a008ad5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\resouces\section">
+      <UniqueIdentifier>{f0a45819-e0a1-4a18-8c1a-98dc693afa94}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Engine\base\DirectX.cpp">
-      <Filter>ソース ファイル</Filter>
+    <ClCompile Include="Engine\base\DirectXCommon.cpp">
+      <Filter>Engine\base</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\base\ImGuiManager.cpp">
-      <Filter>ソース ファイル</Filter>
+    <ClCompile Include="..\externals\imgui\imgui.cpp">
+      <Filter>externals\Imgui</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\base\WinAPI.cpp">
-      <Filter>ソース ファイル</Filter>
+    <ClCompile Include="..\externals\imgui\imgui_demo.cpp">
+      <Filter>externals\Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\externals\imgui\imgui_draw.cpp">
+      <Filter>externals\Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\externals\imgui\imgui_impl_dx12.cpp">
+      <Filter>externals\Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\externals\imgui\imgui_impl_win32.cpp">
+      <Filter>externals\Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\externals\imgui\imgui_tables.cpp">
+      <Filter>externals\Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\externals\imgui\imgui_widgets.cpp">
+      <Filter>externals\Imgui</Filter>
     </ClCompile>
     <ClCompile Include="Engine\math\Matrix4x4.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>Engine\math</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\obj\camera\MainCamera.cpp">
-      <Filter>ソース ファイル</Filter>
+    <ClCompile Include="Engine\base\WinAPI.cpp">
+      <Filter>Engine\base</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\obj\camera\MatrixCamera.cpp">
-      <Filter>ソース ファイル</Filter>
+    <ClCompile Include="Engine\base\ImGuiManager.cpp">
+      <Filter>Engine\base</Filter>
     </ClCompile>
     <ClCompile Include="Engine\primitive\Triangle.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>Engine\primitive</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\resources\Section\Resource.cpp">
+      <Filter>Engine\resouces\section</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\resources\ResourceManager.cpp">
+      <Filter>Engine\resouces</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\object\camera\MatrixCamera.cpp">
+      <Filter>Engine\object\Camera</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -61,17 +92,11 @@
     <FxCompile Include="Object3d.PS.hlsl" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Engine\base\DirectX.h">
+    <ClInclude Include="Engine\base\DirectXCommon.h">
       <Filter>Engine\base</Filter>
     </ClInclude>
     <ClInclude Include="Engine\base\ImGuiManager.h">
       <Filter>Engine\base</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\obj\camera\MainCamera.h">
-      <Filter>Engine\Obj\Camera</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\obj\camera\MatrixCamera.h">
-      <Filter>Engine\Obj\Camera</Filter>
     </ClInclude>
     <ClInclude Include="Engine\base\WinAPI.h">
       <Filter>Engine\base</Filter>
@@ -82,11 +107,52 @@
     <ClInclude Include="Engine\math\Matrix4x4.h">
       <Filter>Engine\math</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\primitive\Triangle.h">
-      <Filter>Engine</Filter>
-    </ClInclude>
     <ClInclude Include="Engine\base\System.h">
       <Filter>Engine\base</Filter>
     </ClInclude>
+    <ClInclude Include="..\externals\imgui\imconfig.h">
+      <Filter>externals\Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\externals\imgui\imgui.h">
+      <Filter>externals\Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\externals\imgui\imgui_impl_dx12.h">
+      <Filter>externals\Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\externals\imgui\imgui_impl_win32.h">
+      <Filter>externals\Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\externals\imgui\imgui_internal.h">
+      <Filter>externals\Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\externals\imgui\imstb_rectpack.h">
+      <Filter>externals\Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\externals\imgui\imstb_textedit.h">
+      <Filter>externals\Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\externals\imgui\imstb_truetype.h">
+      <Filter>externals\Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\primitive\Triangle.h">
+      <Filter>Engine\primitive</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\resources\Section\Resource.h">
+      <Filter>Engine\resouces\section</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\resources\ResourceManager.h">
+      <Filter>Engine\resouces</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\object\camera\MatrixCamera.h">
+      <Filter>Engine\object\Camera</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\externals\imgui\LICENSE.txt">
+      <Filter>externals\Imgui</Filter>
+    </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Object3d.hlsli" />
   </ItemGroup>
 </Project>

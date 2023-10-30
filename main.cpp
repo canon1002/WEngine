@@ -1,18 +1,39 @@
-#include "./Engine/base/DirectX.h"
-#include "./Engine/obj/camera/MatrixCamera.h"
+#include "./Engine/base/DirectXCommon.h"
+#include "./Engine/object/camera/MatrixCamera.h"
 #include "./Engine/primitive/Triangle.h"
+#include "./Engine/resources/Section/Resource.h"
 
 #include <d3d12.h>
+
+// リソースリークチェック
+struct D3DResourceLeakChecker {
+	~D3DResourceLeakChecker()
+	{
+		Microsoft::WRL::ComPtr<IDXGIDebug1> debug;
+		if (SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&debug)))) {
+			debug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_ALL);
+			debug->ReportLiveObjects(DXGI_DEBUG_APP, DXGI_DEBUG_RLO_ALL);
+			debug->ReportLiveObjects(DXGI_DEBUG_D3D12, DXGI_DEBUG_RLO_ALL);
+			debug->Release();
+		}
+	}
+};
+
 
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
+	// リリースチェック
+	D3DResourceLeakChecker leakCheck;
 	// WindowsAPI
 	WinAPI* win = WinAPI::GetInstance();
 	// DirectX
-	DirectX* dx = DirectX::GetInstance();
+	DirectXCommon* dx = DirectXCommon::GetInstance();
 	// カメラ
 	MatrixCamera* mainCamera = MatrixCamera::GetInstance();
+
+	// COMの初期化
+	CoInitializeEx(0, COINIT_MULTITHREADED);
 
 	// デバッグレイヤーでエラーと警告を受け取る
 #ifdef _DEBUG
@@ -30,26 +51,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	dx->Initialize(win, mainCamera);
 	mainCamera->Initialize();
 
-	// ImGuiの初期化
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGui::StyleColorsDark();
-	ImGui_ImplWin32_Init(win->hwnd);
-	ImGui_ImplDX12_Init(dx->device,
-		dx->swapChainDesc.BufferCount,
-		dx->rtvDesc.Format,
-		dx->srvDescriptorHeap,
-		dx->srvDescriptorHeap->GetCPUDescriptorHandleForHeapStart(),
-		dx->srvDescriptorHeap->GetGPUDescriptorHandleForHeapStart()
-	);
-
 	// 三角形
 	Triangle* triangle = new Triangle;
 	triangle->Initialize();
 
 	Triangle* triangle2 = new Triangle;
-	triangle->Initialize();
-	triangle2->SetColor({ 0.0f,1.0f,0.0f,1.0f });
+	triangle2->Initialize();
 	triangle2->SetPos({ 1.0f,0.0f,0.0f });
 
 	// 警告やエラーが発生した際に停止させる
@@ -61,7 +68,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		// エラー時に止まる
 		infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, true);
 		// 警告時に止まる
-		infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_WARNING, true);
+		infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_WARNING, false);
 
 		// 抑制するメッセージのID
 		D3D12_MESSAGE_ID denyIds[] = {
@@ -146,15 +153,14 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	}
 
-#pragma endregion
 
-	// 解放処理
-
-#pragma region リソースリークチェック 01_03 P.5~6
+	// Comの終了処理
+	CoUninitialize();
 
 	// 解放処理
 	delete triangle2;
 	delete triangle;
+	mainCamera->Delete();
 	ImGui_ImplDX12_Shutdown();
 	dx->Delete();
 
@@ -163,20 +169,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 #endif // _DEBUG
 	
 	win->Delete();
-
 	/*CloseWindow(hwnd);*/
 
-	// リソースリークチェック P.5
-	IDXGIDebug1* debug;
-	if (SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&debug)))) {
-		debug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_ALL);
-		debug->ReportLiveObjects(DXGI_DEBUG_APP, DXGI_DEBUG_RLO_ALL);
-		debug->ReportLiveObjects(DXGI_DEBUG_D3D12, DXGI_DEBUG_RLO_ALL);
-		debug->Release();
-	}
-
 #pragma endregion
-
 
 	return 0;
 }

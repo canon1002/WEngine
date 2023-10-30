@@ -93,13 +93,14 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="..\externals\imgui\imgui_impl_win32.cpp" />
     <ClCompile Include="..\externals\imgui\imgui_tables.cpp" />
     <ClCompile Include="..\externals\imgui\imgui_widgets.cpp" />
-    <ClCompile Include="Engine\base\DirectX.cpp" />
+    <ClCompile Include="Engine\base\DirectXCommon.cpp" />
     <ClCompile Include="Engine\base\ImGuiManager.cpp" />
     <ClCompile Include="Engine\base\WinAPI.cpp" />
     <ClCompile Include="Engine\math\Matrix4x4.cpp" />
-    <ClCompile Include="Engine\obj\camera\MainCamera.cpp" />
-    <ClCompile Include="Engine\obj\camera\MatrixCamera.cpp" />
+    <ClCompile Include="Engine\object\camera\MatrixCamera.cpp" />
     <ClCompile Include="Engine\primitive\Triangle.cpp" />
+    <ClCompile Include="Engine\resources\ResourceManager.cpp" />
+    <ClCompile Include="Engine\resources\Section\Resource.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -129,18 +130,30 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="..\externals\imgui\imstb_rectpack.h" />
     <ClInclude Include="..\externals\imgui\imstb_textedit.h" />
     <ClInclude Include="..\externals\imgui\imstb_truetype.h" />
-    <ClInclude Include="Engine\base\DirectX.h" />
+    <ClInclude Include="Engine\base\DirectXCommon.h" />
     <ClInclude Include="Engine\base\ImGuiManager.h" />
     <ClInclude Include="Engine\base\System.h" />
     <ClInclude Include="Engine\base\WinAPI.h" />
     <ClInclude Include="Engine\math\Math.h" />
     <ClInclude Include="Engine\math\Matrix4x4.h" />
-    <ClInclude Include="Engine\obj\camera\MainCamera.h" />
-    <ClInclude Include="Engine\obj\camera\MatrixCamera.h" />
+    <ClInclude Include="Engine\object\camera\MatrixCamera.h" />
     <ClInclude Include="Engine\primitive\Triangle.h" />
+    <ClInclude Include="Engine\resources\ResourceManager.h" />
+    <ClInclude Include="Engine\resources\Section\Resource.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\externals\imgui\LICENSE.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\externals\DirectXTex\DirectXTex_Desktop_2022_Win10.vcxproj">
+      <Project>{371b9fa9-4c90-4ac6-a123-aced756d6c77}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Object3d.hlsli">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </None>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
