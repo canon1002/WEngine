@@ -160,6 +160,7 @@ public: // ** メンバ変数 ** //
 	
 	//SRVを制作するDescriptorHeapの場所を決める
 	Microsoft::WRL::ComPtr<ID3D12Resource> textureResource_;
+	Microsoft::WRL::ComPtr<ID3D12Resource> depthStencilResource_;
 	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU_;
 	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU_;
 

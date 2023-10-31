@@ -16,6 +16,9 @@ namespace Resource
 	//テクスチャリソースの生成
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateTextureResource(Microsoft::WRL::ComPtr<ID3D12Device> device, const DirectX::TexMetadata& metdate);
 
+	//ディープステンシルテクスチャリソースの生成
+	Microsoft::WRL::ComPtr<ID3D12Resource> CreateDeapStencilTextureResource(Microsoft::WRL::ComPtr<ID3D12Device> device, int32_t width, int32_t height);
+
 	// データを転送する
 	void UpdateTextureDate(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages);
 

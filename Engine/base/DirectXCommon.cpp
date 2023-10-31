@@ -373,10 +373,13 @@ void DirectXCommon::CreateShaderResourceView() {
 		srvDescriptorHeap->GetGPUDescriptorHandleForHeapStart()
 	);
 
+	// リソース読み込み
 	DirectX::ScratchImage mipImages = Resource::LoadTextrue("Resources/texture/uvChecker.png");
 	const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
 	textureResource_ = Resource::CreateTextureResource(device, metadata);
 	Resource::UpdateTextureDate(textureResource_.Get(), mipImages);
+
+	depthStencilResource_ = Resource::CreateDeapStencilTextureResource(device, win_->kClientWidth, win_->kClientHeight);
 
 	// mateDateを基にSRVの設定
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};

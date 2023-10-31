@@ -2,6 +2,7 @@
 #include "../math/Math.h"
 #include "../base/DirectXCommon.h"
 #include "../resources/Section/Resource.h"
+#include "../object/worldTransform/WorldTransform.h"
 
 // 前方宣言
 class MatrixCamera;
@@ -17,15 +18,7 @@ public:
 	void Draw();
 
 	void CreateVertexResource();
-	void CreateTransformationRsource();
 	void CreateBufferView();
-	void DrawBeginResource();
-
-	void SetPos(Vector3 pos) { 
-		translate_.x = pos.x; 
-		translate_.y = pos.y; 
-		translate_.z = pos.z; 
-	}
 
 	void SetColor(Vector4 color) {
 		// 指定した色に書き込む
@@ -34,7 +27,8 @@ public:
 
 	const D3D12_VERTEX_BUFFER_VIEW& GetVBV() const { return vertexBufferView; }
 	auto* GetMaterial() {return  materialResource.Get();}
-	auto* GetWVP() {return wvpResource.Get();}
+	
+
 
 private:
 
@@ -42,17 +36,15 @@ private:
 	MatrixCamera* mainCamera_ = nullptr;
 	DirectXCommon* dx_ = nullptr;
 
-	Vector4 translate_;
-
 	// VertexResourceを生成する(P.42)
 	// 実際に頂点リソースを作る
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource = nullptr;
 	// マテリアル用のResourceを作る
 	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource = nullptr;
-	// Transformation用のResourceを作る
-	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource = nullptr;
-	// データを書き込む
-	Matrix4x4* wvpData = nullptr;
+
+	// ワールドトランスフォーム
+	WorldTransform* worldTransform = nullptr;
+
 	// 頂点リソースにデータを書き込む
 	VertexData* vertexData = nullptr;
 	// 頂点バッファビューを作成する

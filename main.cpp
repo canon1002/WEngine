@@ -54,10 +54,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	// 三角形
 	Triangle* triangle = new Triangle;
 	triangle->Initialize();
-
+	Vector3 rotate = { 0.0f,0.0f,0.0f };
 	Triangle* triangle2 = new Triangle;
 	triangle2->Initialize();
-	triangle2->SetPos({ 1.0f,0.0f,0.0f });
+	triangle2->SetColor({ 0.0f,1.0f,0.0f,1.0f });
+	
 
 	// 警告やエラーが発生した際に停止させる
 #ifdef _DEBUG
@@ -122,12 +123,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			// 開発用UIの表示
 			ImGui::ShowDemoWindow();
 
-			//// 三角形のY軸回転
-			//transform.rotate.y += 0.03f;
-			//mainCamera->SetWorldAffine(transform.scale, transform.rotate, transform.translate);
 			mainCamera->Update();
 			triangle->Update();
-			triangle2->Update();
+			//triangle2->Update();
 
 			// 描画処理に入る前に、ImGui内部のコマンドを生成する
 			ImGui::Render();
@@ -139,8 +137,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			// 描画前処理
 			dx->DrawBegin();
 
+			
 			triangle->Draw();
-			triangle2->Draw();
+			//triangle2->Draw();
+			
 		
 
 			// 描画!(DrawCall/ドローコール)。3頂点で1つのインスタンス。インスタンスについては今後

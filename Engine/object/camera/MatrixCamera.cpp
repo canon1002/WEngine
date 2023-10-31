@@ -2,7 +2,7 @@
 
 MatrixCamera* MatrixCamera::instance = nullptr;
 
-MatrixCamera::MatrixCamera(){}
+MatrixCamera::MatrixCamera() { this->Initialize(); }
 
 MatrixCamera::~MatrixCamera() {};
 
