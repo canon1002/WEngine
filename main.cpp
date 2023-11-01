@@ -3,6 +3,7 @@
 #include "./Engine/primitive/Triangle.h"
 #include "./Engine/primitive/Sprite.h"
 #include "./Engine/resources/Section/Resource.h"
+#include "./Engine/primitive/Sphere.h"
 
 #include <d3d12.h>
 
@@ -52,12 +53,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	dx->Initialize(win, mainCamera);
 	mainCamera->Initialize();
 
-	// 三角形
-	Triangle* triangle = new Triangle;
-	triangle->Initialize();
-	Triangle* triangle2 = new Triangle;
-	triangle2->Initialize();
-	triangle2->SetTransform({ 0.3f,0.0f,0.0f });
+	// 球
+	Sphere* sphere = new Sphere;
+	sphere->Initialize();
 
 	// 平面(sprite)
 	Sprite* sprite = new Sprite;
@@ -126,12 +124,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			// 開発用UIの表示
 			ImGui::ShowDemoWindow();
 
-			triangle->Rotation({ 0.0f,0.03f,0.0f });
-			triangle2->Rotation({ 0.0f,-0.001f,0.0f });
-
+			
 			mainCamera->Update();
-			triangle->Update();
-			triangle2->Update();
+			sphere->Update();
 			sprite->Update();
 
 			// 描画処理に入る前に、ImGui内部のコマンドを生成する
@@ -144,8 +139,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			// 描画前処理
 			dx->DrawBegin();
 
-			triangle->Draw();
-			triangle2->Draw();
+			sphere->Draw();
 			sprite->Draw();
 
 
@@ -165,8 +159,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	// 解放処理
 	delete sprite;
-	delete triangle2;
-	delete triangle;
+	delete sphere;
 	mainCamera->Delete();
 	ImGui_ImplDX12_Shutdown();
 	dx->Delete();

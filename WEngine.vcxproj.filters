@@ -92,6 +92,9 @@
     <ClCompile Include="Engine\primitive\Sprite.cpp">
       <Filter>Engine\primitive</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\primitive\Sphere.cpp">
+      <Filter>Engine\primitive</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Object3d.VS.hlsl" />
@@ -156,6 +159,9 @@
       <Filter>Engine\object\WorldTransform</Filter>
     </ClInclude>
     <ClInclude Include="Engine\primitive\Sprite.h">
+      <Filter>Engine\primitive</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\primitive\Sphere.h">
       <Filter>Engine\primitive</Filter>
     </ClInclude>
   </ItemGroup>

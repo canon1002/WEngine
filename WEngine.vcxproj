@@ -99,6 +99,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\math\Matrix4x4.cpp" />
     <ClCompile Include="Engine\object\camera\MatrixCamera.cpp" />
     <ClCompile Include="Engine\object\worldTransform\WorldTransform.cpp" />
+    <ClCompile Include="Engine\primitive\Sphere.cpp" />
     <ClCompile Include="Engine\primitive\Sprite.cpp" />
     <ClCompile Include="Engine\primitive\Triangle.cpp" />
     <ClCompile Include="Engine\resources\ResourceManager.cpp" />
@@ -140,6 +141,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\math\Matrix4x4.h" />
     <ClInclude Include="Engine\object\camera\MatrixCamera.h" />
     <ClInclude Include="Engine\object\worldTransform\WorldTransform.h" />
+    <ClInclude Include="Engine\primitive\Sphere.h" />
     <ClInclude Include="Engine\primitive\Sprite.h" />
     <ClInclude Include="Engine\primitive\Triangle.h" />
     <ClInclude Include="Engine\resources\ResourceManager.h" />

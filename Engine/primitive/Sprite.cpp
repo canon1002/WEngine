@@ -26,7 +26,7 @@ void Sprite::Initialize() {
 void Sprite::Update() {
 
 	ImGui::Begin("Sprite");
-	ImGui::DragFloat3("tranlate : %f", &worldtransform_->translate.x);
+	ImGui::DragFloat3("tranlate", &worldtransform_->translate.x);
 	ImGui::End();
 
 }
