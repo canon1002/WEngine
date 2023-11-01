@@ -179,6 +179,9 @@ public: // ** メンバ変数 ** //
 	uint64_t fenceValue = 0;
 	HANDLE fenceEvent;
 
+	// リソース
+	Microsoft::WRL::ComPtr<ID3D12Resource> intermediaResource = nullptr;
+
 private:
 
 	//

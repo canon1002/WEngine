@@ -86,6 +86,9 @@
     <ClCompile Include="Engine\object\camera\MatrixCamera.cpp">
       <Filter>Engine\object\Camera</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\object\worldTransform\WorldTransform.cpp">
+      <Filter>Engine\object\WorldTransform</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Object3d.VS.hlsl" />
@@ -145,6 +148,9 @@
     </ClInclude>
     <ClInclude Include="Engine\object\camera\MatrixCamera.h">
       <Filter>Engine\object\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\object\worldTransform\WorldTransform.h">
+      <Filter>Engine\object\WorldTransform</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

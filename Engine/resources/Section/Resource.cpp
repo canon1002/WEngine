@@ -1,5 +1,6 @@
 #include "Resource.h"
 
+
 namespace Resource
 {
 	// テクスチャ読み込み
@@ -40,10 +41,50 @@ namespace Resource
 		// リソースを生成する
 		Microsoft::WRL::ComPtr <ID3D12Resource> resource = nullptr;
 		HRESULT hr = device->CreateCommittedResource(
+			&heapProperties,// Heapの設定
+			D3D12_HEAP_FLAG_NONE,// Heapの特殊な設定(特になし)
+			&resourceDesc, // Resourceの設定
+			D3D12_RESOURCE_STATE_COPY_DEST,// データ転送される設定
+			nullptr,// Crear最適値。使わないのでnullptr
+			IID_PPV_ARGS(&resource));// 作成するresourceポインタへのポインタ
+		assert(SUCCEEDED(hr));
+
+		return resource;
+
+	}
+
+	//ディープステンシルテクスチャリソースの生成
+	Microsoft::WRL::ComPtr<ID3D12Resource> CreateDeapStencilTextureResource(
+		Microsoft::WRL::ComPtr<ID3D12Device> device, int32_t width, int32_t height
+	) {
+		//metadateを基にResourceの設定
+		D3D12_RESOURCE_DESC resourceDesc{};
+		resourceDesc.Width = width;
+		resourceDesc.Height = height;
+		resourceDesc.MipLevels = 1;
+		resourceDesc.DepthOrArraySize = 1;// 奥行き or 配列Textureの配列数
+		resourceDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+		resourceDesc.SampleDesc.Count = 1;
+		resourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+		resourceDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
+
+		// 利用するヒープの設定
+		D3D12_HEAP_PROPERTIES heapProperties{};
+		heapProperties.Type = D3D12_HEAP_TYPE_DEFAULT;// VRAM上につくる
+
+		// 深度値のクリア設定
+		D3D12_CLEAR_VALUE depthClearValue{};
+		depthClearValue.DepthStencil.Depth = 1.0f;// 1.0f(最大値)でクリア
+		depthClearValue.Format = DXGI_FORMAT_D24_UNORM_S8_UINT; // フォーマット。Resourceと合わせる
+
+
+		// リソースを生成する
+		Microsoft::WRL::ComPtr <ID3D12Resource> resource = nullptr;
+		HRESULT hr = device->CreateCommittedResource(
 			&heapProperties,
 			D3D12_HEAP_FLAG_NONE,
 			&resourceDesc,
-			D3D12_RESOURCE_STATE_GENERIC_READ,
+			D3D12_RESOURCE_STATE_DEPTH_WRITE,
 			nullptr,
 			IID_PPV_ARGS(&resource));
 		assert(SUCCEEDED(hr));
@@ -53,7 +94,7 @@ namespace Resource
 	}
 
 	// データを転送する
-	void UpdateTextureDate(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages) {
+	void UpdateTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages) {
 		// Mate情報を取得
 		const DirectX::TexMetadata& metadate = mipImages.GetMetadata();
 		// 全MipMapについて 
@@ -70,6 +111,28 @@ namespace Resource
 			);
 			assert(SUCCEEDED(hr));
 		}
+	}
+
+	[[nodiscard]]
+	Microsoft::WRL::ComPtr<ID3D12Resource>UpdateTextureData(
+		Microsoft::WRL::ComPtr <ID3D12Resource> texture,const DirectX::ScratchImage& mipImages,
+		DirectXCommon* dx)
+	{
+		std::vector<D3D12_SUBRESOURCE_DATA> subresource;
+		DirectX::PrepareUpload(dx->device.Get(), mipImages.GetImages(), mipImages.GetImageCount(), mipImages.GetMetadata(), subresource);
+		uint64_t intermediateSize = GetRequiredIntermediateSize(texture.Get(), 0, UINT(subresource.size()));
+		Microsoft::WRL::ComPtr <ID3D12Resource> intermediateResource = dx->CreateBufferResource(dx->device.Get(), intermediateSize);
+		UpdateSubresources(dx->commandList.Get(), texture.Get(), intermediateResource.Get(), 0, 0, UINT(subresource.size()), subresource.data());
+		// Textureの転送後は利用できるよう、D3D12_RESOURCE_STATE_COPYからD3D12_RESOURCE_STATE_GENERIC_READへResourceStateを変更する
+		D3D12_RESOURCE_BARRIER barrier{};
+		barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+		barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;// Noneにしておく
+		barrier.Transition.pResource = texture.Get();// バリアを張る対象の
+		barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+		barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;		// 遷移前(現在)のResourceState
+		barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_GENERIC_READ;	// 遷移後のResourceState
+		dx->commandList->ResourceBarrier(1, &barrier);		// TransitionBarrierを張る
+		return intermediateResource;
 	}
 
 }

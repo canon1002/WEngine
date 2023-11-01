@@ -376,7 +376,7 @@ void DirectXCommon::CreateShaderResourceView() {
 	DirectX::ScratchImage mipImages = Resource::LoadTextrue("Resources/texture/uvChecker.png");
 	const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
 	textureResource_ = Resource::CreateTextureResource(device, metadata);
-	Resource::UpdateTextureDate(textureResource_.Get(), mipImages);
+	intermediaResource = Resource::UpdateTextureData(textureResource_, mipImages, this);
 
 	// mateDateを基にSRVの設定
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
