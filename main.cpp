@@ -1,6 +1,7 @@
 #include "./Engine/base/DirectXCommon.h"
 #include "./Engine/object/camera/MatrixCamera.h"
 #include "./Engine/primitive/Triangle.h"
+#include "./Engine/primitive/Sprite.h"
 #include "./Engine/resources/Section/Resource.h"
 
 #include <d3d12.h>
@@ -54,10 +55,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	// 三角形
 	Triangle* triangle = new Triangle;
 	triangle->Initialize();
-
 	Triangle* triangle2 = new Triangle;
 	triangle2->Initialize();
 	triangle2->SetTransform({ 0.3f,0.0f,0.0f });
+
+	// 平面(sprite)
+	Sprite* sprite = new Sprite;
+	sprite->Initialize();
 
 	// 警告やエラーが発生した際に停止させる
 #ifdef _DEBUG
@@ -128,6 +132,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			mainCamera->Update();
 			triangle->Update();
 			triangle2->Update();
+			sprite->Update();
 
 			// 描画処理に入る前に、ImGui内部のコマンドを生成する
 			ImGui::Render();
@@ -141,7 +146,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 			triangle->Draw();
 			triangle2->Draw();
-		
+			sprite->Draw();
+
 
 			// 描画!(DrawCall/ドローコール)。3頂点で1つのインスタンス。インスタンスについては今後
 			//dx->commandList->DrawInstanced(3, 1, 0, 0);
@@ -158,6 +164,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	CoUninitialize();
 
 	// 解放処理
+	delete sprite;
 	delete triangle2;
 	delete triangle;
 	mainCamera->Delete();
