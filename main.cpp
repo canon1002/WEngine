@@ -57,7 +57,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	Triangle* triangle2 = new Triangle;
 	triangle2->Initialize();
-	triangle2->SetPos({ 0.3f,0.0f,0.0f });
+	triangle2->SetTransform({ 0.3f,0.0f,0.0f });
 
 	// 警告やエラーが発生した際に停止させる
 #ifdef _DEBUG
@@ -121,6 +121,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 			// 開発用UIの表示
 			ImGui::ShowDemoWindow();
+
+			triangle->Rotation({ 0.0f,0.03f,0.0f });
+			triangle2->Rotation({ 0.0f,-0.001f,0.0f });
 
 			mainCamera->Update();
 			triangle->Update();

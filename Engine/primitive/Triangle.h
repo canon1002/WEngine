@@ -22,10 +22,38 @@ public:
 	void CreateBufferView();
 	void DrawBeginResource();
 
-	void SetPos(Vector3 pos) { 
+	/// <summary>
+	///	座標変更
+	/// </summary>
+	/// <param name="pos">座標</param>
+	void SetTransform(Vector3 pos) { 
 		worldtransform_->translate = pos;
 	}
+	
+	/// <summary>
+	/// 中心座標を移動させる
+	/// </summary>
+	/// <param name="t">移動量</param>
+	void Transform(Vector3 t) { 
+		worldtransform_->translate.x += t.x;
+		worldtransform_->translate.y += t.y;
+		worldtransform_->translate.z += t.z;
+	}
 
+	/// <summary>
+	/// 回転させる
+	/// </summary>
+	/// <param name="r">回転量</param>
+	void Rotation(Vector3 r) {
+		worldtransform_->rotate.x += r.x;
+		worldtransform_->rotate.y += r.y;
+		worldtransform_->rotate.z += r.z;
+	}
+
+	/// <summary>
+	/// 色変更
+	/// </summary>
+	/// <param name="color"></param>
 	void SetColor(Vector4 color) {
 		// 指定した色に書き込む
 		*materialDate = Vector4(color.x, color.y, color.z, color.w);

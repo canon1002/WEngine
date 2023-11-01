@@ -67,6 +67,11 @@ public: // ** メンバ関数 ** //
 	void CreateShaderResourceView();
 
 	/// <summary>
+	/// ディープステンシルビューの生成
+	/// </summary>
+	void CreateDepthStencilView();
+
+	/// <summary>
 	/// 深度バッファ生成
 	/// </summary>
 	void CreateDepthBuffer();
@@ -114,6 +119,7 @@ public: // ** メンバ変数 ** //
 	
 	//
 	WinAPI* win_ = nullptr;
+	//
 	MatrixCamera* mainCamera_ = nullptr;
 
 	
@@ -121,7 +127,7 @@ public: // ** メンバ変数 ** //
 	Microsoft::WRL::ComPtr <IDXGIFactory7> dxgiFactory = nullptr;
 	// D3D12Deviceの生成
 	Microsoft::WRL::ComPtr <ID3D12Device> device = nullptr;
-
+	//
 	HRESULT hr;
 
 	// コマンドアロケータ
@@ -146,6 +152,7 @@ public: // ** メンバ変数 ** //
 	// シザー矩形
 	D3D12_RECT scissorRect = {};
 	
+
 	// RTVを2つ作るのでディスクリプタを２つ用意
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandles[2];
 	// RTVの設定
@@ -157,14 +164,23 @@ public: // ** メンバ変数 ** //
 	D3D12_CPU_DESCRIPTOR_HANDLE srtHandles[128];
 	// SRV用ディスクリプタヒープ
 	Microsoft::WRL::ComPtr <ID3D12DescriptorHeap> srvDescriptorHeap = nullptr;
-	
 	//SRVを制作するDescriptorHeapの場所を決める
-	Microsoft::WRL::ComPtr<ID3D12Resource> textureResource_;
 	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU_;
 	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU_;
+	// テクスチャリソース
+	Microsoft::WRL::ComPtr<ID3D12Resource> textureResource_ = nullptr;
+
+	// DSV用デスクリプタヒープ
+	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> dsvDescriptorHeap_ = nullptr;
+	// DSVの設定
+	D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc{};
+	//　ディープステンシル用のリソース
+	Microsoft::WRL::ComPtr<ID3D12Resource> depthStencilTextureResource_ = nullptr;
+	//　ディスクリプタ
+	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle;
 
 	// グラフィックパイプライン
-	Microsoft::WRL::ComPtr < ID3D12PipelineState> graphicsPipelineState = nullptr;
+	Microsoft::WRL::ComPtr <ID3D12PipelineState> graphicsPipelineState = nullptr;
 	// ルートシグネチャー
 	Microsoft::WRL::ComPtr < ID3D12RootSignature> rootSignature = nullptr;
 

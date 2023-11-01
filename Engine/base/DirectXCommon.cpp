@@ -39,6 +39,7 @@ void DirectXCommon::Initialize(WinAPI* win,MatrixCamera* mainCamera) {
 	InitializePSO();
 	CreateFinalRenderTargets();
 	CreateShaderResourceView();
+	CreateDepthStencilView();
 	InitializeViewPort();
 	// 深度バッファ生成
 	//CreateDepthBuffer();
@@ -324,6 +325,18 @@ void DirectXCommon::InitializePSO() {
 	// どのように色を打ち込むかの設定(気にしなくていい)
 	graphicsPipelineStateDesc.SampleDesc.Count = 1;
 	graphicsPipelineStateDesc.SampleMask = D3D12_DEFAULT_SAMPLE_MASK;
+	//  DepthStencilの設定を行う
+	D3D12_DEPTH_STENCIL_DESC depthStencilDesc{};
+	// Depthの機能を有効化
+	depthStencilDesc.DepthEnable = true;
+	// 書き込みを行う
+	depthStencilDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
+	// 比較関数はLessEqual。つまり、近ければ描画される
+	depthStencilDesc.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
+	//  DepthStencilの設定
+	graphicsPipelineStateDesc.DepthStencilState = depthStencilDesc;
+	graphicsPipelineStateDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
+
 	// 実際に生成
 	hr = device->CreateGraphicsPipelineState(&graphicsPipelineStateDesc,
 		IID_PPV_ARGS(&graphicsPipelineState));
@@ -354,7 +367,7 @@ void DirectXCommon::CreateFinalRenderTargets() {
 	device->CreateRenderTargetView(swapChainResources[1].Get(), &rtvDesc, rtvHandles[1]);
 
 }
-
+/// シェーダーリソースビュー生成
 void DirectXCommon::CreateShaderResourceView() {
 
 	// STV用ディスクリプタヒープの生成
@@ -397,6 +410,26 @@ void DirectXCommon::CreateShaderResourceView() {
 	
 
 }
+/// ディープステンシルビューの生成
+void DirectXCommon::CreateDepthStencilView() {
+
+	// リソース生成
+	depthStencilTextureResource_ = Resource::CreateDeapStencilTextureResource(device, win_->kClientWidth, win_->kClientHeight);
+
+	// DSV用のヒープでディスクリプタの数は1。DSVはシェーダー内で触るものではないので、ShaderVisibleはfalse
+	dsvDescriptorHeap_ = CreateDescriptorHeap(device, D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1, false);
+
+	// DSVの設定
+	dsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;// Format。基本的にはResourceに合わせる
+	dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;//2Dテクスチャ
+	// DSVHeapの先頭にDSVをつくる
+	device->CreateDepthStencilView(depthStencilTextureResource_.Get(),
+		&dsvDesc, dsvDescriptorHeap_->GetCPUDescriptorHandleForHeapStart());
+
+	dsvHandle = dsvDescriptorHeap_->GetCPUDescriptorHandleForHeapStart();
+
+}
+
 ///
 void DirectXCommon::InitializeViewPort() {
 
@@ -456,8 +489,13 @@ void DirectXCommon::DrawBegin() {
 	// TransitionBarrierを張る
 	commandList->ResourceBarrier(1, &barrier);
 
-	// 描画先のRTVを設定する
-	commandList->OMSetRenderTargets(1, &rtvHandles[backBufferIndex], false, nullptr);
+
+	// 描画先のRTVとDSVを設定する
+	commandList->OMSetRenderTargets(1, &rtvHandles[backBufferIndex], false, &dsvHandle);
+
+	// 指定した深度で画面全体をクリアにする
+	// フレームの最初に最も遠く(1.0)でクリアする
+	commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 
 	// 指定した色で画面全体をクリアにする
 	float clearColor[] = { 0.1f,0.25f,0.5f,1.0f };	// 青っぽい色 RGBAの順
@@ -474,10 +512,9 @@ void DirectXCommon::DrawBegin() {
 	commandList->SetGraphicsRootSignature(rootSignature.Get());
 	commandList->SetPipelineState(graphicsPipelineState.Get());
 
-
-
 }
 
+/// 描画後処理
 void DirectXCommon::DrawEnd() {
 
 	// ImGuiの描画

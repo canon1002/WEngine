@@ -29,7 +29,6 @@ void Triangle::Update() {
 
 void Triangle::Draw() {
 
-	worldtransform_->rotate.y += 0.03f;
 	//　三角形のワールド行列
 	worldtransform_->worldM = W::Math::MakeAffineMatrix(
 		worldtransform_->scale, worldtransform_->rotate, worldtransform_->translate);
