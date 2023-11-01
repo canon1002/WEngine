@@ -2,6 +2,7 @@
 #include "../math/Math.h"
 #include "../base/DirectXCommon.h"
 #include "../resources/Section/Resource.h"
+#include "../object/worldTransform/WorldTransform.h"
 
 // 前方宣言
 class MatrixCamera;
@@ -22,9 +23,7 @@ public:
 	void DrawBeginResource();
 
 	void SetPos(Vector3 pos) { 
-		translate_.x = pos.x; 
-		translate_.y = pos.y; 
-		translate_.z = pos.z; 
+		worldtransform_->translate = pos;
 	}
 
 	void SetColor(Vector4 color) {
@@ -42,6 +41,8 @@ private:
 	MatrixCamera* mainCamera_ = nullptr;
 	DirectXCommon* dx_ = nullptr;
 
+	WorldTransform* worldtransform_ = nullptr;
+	Matrix4x4 worldM, cameraM, viewM, projectM, pespectiveM,wvpM;
 	Vector4 translate_;
 
 	// VertexResourceを生成する(P.42)

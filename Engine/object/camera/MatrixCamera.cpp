@@ -67,12 +67,12 @@ void MatrixCamera::Initialize() {
 
 void MatrixCamera::Update() 
 {
+	m_rotate.y += 0.03f;
 	m_worldMatrix = W::Math::MakeAffineMatrix(m_scale, m_rotate,m_translate);
 	m_cameraMatrix = W::Math::MakeAffineMatrix(m_cameraScale, m_cameraRotate, m_cameraTranslate);
 	m_viewMatrix = W::Math::Inverse(m_cameraMatrix);
 	m_projectionMatrix = W::Math::MakePerspectiveMatrix(m_VerticalFOV, m_aspectRatio, m_nearClip, m_farClip);
-	m_viewprojectionMatrix = W::Math::Multiply(m_viewMatrix, m_projectionMatrix);
-	m_worldViewProjectionMatrix = W::Math::Multiply(m_worldMatrix, m_viewprojectionMatrix);
+	m_worldViewProjectionMatrix = W::Math::Multiply(m_worldMatrix, W::Math::Multiply(m_viewMatrix, m_projectionMatrix));
 	m_viewportMatrix = W::Math::MakeViewportMatrix(0, 0, m_windowSize.x, m_windowSize.y, 0.0f, 1.0f);
 }
 

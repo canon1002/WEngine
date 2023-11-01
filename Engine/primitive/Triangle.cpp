@@ -15,10 +15,7 @@ void Triangle::Initialize() {
 	dx_ = DirectXCommon::GetInstance();
 	mainCamera_ = MatrixCamera::GetInstance();
 
-	translate_.x = 0.0f;
-	translate_.y = 0.0f;
-	translate_.z = 0.0f;
-	translate_.w = 1.0f;
+	worldtransform_ = new WorldTransform;
 
 	CreateVertexResource();
 	CreateTransformationRsource();
@@ -32,24 +29,21 @@ void Triangle::Update() {
 
 void Triangle::Draw() {
 
-	*(wvpData) = mainCamera_->GetWorldViewProjection();
-
-	vertexData[0].position = mainCamera_->GetNdcPos({
-		(translate_.x + (-0.5f)),
-		(translate_.y + (-0.5f)),
-		(translate_.z + 0.0f),
-		1.0f });
-	vertexData[1].position = mainCamera_->GetNdcPos({
-		translate_.x + (0.0f),
-		translate_.y + (0.5f),
-		translate_.z + 0.0f,
-		1.0f });
-	vertexData[2].position = mainCamera_->GetNdcPos({
-		translate_.x + (0.5f),
-		translate_.y + (-0.5f),
-		translate_.z + 0.0f,
-		1.0f });
-
+	worldtransform_->rotate.y += 0.03f;
+	//　三角形のワールド行列
+	worldtransform_->worldM = W::Math::MakeAffineMatrix(
+		worldtransform_->scale, worldtransform_->rotate, worldtransform_->translate);
+	
+	// カメラのワールド行列
+	cameraM = W::Math::MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f }, { 0.0f,0.0f,-5.0f });
+	// カメラ行列のビュー行列(カメラのワールド行列の逆行列)
+	viewM = W::Math::Inverse(cameraM);
+	// 正規化デバイス座標系(NDC)に変換(正射影行列をかける)
+	pespectiveM = W::Math::MakePerspectiveMatrix(0.45f, (1280.0f / 720.0f), 0.1f, 100.0f);
+	// WVPにまとめる
+	wvpM = W::Math::Multiply(viewM,pespectiveM);
+	// 三角形のワールド行列とWVP行列を掛け合わした行列を代入
+	*wvpData = W::Math::Multiply(worldtransform_->worldM, wvpM);
 
 	dx_->commandList->IASetVertexBuffers(0, 1, &vertexBufferView);
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけばいい
