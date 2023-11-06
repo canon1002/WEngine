@@ -16,6 +16,8 @@ void Sphere::Initialize() {
 	mainCamera_ = MatrixCamera::GetInstance();
 
 	worldTransform_ = new WorldTransform;
+	cameraWorldTransform_ = new WorldTransform;
+	cameraWorldTransform_->translate.z = -5.0f;
 
 	CreateVertexResource();
 	CreateTransformationRsource();
@@ -25,10 +27,250 @@ void Sphere::Initialize() {
 
 void Sphere::Update() {
 
+
+	ImGui::Begin("camera");
+	ImGui::SliderFloat3("Scale", &cameraWorldTransform_->scale.x,0.0f,1.0f);
+	ImGui::SliderFloat3("rotate", &cameraWorldTransform_->rotate.x, -2.0f, 2.0f);
+	ImGui::SliderFloat3("translate", &cameraWorldTransform_->translate.x, -20.0f, 20.0f);
+	ImGui::End();
+
 	ImGui::Begin("Sphere");
 	ImGui::DragFloat3("scale", &worldTransform_->scale.x, 0.01f, 0.0f, 5.0f);
 	ImGui::DragFloat3("rotate", &worldTransform_->rotate.x, 0.01f, -2.0f, 2.0f);
 	ImGui::DragFloat3("tranlate", &worldTransform_->translate.x, 0.01f, -2.0f, 2.0f);
+	if (ImGui::TreeNode("tex")) {
+		if (ImGui::Button("texcood.x +0.1f")) {
+			for (uint32_t latIndex = 0; latIndex < kSubdivision; ++latIndex) {
+				for (uint32_t lonIndex = 0; lonIndex < kSubdivision; ++lonIndex) {
+					uint32_t start = (latIndex * kSubdivision + lonIndex) * 6;
+					vertexData[start].texcoord.x += 0.01f;
+					vertexData[start + 1].texcoord.x += 0.01f;
+					vertexData[start + 2].texcoord.x += 0.01f;
+					vertexData[start + 3].texcoord.x += 0.01f;
+					vertexData[start + 4].texcoord.x += 0.01f;
+					vertexData[start + 5].texcoord.x += 0.01f;
+				}
+			}
+		}
+		if (ImGui::Button("texcood.x -0.1f")) {
+			for (uint32_t latIndex = 0; latIndex < kSubdivision; ++latIndex) {
+				for (uint32_t lonIndex = 0; lonIndex < kSubdivision; ++lonIndex) {
+					uint32_t start = (latIndex * kSubdivision + lonIndex) * 6;
+					vertexData[start].texcoord.x -= 0.01f;
+					vertexData[start + 1].texcoord.x -= 0.01f;
+					vertexData[start + 2].texcoord.x -= 0.01f;
+					vertexData[start + 3].texcoord.x -= 0.01f;
+					vertexData[start + 4].texcoord.x -= 0.01f;
+					vertexData[start + 5].texcoord.x -= 0.01f;
+				}
+			}
+		}
+		if (ImGui::Button("texcood.y +0.1f")) {
+			for (uint32_t latIndex = 0; latIndex < kSubdivision; ++latIndex) {
+				for (uint32_t lonIndex = 0; lonIndex < kSubdivision; ++lonIndex) {
+					uint32_t start = (latIndex * kSubdivision + lonIndex) * 6;
+					vertexData[start].texcoord.y += 0.1f;
+					vertexData[start + 1].texcoord.y += 0.1f;
+					vertexData[start + 2].texcoord.y += 0.1f;
+					vertexData[start + 3].texcoord.y += 0.1f;
+					vertexData[start + 4].texcoord.y += 0.1f;
+					vertexData[start + 5].texcoord.y += 0.1f;
+				}
+			}
+		}
+		if (ImGui::Button("texcood.y -0.1f")) {
+			for (uint32_t latIndex = 0; latIndex < kSubdivision; ++latIndex) {
+				for (uint32_t lonIndex = 0; lonIndex < kSubdivision; ++lonIndex) {
+					uint32_t start = (latIndex * kSubdivision + lonIndex) * 6;
+					vertexData[start].texcoord.y -= 0.1f;
+					vertexData[start + 1].texcoord.y -= 0.1f;
+					vertexData[start + 2].texcoord.y -= 0.1f;
+					vertexData[start + 3].texcoord.y -= 0.1f;
+					vertexData[start + 4].texcoord.y -= 0.1f;
+					vertexData[start + 5].texcoord.y -= 0.1f;
+				}
+			}
+		}
+		ImGui::TreePop();
+	}
+
+	if (ImGui::TreeNode("Left")) {
+		if (ImGui::Button("Left.x +0.1f")) {
+			for (uint32_t latIndex = 0; latIndex < kSubdivision; ++latIndex) {
+				for (uint32_t lonIndex = 0; lonIndex < kSubdivision; ++lonIndex) {
+					uint32_t start = (latIndex * kSubdivision + lonIndex) * 6;
+					vertexData[start].texcoord.x += 0.01f;
+					vertexData[start + 1].texcoord.x += 0.01f;
+					vertexData[start + 3].texcoord.x += 0.01f;
+				}
+			}
+		}
+		if (ImGui::Button("Left.x -0.1f")) {
+			for (uint32_t latIndex = 0; latIndex < kSubdivision; ++latIndex) {
+				for (uint32_t lonIndex = 0; lonIndex < kSubdivision; ++lonIndex) {
+					uint32_t start = (latIndex * kSubdivision + lonIndex) * 6;
+					vertexData[start].texcoord.x -= 0.01f;
+					vertexData[start + 1].texcoord.x -= 0.01f;
+					vertexData[start + 3].texcoord.x -= 0.01f;
+				}
+			}
+		}
+		if (ImGui::Button("Left.y +0.1f")) {
+			for (uint32_t latIndex = 0; latIndex < kSubdivision; ++latIndex) {
+				for (uint32_t lonIndex = 0; lonIndex < kSubdivision; ++lonIndex) {
+					uint32_t start = (latIndex * kSubdivision + lonIndex) * 6;
+					vertexData[start].texcoord.y += 0.01f;
+					vertexData[start + 1].texcoord.y += 0.01f;
+					vertexData[start + 3].texcoord.y += 0.10f;
+				}
+			}
+		}
+		if (ImGui::Button("Left.y -0.1f")) {
+			for (uint32_t latIndex = 0; latIndex < kSubdivision; ++latIndex) {
+				for (uint32_t lonIndex = 0; lonIndex < kSubdivision; ++lonIndex) {
+					uint32_t start = (latIndex * kSubdivision + lonIndex) * 6;
+					vertexData[start].texcoord.y -= 0.01f;
+					vertexData[start + 1].texcoord.y -= 0.01f;
+					vertexData[start + 3].texcoord.y -= 0.01f;
+				}
+			}
+		}
+		ImGui::TreePop();
+	}
+
+	if (ImGui::TreeNode("Right")) {
+		if (ImGui::Button("Right.x +0.1f")) {
+			for (uint32_t latIndex = 0; latIndex < kSubdivision; ++latIndex) {
+				for (uint32_t lonIndex = 0; lonIndex < kSubdivision; ++lonIndex) {
+					uint32_t start = (latIndex * kSubdivision + lonIndex) * 6;
+					vertexData[start + 2].texcoord.x += 0.01f;
+					vertexData[start + 4].texcoord.x += 0.01f;
+					vertexData[start + 5].texcoord.x += 0.01f;
+				}
+			}
+		}
+		if (ImGui::Button("Right.x -0.1f")) {
+			for (uint32_t latIndex = 0; latIndex < kSubdivision; ++latIndex) {
+				for (uint32_t lonIndex = 0; lonIndex < kSubdivision; ++lonIndex) {
+					uint32_t start = (latIndex * kSubdivision + lonIndex) * 6;
+					vertexData[start + 2].texcoord.x -= 0.01f;
+					vertexData[start + 4].texcoord.x -= 0.01f;
+					vertexData[start + 5].texcoord.x -= 0.01f;
+				}
+			}
+		}
+		if (ImGui::Button("Right.y +0.1f")) {
+			for (uint32_t latIndex = 0; latIndex < kSubdivision; ++latIndex) {
+				for (uint32_t lonIndex = 0; lonIndex < kSubdivision; ++lonIndex) {
+					uint32_t start = (latIndex * kSubdivision + lonIndex) * 6;
+					vertexData[start + 2].texcoord.y += 0.01f;
+					vertexData[start + 4].texcoord.y += 0.01f;
+					vertexData[start + 5].texcoord.y += 0.01f;
+				}
+			}
+		}
+		if (ImGui::Button("Right.y -0.1f")) {
+			for (uint32_t latIndex = 0; latIndex < kSubdivision; ++latIndex) {
+				for (uint32_t lonIndex = 0; lonIndex < kSubdivision; ++lonIndex) {
+					uint32_t start = (latIndex * kSubdivision + lonIndex) * 6;
+					vertexData[start + 2].texcoord.y -= 0.01f;
+					vertexData[start + 4].texcoord.y -= 0.01f;
+					vertexData[start + 5].texcoord.y -= 0.01f;
+				}
+			}
+		}
+		ImGui::TreePop();
+	}
+
+	if (ImGui::TreeNode("Top")) {
+		if (ImGui::Button("Top.x +0.1f")) {
+			for (uint32_t latIndex = 0; latIndex < kSubdivision; ++latIndex) {
+				for (uint32_t lonIndex = 0; lonIndex < kSubdivision; ++lonIndex) {
+					uint32_t start = (latIndex * kSubdivision + lonIndex) * 6;
+					vertexData[start + 1].texcoord.x += 0.01f;
+					vertexData[start + 3].texcoord.x += 0.01f;
+					vertexData[start + 4].texcoord.x += 0.01f;
+				}
+			}
+		}
+		if (ImGui::Button("Top.x -0.1f")) {
+			for (uint32_t latIndex = 0; latIndex < kSubdivision; ++latIndex) {
+				for (uint32_t lonIndex = 0; lonIndex < kSubdivision; ++lonIndex) {
+					uint32_t start = (latIndex * kSubdivision + lonIndex) * 6;
+					vertexData[start + 1].texcoord.x -= 0.01f;
+					vertexData[start + 3].texcoord.x -= 0.01f;
+					vertexData[start + 4].texcoord.x -= 0.01f;
+				}
+			}
+		}
+		if (ImGui::Button("Top.y +0.1f")) {
+			for (uint32_t latIndex = 0; latIndex < kSubdivision; ++latIndex) {
+				for (uint32_t lonIndex = 0; lonIndex < kSubdivision; ++lonIndex) {
+					uint32_t start = (latIndex * kSubdivision + lonIndex) * 6;
+					vertexData[start + 1].texcoord.y += 0.01f;
+					vertexData[start + 3].texcoord.y += 0.01f;
+					vertexData[start + 4].texcoord.y += 0.01f;
+				}
+			}
+		}
+		if (ImGui::Button("Top.y -0.1f")) {
+			for (uint32_t latIndex = 0; latIndex < kSubdivision; ++latIndex) {
+				for (uint32_t lonIndex = 0; lonIndex < kSubdivision; ++lonIndex) {
+					uint32_t start = (latIndex * kSubdivision + lonIndex) * 6;
+					vertexData[start + 1].texcoord.y -= 0.01f;
+					vertexData[start + 3].texcoord.y -= 0.01f;
+					vertexData[start + 4].texcoord.y -= 0.01f;
+				}
+			}
+		}
+		ImGui::TreePop();
+	}
+
+	if (ImGui::TreeNode("Buttom")) {
+		if (ImGui::Button("Buttom.x +0.1f")) {
+			for (uint32_t latIndex = 0; latIndex < kSubdivision; ++latIndex) {
+				for (uint32_t lonIndex = 0; lonIndex < kSubdivision; ++lonIndex) {
+					uint32_t start = (latIndex * kSubdivision + lonIndex) * 6;
+					vertexData[start].texcoord.x += 0.01f;
+					vertexData[start + 2].texcoord.x += 0.01f;
+					vertexData[start + 5].texcoord.x += 0.01f;
+				}
+			}
+		}
+		if (ImGui::Button("Buttom.x -0.1f")) {
+			for (uint32_t latIndex = 0; latIndex < kSubdivision; ++latIndex) {
+				for (uint32_t lonIndex = 0; lonIndex < kSubdivision; ++lonIndex) {
+					uint32_t start = (latIndex * kSubdivision + lonIndex) * 6;
+					vertexData[start].texcoord.x -= 0.01f;
+					vertexData[start + 2].texcoord.x -= 0.01f;
+					vertexData[start + 5].texcoord.x -= 0.01f;
+				}
+			}
+		}
+		if (ImGui::Button("Buttom.y +0.1f")) {
+			for (uint32_t latIndex = 0; latIndex < kSubdivision; ++latIndex) {
+				for (uint32_t lonIndex = 0; lonIndex < kSubdivision; ++lonIndex) {
+					uint32_t start = (latIndex * kSubdivision + lonIndex) * 6;
+					vertexData[start].texcoord.y += 0.01f;
+					vertexData[start + 2].texcoord.y += 0.01f;
+					vertexData[start + 5].texcoord.y += 0.01f;
+				}
+			}
+		}
+		if (ImGui::Button("Buttom.y -0.1f")) {
+			for (uint32_t latIndex = 0; latIndex < kSubdivision; ++latIndex) {
+				for (uint32_t lonIndex = 0; lonIndex < kSubdivision; ++lonIndex) {
+					uint32_t start = (latIndex * kSubdivision + lonIndex) * 6;
+					vertexData[start].texcoord.y -= 0.01f;
+					vertexData[start + 2].texcoord.y -= 0.01f;
+					vertexData[start + 5].texcoord.y -= 0.01f;
+				}
+			}
+		}
+		ImGui::TreePop();
+	}
+
+
 	ImGui::End();
 
 	//　球体のワールド行列
@@ -36,7 +278,9 @@ void Sphere::Update() {
 		worldTransform_->scale, worldTransform_->rotate, worldTransform_->translate);
 
 	// カメラのワールド行列
-	cameraM = W::Math::MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f }, { 0.0f,0.0f,-5.0f });
+	
+	cameraM = W::Math::MakeAffineMatrix(
+		cameraWorldTransform_->scale, cameraWorldTransform_->rotate, cameraWorldTransform_->translate);
 	// カメラ行列のビュー行列(カメラのワールド行列の逆行列)
 	viewM = W::Math::Inverse(cameraM);
 	// 正規化デバイス座標系(NDC)に変換(正射影行列をかける)
@@ -65,7 +309,7 @@ void Sphere::Draw() const {
 	dx_->commandList->SetGraphicsRootDescriptorTable(2, dx_->textureSrvHandleGPU_);
 
 	// インスタンス生成
-	dx_->commandList->DrawInstanced(((kSubdivision + 1) * (kSubdivision + 1) * 6), 1, 0, 0);
+	dx_->commandList->DrawInstanced(((kSubdivision) * (kSubdivision) * 6), 1, 0, 0);
 
 }
 
@@ -74,7 +318,7 @@ void Sphere::CreateVertexResource() {
 
 	// VertexResourceを生成する(P.42)
 	// 実際に頂点リソースを作る
-	vertexResource = dx_->CreateBufferResource(dx_->device.Get(), sizeof(VertexData) * ((kSubdivision + 1) * (kSubdivision + 1) * 6));
+	vertexResource = dx_->CreateBufferResource(dx_->device.Get(), sizeof(VertexData) * ((kSubdivision) * (kSubdivision) * 6));
 
 	// マテリアル用のResourceを作る
 	materialResource = dx_->CreateBufferResource(dx_->device.Get(), sizeof(VertexData));
@@ -109,7 +353,7 @@ void Sphere::CreateBufferView() {
 	// リソースの先頭のアドレスから使う
 	vertexBufferView.BufferLocation = vertexResource->GetGPUVirtualAddress();
 	// 使用するリソースサイズは頂点3つ分のサイズ
-	vertexBufferView.SizeInBytes = sizeof(VertexData) * ((kSubdivision + 1) * (kSubdivision + 1) * 6);
+	vertexBufferView.SizeInBytes = sizeof(VertexData) * ((kSubdivision) * (kSubdivision) * 6);
 	// 1頂点あたりのサイズ
 	vertexBufferView.StrideInBytes = sizeof(VertexData);
 
@@ -140,31 +384,37 @@ void Sphere::CreateBufferView() {
 				sin(lat) * rad,
 				cos(lat) * sin(lon + ((pi * 2) / kSubdivision)) * rad };
 			Vector3 d = {
-				cos(lat + (pi / kSubdivision))* cos(lon + ((pi * 2) / kSubdivision))* rad,
-				sin(lat + (pi / kSubdivision))* rad,
-				cos(lat + (pi / kSubdivision))* sin(lon + ((pi * 2) / kSubdivision))* rad };
+				cos(lat + (pi / kSubdivision)) * cos(lon + ((pi * 2) / kSubdivision)) * rad,
+				sin(lat + (pi / kSubdivision)) * rad,
+				cos(lat + (pi / kSubdivision)) * sin(lon + ((pi * 2) / kSubdivision)) * rad };
 
 			// 頂点インデックスにデータを入力する
 
 			// 左下
 			vertexData[start].position = { a.x,a.y,a.z,1.0f };
-			vertexData[start].texcoord = { 0.0f,1.0f };
+			vertexData[start].texcoord.x = float(lonIndex) / float(kSubdivision);
+			vertexData[start].texcoord.y = 1.0f - float(latIndex-1) / float(kSubdivision) ;
 			//　左上
 			vertexData[start + 1].position = { b.x,b.y,b.z,1.0f };
-			vertexData[start + 1].texcoord = { 0.0f,0.0f };
+			vertexData[start + 1].texcoord.x = float(lonIndex) / float(kSubdivision);
+			vertexData[start + 1].texcoord.y = 1.0f - float(latIndex) / float(kSubdivision);
 			// 右下
 			vertexData[start + 2].position = { c.x,c.y,c.z,1.0f };
-			vertexData[start + 2].texcoord = { 1.0f,1.0f };
+			vertexData[start + 2].texcoord.x = float(lonIndex + 1) / float(kSubdivision);
+			vertexData[start + 2].texcoord.y = 1.0f - float(latIndex-1) / float(kSubdivision);
 			/// 2枚目
 			// 左上
 			vertexData[start + 3].position = { b.x,b.y,b.z,1.0f };
-			vertexData[start + 3].texcoord = { 0.0f,0.0f };
+			vertexData[start + 3].texcoord.x = float(lonIndex) / float(kSubdivision);
+			vertexData[start + 3].texcoord.y = 1.0f - float(latIndex) / float(kSubdivision);
 			//　右上
 			vertexData[start + 4].position = { d.x,d.y,d.z,1.0f };
-			vertexData[start + 4].texcoord = { 1.0f,0.0f };
+			vertexData[start + 4].texcoord.x = float(lonIndex + 1) / float(kSubdivision);
+			vertexData[start + 4].texcoord.y = 1.0f - float(latIndex) / float(kSubdivision);
 			// 右下
 			vertexData[start + 5].position = { c.x,c.y,c.z,1.0f };
-			vertexData[start + 5].texcoord = { 1.0f,1.0f };
+			vertexData[start + 5].texcoord.x = float(lonIndex + 1) / float(kSubdivision);
+			vertexData[start + 5].texcoord.y = 1.0f-float(latIndex-1) / float(kSubdivision);
 
 		}
 	}

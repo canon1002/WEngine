@@ -70,6 +70,7 @@ private:
 	DirectXCommon* dx_ = nullptr;
 
 	WorldTransform* worldTransform_ = nullptr;
+	WorldTransform* cameraWorldTransform_ = nullptr;
 	Matrix4x4 worldM, cameraM, viewM, projectM, pespectiveM, wvpM;
 	float rad = 1.0f;
 
@@ -91,8 +92,8 @@ private:
 
 	const float pi = 3.14f;
 	const uint32_t kSubdivision = 16;
-	const float kLonEvery = (2 * pi) / kSubdivision;
-	const float kLatEvery = pi / kSubdivision;
+	const float kLonEvery = (2.0f * pi) / (float)kSubdivision;
+	const float kLatEvery = pi / (float)kSubdivision;
 
 };
 
