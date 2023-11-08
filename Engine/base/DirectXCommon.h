@@ -108,6 +108,20 @@ public: // ** メンバ関数 ** //
 
 	DirectX::ScratchImage LoadTexture(const std::string& filePath);
 
+	D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDescriptorHandle(Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap,
+		uint32_t descriptorSize,uint32_t index){
+		D3D12_CPU_DESCRIPTOR_HANDLE handleCPU = descriptorHeap->GetCPUDescriptorHandleForHeapStart();
+		handleCPU.ptr += (descriptorSize * index);
+		return handleCPU;
+	}
+
+	D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap,
+		uint32_t descriptorSize,uint32_t index){
+		D3D12_GPU_DESCRIPTOR_HANDLE handleGPU = descriptorHeap->GetGPUDescriptorHandleForHeapStart();
+		handleGPU.ptr += (descriptorSize * index);
+		return handleGPU;
+	}
+
 	/// バッファリソースの生成
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(ID3D12Device* device, size_t sizeInBytes);
 
@@ -151,7 +165,6 @@ public: // ** メンバ変数 ** //
 	D3D12_VIEWPORT viewport = {};
 	// シザー矩形
 	D3D12_RECT scissorRect = {};
-	
 
 	// RTVを2つ作るのでディスクリプタを２つ用意
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandles[2];
@@ -167,8 +180,15 @@ public: // ** メンバ変数 ** //
 	//SRVを制作するDescriptorHeapの場所を決める
 	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU_;
 	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU_;
+	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU2_;
+	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU2_;
 	// テクスチャリソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> textureResource_ = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12Resource> textureResource2_ = nullptr;
+	// リソース
+	Microsoft::WRL::ComPtr<ID3D12Resource> intermediaResource = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12Resource> intermediaResource2 = nullptr;
+
 
 	// DSV用デスクリプタヒープ
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> dsvDescriptorHeap_ = nullptr;
@@ -195,12 +215,10 @@ public: // ** メンバ変数 ** //
 	uint64_t fenceValue = 0;
 	HANDLE fenceEvent;
 
-	// リソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> intermediaResource = nullptr;
-
+	
 private:
 
-	//
+	// インスタンス
 	static DirectXCommon* instance;
 
 };

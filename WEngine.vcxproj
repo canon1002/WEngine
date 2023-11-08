@@ -98,6 +98,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\base\WinAPI.cpp" />
     <ClCompile Include="Engine\math\Matrix4x4.cpp" />
     <ClCompile Include="Engine\object\camera\MatrixCamera.cpp" />
+    <ClCompile Include="Engine\object\light\DirectionalLight.cpp" />
     <ClCompile Include="Engine\object\worldTransform\WorldTransform.cpp" />
     <ClCompile Include="Engine\primitive\Sphere.cpp" />
     <ClCompile Include="Engine\primitive\Sprite.cpp" />
@@ -140,6 +141,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\math\Math.h" />
     <ClInclude Include="Engine\math\Matrix4x4.h" />
     <ClInclude Include="Engine\object\camera\MatrixCamera.h" />
+    <ClInclude Include="Engine\object\light\DirectionalLight.h" />
     <ClInclude Include="Engine\object\worldTransform\WorldTransform.h" />
     <ClInclude Include="Engine\primitive\Sphere.h" />
     <ClInclude Include="Engine\primitive\Sprite.h" />

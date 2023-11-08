@@ -38,6 +38,9 @@
     <Filter Include="Engine\resouces\section">
       <UniqueIdentifier>{f0a45819-e0a1-4a18-8c1a-98dc693afa94}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine\object\Light">
+      <UniqueIdentifier>{3aabf391-e7d4-4cee-a79d-2de8f3ca0524}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -94,6 +97,9 @@
     </ClCompile>
     <ClCompile Include="Engine\primitive\Sphere.cpp">
       <Filter>Engine\primitive</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\object\light\DirectionalLight.cpp">
+      <Filter>Engine\object\Light</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -163,6 +169,9 @@
     </ClInclude>
     <ClInclude Include="Engine\primitive\Sphere.h">
       <Filter>Engine\primitive</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\object\light\DirectionalLight.h">
+      <Filter>Engine\object\Light</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

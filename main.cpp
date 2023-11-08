@@ -124,7 +124,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			// 開発用UIの表示
 			ImGui::ShowDemoWindow();
 
-			
 			mainCamera->Update();
 			sphere->Update();
 			sprite->Update();
@@ -140,11 +139,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			dx->DrawBegin();
 
 			sphere->Draw();
-			sprite->Draw();
-
-
-			// 描画!(DrawCall/ドローコール)。3頂点で1つのインスタンス。インスタンスについては今後
-			//dx->commandList->DrawInstanced(3, 1, 0, 0);
+			//sprite->Draw();
 
 			// 描画後処理
 			dx->DrawEnd();

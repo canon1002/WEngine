@@ -3,6 +3,7 @@
 #include "../base/DirectXCommon.h"
 #include "../resources/Section/Resource.h"
 #include "../object/worldTransform/WorldTransform.h"
+#include "../object/light/DirectionalLight.h"
 
 // 前方宣言
 class MatrixCamera;
@@ -56,7 +57,7 @@ public:
 	/// <param name="color"></param>
 	void SetColor(Vector4 color) {
 		// 指定した色に書き込む
-		*materialDate = Vector4(color.x, color.y, color.z, color.w);
+		materialData->color = Vector4(color.x, color.y, color.z, color.w);
 	}
 
 	const D3D12_VERTEX_BUFFER_VIEW& GetVBV() const { return vertexBufferView; }
@@ -71,7 +72,8 @@ private:
 
 	WorldTransform* worldTransform_ = nullptr;
 	WorldTransform* cameraWorldTransform_ = nullptr;
-	Matrix4x4 worldM, cameraM, viewM, projectM, pespectiveM, wvpM;
+	Matrix4x4 cameraM, viewM, projectM, pespectiveM, wvpM;
+	// 半径
 	float rad = 1.0f;
 
 	// VertexResourceを生成する(P.42)
@@ -81,18 +83,31 @@ private:
 	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource = nullptr;
 	// Transformation用のResourceを作る
 	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource = nullptr;
+	// Light用のリソースデータを作る
+	Microsoft::WRL::ComPtr<ID3D12Resource> directionalLightResource = nullptr;
 	// データを書き込む
-	Matrix4x4* wvpData = nullptr;
+	TransformationMatrix* wvpData = nullptr;
 	// 頂点リソースにデータを書き込む
 	VertexData* vertexData = nullptr;
 	// 頂点バッファビューを作成する
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
 	// マテリアルデータ
-	Vector4* materialDate = nullptr;
+	Material* materialData = nullptr;
+	// 平行光源　
+	DirectionalLight* directionalLightDate = nullptr;
 
+	// テクスチャ切り替え
+	bool useBall = true;
+
+private:
+
+	// 円周率
 	const float pi = 3.14f;
+	// 球体の分割数
 	const uint32_t kSubdivision = 16;
+	// 緯度
 	const float kLonEvery = (2.0f * pi) / (float)kSubdivision;
+	// 経度
 	const float kLatEvery = pi / (float)kSubdivision;
 
 };
