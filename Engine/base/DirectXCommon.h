@@ -33,8 +33,7 @@ public: // ** メンバ関数 ** //
 	/// 
 	/// </summary>
 	/// <param name="win"></param>
-	/// <param name="mainCamera"></param>
-	void Initialize(WinAPI* win, MatrixCamera* mainCamera);
+	void Initialize(WinAPI* win);
 
 	/// <summary>
 	/// 
@@ -133,9 +132,6 @@ public: // ** メンバ変数 ** //
 	
 	//
 	WinAPI* win_ = nullptr;
-	//
-	MatrixCamera* mainCamera_ = nullptr;
-
 	
 	// DXGIファクトリーの生成
 	Microsoft::WRL::ComPtr <IDXGIFactory7> dxgiFactory = nullptr;

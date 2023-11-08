@@ -31,8 +31,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	WinAPI* win = WinAPI::GetInstance();
 	// DirectX
 	DirectXCommon* dx = DirectXCommon::GetInstance();
-	// カメラ
-	MatrixCamera* mainCamera = MatrixCamera::GetInstance();
 
 	// COMの初期化
 	CoInitializeEx(0, COINIT_MULTITHREADED);
@@ -50,8 +48,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	// 初期化
 	win->Initialize();
-	dx->Initialize(win, mainCamera);
-	mainCamera->Initialize();
+	dx->Initialize(win);
 
 	// 球
 	Sphere* sphere = new Sphere;
@@ -93,14 +90,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	}
 #endif // _DEBUG
 
-	// 開始前にTransform変数を作る
-	Math::Transform transform = { {1.0f,1.0f,1.0f}, { 0.0f,0.0f,0.0f }, {0.0f,0.0f,0.0f} };
-	// ワールド行列の生成
-	Matrix4x4 worldMatrix = W::Math::MakeAffineMatrix(transform.scale, transform.rotate, transform.translate);
-
-	mainCamera->SetWorldAffine(transform.scale, transform.rotate, transform.translate);
-	mainCamera->SetCameraAffine(transform.scale, transform.rotate, { 0.0f,0.0f,-5.0f });
-
 	// ウィンドウの×ボタンが押されるまでループ
 	while (win->msg.message != WM_QUIT) {
 		// Windowsにメッセージが来てたら最優先で処理させる
@@ -124,7 +113,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			// 開発用UIの表示
 			ImGui::ShowDemoWindow();
 
-			mainCamera->Update();
 			sphere->Update();
 			sprite->Update();
 
@@ -155,7 +143,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	// 解放処理
 	delete sprite;
 	delete sphere;
-	mainCamera->Delete();
 	ImGui_ImplDX12_Shutdown();
 	dx->Delete();
 

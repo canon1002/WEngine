@@ -84,7 +84,7 @@ namespace Resource
 			D3D12_HEAP_FLAG_NONE,
 			&resourceDesc,
 			D3D12_RESOURCE_STATE_DEPTH_WRITE,
-			nullptr,
+			&depthClearValue,
 			IID_PPV_ARGS(&resource));
 		assert(SUCCEEDED(hr));
 

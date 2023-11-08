@@ -23,10 +23,9 @@ DirectXCommon* DirectXCommon::GetInstance() {
 	return instance;
 }
 
-void DirectXCommon::Initialize(WinAPI* win,MatrixCamera* mainCamera) {
+void DirectXCommon::Initialize(WinAPI* win) {
 
 	win_ = win;
-	mainCamera_ = mainCamera;
 
 	// デバイスの初期化
 	InitializeDXGIDevice();
