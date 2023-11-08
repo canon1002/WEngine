@@ -18,6 +18,7 @@ void Sprite::Initialize() {
 	worldtransform_ = new WorldTransform;
 
 	CreateVertexResource();
+	CreateIndexResource();
 	CreateTransformationRsource();
 	CreateBufferView();
 
@@ -49,6 +50,7 @@ void Sprite::Update() {
 void Sprite::Draw() {
 
 	dx_->commandList->IASetVertexBuffers(0, 1, &vertexBufferView);
+	dx_->commandList->IASetIndexBuffer(&indexBufferView);
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけばいい
 	dx_->commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
@@ -59,10 +61,15 @@ void Sprite::Draw() {
 	//wvp用のCBufferの場所を指定
 	dx_->commandList->SetGraphicsRootConstantBufferView(1, wvpResource->GetGPUVirtualAddress());
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である
-	dx_->commandList->SetGraphicsRootDescriptorTable(2, dx_->textureSrvHandleGPU2_);
+	dx_->commandList->SetGraphicsRootDescriptorTable(2, dx_->textureSrvHandleGPU_);
 
-	// インスタンス生成
-	dx_->commandList->DrawInstanced(6, 1, 0, 0);
+	// インデックスを使用してドローコール
+	dx_->commandList->DrawIndexedInstanced(6, 1, 0, 0, 0);
+
+}
+
+// インデックスデータの生成
+void Sprite::CreateIndexResource() {
 
 }
 
@@ -104,7 +111,7 @@ void Sprite::CreateBufferView() {
 	// リソースの先頭のアドレスから使う
 	vertexBufferView.BufferLocation = vertexResource->GetGPUVirtualAddress();
 	// 使用するリソースサイズは頂点6つ分のサイズ
-	vertexBufferView.SizeInBytes = sizeof(VertexData) * 6;
+	vertexBufferView.SizeInBytes = sizeof(VertexData) * 4;
 	// 1頂点あたりのサイズ
 	vertexBufferView.StrideInBytes = sizeof(VertexData);
 
@@ -114,30 +121,31 @@ void Sprite::CreateBufferView() {
 	vertexResource->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
 	
 	/// 1枚目
-	// 左下
-	vertexData[0].position = { 0.0f,360.0f,0.0f,1.0f };
-	vertexData[0].texcoord = { 0.0f,1.0f };
-	vertexData[0].nomal = { 0.0f,0.0f,-1.0f };
 	//　左上
-	vertexData[1].position = { 0.0f,0.0f,0.0f,1.0f };
-	vertexData[1].texcoord = { 0.0f,0.0f };
-	vertexData[1].nomal = { 0.0f,0.0f,-1.0f };
-	// 右下
-	vertexData[2].position = { 640.0f,360.0f,0.0f,1.0f };
-	vertexData[2].texcoord = { 1.0f,1.0f };
-	vertexData[2].nomal = { 0.0f,0.0f,-1.0f };
-	/// 2枚目
-	// 左上
-	vertexData[3].position = { 0.0f,0.0f,0.0f,1.0f };
-	vertexData[3].texcoord = { 0.0f,0.0f };
-	vertexData[3].nomal = { 0.0f,0.0f,-1.0f };
+	vertexData[0].position = { 0.0f,0.0f,0.0f,1.0f };
+	vertexData[0].texcoord = { 0.0f,0.0f };
+	vertexData[0].nomal = { 0.0f,0.0f,-1.0f };
 	//　右上
-	vertexData[4].position = { 640.0f,0.0f,0.0f,1.0f };
-	vertexData[4].texcoord = { 1.0f,0.0f };
-	vertexData[4].nomal = { 0.0f,0.0f,-1.0f };
+	vertexData[1].position = { 640.0f,0.0f,0.0f,1.0f };
+	vertexData[1].texcoord = { 1.0f,0.0f };
+	vertexData[1].nomal = { 0.0f,0.0f,-1.0f };
+	// 左下
+	vertexData[2].position = { 0.0f,360.0f,0.0f,1.0f };
+	vertexData[2].texcoord = { 0.0f,1.0f };
+	vertexData[2].nomal = { 0.0f,0.0f,-1.0f };
 	// 右下
-	vertexData[5].position = { 640.0f,360.0f,0.0f,1.0f };
-	vertexData[5].texcoord = { 1.0f,1.0f };
-	vertexData[5].nomal = { 0.0f,0.0f,-1.0f };
+	vertexData[3].position = { 640.0f,360.0f,0.0f,1.0f };
+	vertexData[3].texcoord = { 1.0f,1.0f };
+	vertexData[3].nomal = { 0.0f,0.0f,-1.0f };
 
+	indexResource = dx_->CreateBufferResource(dx_->device.Get(), sizeof(uint32_t) * 6);
+	indexBufferView.BufferLocation = indexResource->GetGPUVirtualAddress();
+	indexBufferView.SizeInBytes = sizeof(uint32_t) * 6;
+	indexBufferView.Format = DXGI_FORMAT_R32_UINT;
+
+	// インデックスリソースにデータを書き込む
+	uint32_t* indexData = nullptr;
+	indexResource->Map(0, nullptr, reinterpret_cast<void**>(&indexData));
+	indexData[0] = 0; indexData[1] = 1; indexData[2] = 2;
+	indexData[3] = 1; indexData[4] = 3; indexData[5] = 2;
 }

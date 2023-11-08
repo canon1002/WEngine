@@ -621,7 +621,7 @@ Microsoft::WRL::ComPtr<ID3D12Resource> DirectXCommon::CreateBufferResource(ID3D1
 	D3D12_RESOURCE_DESC vertexResouceDesc{};
 	// バッファリソース。テクスチャの場合はまた別の設定をする
 	vertexResouceDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
-	vertexResouceDesc.Width = sizeInBytes;// リソースのサイズ。今回はVector4を3頂点分
+	vertexResouceDesc.Width = sizeInBytes;// リソースのサイズ。
 	// バッファの場合はこれらは1にする決まり
 	vertexResouceDesc.Height = 1;
 	vertexResouceDesc.DepthOrArraySize = 1;

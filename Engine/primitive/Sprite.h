@@ -15,6 +15,7 @@ public:
 	void Draw();
 
 	void CreateVertexResource();
+	void CreateIndexResource();
 	void CreateTransformationRsource();
 	void CreateBufferView();
 
@@ -77,12 +78,16 @@ private:
 	Microsoft::WRL::ComPtr<ID3D12Resource> materialResourceSprite = nullptr;
 	// Transformation用のResourceを作る
 	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource = nullptr;
+	// Index用リソースデータの生成
+	Microsoft::WRL::ComPtr<ID3D12Resource> indexResource = nullptr;
 	// データを書き込む
 	TransformationMatrix* wvpData = nullptr;
 	// 頂点リソースにデータを書き込む
 	VertexData* vertexData = nullptr;
 	// 頂点バッファビューを作成する
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
+	//　インデックスはuint32_tとする
+	D3D12_INDEX_BUFFER_VIEW indexBufferView{};
 	// マテリアルデータ
 	Material *materialData = nullptr;
 };
