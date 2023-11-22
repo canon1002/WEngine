@@ -22,6 +22,7 @@ namespace Math {
     Transform operator-(Transform obj);
 }
 
+struct Matrix3x3 final { float m[3][3]; };
 struct Matrix4x4 final { float m[4][4]; };
 
 

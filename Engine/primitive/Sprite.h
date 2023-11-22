@@ -90,5 +90,7 @@ private:
 	D3D12_INDEX_BUFFER_VIEW indexBufferView{};
 	// マテリアルデータ
 	Material *materialData = nullptr;
+	// UVTransform用の変数
+	Math::Transform uvTransform_;
 };
 

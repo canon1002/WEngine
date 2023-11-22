@@ -27,7 +27,14 @@ void Sprite::Initialize() {
 void Sprite::Update() {
 
 	ImGui::Begin("Sprite");
-	ImGui::DragFloat3("tranlate", &worldtransform_->translate.x);
+	ImGui::DragFloat3("Scale", &worldtransform_->scale.x);
+	ImGui::DragFloat3("Rotate", &worldtransform_->rotate.x);
+	ImGui::DragFloat3("Tranlate", &worldtransform_->translate.x);
+	ImGui::Spacing();
+	ImGui::DragFloat2("UVScale", &uvTransform_.scale.x, 0.01f, -10.0f, 10.0f);
+	ImGui::DragFloat2("UVTranlate", &uvTransform_.translate.x, 0.01f, -10.0f, 10.0f);
+	ImGui::SliderAngle("UVRotate", &uvTransform_.rotate.z);
+	ImGui::ColorEdit4("Color", &materialData->color.x);
 	ImGui::End();
 
 	//　矩形のワールド行列
@@ -45,6 +52,18 @@ void Sprite::Update() {
 	// 矩形のワールド行列とWVP行列を掛け合わした行列を代入
 	wvpData->WVP = W::Math::Multiply(worldtransform_->worldM, wvpM);
 	wvpData->World = worldtransform_->worldM;
+
+	/// マテリアル・UVTransform
+	Matrix4x4 uvTransformMatrix = W::Math::MakeAffineMatrix(
+		uvTransform_.scale,
+		{ 0.0f,0.0f,uvTransform_.rotate.z },
+		uvTransform_.translate
+	);
+	// 変換したデータを代入する
+	materialData->uvTransform = uvTransformMatrix;
+	
+
+
 }
 
 void Sprite::Draw() {
@@ -89,6 +108,9 @@ void Sprite::CreateVertexResource() {
 	// 色の書き込み・Lightingの無効化
 	materialData->color = { 1.0f, 1.0f, 1.0f, 1.0f };
 	materialData->enableLighting = false;
+	// UVTransformを設定
+	materialData->uvTransform = W::Math::MakeIdentity();
+	uvTransform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 }
 
 //
