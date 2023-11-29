@@ -6,6 +6,8 @@
 class MatrixCamera;
 struct Vector4;
 struct Matrix4x4;
+struct ModelData;
+
 
 class DirectXCommon
 {
@@ -64,6 +66,7 @@ public: // ** メンバ関数 ** //
 	/// シェーダーリソースビュー生成
 	/// </summary>
 	void CreateShaderResourceView();
+	void SetShaderResourceViewTex(const ModelData& modelData);
 
 	/// <summary>
 	/// ディープステンシルビューの生成
@@ -181,9 +184,11 @@ public: // ** メンバ変数 ** //
 	// テクスチャリソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> textureResource_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12Resource> textureResource2_ = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12Resource> textureResource3_ = nullptr;
 	// リソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> intermediaResource = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12Resource> intermediaResource2 = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12Resource> intermediaResource3 = nullptr;
 
 
 	// DSV用デスクリプタヒープ

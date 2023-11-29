@@ -4,6 +4,7 @@
 #include "./Engine/primitive/Sprite.h"
 #include "./Engine/resources/Section/Resource.h"
 #include "./Engine/primitive/Sphere.h"
+#include "./Engine/object/model/Model.h"
 
 #include <d3d12.h>
 
@@ -57,6 +58,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	// 平面(sprite)
 	Sprite* sprite = new Sprite;
 	sprite->Initialize();
+
+	// モデル
+	Model* model = new Model;
+	model->Initialize();
 
 	// 警告やエラーが発生した際に停止させる
 #ifdef _DEBUG
@@ -113,8 +118,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			// 開発用UIの表示
 			ImGui::ShowDemoWindow();
 
-			sphere->Update();
-			sprite->Update();
+			//sphere->Update();
+			//sprite->Update();
+			model->Update();
 
 			// 描画処理に入る前に、ImGui内部のコマンドを生成する
 			ImGui::Render();
@@ -126,8 +132,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			// 描画前処理
 			dx->DrawBegin();
 
-			sphere->Draw();
-			sprite->Draw();
+			//sphere->Draw();
+			//sprite->Draw();
+			model->Draw();
 
 			// 描画後処理
 			dx->DrawEnd();
@@ -141,6 +148,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	CoUninitialize();
 
 	// 解放処理
+	delete model;
 	delete sprite;
 	delete sphere;
 	ImGui_ImplDX12_Shutdown();

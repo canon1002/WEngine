@@ -41,6 +41,9 @@
     <Filter Include="Engine\object\Light">
       <UniqueIdentifier>{3aabf391-e7d4-4cee-a79d-2de8f3ca0524}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine\object\Model">
+      <UniqueIdentifier>{eb743ed8-e752-4eeb-bcd5-54f6a95ee6ee}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -100,6 +103,9 @@
     </ClCompile>
     <ClCompile Include="Engine\object\light\DirectionalLight.cpp">
       <Filter>Engine\object\Light</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\object\model\Model.cpp">
+      <Filter>Engine\object\Model</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -172,6 +178,9 @@
     </ClInclude>
     <ClInclude Include="Engine\object\light\DirectionalLight.h">
       <Filter>Engine\object\Light</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\object\model\Model.h">
+      <Filter>Engine\object\Model</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
