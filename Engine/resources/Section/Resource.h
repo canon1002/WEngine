@@ -42,8 +42,7 @@ namespace Resource
 
 	Microsoft::WRL::ComPtr<ID3D12Resource>UpdateTextureData(
 		Microsoft::WRL::ComPtr < ID3D12Resource> texture,
-		const DirectX::ScratchImage& mipImages,
-		DirectXCommon* dx);
+		const DirectX::ScratchImage& mipImages);
 
 };
 

@@ -27,6 +27,7 @@ DirectXCommon* DirectXCommon::GetInstance() {
 void DirectXCommon::Initialize(WinAPI* win) {
 
 	win_ = win;
+	srv_ = SRV::GetInstance();
 
 	// デバイスの初期化
 	InitializeDXGIDevice();
@@ -35,10 +36,13 @@ void DirectXCommon::Initialize(WinAPI* win) {
 	// スワップチェーンの生成
 	CreateSwapChain();
 	// レンダーターゲットビュー
+	// dxCompiler
 	InitializeDXC();
+	// pipelineStateObject
 	InitializePSO();
+
 	CreateFinalRenderTargets();
-	CreateShaderResourceView();
+	srv_->Initialize(this);
 	CreateDepthStencilView();
 	InitializeViewPort();
 	// 深度バッファ生成
@@ -58,7 +62,7 @@ void DirectXCommon::Delete() {
 	//dxcUtils->Release();
 	//graphicsPipelineState->Release();
 	//rootSignature->Release();
-	//srvDescriptorHeap->Release();
+	srv_->Relese();
 	//rtvDescriptorHeap->Release();
 	//swapChainResources[0]->Release();
 	//swapChainResources[1]->Release();
@@ -185,10 +189,9 @@ void DirectXCommon::InitializeCommand() {
 
 }
 
-///
+/// dxCompilerの初期化
 void DirectXCommon::InitializeDXC() {
 
-	// dxCompilerを初期化
 	dxcUtils = nullptr;
 	dxcCompiler = nullptr;
 	hr = DxcCreateInstance(CLSID_DxcUtils, IID_PPV_ARGS(&dxcUtils));
@@ -206,7 +209,7 @@ void DirectXCommon::InitializeDXC() {
 
 };
 
-///
+/// PipelineStateObjectの初期化
 void DirectXCommon::InitializePSO() {
 
 	// RootSignatureを生成する(P.30)
@@ -376,110 +379,8 @@ void DirectXCommon::CreateFinalRenderTargets() {
 	device->CreateRenderTargetView(swapChainResources[1].Get(), &rtvDesc, rtvHandles[1]);
 
 }
-/// シェーダーリソースビュー生成
-void DirectXCommon::CreateShaderResourceView() {
 
-	// STV用ディスクリプタヒープの生成
-	srvDescriptorHeap = CreateDescriptorHeap(device, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 128, true);
 
-	// ImGuiの初期化
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGui::StyleColorsDark();
-	ImGui_ImplWin32_Init(win_->hwnd);
-	ImGui_ImplDX12_Init(device.Get(),
-		swapChainDesc.BufferCount,
-		rtvDesc.Format,
-		srvDescriptorHeap.Get(),
-		srvDescriptorHeap->GetCPUDescriptorHandleForHeapStart(),
-		srvDescriptorHeap->GetGPUDescriptorHandleForHeapStart()
-	);
-
-	// テクスチャを読んで転送する
-	DirectX::ScratchImage mipImages = Resource::LoadTextrue("Resources/texture/uvChecker.png");
-	const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
-	textureResource_ = Resource::CreateTextureResource(device, metadata);
-	intermediaResource = Resource::UpdateTextureData(textureResource_, mipImages, this);
-	// 二枚目のテクスチャを読んで転送する
-	DirectX::ScratchImage mipImages2 = Resource::LoadTextrue("Resources/texture/monsterBall.png");
-	const DirectX::TexMetadata& metadata2 = mipImages2.GetMetadata();
-	textureResource2_ = Resource::CreateTextureResource(device, metadata2);
-	intermediaResource2 = Resource::UpdateTextureData(textureResource2_, mipImages2, this);
-
-	// mateDateを基にSRVの設定
-	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
-	srvDesc.Format = metadata.format;
-	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-	srvDesc.Texture2D.MipLevels = UINT(metadata.mipLevels);
-
-	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc2{};
-	srvDesc2.Format = metadata2.format;
-	srvDesc2.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	srvDesc2.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-	srvDesc2.Texture2D.MipLevels = UINT(metadata2.mipLevels);
-
-	// デスクリプタサイズを取得
-	const uint32_t descriptorSizeSRV = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	const uint32_t descriptorSizeRTV = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-	const uint32_t descriptorSizeDSV = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
-
-	//SRVを制作するDescriptorHeapの場所を決める
-	textureSrvHandleCPU_ = srvDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
-	textureSrvHandleGPU_ = srvDescriptorHeap->GetGPUDescriptorHandleForHeapStart();
-	textureSrvHandleCPU2_ = GetCPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, 2);
-	textureSrvHandleGPU2_ = GetGPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, 2);
-
-	// 先頭はImGuiが使うのでその次を使う
-	textureSrvHandleCPU_.ptr += device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	textureSrvHandleGPU_.ptr += device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	// 二枚目
-	textureSrvHandleCPU2_.ptr += device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	textureSrvHandleGPU2_.ptr += device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	//SRVの生成
-	device->CreateShaderResourceView(textureResource_.Get(), &srvDesc, textureSrvHandleCPU_);
-	device->CreateShaderResourceView(textureResource2_.Get(), &srvDesc2, textureSrvHandleCPU2_);
-	
-
-}
-
-/// シェーダーリソースビュー生成
-void DirectXCommon::SetShaderResourceViewTex(const ModelData& modelData) {
-
-	// STV用ディスクリプタヒープの生成
-	srvDescriptorHeap = CreateDescriptorHeap(device, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 128, true);
-
-	// 二枚目のテクスチャを読んで転送する
-	DirectX::ScratchImage mipImages2 = Resource::LoadTextrue(modelData.material.textureFilePath);
-	const DirectX::TexMetadata& metadata2 = mipImages2.GetMetadata();
-	textureResource2_ = Resource::CreateTextureResource(device, metadata2);
-	intermediaResource2 = Resource::UpdateTextureData(textureResource2_, mipImages2, this);
-
-	// mateDateを基にSRVの設定
-
-	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc2{};
-	srvDesc2.Format = metadata2.format;
-	srvDesc2.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	srvDesc2.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-	srvDesc2.Texture2D.MipLevels = UINT(metadata2.mipLevels);
-
-	// デスクリプタサイズを取得
-	const uint32_t descriptorSizeSRV = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	const uint32_t descriptorSizeRTV = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-	const uint32_t descriptorSizeDSV = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
-
-	//SRVを制作するDescriptorHeapの場所を決める
-	textureSrvHandleCPU2_ = GetCPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, 2);
-	textureSrvHandleGPU2_ = GetGPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, 2);
-
-	// 二枚目
-	textureSrvHandleCPU2_.ptr += device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	textureSrvHandleGPU2_.ptr += device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	//SRVの生成
-	device->CreateShaderResourceView(textureResource2_.Get(), &srvDesc2, textureSrvHandleCPU2_);
-	
-
-}
 /// ディープステンシルビューの生成
 void DirectXCommon::CreateDepthStencilView() {
 
@@ -572,7 +473,7 @@ void DirectXCommon::DrawBegin() {
 	commandList->ClearRenderTargetView(rtvHandles[backBufferIndex], clearColor, 0, nullptr);
 
 	// 描画用のディスクリプタヒープの設定
-	ID3D12DescriptorHeap* descriptorHeaps[] = { srvDescriptorHeap.Get()};
+	ID3D12DescriptorHeap* descriptorHeaps[] = { srv_->srvDescriptorHeap.Get()};
 	commandList->SetDescriptorHeaps(1, descriptorHeaps);
 
 	// コマンドを積み込む

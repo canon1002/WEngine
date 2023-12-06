@@ -38,6 +38,7 @@ ModelData Model::LoadObjFile(const std::string& directoryPath, const std::string
 		else if (identifier == "vt") {
 			Vector2 texcoord;
 			s >> texcoord.x >> texcoord.y;
+			texcoord.y = 1.0f - texcoord.y;
 			texcoords.push_back(texcoord);
 		}
 		// 法線
@@ -106,6 +107,7 @@ MaterialData Model::LoadMaterialTemplateFile(const std::string& directoryPath, c
 			s >> textureFilename;
 			// 連結してファイルパスにする
 			materialData.textureFilePath = directoryPath + "/" + textureFilename;
+			
 		}
 		
 
@@ -125,15 +127,19 @@ void Model::Initialize() {
 	CreateIndexResource();
 	CreateTransformationRsource();
 	CreateBufferView();
-	dx_->SetShaderResourceViewTex(modelData);
+	
 }
 
 void Model::Update() {
 
 	ImGui::Begin("Model");
-	ImGui::DragFloat3("Scale", &worldTransform_->scale.x);
-	ImGui::DragFloat3("Rotate", &worldTransform_->rotate.x);
-	ImGui::DragFloat3("Tranlate", &worldTransform_->translate.x);
+	float treeScale = worldTransform_->scale.x;
+	ImGui::DragFloat("ObjScale", &treeScale,0.05f);
+	worldTransform_->scale = { treeScale ,treeScale ,treeScale };
+	ImGui::SliderAngle("ObjRotateX", &worldTransform_->rotate.x);
+	ImGui::SliderAngle("ObjRotateY", &worldTransform_->rotate.y);
+	ImGui::SliderAngle("ObjRotateZ", &worldTransform_->rotate.z);
+	ImGui::DragFloat3("ObjTranlate", &worldTransform_->translate.x);
 	ImGui::Spacing();
 	ImGui::DragFloat2("UVScale", &uvTransform_.scale.x, 0.01f, -10.0f, 10.0f);
 	ImGui::DragFloat2("UVTranlate", &uvTransform_.translate.x, 0.01f, -10.0f, 10.0f);
@@ -185,7 +191,7 @@ void Model::Draw() {
 	dx_->commandList->SetGraphicsRootConstantBufferView(3, directionalLightResource->GetGPUVirtualAddress());
 
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である
-	dx_->commandList->SetGraphicsRootDescriptorTable(2, dx_->textureSrvHandleGPU_);
+	dx_->commandList->SetGraphicsRootDescriptorTable(2, dx_->srv_->textureSrvHandleGPU3_);
 
 	// インデックスを使用してドローコール
 	dx_->commandList->DrawInstanced(UINT(modelData.vertices.size()), 1, 0, 0);
@@ -201,7 +207,7 @@ void Model::CreateIndexResource() {
 void Model::CreateVertexResource() {
 
 	// モデル読み込み
-	modelData = LoadObjFile("resources/obj", "plane.obj");
+	modelData = LoadObjFile("resources/obj", "axis.obj");
 	// 実際に頂点リソースを作る
 	vertexResource = dx_->CreateBufferResource(dx_->device.Get(), sizeof(VertexData) * modelData.vertices.size());
 	// マテリアル用のResourceを作る
@@ -210,6 +216,8 @@ void Model::CreateVertexResource() {
 	materialData_ = nullptr;
 	// 書き込むためのアドレスを取得
 	materialResource->Map(0, nullptr, reinterpret_cast<void**>(&materialData_));
+	// テクスチャの情報を転送
+	dx_->srv_->SetSRVDesc(modelData.material.textureFilePath);
 	// 色の書き込み・Lightingの無効化
 	materialData_->color = { 1.0f, 1.0f, 1.0f, 1.0f };
 	materialData_->enableLighting = true;

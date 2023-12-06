@@ -1,5 +1,6 @@
 #pragma once
 #include "WinAPI.h"
+#include "SRV.h"
 #include "../../../Externals/DirectXTex/DirectXTex.h"
 
 // 前方宣言
@@ -63,12 +64,6 @@ public: // ** メンバ関数 ** //
 	void CreateFinalRenderTargets();
 
 	/// <summary>
-	/// シェーダーリソースビュー生成
-	/// </summary>
-	void CreateShaderResourceView();
-	void SetShaderResourceViewTex(const ModelData& modelData);
-
-	/// <summary>
 	/// ディープステンシルビューの生成
 	/// </summary>
 	void CreateDepthStencilView();
@@ -108,7 +103,7 @@ public: // ** メンバ関数 ** //
 	/// </summary>
 	void DrawEnd();
 
-	DirectX::ScratchImage LoadTexture(const std::string& filePath);
+
 
 	D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDescriptorHandle(Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap,
 		uint32_t descriptorSize,uint32_t index){
@@ -133,9 +128,10 @@ public: // ** メンバ関数 ** //
 
 public: // ** メンバ変数 ** //
 	
-	//
+	// 外部
 	WinAPI* win_ = nullptr;
-	
+	SRV* srv_ = nullptr;
+
 	// DXGIファクトリーの生成
 	Microsoft::WRL::ComPtr <IDXGIFactory7> dxgiFactory = nullptr;
 	// D3D12Deviceの生成
@@ -172,24 +168,7 @@ public: // ** メンバ変数 ** //
 	// RTV用ディスクリプタヒープ
 	Microsoft::WRL::ComPtr < ID3D12DescriptorHeap> rtvDescriptorHeap = nullptr;
 
-	// SRVはディスクリプタを128つ
-	D3D12_CPU_DESCRIPTOR_HANDLE srtHandles[128];
-	// SRV用ディスクリプタヒープ
-	Microsoft::WRL::ComPtr <ID3D12DescriptorHeap> srvDescriptorHeap = nullptr;
-	//SRVを制作するDescriptorHeapの場所を決める
-	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU_;
-	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU_;
-	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU2_;
-	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU2_;
-	// テクスチャリソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> textureResource_ = nullptr;
-	Microsoft::WRL::ComPtr<ID3D12Resource> textureResource2_ = nullptr;
-	Microsoft::WRL::ComPtr<ID3D12Resource> textureResource3_ = nullptr;
-	// リソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> intermediaResource = nullptr;
-	Microsoft::WRL::ComPtr<ID3D12Resource> intermediaResource2 = nullptr;
-	Microsoft::WRL::ComPtr<ID3D12Resource> intermediaResource3 = nullptr;
-
+	
 
 	// DSV用デスクリプタヒープ
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> dsvDescriptorHeap_ = nullptr;

@@ -44,12 +44,21 @@
     <Filter Include="Engine\object\Model">
       <UniqueIdentifier>{eb743ed8-e752-4eeb-bcd5-54f6a95ee6ee}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine\base\DirectX">
+      <UniqueIdentifier>{58013492-ed9b-4a56-a74d-0ecf1b84379a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\base\DirectX\RTV">
+      <UniqueIdentifier>{3abc21fd-95e4-4312-9ee3-52909f7b0ff3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\base\DirectX\SRV">
+      <UniqueIdentifier>{3288a30a-03f8-40c2-b8d3-22685fc2ef0c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\base\DirectX\DSV">
+      <UniqueIdentifier>{146fb369-94e9-4db7-9310-12d000f8f00c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Engine\base\DirectXCommon.cpp">
-      <Filter>Engine\base</Filter>
-    </ClCompile>
     <ClCompile Include="..\externals\imgui\imgui.cpp">
       <Filter>externals\Imgui</Filter>
     </ClCompile>
@@ -107,15 +116,18 @@
     <ClCompile Include="Engine\object\model\Model.cpp">
       <Filter>Engine\object\Model</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\base\DirectXCommon.cpp">
+      <Filter>Engine\base\DirectX</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\base\SRV.cpp">
+      <Filter>Engine\base\DirectX\SRV</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Object3d.VS.hlsl" />
     <FxCompile Include="Object3d.PS.hlsl" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Engine\base\DirectXCommon.h">
-      <Filter>Engine\base</Filter>
-    </ClInclude>
     <ClInclude Include="Engine\base\ImGuiManager.h">
       <Filter>Engine\base</Filter>
     </ClInclude>
@@ -181,6 +193,12 @@
     </ClInclude>
     <ClInclude Include="Engine\object\model\Model.h">
       <Filter>Engine\object\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\base\DirectXCommon.h">
+      <Filter>Engine\base\DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\base\SRV.h">
+      <Filter>Engine\base\DirectX\SRV</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

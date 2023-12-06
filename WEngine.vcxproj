@@ -95,6 +95,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="..\externals\imgui\imgui_widgets.cpp" />
     <ClCompile Include="Engine\base\DirectXCommon.cpp" />
     <ClCompile Include="Engine\base\ImGuiManager.cpp" />
+    <ClCompile Include="Engine\base\SRV.cpp" />
     <ClCompile Include="Engine\base\WinAPI.cpp" />
     <ClCompile Include="Engine\math\Matrix4x4.cpp" />
     <ClCompile Include="Engine\object\camera\MatrixCamera.cpp" />
@@ -137,6 +138,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="..\externals\imgui\imstb_truetype.h" />
     <ClInclude Include="Engine\base\DirectXCommon.h" />
     <ClInclude Include="Engine\base\ImGuiManager.h" />
+    <ClInclude Include="Engine\base\SRV.h" />
     <ClInclude Include="Engine\base\System.h" />
     <ClInclude Include="Engine\base\WinAPI.h" />
     <ClInclude Include="Engine\math\Math.h" />

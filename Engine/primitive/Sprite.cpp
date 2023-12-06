@@ -80,7 +80,7 @@ void Sprite::Draw() {
 	//wvp用のCBufferの場所を指定
 	dx_->commandList->SetGraphicsRootConstantBufferView(1, wvpResource->GetGPUVirtualAddress());
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である
-	dx_->commandList->SetGraphicsRootDescriptorTable(2, dx_->textureSrvHandleGPU_);
+	dx_->commandList->SetGraphicsRootDescriptorTable(2, dx_->srv_->textureSrvHandleGPU_);
 
 	// インデックスを使用してドローコール
 	dx_->commandList->DrawIndexedInstanced(6, 1, 0, 0, 0);
