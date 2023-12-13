@@ -112,6 +112,8 @@ private:
 
 	// テクスチャ切り替え
 	bool useBall = true;
+	// テクスチャハンドル
+	int32_t textureHandle_;
 	// モデルデータ
 	ModelData modelData;
 	// UVTransform用の変数

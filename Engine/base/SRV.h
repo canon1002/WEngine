@@ -1,8 +1,16 @@
 #pragma once
 #include "WinAPI.h"
+#include <unordered_map>
 #include "../../../Externals/DirectXTex/DirectXTex.h"
 
 class DirectXCommon;
+
+struct TextureData {
+	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU;
+	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU;
+	Microsoft::WRL::ComPtr<ID3D12Resource> textureResource = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12Resource> intermediaResource = nullptr;
+};
 
 class SRV
 {
@@ -28,8 +36,8 @@ public:
 	void Initialize(DirectXCommon* dx);
 	void CreateShaderResourceView();
 	void CreateSRVDescriptorHeap();
-	void SetSRVDesc0(const char* filePath);
 	void SetSRVDesc(const std::string filePath);
+	int LoadTexture(const std::string filePath);
 
 private:
 
@@ -45,17 +53,12 @@ public:
 	D3D12_CPU_DESCRIPTOR_HANDLE srtHandles[128];
 	// SRV用ディスクリプタヒープ
 	Microsoft::WRL::ComPtr <ID3D12DescriptorHeap> srvDescriptorHeap = nullptr;
-	//SRVを制作するDescriptorHeapの場所を決める
-	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU_;
-	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU_;
-	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU3_;
-	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU3_;
-	// テクスチャリソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> textureResource_ = nullptr;
-	Microsoft::WRL::ComPtr<ID3D12Resource> textureResource2_ = nullptr;
-	// リソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> intermediaResource = nullptr;
-	Microsoft::WRL::ComPtr<ID3D12Resource> intermediaResource2 = nullptr;
+
+	// テクスチャデータのマップ
+	std::unordered_map<int32_t,TextureData> textureData_;
+	// 次に使用可能なテクスチャデータの番地
+	int32_t textureId_ = 0;
+	int32_t defaultTexId_;
 
 };
 

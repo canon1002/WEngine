@@ -103,6 +103,7 @@ public: // ** メンバ関数 ** //
 	/// </summary>
 	void DrawEnd();
 
+	void TexLoadEnd();
 
 
 	D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDescriptorHandle(Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap,

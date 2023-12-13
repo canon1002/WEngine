@@ -16,6 +16,7 @@ public:
 	void Initialize();
 	void Update();
 	void Draw();
+	void DisplayGUI(const char* name);
 
 	void CreateVertexResource();
 	void CreateTransformationRsource();
@@ -56,7 +57,7 @@ public:
 	/// <param name="color"></param>
 	void SetColor(Vector4 color) {
 		// 指定した色に書き込む
-		*materialDate = Vector4(color.x, color.y, color.z, color.w);
+		*materialData = { Vector4(color.x, color.y, color.z, color.w) };
 	}
 
 	const D3D12_VERTEX_BUFFER_VIEW& GetVBV() const { return vertexBufferView; }
@@ -81,12 +82,14 @@ private:
 	// Transformation用のResourceを作る
 	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource = nullptr;
 	// データを書き込む
-	Matrix4x4* wvpData = nullptr;
+	TransformationMatrix* wvpData = nullptr;
 	// 頂点リソースにデータを書き込む
 	VertexData* vertexData = nullptr;
 	// 頂点バッファビューを作成する
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
 	// マテリアルデータ
-	Vector4* materialDate = nullptr;
+	Material* materialData = nullptr;
+	// UVTransform用の変数
+	Math::Transform uvTransform_;
 };
 

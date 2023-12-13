@@ -80,7 +80,7 @@ void Sprite::Draw() {
 	//wvp用のCBufferの場所を指定
 	dx_->commandList->SetGraphicsRootConstantBufferView(1, wvpResource->GetGPUVirtualAddress());
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である
-	dx_->commandList->SetGraphicsRootDescriptorTable(2, dx_->srv_->textureSrvHandleGPU_);
+	dx_->commandList->SetGraphicsRootDescriptorTable(2, dx_->srv_->textureData_.at(1).textureSrvHandleGPU);
 
 	// インデックスを使用してドローコール
 	dx_->commandList->DrawIndexedInstanced(6, 1, 0, 0, 0);
@@ -132,7 +132,7 @@ void Sprite::CreateBufferView() {
 
 	// リソースの先頭のアドレスから使う
 	vertexBufferView.BufferLocation = vertexResource->GetGPUVirtualAddress();
-	// 使用するリソースサイズは頂点6つ分のサイズ
+	// 使用するリソースサイズは頂点4つ分のサイズ
 	vertexBufferView.SizeInBytes = sizeof(VertexData) * 4;
 	// 1頂点あたりのサイズ
 	vertexBufferView.StrideInBytes = sizeof(VertexData);

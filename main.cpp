@@ -51,17 +51,14 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	win->Initialize();
 	dx->Initialize(win);
 
-	// 球
-	Sphere* sphere = new Sphere;
-	sphere->Initialize();
+	// 三角形
+	Triangle* triangleA = new Triangle;
+	Triangle* triangleB = new Triangle;
+	triangleA->Initialize();
+	triangleB->Initialize();
 
-	// 平面(sprite)
-	Sprite* sprite = new Sprite;
-	sprite->Initialize();
-
-	// モデル
-	Model* model = new Model;
-	model->Initialize();
+	//
+	dx->TexLoadEnd();
 
 	// 警告やエラーが発生した際に停止させる
 #ifdef _DEBUG
@@ -118,9 +115,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			// 開発用UIの表示
 			ImGui::ShowDemoWindow();
 
-			//sphere->Update();
-			//sprite->Update();
-			model->Update();
+			triangleA->DisplayGUI("triangleA");
+			triangleB->DisplayGUI("triangleB");
+			triangleA->Update();
+			triangleB->Update();
+
 
 			// 描画処理に入る前に、ImGui内部のコマンドを生成する
 			ImGui::Render();
@@ -131,10 +130,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 			// 描画前処理
 			dx->DrawBegin();
+			
+			triangleA->Draw();
+			triangleB->Draw();
 
-			//sphere->Draw();
-			//sprite->Draw();
-			model->Draw();
 
 			// 描画後処理
 			dx->DrawEnd();
@@ -148,15 +147,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	CoUninitialize();
 
 	// 解放処理
-	delete model;
-	delete sprite;
-	delete sphere;
+
 	ImGui_ImplDX12_Shutdown();
 	dx->Delete();
 
 #ifdef _DEBUG
 	debugController->Release();
 #endif // _DEBUG
+	
+	delete triangleA;
+	delete triangleB;
 	
 	win->Delete();
 	/*CloseWindow(hwnd);*/

@@ -191,7 +191,7 @@ void Model::Draw() {
 	dx_->commandList->SetGraphicsRootConstantBufferView(3, directionalLightResource->GetGPUVirtualAddress());
 
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である
-	dx_->commandList->SetGraphicsRootDescriptorTable(2, dx_->srv_->textureSrvHandleGPU3_);
+	dx_->commandList->SetGraphicsRootDescriptorTable(2, dx_->srv_->textureData_.at(textureHandle_).textureSrvHandleGPU);
 
 	// インデックスを使用してドローコール
 	dx_->commandList->DrawInstanced(UINT(modelData.vertices.size()), 1, 0, 0);
@@ -217,7 +217,7 @@ void Model::CreateVertexResource() {
 	// 書き込むためのアドレスを取得
 	materialResource->Map(0, nullptr, reinterpret_cast<void**>(&materialData_));
 	// テクスチャの情報を転送
-	dx_->srv_->SetSRVDesc(modelData.material.textureFilePath);
+	textureHandle_ = dx_->srv_->LoadTexture(modelData.material.textureFilePath);
 	// 色の書き込み・Lightingの無効化
 	materialData_->color = { 1.0f, 1.0f, 1.0f, 1.0f };
 	materialData_->enableLighting = true;

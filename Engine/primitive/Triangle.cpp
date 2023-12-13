@@ -25,14 +25,10 @@ void Triangle::Initialize() {
 
 void Triangle::Update() {
 
-}
-
-void Triangle::Draw() {
-
 	//　三角形のワールド行列
 	worldtransform_->worldM = W::Math::MakeAffineMatrix(
 		worldtransform_->scale, worldtransform_->rotate, worldtransform_->translate);
-	
+
 	// カメラのワールド行列
 	cameraM = W::Math::MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f }, { 0.0f,0.0f,-5.0f });
 	// カメラ行列のビュー行列(カメラのワールド行列の逆行列)
@@ -40,9 +36,23 @@ void Triangle::Draw() {
 	// 正規化デバイス座標系(NDC)に変換(正射影行列をかける)
 	pespectiveM = W::Math::MakePerspectiveMatrix(0.45f, (1280.0f / 720.0f), 0.1f, 100.0f);
 	// WVPにまとめる
-	wvpM = W::Math::Multiply(viewM,pespectiveM);
-	// 三角形のワールド行列とWVP行列を掛け合わした行列を代入
-	*wvpData = W::Math::Multiply(worldtransform_->worldM, wvpM);
+	wvpM = W::Math::Multiply(viewM, pespectiveM);
+	// 矩形のワールド行列とWVP行列を掛け合わした行列を代入
+	wvpData->WVP = W::Math::Multiply(worldtransform_->worldM, wvpM);
+	wvpData->World = worldtransform_->worldM;
+
+	/// マテリアル・UVTransform
+	Matrix4x4 uvTransformMatrix = W::Math::MakeAffineMatrix(
+		uvTransform_.scale,
+		{ 0.0f,0.0f,uvTransform_.rotate.z },
+		uvTransform_.translate
+	);
+	// 変換したデータを代入する
+	materialData->uvTransform = uvTransformMatrix;
+
+}
+
+void Triangle::Draw() {
 
 	dx_->commandList->IASetVertexBuffers(0, 1, &vertexBufferView);
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけばいい
@@ -55,10 +65,25 @@ void Triangle::Draw() {
 	//wvp用のCBufferの場所を指定
 	dx_->commandList->SetGraphicsRootConstantBufferView(1, wvpResource->GetGPUVirtualAddress());
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である
-	dx_->commandList->SetGraphicsRootDescriptorTable(2, dx_->srv_->textureSrvHandleGPU_);
+	dx_->commandList->SetGraphicsRootDescriptorTable(2, dx_->srv_->textureData_.at(1).textureSrvHandleGPU);
 
 	// インスタンス生成
 	dx_->commandList->DrawInstanced(3, 1, 0, 0);
+
+}
+
+void Triangle::DisplayGUI(const char* name) {
+
+	ImGui::Begin(name);
+	ImGui::DragFloat3("Scale", &this->worldtransform_->scale.x, 0.1f);
+	ImGui::DragFloat3("Rotate", &this->worldtransform_->rotate.x, 0.01f);
+	ImGui::DragFloat3("Tranlate", &this->worldtransform_->translate.x, 0.01f);
+	ImGui::Spacing();
+	ImGui::DragFloat2("UVScale", &this->uvTransform_.scale.x, 0.01f, -10.0f, 10.0f);
+	ImGui::DragFloat2("UVTranlate", &this->uvTransform_.translate.x, 0.01f, -10.0f, 10.0f);
+	ImGui::SliderAngle("UVRotate", &this->uvTransform_.rotate.z);
+	ImGui::ColorEdit4("Color", &this->materialData->color.x);
+	ImGui::End();
 
 }
 
@@ -70,13 +95,17 @@ void Triangle::CreateVertexResource() {
 	vertexResource = dx_->CreateBufferResource(dx_->device.Get(), sizeof(VertexData) * 3);
 
 	// マテリアル用のResourceを作る
-	materialResource = dx_->CreateBufferResource(dx_->device.Get(), sizeof(VertexData));
+	materialResource = dx_->CreateBufferResource(dx_->device.Get(), sizeof(Material));
 	// マテリアルにデータを書き込む
-	materialDate = nullptr;
+	materialData = nullptr;
 	// 書き込むためのアドレスを取得
-	materialResource->Map(0, nullptr, reinterpret_cast<void**>(&materialDate));
-	// 色を書き込む
-	*materialDate = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+	materialResource->Map(0, nullptr, reinterpret_cast<void**>(&materialData));
+	// 色の書き込み・Lightingの無効化
+	materialData->color = { 1.0f, 1.0f, 1.0f, 1.0f };
+	materialData->enableLighting = false;
+	// UVTransformを設定
+	materialData->uvTransform = W::Math::MakeIdentity();
+	uvTransform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 
 }
 
@@ -84,21 +113,19 @@ void Triangle::CreateVertexResource() {
 void Triangle::CreateTransformationRsource() {
 
 	// Transformation用のResourceを作る
-	wvpResource = dx_->CreateBufferResource(dx_->device.Get(), sizeof(Matrix4x4));
+	wvpResource = dx_->CreateBufferResource(dx_->device.Get(), sizeof(TransformationMatrix));
 	// データを書き込む
 	// 書き込むためのアドレスを取得
 	wvpResource->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
 	// 単位行列を書き込む
-	*wvpData = mainCamera_->GetWorldViewProjection();
-
+	// 単位行列を書き込む
+	wvpData->WVP = mainCamera_->GetWorldViewProjection();
+	wvpData->World = W::Math::MakeIdentity();
 }
 
 //
 void Triangle::CreateBufferView() {
 
-	// VertexBufferViewを作成する(P.43)
-	// 頂点バッファビューを作成する
-	vertexBufferView = {};
 	// リソースの先頭のアドレスから使う
 	vertexBufferView.BufferLocation = vertexResource->GetGPUVirtualAddress();
 	// 使用するリソースサイズは頂点3つ分のサイズ
@@ -113,12 +140,15 @@ void Triangle::CreateBufferView() {
 	// 左下
 	vertexData[0].position = { -0.5f,-0.5f,0.0f,1.0f };
 	vertexData[0].texcoord = { 0.0f,1.0f };
+	vertexData[0].nomal = { 0.0f,0.0f,-1.0f };
 	// 上
 	vertexData[1].position = { 0.0f,0.5f,0.0f,1.0f };
 	vertexData[1].texcoord = { 0.5f,0.0f };
+	vertexData[1].nomal = { 0.0f,0.0f,-1.0f };
 	// 右下
 	vertexData[2].position = { 0.5f,-0.5f,0.0f,1.0f };
 	vertexData[2].texcoord = { 1.0f,1.0f };
+	vertexData[2].nomal = { 0.0f,0.0f,-1.0f };
 
 }
 
