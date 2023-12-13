@@ -57,6 +57,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	triangleA->Initialize();
 	triangleB->Initialize();
 	triangleB->SetTransform({ 1.2f,0.0f,0.0f });
+	triangleB->SetColor({ 0.7f,0.0f,0.0f,1.0f });
 
 	//
 	dx->TexLoadEnd();
