@@ -56,6 +56,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Triangle* triangleB = new Triangle;
 	triangleA->Initialize();
 	triangleB->Initialize();
+	triangleB->SetTransform({ 1.2f,0.0f,0.0f });
 
 	//
 	dx->TexLoadEnd();
