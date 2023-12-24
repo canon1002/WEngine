@@ -5,6 +5,7 @@
 #include "./Engine/resources/Section/Resource.h"
 #include "./Engine/primitive/Sphere.h"
 #include "./Engine/object/model/Model.h"
+#include "./Audio.h"
 
 #include <d3d12.h>
 
@@ -32,6 +33,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	WinAPI* win = WinAPI::GetInstance();
 	// DirectX
 	DirectXCommon* dx = DirectXCommon::GetInstance();
+	// Audio
+	Audio* audio = Audio::GetWaveInstance();
 
 	// COMの初期化
 	CoInitializeEx(0, COINIT_MULTITHREADED);
@@ -61,6 +64,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	//
 	dx->TexLoadEnd();
+
+	// 音声データの生成
+	SoundData sound1 = audio->LoadWave("./Resources/sound/Alarm01.wav");
 
 	// 警告やエラーが発生した際に停止させる
 #ifdef _DEBUG
@@ -150,15 +156,18 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	// 解放処理
 
+
+	delete triangleA;
+	delete triangleB;
+
+	audio->Finalize();
+
 	ImGui_ImplDX12_Shutdown();
 	dx->Delete();
 
 #ifdef _DEBUG
 	debugController->Release();
 #endif // _DEBUG
-	
-	delete triangleA;
-	delete triangleB;
 	
 	win->Delete();
 	/*CloseWindow(hwnd);*/

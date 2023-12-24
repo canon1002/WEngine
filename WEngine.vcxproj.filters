@@ -122,6 +122,7 @@
     <ClCompile Include="Engine\base\SRV.cpp">
       <Filter>Engine\base\DirectX\SRV</Filter>
     </ClCompile>
+    <ClCompile Include="Audio.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Object3d.VS.hlsl" />
@@ -200,6 +201,7 @@
     <ClInclude Include="Engine\base\SRV.h">
       <Filter>Engine\base\DirectX\SRV</Filter>
     </ClInclude>
+    <ClInclude Include="Audio.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\externals\imgui\LICENSE.txt">
