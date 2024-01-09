@@ -80,7 +80,7 @@ void Sphere::Draw() const {
 	dx_->commandList->SetGraphicsRootConstantBufferView(1, wvpResource->GetGPUVirtualAddress());
 	dx_->commandList->SetGraphicsRootConstantBufferView(3, directionalLightResource->GetGPUVirtualAddress());
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である
-	dx_->commandList->SetGraphicsRootDescriptorTable(2, dx_->srv_->textureSrvHandleGPU_);
+	dx_->commandList->SetGraphicsRootDescriptorTable(2, dx_->srv_->textureData_.at(1).textureSrvHandleGPU);
 
 	// インスタンス生成
 	dx_->commandList->DrawInstanced(((kSubdivision) * (kSubdivision) * 6), 1, 0, 0);
@@ -180,45 +180,45 @@ void Sphere::CreateBufferView() {
 			vertexData[start].position = { a.x,a.y,a.z,1.0f };
 			vertexData[start].texcoord.x = float(lonIndex) / float(kSubdivision);
 			vertexData[start].texcoord.y = 1.0f - float(latIndex-1) / float(kSubdivision) ;
-			vertexData[start].nomal.x = vertexData[start].position.x;
-			vertexData[start].nomal.y = vertexData[start].position.y;
-			vertexData[start].nomal.z = vertexData[start].position.z;
+			vertexData[start].normal.x = vertexData[start].position.x;
+			vertexData[start].normal.y = vertexData[start].position.y;
+			vertexData[start].normal.z = vertexData[start].position.z;
 			//　左上
 			vertexData[start + 1].position = { b.x,b.y,b.z,1.0f };
 			vertexData[start + 1].texcoord.x = float(lonIndex) / float(kSubdivision);
 			vertexData[start + 1].texcoord.y = 1.0f - float(latIndex) / float(kSubdivision);
-			vertexData[start + 1].nomal.x = vertexData[start + 1].position.x;
-			vertexData[start + 1].nomal.y = vertexData[start + 1].position.y;
-			vertexData[start + 1].nomal.z = vertexData[start + 1].position.z;
+			vertexData[start + 1].normal.x = vertexData[start + 1].position.x;
+			vertexData[start + 1].normal.y = vertexData[start + 1].position.y;
+			vertexData[start + 1].normal.z = vertexData[start + 1].position.z;
 			// 右下
 			vertexData[start + 2].position = { c.x,c.y,c.z,1.0f };
 			vertexData[start + 2].texcoord.x = float(lonIndex + 1) / float(kSubdivision);
 			vertexData[start + 2].texcoord.y = 1.0f - float(latIndex-1) / float(kSubdivision);
-			vertexData[start + 2].nomal.x = vertexData[start + 2].position.x;
-			vertexData[start + 2].nomal.y = vertexData[start + 2].position.y;
-			vertexData[start + 2].nomal.z = vertexData[start + 2].position.z;
+			vertexData[start + 2].normal.x = vertexData[start + 2].position.x;
+			vertexData[start + 2].normal.y = vertexData[start + 2].position.y;
+			vertexData[start + 2].normal.z = vertexData[start + 2].position.z;
 			/// 2枚目
 			// 左上
 			vertexData[start + 3].position = { b.x,b.y,b.z,1.0f };
 			vertexData[start + 3].texcoord.x = float(lonIndex) / float(kSubdivision);
 			vertexData[start + 3].texcoord.y = 1.0f - float(latIndex) / float(kSubdivision);
-			vertexData[start + 3].nomal.x = vertexData[start + 3].position.x;
-			vertexData[start + 3].nomal.y = vertexData[start + 3].position.y;
-			vertexData[start + 3].nomal.z = vertexData[start + 3].position.z;
+			vertexData[start + 3].normal.x = vertexData[start + 3].position.x;
+			vertexData[start + 3].normal.y = vertexData[start + 3].position.y;
+			vertexData[start + 3].normal.z = vertexData[start + 3].position.z;
 			//　右上
 			vertexData[start + 4].position = { d.x,d.y,d.z,1.0f };
 			vertexData[start + 4].texcoord.x = float(lonIndex + 1) / float(kSubdivision);
 			vertexData[start + 4].texcoord.y = 1.0f - float(latIndex) / float(kSubdivision);
-			vertexData[start + 4].nomal.x = vertexData[start + 4].position.x;
-			vertexData[start + 4].nomal.y = vertexData[start + 4].position.y;
-			vertexData[start + 4].nomal.z = vertexData[start + 4].position.z;
+			vertexData[start + 4].normal.x = vertexData[start + 4].position.x;
+			vertexData[start + 4].normal.y = vertexData[start + 4].position.y;
+			vertexData[start + 4].normal.z = vertexData[start + 4].position.z;
 			// 右下
 			vertexData[start + 5].position = { c.x,c.y,c.z,1.0f };
 			vertexData[start + 5].texcoord.x = float(lonIndex + 1) / float(kSubdivision);
 			vertexData[start + 5].texcoord.y = 1.0f-float(latIndex-1) / float(kSubdivision);
-			vertexData[start + 5].nomal.x = vertexData[start + 5].position.x;
-			vertexData[start + 5].nomal.y = vertexData[start + 5].position.y;
-			vertexData[start + 5].nomal.z = vertexData[start + 5].position.z;
+			vertexData[start + 5].normal.x = vertexData[start + 5].position.x;
+			vertexData[start + 5].normal.y = vertexData[start + 5].position.y;
+			vertexData[start + 5].normal.z = vertexData[start + 5].position.z;
 
 		}
 	}

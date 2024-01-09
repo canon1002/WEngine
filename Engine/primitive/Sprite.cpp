@@ -80,7 +80,7 @@ void Sprite::Draw() {
 	//wvp用のCBufferの場所を指定
 	dx_->commandList->SetGraphicsRootConstantBufferView(1, wvpResource->GetGPUVirtualAddress());
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である
-	dx_->commandList->SetGraphicsRootDescriptorTable(2, dx_->srv_->textureSrvHandleGPU_);
+	dx_->commandList->SetGraphicsRootDescriptorTable(2, dx_->srv_->textureData_.at(1).textureSrvHandleGPU);
 
 	// インデックスを使用してドローコール
 	dx_->commandList->DrawIndexedInstanced(6, 1, 0, 0, 0);
@@ -146,19 +146,19 @@ void Sprite::CreateBufferView() {
 	//　左上
 	vertexData[0].position = { 0.0f,0.0f,0.0f,1.0f };
 	vertexData[0].texcoord = { 0.0f,0.0f };
-	vertexData[0].nomal = { 0.0f,0.0f,-1.0f };
+	vertexData[0].normal = { 0.0f,0.0f,-1.0f };
 	//　右上
 	vertexData[1].position = { 640.0f,0.0f,0.0f,1.0f };
 	vertexData[1].texcoord = { 1.0f,0.0f };
-	vertexData[1].nomal = { 0.0f,0.0f,-1.0f };
+	vertexData[1].normal = { 0.0f,0.0f,-1.0f };
 	// 左下
 	vertexData[2].position = { 0.0f,360.0f,0.0f,1.0f };
 	vertexData[2].texcoord = { 0.0f,1.0f };
-	vertexData[2].nomal = { 0.0f,0.0f,-1.0f };
+	vertexData[2].normal = { 0.0f,0.0f,-1.0f };
 	// 右下
 	vertexData[3].position = { 640.0f,360.0f,0.0f,1.0f };
 	vertexData[3].texcoord = { 1.0f,1.0f };
-	vertexData[3].nomal = { 0.0f,0.0f,-1.0f };
+	vertexData[3].normal = { 0.0f,0.0f,-1.0f };
 
 	indexResource = dx_->CreateBufferResource(dx_->device.Get(), sizeof(uint32_t) * 6);
 	indexBufferView.BufferLocation = indexResource->GetGPUVirtualAddress();

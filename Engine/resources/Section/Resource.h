@@ -8,7 +8,7 @@
 struct VertexData {
 	Vector4 position;
 	Vector2 texcoord;
-	Vector3 nomal;
+	Vector3 normal;
 };
 
 struct Material {

@@ -5,6 +5,7 @@
 #include "./Engine/resources/Section/Resource.h"
 #include "./Engine/primitive/Sphere.h"
 #include "./Engine/object/model/Model.h"
+#include "./Engine/primitive/VoxelParticle.h"
 
 #include <d3d12.h>
 
@@ -63,6 +64,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Model* model = new Model;
 	model->Initialize();
 
+	// パーティクル
+	VoxelParticle* voxels = new VoxelParticle;
+	//voxels->Initialize();
+
 	// 警告やエラーが発生した際に停止させる
 #ifdef _DEBUG
 	ID3D12InfoQueue* infoQueue = nullptr;
@@ -120,7 +125,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 			//sphere->Update();
 			//sprite->Update();
-			model->Update();
+			//model->Update();
+			voxels->Update();
 
 			// 描画処理に入る前に、ImGui内部のコマンドを生成する
 			ImGui::Render();
@@ -134,7 +140,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 			//sphere->Draw();
 			//sprite->Draw();
-			model->Draw();
+			//model->Draw();
+			voxels->Draw();
 
 			// 描画後処理
 			dx->DrawEnd();
@@ -148,6 +155,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	CoUninitialize();
 
 	// 解放処理
+	delete voxels;
 	delete model;
 	delete sprite;
 	delete sphere;

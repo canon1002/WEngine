@@ -122,10 +122,15 @@
     <ClCompile Include="Engine\base\SRV.cpp">
       <Filter>Engine\base\DirectX\SRV</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\primitive\VoxelParticle.cpp">
+      <Filter>Engine\primitive</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Object3d.VS.hlsl" />
     <FxCompile Include="Object3d.PS.hlsl" />
+    <FxCompile Include="Particle.PS.hlsl" />
+    <FxCompile Include="Particle.VS.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\base\ImGuiManager.h">
@@ -200,6 +205,9 @@
     <ClInclude Include="Engine\base\SRV.h">
       <Filter>Engine\base\DirectX\SRV</Filter>
     </ClInclude>
+    <ClInclude Include="Engine\primitive\VoxelParticle.h">
+      <Filter>Engine\primitive</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\externals\imgui\LICENSE.txt">
@@ -208,5 +216,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Object3d.hlsli" />
+    <None Include="Particle.hlsli" />
   </ItemGroup>
 </Project>

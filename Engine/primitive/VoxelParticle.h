@@ -1,31 +1,16 @@
 #pragma once
-#include "../../math/Math.h"
-#include "../../base/DirectXCommon.h"
-#include "../worldTransform/WorldTransform.h"
-#include "../../resources/Section/Resource.h"
-#include "../../object/light/DirectionalLight.h"
+#include "../math/Math.h"
+#include "../base/DirectXCommon.h"
+#include "../resources/Section/Resource.h"
+#include "../object/worldTransform/WorldTransform.h"
+#include "../object/model/Model.h"
+#include "../object/light/DirectionalLight.h"
 
-struct MaterialData {
-	std::string textureFilePath;
-};
-
-struct ModelData{
-	std::vector<VertexData> vertices;
-	MaterialData material;
-};
-
-class Model
+class VoxelParticle
 {
-public: 
-
-	static ModelData LoadObjFile(const std::string& directoryPath, const std::string& filename);
-	
-	static MaterialData LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename);
-
-
 public:
-	Model();
-	~Model();
+	VoxelParticle();
+	~VoxelParticle();
 
 	void Initialize();
 	void Update();
@@ -99,8 +84,11 @@ private:
 	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource = nullptr;
 	// Light用のリソースデータを作る
 	Microsoft::WRL::ComPtr<ID3D12Resource> directionalLightResource = nullptr;
+	// TransformationMatrixを10コ格納できるResourceを作成する
+	Microsoft::WRL::ComPtr<ID3D12Resource> instancingResource = nullptr;
 	// データを書き込む
 	TransformationMatrix* wvpData = nullptr;
+	TransformationMatrix* instancingData_ = nullptr;
 	// 頂点リソースにデータを書き込む
 	VertexData* vertexData = nullptr;
 	// 頂点バッファビューを作成する
@@ -114,8 +102,17 @@ private:
 	bool useBall = true;
 	// テクスチャハンドル
 	int32_t textureHandle_;
+	int32_t instancingHandle_;
 	// モデルデータ
-	ModelData modelData;
+	ModelData modelData_;
 	// UVTransform用の変数
 	Math::Transform uvTransform_;
+	// インスタンスの数
+	const int32_t kNumInstance = 10;
+	int32_t instanceCount_;
+
+	Math::Transform transforms[10];
+
+
 };
+
