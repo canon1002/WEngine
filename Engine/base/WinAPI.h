@@ -65,6 +65,10 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg
 			Microsoft::WRL::ComPtr < IDxcUtils> dxcUtils,
 			Microsoft::WRL::ComPtr < IDxcCompiler3> dxcCompiler,
 			Microsoft::WRL::ComPtr < IDxcIncludeHandler> includeHandler);
+
+		// メッセージ処理
+		bool ProcessMessage();
+
 		// ** 変換 ** //
 
 		// string->wstring

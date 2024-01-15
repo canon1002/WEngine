@@ -105,55 +105,52 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 #endif // _DEBUG
 
 	// ウィンドウの×ボタンが押されるまでループ
-	while (win->msg.message != WM_QUIT) {
-		// Windowsにメッセージが来てたら最優先で処理させる
-		if (PeekMessage(&win->msg, NULL, 0, 0, PM_REMOVE)) {
-			TranslateMessage(&win->msg);
-			DispatchMessage(&win->msg);
+	while (true) {
+		// Windowsのメッセージ処理
+		if (win->ProcessMessage()) {
+			// ゲームループを抜ける
+			break;
 		}
-		else {
 
-			// フレームの先頭でImGuiに、ここからフレームが始まる旨を伝える
-			ImGui_ImplDX12_NewFrame();
-			ImGui_ImplWin32_NewFrame();
-			ImGui::NewFrame();
+		// フレームの先頭でImGuiに、ここからフレームが始まる旨を伝える
+		ImGui_ImplDX12_NewFrame();
+		ImGui_ImplWin32_NewFrame();
+		ImGui::NewFrame();
 
-			// フレームの先頭で入力処理の更新を行う
-			input->Update();
+		// フレームの先頭で入力処理の更新を行う
+		input->Update();
 
-			// ゲーム用の処理
+		// ゲーム用の処理
 
-			///
-			/// 更新処理(推定)
-			///
+		///
+		/// 更新処理(推定)
+		///
 
-			// 開発用UIの表示
-			ImGui::ShowDemoWindow();
+		// 開発用UIの表示
+		ImGui::ShowDemoWindow();
 
-			//sphere->Update();
-			//sprite->Update();
-			//model->Update();
-			voxels->Update();
+		//sphere->Update();
+		//sprite->Update();
+		//model->Update();
+		voxels->Update();
 
-			// 描画処理に入る前に、ImGui内部のコマンドを生成する
-			ImGui::Render();
+		// 描画処理に入る前に、ImGui内部のコマンドを生成する
+		ImGui::Render();
 
-			///
-			/// 描画処理(推定) 
-			/// 
+		///
+		/// 描画処理(推定) 
+		/// 
 
-			// 描画前処理
-			dx->DrawBegin();
+		// 描画前処理
+		dx->DrawBegin();
 
-			//sphere->Draw();
-			//sprite->Draw();
-			//model->Draw();
-			voxels->Draw();
+		//sphere->Draw();
+		//sprite->Draw();
+		//model->Draw();
+		voxels->Draw();
 
-			// 描画後処理
-			dx->DrawEnd();
-
-		}
+		// 描画後処理
+		dx->DrawEnd();
 
 	}
 
@@ -172,11 +169,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 #ifdef _DEBUG
 	debugController->Release();
 #endif // _DEBUG
-	
+
 	win->Delete();
 	/*CloseWindow(hwnd);*/
-
-#pragma endregion
 
 	return 0;
 }
