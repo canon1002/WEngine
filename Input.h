@@ -23,10 +23,14 @@ public:
 	// インスタンスを取得
 	static Input* GetInstance();
 
-
+	// 初期化
 	void Init();
+	// 更新
 	void Update();
-	void Draw();
+	
+	// キーの入力をチェック
+	bool GetPushKey(BYTE keyNumber);
+	bool GetTriggerKey(BYTE keyNumber);
 
 	IDirectInput8* directinput = nullptr;
 
@@ -40,6 +44,9 @@ private:
 
 	// キーボードデバイス
 	IDirectInputDevice8* keyboard = nullptr;
+	// キーの入力状況
+	BYTE keys[256] = {};
+	BYTE preKeys[256] = {};
 
 };
 

@@ -44,12 +44,40 @@ void Input::Init() {
 
 void Input::Update() {
 
+	// 前フレームの入力結果を保持
+	memcpy(preKeys, keys, sizeof(keys));
 	// キーボード情報の取得開始
 	keyboard->Acquire();
-
 	// 全キーの入力状態を取得する
-	BYTE key[256] = {};
-	keyboard->GetDeviceState(sizeof(key), key);
+	keyboard->GetDeviceState(sizeof(keys), keys);
 
+	if (GetPushKey(DIK_0)) {
+		OutputDebugStringA("Trigger 0\n");
+	}
 
+}
+
+// キーの入力をチェック
+bool Input::GetPushKey(BYTE keyNumber) {
+
+	// 指定したキーが入力されていればtrueを返す
+	if (keys[keyNumber]) {
+		return true;
+	}
+
+	// そうでなければfalseを返す
+	return false;
+}
+
+// キーの入力をチェック -- 単押し --
+bool Input::GetTriggerKey(BYTE keyNumber) {
+
+	// 指定したキーが 「前のフレームで入力されていない」かつ
+	// 「現在のフレームで入力されている」状態であればtrueを返す
+	if (keys[keyNumber] && !preKeys[keyNumber]) {
+		return true;
+	}
+
+	// そうでなければfalseを返す
+	return false;
 }
