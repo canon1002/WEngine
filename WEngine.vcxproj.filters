@@ -125,6 +125,7 @@
     <ClCompile Include="Engine\primitive\VoxelParticle.cpp">
       <Filter>Engine\primitive</Filter>
     </ClCompile>
+    <ClCompile Include="Input.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Object3d.VS.hlsl" />
@@ -208,6 +209,7 @@
     <ClInclude Include="Engine\primitive\VoxelParticle.h">
       <Filter>Engine\primitive</Filter>
     </ClInclude>
+    <ClInclude Include="Input.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\externals\imgui\LICENSE.txt">

@@ -108,6 +108,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\primitive\VoxelParticle.cpp" />
     <ClCompile Include="Engine\resources\ResourceManager.cpp" />
     <ClCompile Include="Engine\resources\Section\Resource.cpp" />
+    <ClCompile Include="Input.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -162,6 +163,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\primitive\VoxelParticle.h" />
     <ClInclude Include="Engine\resources\ResourceManager.h" />
     <ClInclude Include="Engine\resources\Section\Resource.h" />
+    <ClInclude Include="Input.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\externals\imgui\LICENSE.txt" />

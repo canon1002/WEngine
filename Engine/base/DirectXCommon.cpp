@@ -6,13 +6,9 @@
 // staticメンバ変数で宣言したインスタンスを初期化
 DirectXCommon* DirectXCommon::instance = nullptr;
 
-DirectXCommon::DirectXCommon()
-{
-}
+DirectXCommon::DirectXCommon(){}
 
-DirectXCommon::~DirectXCommon()
-{
-}
+DirectXCommon::~DirectXCommon(){}
 
 // インスタンスを取得
 DirectXCommon* DirectXCommon::GetInstance() {

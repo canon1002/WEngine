@@ -6,6 +6,7 @@
 #include "./Engine/primitive/Sphere.h"
 #include "./Engine/object/model/Model.h"
 #include "./Engine/primitive/VoxelParticle.h"
+#include "./Input.h"
 
 #include <d3d12.h>
 
@@ -33,6 +34,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	WinAPI* win = WinAPI::GetInstance();
 	// DirectX
 	DirectXCommon* dx = DirectXCommon::GetInstance();
+	// Input
+	Input* input = Input::GetInstance();
 
 	// COMの初期化
 	CoInitializeEx(0, COINIT_MULTITHREADED);
@@ -51,6 +54,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	// 初期化
 	win->Initialize();
 	dx->Initialize(win);
+	input->Init();
 
 	// 球
 	Sphere* sphere = new Sphere;
@@ -113,6 +117,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			ImGui_ImplDX12_NewFrame();
 			ImGui_ImplWin32_NewFrame();
 			ImGui::NewFrame();
+
+			// フレームの先頭で入力処理の更新を行う
+			input->Update();
 
 			// ゲーム用の処理
 
