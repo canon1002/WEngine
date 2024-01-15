@@ -22,11 +22,58 @@ DirectXCommon* DirectXCommon::GetInstance() {
 
 void DirectXCommon::Initialize(WinAPI* win) {
 
+	// FPS固定
+	InitFixFPS();
+
+	// デバッグレイヤーでエラーと警告を受け取る
+	#ifdef _DEBUG
+	if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController)))) {
+		// デバッグレイヤーを有効化する
+		debugController->EnableDebugLayer();
+		// さらにGPU側でもチェックを行うようにする
+		debugController->SetEnableGPUBasedValidation(TRUE);
+	}	
+	#endif // _DEBUG
+
+	// 外部のやつ
 	win_ = win;
 	srv_ = SRV::GetInstance();
 
 	// デバイスの初期化
 	InitializeDXGIDevice();
+
+	// 警告やエラーが発生した際に停止させる
+	#ifdef _DEBUG
+	ID3D12InfoQueue* infoQueue = nullptr;
+	if (SUCCEEDED(device->QueryInterface(IID_PPV_ARGS(&infoQueue)))) {
+		// やばいエラー時に止まる
+		infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_CORRUPTION, true);
+		// エラー時に止まる
+		infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, true);
+		// 警告時に止まる
+		infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_WARNING, true);
+
+		// 抑制するメッセージのID
+		D3D12_MESSAGE_ID denyIds[] = {
+			// Windows11でのDXGIデバッグレイヤーとDX12デバッグレイヤーの相互作用バグによるエラーメッセージ
+			// https://stackoverflow.com/questions/69805245/directx-12-application-is-crashing-in-windows-11
+			D3D12_MESSAGE_ID_RESOURCE_BARRIER_MISMATCHING_COMMAND_LIST_TYPE
+		};
+		// 抑制するレベル
+		D3D12_MESSAGE_SEVERITY severities[] = { D3D12_MESSAGE_SEVERITY_INFO };
+		D3D12_INFO_QUEUE_FILTER filter{};
+		filter.DenyList.NumIDs = _countof(denyIds);
+		filter.DenyList.pIDList = denyIds;
+		filter.DenyList.NumSeverities = _countof(severities);
+		filter.DenyList.pSeverityList = severities;
+		// 指定したメッセージを抑制する
+		infoQueue->PushStorageFilter(&filter);
+		// 解放
+		infoQueue->Release();
+
+	}
+	#endif // _DEBUG
+
 	// コマンドの初期化
 	InitializeCommand();
 	// スワップチェーンの生成
@@ -45,6 +92,8 @@ void DirectXCommon::Initialize(WinAPI* win) {
 	//CreateDepthBuffer();
 	// フェンスの生成
 	CreateFence();
+
+	
 
 }
 
@@ -69,6 +118,10 @@ void DirectXCommon::Delete() {
 	//device->Release();
 	////useAdapter->Release();
 	//dxgiFactory->Release();
+
+#ifdef _DEBUG
+	debugController->Release();
+#endif // _DEBUG
 
 	// インスタンスを解放
 	delete instance;
@@ -543,20 +596,22 @@ void DirectXCommon::DrawEnd() {
 	// GPUとOSに画面の交換を行うように通知する
 	swapChain->Present(1, 0);
 
-	// Fenceの値を更新
-	fenceValue++;
-	// GPUがここまでたどり着いたときに、Fencenの値を指定した値に代入するようにSignalを送る
-	commandQueue->Signal(fence.Get(), fenceValue);
+	// コマンドの実行完了を待つ
+	commandQueue->Signal(fence.Get(), ++fenceValue);
 
+	// FPS固定
+	UpdateFixFPS();
 
 	// Fenceの値が指定したsignal値にたどりついているか確認する
 	// GetCompletedValueの初期値はFence作成時に渡した初期値
-	if (fence->GetCompletedValue() < fenceValue)
+	if (fence->GetCompletedValue() != fenceValue)
 	{
+		HANDLE event = CreateEvent(nullptr, false, false, nullptr);
 		// 指定したSignalにたどり着いていないので、たどり着くまで待つようにイベントを設定する
 		fence->SetEventOnCompletion(fenceValue, fenceEvent);
 		// イベントを待つ
 		WaitForSingleObject(fenceEvent, INFINITE);
+		CloseHandle(event);
 	}
 
 	// 次のフレーム用のコマンドリストを準備
@@ -614,4 +669,38 @@ Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> DirectXCommon::CreateDescriptorHeap
 	// 生成完了のログをだす
 	WinAPI::Log("ディスクリプタヒープの生成に成功\n");
 	return resultDescriptorHeap;
+}
+
+
+// FPS固定初期化
+void DirectXCommon::InitFixFPS() {
+	// 現在時間を記録
+	reference_ = std::chrono::steady_clock::now();
+}
+
+// FPS固定更新
+void DirectXCommon::UpdateFixFPS() {
+	// 1/60秒ピッタリの時間
+	const std::chrono::microseconds kMinTime(uint64_t(1000000.0f / 60.0f));
+	// 1/60秒よりわずかに短い時間
+	const std::chrono::microseconds kMinCheckTime(uint64_t(1000000.0f / 65.0f));
+
+	// 現在時間を取得
+	std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
+	// 前回記録からの経過時間を取得
+	std::chrono::microseconds elapsed =
+		std::chrono::duration_cast<std::chrono::microseconds>(now - reference_);
+
+	// 1/60秒 (よりわずかに短い時間) 立っていない場合
+	if (elapsed < kMinCheckTime) {
+		// 1/60	秒経過するまで微小なスリープを繰り返す
+		while (std::chrono::steady_clock::now() - reference_ < kMinTime)
+		{
+			// 1マイクロ秒スリープ
+			std::this_thread::sleep_for(std::chrono::microseconds(1));
+		}
+	}
+	// 現在時間を記録
+	reference_ = std::chrono::steady_clock::now();
+
 }

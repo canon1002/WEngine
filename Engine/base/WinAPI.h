@@ -15,6 +15,9 @@
 #pragma comment(lib,"dxguid.lib")
 #pragma comment(lib,"dxcompiler.lib")
 
+// FPS固定
+#pragma comment(lib,"winmm.lib")
+
 // ImGui
 #include "../../../externals/imgui/imgui.h"
 #include "../../../externals/imgui/imgui_impl_dx12.h"

@@ -2,6 +2,8 @@
 #include "WinAPI.h"
 #include "SRV.h"
 #include "../../../Externals/DirectXTex/DirectXTex.h"
+#include <chrono>
+#include <thread>
 
 // 前方宣言
 class MatrixCamera;
@@ -10,12 +12,33 @@ struct Matrix4x4;
 struct ModelData;
 
 
+// リソースリークチェック
+struct D3DResourceLeakChecker {
+	~D3DResourceLeakChecker()
+	{
+		Microsoft::WRL::ComPtr<IDXGIDebug1> debug;
+		if (SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&debug)))) {
+			debug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_ALL);
+			debug->ReportLiveObjects(DXGI_DEBUG_APP, DXGI_DEBUG_RLO_ALL);
+			debug->ReportLiveObjects(DXGI_DEBUG_D3D12, DXGI_DEBUG_RLO_ALL);
+			debug->Release();
+		}
+	}
+};
+
+
 class DirectXCommon
 {
 private:
 	
+	// 外部からの呼び出し禁止
 	DirectXCommon();
 	~DirectXCommon();
+
+	// FPS固定初期化
+	void InitFixFPS();
+	// FPS固定更新
+	void UpdateFixFPS();
 
 public: // ** 静的メンバ関数 ** //
 
@@ -139,6 +162,14 @@ public: // ** メンバ変数 ** //
 	//
 	HRESULT hr;
 
+#ifdef _DEBUG
+	ID3D12Debug1* debugController = nullptr;
+#endif // _DEBUG
+
+	// デバッグ
+
+
+
 	// コマンドアロケータ
 	Microsoft::WRL::ComPtr < ID3D12CommandAllocator> commandAllocator = nullptr;
 	// コマンドキュー
@@ -196,7 +227,9 @@ public: // ** メンバ変数 ** //
 	uint64_t fenceValue = 0;
 	HANDLE fenceEvent;
 
-	
+	// 記録時間(FPS固定用)
+	std::chrono::steady_clock::time_point reference_;
+
 private:
 
 	// インスタンス

@@ -20,6 +20,9 @@ WinAPI* WinAPI::GetInstance() {
 // 初期化
 void WinAPI::Initialize() {
 
+	// COMの初期化
+	CoInitializeEx(0, COINIT_MULTITHREADED);
+
 	// ウィンドウプロシージャ
 	wc.lpfnWndProc = WindowProc;
 	// ウィンドウクラス名
@@ -51,6 +54,9 @@ void WinAPI::Initialize() {
 
 	// ウィンドウを表示する
 	ShowWindow(hwnd, SW_SHOW);
+
+	// システムタイマーの分解能を上げる
+	timeBeginPeriod(1);
 
 }
 

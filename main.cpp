@@ -10,20 +10,6 @@
 
 #include <d3d12.h>
 
-// リソースリークチェック
-struct D3DResourceLeakChecker {
-	~D3DResourceLeakChecker()
-	{
-		Microsoft::WRL::ComPtr<IDXGIDebug1> debug;
-		if (SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&debug)))) {
-			debug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_ALL);
-			debug->ReportLiveObjects(DXGI_DEBUG_APP, DXGI_DEBUG_RLO_ALL);
-			debug->ReportLiveObjects(DXGI_DEBUG_D3D12, DXGI_DEBUG_RLO_ALL);
-			debug->Release();
-		}
-	}
-};
-
 
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
@@ -36,20 +22,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	DirectXCommon* dx = DirectXCommon::GetInstance();
 	// Input
 	Input* input = Input::GetInstance();
-
-	// COMの初期化
-	CoInitializeEx(0, COINIT_MULTITHREADED);
-
-	// デバッグレイヤーでエラーと警告を受け取る
-#ifdef _DEBUG
-	ID3D12Debug1* debugController = nullptr;
-	if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController)))) {
-		// デバッグレイヤーを有効化する
-		debugController->EnableDebugLayer();
-		// さらにGPU側でもチェックを行うようにする
-		debugController->SetEnableGPUBasedValidation(TRUE);
-	}
-#endif // _DEBUG
 
 	// 初期化
 	win->Initialize();
@@ -72,37 +44,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	VoxelParticle* voxels = new VoxelParticle;
 	//voxels->Initialize();
 
-	// 警告やエラーが発生した際に停止させる
-#ifdef _DEBUG
-	ID3D12InfoQueue* infoQueue = nullptr;
-	if (SUCCEEDED(dx->device->QueryInterface(IID_PPV_ARGS(&infoQueue)))) {
-		// やばいエラー時に止まる
-		infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_CORRUPTION, true);
-		// エラー時に止まる
-		infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, true);
-		// 警告時に止まる
-		infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_WARNING, true);
-
-		// 抑制するメッセージのID
-		D3D12_MESSAGE_ID denyIds[] = {
-			// Windows11でのDXGIデバッグレイヤーとDX12デバッグレイヤーの相互作用バグによるエラーメッセージ
-			// https://stackoverflow.com/questions/69805245/directx-12-application-is-crashing-in-windows-11
-			D3D12_MESSAGE_ID_RESOURCE_BARRIER_MISMATCHING_COMMAND_LIST_TYPE
-		};
-		// 抑制するレベル
-		D3D12_MESSAGE_SEVERITY severities[] = { D3D12_MESSAGE_SEVERITY_INFO };
-		D3D12_INFO_QUEUE_FILTER filter{};
-		filter.DenyList.NumIDs = _countof(denyIds);
-		filter.DenyList.pIDList = denyIds;
-		filter.DenyList.NumSeverities = _countof(severities);
-		filter.DenyList.pSeverityList = severities;
-		// 指定したメッセージを抑制する
-		infoQueue->PushStorageFilter(&filter);
-		// 解放
-		infoQueue->Release();
-
-	}
-#endif // _DEBUG
+	
 
 	// ウィンドウの×ボタンが押されるまでループ
 	while (true) {
@@ -128,6 +70,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		// 開発用UIの表示
 		ImGui::ShowDemoWindow();
+
+		ImGui::Text("FPS : %.2f", ImGui::GetIO().Framerate);
 
 		//sphere->Update();
 		//sprite->Update();
@@ -166,9 +110,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	ImGui_ImplDX12_Shutdown();
 	dx->Delete();
 
-#ifdef _DEBUG
-	debugController->Release();
-#endif // _DEBUG
+
 
 	win->Delete();
 	/*CloseWindow(hwnd);*/
