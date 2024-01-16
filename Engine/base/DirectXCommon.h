@@ -110,6 +110,7 @@ public: // ** メンバ関数 ** //
 	/// 
 	/// </summary>
 	void InitializePSO();
+	void InitializePSOP();
 	
 	/// <summary>
 	/// 
@@ -120,6 +121,8 @@ public: // ** メンバ関数 ** //
 	/// 
 	/// </summary>
 	void DrawBegin();
+
+	void DrawPariticleBegin();
 
 	/// <summary>
 	/// 
@@ -212,6 +215,7 @@ public: // ** メンバ変数 ** //
 
 	// グラフィックパイプライン
 	Microsoft::WRL::ComPtr <ID3D12PipelineState> graphicsPipelineState = nullptr;
+	Microsoft::WRL::ComPtr <ID3D12PipelineState> pGraphicsPipelineState = nullptr;
 	// ルートシグネチャー
 	Microsoft::WRL::ComPtr < ID3D12RootSignature> rootSignature = nullptr;
 	Microsoft::WRL::ComPtr < ID3D12RootSignature> particleRootSignature = nullptr;

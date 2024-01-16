@@ -89,10 +89,6 @@ int SRV::LoadTexture(const std::string filePath) {
 	textureData.textureSrvHandleCPU = dx_->GetCPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, textureId_);
 	textureData.textureSrvHandleGPU = dx_->GetGPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, textureId_);
 
-	// 二枚目
-	textureData.textureSrvHandleCPU.ptr += dx_->device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	textureData.textureSrvHandleGPU.ptr += dx_->device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-
 	textureData_.insert(std::make_pair(textureId_, textureData));
 
 	dx_->device->CreateShaderResourceView(textureData.textureResource.Get(), &srvDesc, textureData.textureSrvHandleCPU);

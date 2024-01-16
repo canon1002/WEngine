@@ -1,7 +1,7 @@
 #include "VoxelParticle.h"
 #include "../object/camera/MatrixCamera.h"
 
-VoxelParticle::VoxelParticle() { this->Initialize(); }
+VoxelParticle::VoxelParticle() {}
 
 VoxelParticle::~VoxelParticle()
 {
@@ -92,12 +92,10 @@ void VoxelParticle::Draw() {
 	dx_->commandList->SetGraphicsRootConstantBufferView(0, materialResource->GetGPUVirtualAddress());
 
 	//wvp用のCBufferの場所を指定
-	//dx_->commandList->SetGraphicsRootConstantBufferView(1, instancingResource->GetGPUVirtualAddress());
 	dx_->commandList->SetGraphicsRootDescriptorTable(1, dx_->srv_->instancingSrvHandleGPU);
 
 	// テクスチャ
 	dx_->commandList->SetGraphicsRootDescriptorTable(2, dx_->srv_->textureData_.at(dx_->srv_->defaultTexId_).textureSrvHandleGPU);
-
 
 	// インデックスを使用してドローコール
 	dx_->commandList->DrawInstanced(6, instanceCount_, 0, 0);

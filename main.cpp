@@ -42,7 +42,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	// パーティクル
 	VoxelParticle* voxels = new VoxelParticle;
-	//voxels->Initialize();
+	voxels->Initialize();
 
 	
 
@@ -75,7 +75,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		//sphere->Update();
 		//sprite->Update();
-		//model->Update();
+		model->Update();
 		voxels->Update();
 
 		// 描画処理に入る前に、ImGui内部のコマンドを生成する
@@ -90,7 +90,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		//sphere->Draw();
 		//sprite->Draw();
-		//model->Draw();
+		model->Draw();
+
+		// パーティクル
+		dx->DrawPariticleBegin();
 		voxels->Draw();
 
 		// 描画後処理

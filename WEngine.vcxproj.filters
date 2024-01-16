@@ -212,12 +212,12 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Object3d.hlsli" />
-    <None Include="Particle.hlsli" />
-  </ItemGroup>
-  <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt">
       <Filter>Externals\imgui</Filter>
     </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Object3d.hlsli" />
+    <None Include="Particle.hlsli" />
   </ItemGroup>
 </Project>
