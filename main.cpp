@@ -75,7 +75,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		//sphere->Update();
 		//sprite->Update();
-		model->Update();
+		//model->Update();
 		voxels->Update();
 
 		// 描画処理に入る前に、ImGui内部のコマンドを生成する
@@ -90,7 +90,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		//sphere->Draw();
 		//sprite->Draw();
-		model->Draw();
+		//model->Draw();
 
 		// パーティクル
 		dx->DrawPariticleBegin();

@@ -512,9 +512,9 @@ void DirectXCommon::InitializePSOP() {
 	pInputElementDescs[1].SemanticIndex = 0;
 	pInputElementDescs[1].Format = DXGI_FORMAT_R32G32_FLOAT;
 	pInputElementDescs[1].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
-	pInputElementDescs[2].SemanticName = "NORMAL";
+	pInputElementDescs[2].SemanticName = "COLOR";
 	pInputElementDescs[2].SemanticIndex = 0;
-	pInputElementDescs[2].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+	pInputElementDescs[2].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
 	pInputElementDescs[2].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
 
 	D3D12_INPUT_LAYOUT_DESC pInputLayoutDesc{};

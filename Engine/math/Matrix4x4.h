@@ -5,7 +5,9 @@ struct Vector2 { float x, y; };
 struct Vector3 { float x, y, z; };
 
 Vector3 operator+(Vector3 obj);
+Vector3& operator+=(Vector3& a, const Vector3& b);
 Vector3 operator-(Vector3 obj);
+Vector3 operator*(Vector3 obj,float f);
 
 struct Vector4 { float x, y, z, w; };
 Vector4 operator+(Vector4 obj);
@@ -20,6 +22,7 @@ namespace Math {
 
     Transform operator+(Transform obj);
     Transform operator-(Transform obj);
+  
 }
 
 struct Matrix3x3 final { float m[3][3]; };

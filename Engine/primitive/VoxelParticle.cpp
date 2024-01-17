@@ -1,7 +1,8 @@
 #include "VoxelParticle.h"
 #include "../object/camera/MatrixCamera.h"
 
-VoxelParticle::VoxelParticle() {}
+
+VoxelParticle::VoxelParticle() : randomEngine_(seedGenerator_()) {}
 
 VoxelParticle::~VoxelParticle()
 {
@@ -15,16 +16,19 @@ void VoxelParticle::Initialize() {
 	dx_ = DirectXCommon::GetInstance();
 	mainCamera_ = MatrixCamera::GetInstance();
 	worldTransform_ = new WorldTransform;
-	instanceCount_ = 10;
+	instanceCount_ = kNumMaxInstance;
 
 	CreateVertexResource();
 	CreateIndexResource();
 	CreateTransformationRsource();
 	CreateBufferView();
-	instancingHandle_ = dx_->srv_->SetStructuredBuffer(kNumInstance, instancingResource);
+	instancingHandle_ = dx_->srv_->SetStructuredBuffer(kNumMaxInstance, instancingResource);
 }
 
 void VoxelParticle::Update() {
+
+	// Δtを定義 60fps固定してあるが、実時間を計測して可変fpsで動かせるようにしておきたい
+	const float kDeltaTime = 1.0f / 60.0f;
 
 	ImGui::Begin("Pirticle");
 	float treeScale = worldTransform_->scale.x;
@@ -44,7 +48,7 @@ void VoxelParticle::Update() {
 
 	//　矩形のワールド行列
 	worldTransform_->worldM = W::Math::MakeAffineMatrix(
-		transforms[0].scale, transforms[0].rotate, transforms[0].translate);
+		particles[0].transform.scale, particles[0].transform.rotate, particles[0].transform.translate);
 
 
 	// カメラのワールド行列
@@ -59,14 +63,30 @@ void VoxelParticle::Update() {
 	wvpData->WVP = W::Math::Multiply(worldTransform_->worldM, wvpM);
 	wvpData->World = worldTransform_->worldM;
 
-	for (int32_t index = 0; index < kNumInstance; ++index) {
+	for (int32_t index = 0; index < kNumMaxInstance; ++index) {
+		if (particles[index].lifeTime <= particles[index].currentTime) {
+			//continue;
+		}
 
-		//　矩形のワールド行列
+		// パーティクルの移動を行う
+		particles[index].transform.translate += particles[index].vel * kDeltaTime;
+		// 経過時間の加算
+		particles[index].currentTime += kDeltaTime;
+		// 徐々に透明にする
+		float alpha = 1.0f - (particles[index].currentTime / particles[index].lifeTime);
+		alpha = 0.1f;
+		//　ワールド行列
 		worldTransform_->worldM = W::Math::MakeAffineMatrix(
-			transforms[index].scale, transforms[index].rotate, transforms[index].translate);
-
+			particles[index].transform.scale,
+			particles[index].transform.rotate,
+			particles[index].transform.translate);
 		instancingData_[index].WVP = W::Math::Multiply(worldTransform_->worldM, wvpM);
 		instancingData_[index].World = worldTransform_->worldM;
+		instancingData_[index].color = particles[index].color;
+		instancingData_[index].color.w = alpha;
+
+		++instanceCount_;
+
 	}
 
 	/// マテリアル・UVTransform
@@ -110,7 +130,6 @@ void VoxelParticle::CreateIndexResource() {
 //
 void VoxelParticle::CreateVertexResource() {
 
-	modelData_;
 	modelData_.vertices.push_back(VertexData{ .position = {-1.0f,  1.0f,0.0f,1.0f},.texcoord = {0.0f,0.0f},.normal = {0.0f,0.0f,1.0f} });
 	modelData_.vertices.push_back(VertexData{ .position = { 1.0f,  1.0f,0.0f,1.0f},.texcoord = {1.0f,0.0f},.normal = {0.0f,0.0f,1.0f} });
 	modelData_.vertices.push_back(VertexData{ .position = {-1.0f, -1.0f,0.0f,1.0f},.texcoord = {0.0f,1.0f},.normal = {0.0f,0.0f,1.0f} });
@@ -118,15 +137,17 @@ void VoxelParticle::CreateVertexResource() {
 	modelData_.vertices.push_back(VertexData{ .position = { 1.0f,  1.0f,0.0f,1.0f},.texcoord = {1.0f,0.0f},.normal = {0.0f,0.0f,1.0f} });
 	modelData_.vertices.push_back(VertexData{ .position = { 1.0f, -1.0f,0.0f,1.0f},.texcoord = {1.0f,1.0f},.normal = {0.0f,0.0f,1.0f} });
 
-	
+
 	instancingResource = dx_->CreateBufferResource(
-		dx_->device.Get(), sizeof(TransformationMatrix) * kNumInstance);
+		dx_->device.Get(), sizeof(ParticleForGPU) * kNumMaxInstance);
 	// 書き込むためのアドレスを取得
 	instancingResource->Map(0, nullptr, reinterpret_cast<void**>(&instancingData_));
 	// 単位行列を書き込む
-	for (int32_t index = 0; index < kNumInstance; ++index) {
+	for (int32_t index = 0; index < kNumMaxInstance; ++index) {
 		instancingData_[index].WVP = W::Math::MakeIdentity();
 		instancingData_[index].World = W::Math::MakeIdentity();
+		instancingData_[index].color = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+
 	}
 
 
@@ -159,22 +180,19 @@ void VoxelParticle::CreateVertexResource() {
 //
 void VoxelParticle::CreateTransformationRsource() {
 
-	for (int32_t index = 0; index < kNumInstance; ++index) {
-		transforms[index].scale = { 1.0f,1.0f,1.0f };
-		transforms[index].rotate = { 0.0f,0.0f,0.0f };
-		transforms[index].translate = { index * 0.1f,index * 0.1f,index * 0.1f };
+	for (int32_t index = 0; index < kNumMaxInstance; ++index) {
+		particles[index] = MakeNewParticle(randomEngine_);
 	}
 
 	// Transformation用のResourceを作る
-	wvpResource = dx_->CreateBufferResource(dx_->device.Get(), sizeof(TransformationMatrix));
+	wvpResource = dx_->CreateBufferResource(dx_->device.Get(), sizeof(ParticleForGPU));
 	// データを書き込む
 	// 書き込むためのアドレスを取得
 	wvpResource->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
 	// 単位行列を書き込む
 	wvpData->WVP = mainCamera_->GetWorldViewProjection();
 	wvpData->World = W::Math::MakeIdentity();
-
-	
+	wvpData->color = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
 
 }
 
@@ -194,4 +212,27 @@ void VoxelParticle::CreateBufferView() {
 	vertexResource->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));// 書き込むためのアドレスを取得
 
 	std::memcpy(vertexData, modelData_.vertices.data(), sizeof(VertexData) * modelData_.vertices.size());
+}
+
+Particle VoxelParticle::MakeNewParticle(std::mt19937& randomEngine) {
+
+	// 返り値
+	Particle particle;
+	// 乱数の最小・最大値
+	std::uniform_real_distribution<float> distribution(-1.0f, 1.0f);
+
+	// SRT・移動量・色の設定
+	particle.transform.scale = { 1.0f,1.0f,1.0f };
+	particle.transform.rotate = { 0.0f,0.0f,0.0f };
+	particle.transform.translate = {distribution(randomEngine),distribution(randomEngine),distribution(randomEngine) };
+	particle.vel = {distribution(randomEngine),distribution(randomEngine),distribution(randomEngine) };
+	particle.color = { distribution(randomEngine),distribution(randomEngine),distribution(randomEngine),0.1f };
+
+	// 乱数の最小・最大値
+	std::uniform_real_distribution<float> distTime(-1.0f, 3.0f);
+	// 生存時間の設定
+	particle.lifeTime = distTime(randomEngine);
+	particle.currentTime = 0;
+
+	return particle;
 }

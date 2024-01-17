@@ -23,6 +23,12 @@ struct TransformationMatrix {
 	Matrix4x4 World;
 };
 
+struct ParticleForGPU {
+	Matrix4x4 WVP;
+	Matrix4x4 World;
+	Vector4 color;
+};
+
 namespace Resource
 {	
 	// テクスチャ読み込み

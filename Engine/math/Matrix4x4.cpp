@@ -10,12 +10,28 @@ Vector3 operator+(Vector3 obj) {
 	v.z += obj.z;
 	return v;
 }
+Vector3& operator+=(Vector3& a, const Vector3& b) {
+	// 拡大縮小
+	a.x += b.x;
+	a.y += b.y;
+	a.z += b.z;
+	return a;
+}
+
 Vector3 operator-(Vector3 obj) {
 	Vector3 v;
 	// 拡大縮小
 	v.x -= obj.x;
 	v.y -= obj.y;
 	v.z -= obj.z;
+	return v;
+}
+Vector3 operator*(Vector3 obj, float f) {
+	Vector3 v;
+	// スカラー倍を行う
+	v.x = obj.x * f;
+	v.y = obj.y * f;
+	v.z = obj.z * f;
 	return v;
 }
 
@@ -73,6 +89,7 @@ namespace Math {
 		tr.translate.z -= obj.translate.z;
 		return tr;
 	}
+	
 }
 
 namespace W::Math {

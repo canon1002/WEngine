@@ -5,6 +5,15 @@
 #include "../object/worldTransform/WorldTransform.h"
 #include "../object/model/Model.h"
 #include "../object/light/DirectionalLight.h"
+#include <random>
+
+struct Particle {
+	Math::Transform transform;
+	Vector3 vel;
+	Vector4 color;
+	float lifeTime;
+	float currentTime;
+};
 
 class VoxelParticle
 {
@@ -21,6 +30,7 @@ public:
 	void CreateTransformationRsource();
 	void CreateBufferView();
 
+	Particle MakeNewParticle(std::mt19937& randomEngine);
 
 	/// <summary>
 	///	座標変更
@@ -87,8 +97,8 @@ private:
 	// TransformationMatrixを10コ格納できるResourceを作成する
 	Microsoft::WRL::ComPtr<ID3D12Resource> instancingResource = nullptr;
 	// データを書き込む
-	TransformationMatrix* wvpData = nullptr;
-	TransformationMatrix* instancingData_ = nullptr;
+	ParticleForGPU* wvpData = nullptr;
+	ParticleForGPU* instancingData_ = nullptr;
 	// 頂点リソースにデータを書き込む
 	VertexData* vertexData = nullptr;
 	// 頂点バッファビューを作成する
@@ -108,11 +118,15 @@ private:
 	// UVTransform用の変数
 	Math::Transform uvTransform_;
 	// インスタンスの数
-	const int32_t kNumInstance = 10;
+	const int32_t kNumMaxInstance = 10;
 	int32_t instanceCount_;
 
-	Math::Transform transforms[10];
-
+	// パーティクル
+	Particle particles[10];
+	
+	// 乱数生成機
+	std::random_device seedGenerator_;
+	std::mt19937 randomEngine_;
 
 };
 
