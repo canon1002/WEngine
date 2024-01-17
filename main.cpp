@@ -7,6 +7,7 @@
 #include "./Engine/object/model/Model.h"
 #include "./Engine/primitive/VoxelParticle.h"
 #include "./Input.h"
+#include "./Engine/resources/Section/Audio.h"
 
 #include <d3d12.h>
 
@@ -22,11 +23,14 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	DirectXCommon* dx = DirectXCommon::GetInstance();
 	// Input
 	Input* input = Input::GetInstance();
+	// Audio
+	Audio* audio = Audio::GetWaveInstance();
 
 	// 初期化
 	win->Initialize();
 	dx->Initialize(win);
 	input->Init();
+	audio->Init();
 
 	// 球
 	Sphere* sphere = new Sphere;
@@ -44,7 +48,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	VoxelParticle* voxels = new VoxelParticle;
 	voxels->Initialize();
 
-	
+	// 音声データの生成
+	SoundData sound1 = audio->LoadWave("Resources/sound/Alarm01.wav");
+	audio->PlayWave(sound1);
 
 	// ウィンドウの×ボタンが押されるまでループ
 	while (true) {
@@ -76,7 +82,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		//sphere->Update();
 		//sprite->Update();
 		//model->Update();
-		voxels->Update();
+		//voxels->Update();
 
 		// 描画処理に入る前に、ImGui内部のコマンドを生成する
 		ImGui::Render();
@@ -94,7 +100,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		// パーティクル
 		dx->DrawPariticleBegin();
-		voxels->Draw();
+		//voxels->Draw();
 
 		// 描画後処理
 		dx->DrawEnd();

@@ -126,6 +126,9 @@
     <ClCompile Include="Externals\imgui\imgui_widgets.cpp">
       <Filter>Externals\imgui</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\resources\Section\Audio.cpp">
+      <Filter>Engine\resouces\section</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Object3d.VS.hlsl" />
@@ -209,6 +212,9 @@
     </ClInclude>
     <ClInclude Include="Externals\imgui\imstb_truetype.h">
       <Filter>Externals\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\resources\Section\Audio.h">
+      <Filter>Engine\resouces\section</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
