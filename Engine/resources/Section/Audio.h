@@ -54,13 +54,7 @@ public: // ** 静的メンバ関数 ** //
 	// インスタンスを取得
 
 
-	static Audio* GetWaveInstance() {
-		// 関数内staticは初めて通ったときのみ実行される
-		if (instance == nullptr) {
-			instance = new Audio;
-		}
-		return instance;
-	}
+	static Audio* GetInstance();
 
 	// 開放する
 	static void Finalize();
@@ -78,6 +72,7 @@ public:
 
 	Microsoft::WRL::ComPtr<IXAudio2> xAudio2_;
 	IXAudio2MasteringVoice* masterVoice_;
+
 
 private:
 

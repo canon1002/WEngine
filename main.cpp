@@ -24,7 +24,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	// Input
 	Input* input = Input::GetInstance();
 	// Audio
-	Audio* audio = Audio::GetWaveInstance();
+	Audio* audio = Audio::GetInstance();
 
 	// 初期化
 	win->Initialize();
@@ -69,6 +69,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		input->Update();
 
 		// ゲーム用の処理
+
+		if (input->GetTriggerKey(DIK_2)) {
+			audio->StopWave(sound1);
+		}
+		if (input->GetTriggerKey(DIK_SPACE)) {
+			audio->PlayWave(sound1);
+		}
 
 		///
 		/// 更新処理(推定)

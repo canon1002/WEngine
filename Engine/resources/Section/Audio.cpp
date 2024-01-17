@@ -7,6 +7,14 @@ Audio* Audio::instance = nullptr;
 Audio::Audio(){}
 Audio::~Audio(){}
 
+Audio* Audio::GetInstance() {
+	// 関数内staticは初めて通ったときのみ実行される
+	if (instance == nullptr) {
+		instance = new Audio;
+	}
+	return instance;
+}
+
 // 開放する
 void Audio::Finalize()
 {
@@ -110,9 +118,15 @@ void Audio::PlayWave(const SoundData& soundData)
 	// 波形データの再生
 	hr = pSoundVoice->SubmitSourceBuffer(&buf);
 	hr = pSoundVoice->Start();
-
 }
 
 void Audio::StopWave(const SoundData& soundData) {
+	HRESULT hr;
 
+	// 波形フォーマットデータをもとにSourceVoiceの生成
+	IXAudio2SourceVoice* pSoundVoice = nullptr;
+	hr = xAudio2_->CreateSourceVoice(&pSoundVoice, &soundData.wfex);
+	assert(SUCCEEDED(hr));
+
+	hr = pSoundVoice->Stop();
 }
