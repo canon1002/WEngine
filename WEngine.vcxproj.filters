@@ -56,6 +56,12 @@
     <Filter Include="Externals\imgui">
       <UniqueIdentifier>{6eaad0ce-75d7-4032-b592-03be9ea31292}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine\scene">
+      <UniqueIdentifier>{cb3f15ed-4218-4968-b0ef-876b54aa0080}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\command">
+      <UniqueIdentifier>{d65dd533-df01-4566-9654-a169c8ae895a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -128,6 +134,30 @@
     </ClCompile>
     <ClCompile Include="Engine\resources\Section\Audio.cpp">
       <Filter>Engine\resouces\section</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\scene\GameMainScene.cpp">
+      <Filter>Engine\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\scene\IScene.cpp">
+      <Filter>Engine\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\scene\ResultScene.cpp">
+      <Filter>Engine\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\scene\SceneManager.cpp">
+      <Filter>Engine\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\scene\StageScene.cpp">
+      <Filter>Engine\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\scene\TitleScene.cpp">
+      <Filter>Engine\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\command\ICommand.cpp">
+      <Filter>Engine\command</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\command\InputHandle.cpp">
+      <Filter>Engine\command</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -215,6 +245,30 @@
     </ClInclude>
     <ClInclude Include="Engine\resources\Section\Audio.h">
       <Filter>Engine\resouces\section</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\scene\GameMainScene.h">
+      <Filter>Engine\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\scene\IScene.h">
+      <Filter>Engine\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\scene\ResultScene.h">
+      <Filter>Engine\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\scene\SceneManager.h">
+      <Filter>Engine\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\scene\StageScene.h">
+      <Filter>Engine\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\scene\TitleScene.h">
+      <Filter>Engine\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\command\ICommand.h">
+      <Filter>Engine\command</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\command\InputHandle.h">
+      <Filter>Engine\command</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
