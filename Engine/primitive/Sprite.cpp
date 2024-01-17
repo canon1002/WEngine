@@ -97,10 +97,10 @@ void Sprite::CreateVertexResource() {
 
 	// VertexResourceを生成する(P.42)
 	// 実際に頂点リソースを作る
-	vertexResource = dx_->CreateBufferResource(dx_->device.Get(), sizeof(VertexData) * 6);
+	vertexResource = dx_->CreateBufferResource(dx_->device_.Get(), sizeof(VertexData) * 6);
 
 	// マテリアル用のResourceを作る
-	materialResourceSprite = dx_->CreateBufferResource(dx_->device.Get(), sizeof(Material));
+	materialResourceSprite = dx_->CreateBufferResource(dx_->device_.Get(), sizeof(Material));
 	// マテリアルにデータを書き込む
 	materialData = nullptr;
 	// 書き込むためのアドレスを取得
@@ -117,7 +117,7 @@ void Sprite::CreateVertexResource() {
 void Sprite::CreateTransformationRsource() {
 
 	// Transformation用のResourceを作る
-	wvpResource = dx_->CreateBufferResource(dx_->device.Get(), sizeof(TransformationMatrix));
+	wvpResource = dx_->CreateBufferResource(dx_->device_.Get(), sizeof(TransformationMatrix));
 	// データを書き込む
 	// 書き込むためのアドレスを取得
 	wvpResource->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
@@ -160,7 +160,7 @@ void Sprite::CreateBufferView() {
 	vertexData[3].texcoord = { 1.0f,1.0f };
 	vertexData[3].normal = { 0.0f,0.0f,-1.0f };
 
-	indexResource = dx_->CreateBufferResource(dx_->device.Get(), sizeof(uint32_t) * 6);
+	indexResource = dx_->CreateBufferResource(dx_->device_.Get(), sizeof(uint32_t) * 6);
 	indexBufferView.BufferLocation = indexResource->GetGPUVirtualAddress();
 	indexBufferView.SizeInBytes = sizeof(uint32_t) * 6;
 	indexBufferView.Format = DXGI_FORMAT_R32_UINT;

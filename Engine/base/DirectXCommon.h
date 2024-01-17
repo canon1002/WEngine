@@ -161,7 +161,7 @@ public: // ** メンバ変数 ** //
 	// DXGIファクトリーの生成
 	Microsoft::WRL::ComPtr <IDXGIFactory7> dxgiFactory = nullptr;
 	// D3D12Deviceの生成
-	Microsoft::WRL::ComPtr <ID3D12Device> device = nullptr;
+	Microsoft::WRL::ComPtr <ID3D12Device> device_ = nullptr;
 	//
 	HRESULT hr;
 

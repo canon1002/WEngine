@@ -65,7 +65,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Engine\math\Matrix4x4.cpp">
+    <ClCompile Include="Engine\VMQ\Matrix4x4.cpp">
       <Filter>Engine\math</Filter>
     </ClCompile>
     <ClCompile Include="Engine\base\WinAPI.cpp">
@@ -77,7 +77,7 @@
     <ClCompile Include="Engine\primitive\Triangle.cpp">
       <Filter>Engine\primitive</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\resources\Section\Resource.cpp">
+    <ClCompile Include="Engine\resources\section\Resource.cpp">
       <Filter>Engine\resouces\section</Filter>
     </ClCompile>
     <ClCompile Include="Engine\resources\ResourceManager.cpp">
@@ -132,7 +132,7 @@
     <ClCompile Include="Externals\imgui\imgui_widgets.cpp">
       <Filter>Externals\imgui</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\resources\Section\Audio.cpp">
+    <ClCompile Include="Engine\resources\section\Audio.cpp">
       <Filter>Engine\resouces\section</Filter>
     </ClCompile>
     <ClCompile Include="Engine\scene\GameMainScene.cpp">
@@ -173,10 +173,10 @@
     <ClInclude Include="Engine\base\WinAPI.h">
       <Filter>Engine\base</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\math\Math.h">
+    <ClInclude Include="Engine\VMQ\Math.h">
       <Filter>Engine\math</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\math\Matrix4x4.h">
+    <ClInclude Include="Engine\VMQ\Matrix4x4.h">
       <Filter>Engine\math</Filter>
     </ClInclude>
     <ClInclude Include="Engine\base\System.h">
@@ -185,7 +185,7 @@
     <ClInclude Include="Engine\primitive\Triangle.h">
       <Filter>Engine\primitive</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\resources\Section\Resource.h">
+    <ClInclude Include="Engine\resources\section\Resource.h">
       <Filter>Engine\resouces\section</Filter>
     </ClInclude>
     <ClInclude Include="Engine\resources\ResourceManager.h">
@@ -243,7 +243,7 @@
     <ClInclude Include="Externals\imgui\imstb_truetype.h">
       <Filter>Externals\imgui</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\resources\Section\Audio.h">
+    <ClInclude Include="Engine\resources\section\Audio.h">
       <Filter>Engine\resouces\section</Filter>
     </ClInclude>
     <ClInclude Include="Engine\scene\GameMainScene.h">

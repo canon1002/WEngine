@@ -45,9 +45,13 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>$(SolutionDir)Externals\DirectXTex;$(IncludePath)</IncludePath>
+    <IntDir>$(SolutionDir)..\Generated\Obj\$(ProjectName)\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)..\Generated\Outputs\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>$(SolutionDir)Externals\DirectXTex;$(IncludePath)</IncludePath>
+    <IntDir>$(SolutionDir)..\Generated\Obj\$(ProjectName)\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)..\Generated\Outputs\$(Configuration)\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -57,6 +61,7 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>,;$(ProjectDir)Engine\base,;$(ProjectDir)Engine\collision,;$(ProjectDir)Engine\primitive,;$(ProjectDir)Engine\resources\section,;$(ProjectDir)Engine\scene,;$(ProjectDir)Engine\object\worldTransform,;$(ProjectDir)Engine\object\model,;$(ProjectDir)Engine\VMQ,;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -78,6 +83,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>,;$(ProjectDir)Engine\base,;$(ProjectDir)Engine\collision,;$(ProjectDir)Engine\primitive,;$(ProjectDir)Engine\resources\section,;$(ProjectDir)Engine\scene,;$(ProjectDir)Engine\object\worldTransform,;$(ProjectDir)Engine\object\model,;$(ProjectDir)Engine\VMQ,;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -98,7 +104,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\base\WinAPI.cpp" />
     <ClCompile Include="Engine\command\ICommand.cpp" />
     <ClCompile Include="Engine\command\InputHandle.cpp" />
-    <ClCompile Include="Engine\math\Matrix4x4.cpp" />
+    <ClCompile Include="Engine\VMQ\Matrix4x4.cpp" />
     <ClCompile Include="Engine\object\camera\MatrixCamera.cpp" />
     <ClCompile Include="Engine\object\light\DirectionalLight.cpp" />
     <ClCompile Include="Engine\object\model\Model.cpp" />
@@ -108,8 +114,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\primitive\Triangle.cpp" />
     <ClCompile Include="Engine\primitive\VoxelParticle.cpp" />
     <ClCompile Include="Engine\resources\ResourceManager.cpp" />
-    <ClCompile Include="Engine\resources\Section\Audio.cpp" />
-    <ClCompile Include="Engine\resources\Section\Resource.cpp" />
+    <ClCompile Include="Engine\resources\section\Audio.cpp" />
+    <ClCompile Include="Engine\resources\section\Resource.cpp" />
     <ClCompile Include="Engine\scene\GameMainScene.cpp" />
     <ClCompile Include="Engine\scene\IScene.cpp" />
     <ClCompile Include="Engine\scene\ResultScene.cpp" />
@@ -160,8 +166,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\base\WinAPI.h" />
     <ClInclude Include="Engine\command\ICommand.h" />
     <ClInclude Include="Engine\command\InputHandle.h" />
-    <ClInclude Include="Engine\math\Math.h" />
-    <ClInclude Include="Engine\math\Matrix4x4.h" />
+    <ClInclude Include="Engine\VMQ\Math.h" />
+    <ClInclude Include="Engine\VMQ\Matrix4x4.h" />
     <ClInclude Include="Engine\object\camera\MatrixCamera.h" />
     <ClInclude Include="Engine\object\light\DirectionalLight.h" />
     <ClInclude Include="Engine\object\model\Model.h" />
@@ -171,8 +177,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\primitive\Triangle.h" />
     <ClInclude Include="Engine\primitive\VoxelParticle.h" />
     <ClInclude Include="Engine\resources\ResourceManager.h" />
-    <ClInclude Include="Engine\resources\Section\Audio.h" />
-    <ClInclude Include="Engine\resources\Section\Resource.h" />
+    <ClInclude Include="Engine\resources\section\Audio.h" />
+    <ClInclude Include="Engine\resources\section\Resource.h" />
     <ClInclude Include="Engine\scene\GameMainScene.h" />
     <ClInclude Include="Engine\scene\IScene.h" />
     <ClInclude Include="Engine\scene\ResultScene.h" />

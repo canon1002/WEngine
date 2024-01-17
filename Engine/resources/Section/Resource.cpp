@@ -117,9 +117,9 @@ namespace Resource
 	{
 		DirectXCommon* dx = DirectXCommon::GetInstance();
 		std::vector<D3D12_SUBRESOURCE_DATA> subresources;
-		DirectX::PrepareUpload(dx->device.Get(), mipImages.GetImages(), mipImages.GetImageCount(), mipImages.GetMetadata(), subresources);
+		DirectX::PrepareUpload(dx->device_.Get(), mipImages.GetImages(), mipImages.GetImageCount(), mipImages.GetMetadata(), subresources);
 		uint64_t intermediateSize = GetRequiredIntermediateSize(texture.Get(), 0, UINT(subresources.size()));
-		Microsoft::WRL::ComPtr <ID3D12Resource> intermediateResource = dx->CreateBufferResource(dx->device.Get(), intermediateSize);
+		Microsoft::WRL::ComPtr <ID3D12Resource> intermediateResource = dx->CreateBufferResource(dx->device_.Get(), intermediateSize);
 		UpdateSubresources(dx->commandList.Get(), texture.Get(), intermediateResource.Get(), 0, 0, UINT(subresources.size()), subresources.data());
 		// Textureの転送後は利用できるよう、D3D12_RESOURCE_STATE_COPYからD3D12_RESOURCE_STATE_GENERIC_READへResourceStateを変更する
 		D3D12_RESOURCE_BARRIER barrier{};

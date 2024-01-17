@@ -1,5 +1,5 @@
 #pragma once
-#include "../math/Math.h"
+#include "../VMQ/Math.h"
 #include "../base/DirectXCommon.h"
 #include "../resources/Section/Resource.h"
 #include "../object/worldTransform/WorldTransform.h"

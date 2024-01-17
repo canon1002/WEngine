@@ -139,7 +139,7 @@ void VoxelParticle::CreateVertexResource() {
 
 
 	instancingResource = dx_->CreateBufferResource(
-		dx_->device.Get(), sizeof(ParticleForGPU) * kNumMaxInstance);
+		dx_->device_.Get(), sizeof(ParticleForGPU) * kNumMaxInstance);
 	// 書き込むためのアドレスを取得
 	instancingResource->Map(0, nullptr, reinterpret_cast<void**>(&instancingData_));
 	// 単位行列を書き込む
@@ -153,10 +153,10 @@ void VoxelParticle::CreateVertexResource() {
 
 	// VertexResourceを生成する(P.42)
 	// 実際に頂点リソースを作る
-	vertexResource = dx_->CreateBufferResource(dx_->device.Get(), sizeof(VertexData) * modelData_.vertices.size());
+	vertexResource = dx_->CreateBufferResource(dx_->device_.Get(), sizeof(VertexData) * modelData_.vertices.size());
 
 	// マテリアル用のResourceを作る
-	materialResource = dx_->CreateBufferResource(dx_->device.Get(), sizeof(Material));
+	materialResource = dx_->CreateBufferResource(dx_->device_.Get(), sizeof(Material));
 	// マテリアルにデータを書き込む
 	materialData_ = nullptr;
 	// 書き込むためのアドレスを取得
@@ -169,7 +169,7 @@ void VoxelParticle::CreateVertexResource() {
 	uvTransform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 
 	// Light
-	directionalLightResource = dx_->CreateBufferResource(dx_->device.Get(), sizeof(DirectionalLight));
+	directionalLightResource = dx_->CreateBufferResource(dx_->device_.Get(), sizeof(DirectionalLight));
 	// データを書き込む
 	directionalLightResource->Map(0, nullptr, reinterpret_cast<void**>(&directionalLightDate));
 	directionalLightDate->color = { 1.0f, 1.0f, 1.0f, 1.0f };
@@ -185,7 +185,7 @@ void VoxelParticle::CreateTransformationRsource() {
 	}
 
 	// Transformation用のResourceを作る
-	wvpResource = dx_->CreateBufferResource(dx_->device.Get(), sizeof(ParticleForGPU));
+	wvpResource = dx_->CreateBufferResource(dx_->device_.Get(), sizeof(ParticleForGPU));
 	// データを書き込む
 	// 書き込むためのアドレスを取得
 	wvpResource->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));

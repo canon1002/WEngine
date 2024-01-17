@@ -67,10 +67,10 @@ void Triangle::CreateVertexResource() {
 
 	// VertexResourceを生成する(P.42)
 	// 実際に頂点リソースを作る
-	vertexResource = dx_->CreateBufferResource(dx_->device.Get(), sizeof(VertexData) * 3);
+	vertexResource = dx_->CreateBufferResource(dx_->device_.Get(), sizeof(VertexData) * 3);
 
 	// マテリアル用のResourceを作る
-	materialResource = dx_->CreateBufferResource(dx_->device.Get(), sizeof(VertexData));
+	materialResource = dx_->CreateBufferResource(dx_->device_.Get(), sizeof(VertexData));
 	// マテリアルにデータを書き込む
 	materialDate = nullptr;
 	// 書き込むためのアドレスを取得
@@ -84,7 +84,7 @@ void Triangle::CreateVertexResource() {
 void Triangle::CreateTransformationRsource() {
 
 	// Transformation用のResourceを作る
-	wvpResource = dx_->CreateBufferResource(dx_->device.Get(), sizeof(Matrix4x4));
+	wvpResource = dx_->CreateBufferResource(dx_->device_.Get(), sizeof(Matrix4x4));
 	// データを書き込む
 	// 書き込むためのアドレスを取得
 	wvpResource->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));

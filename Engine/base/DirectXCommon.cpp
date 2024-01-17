@@ -1,7 +1,7 @@
 #include "DirectXCommon.h"
 #include "../resources/Section/Resource.h"
 #include "../object/model/Model.h"
-#include "../math/Math.h"
+#include "../VMQ/Math.h"
 
 // staticメンバ変数で宣言したインスタンスを初期化
 DirectXCommon* DirectXCommon::instance = nullptr;
@@ -45,7 +45,7 @@ void DirectXCommon::Initialize(WinAPI* win) {
 	// 警告やエラーが発生した際に停止させる
 	#ifdef _DEBUG
 	ID3D12InfoQueue* infoQueue = nullptr;
-	if (SUCCEEDED(device->QueryInterface(IID_PPV_ARGS(&infoQueue)))) {
+	if (SUCCEEDED(device_->QueryInterface(IID_PPV_ARGS(&infoQueue)))) {
 		// やばいエラー時に止まる
 		infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_CORRUPTION, true);
 		// エラー時に止まる
@@ -187,7 +187,7 @@ void DirectXCommon::InitializeDXGIDevice() {
 	// 高い順の生成できるか試す
 	for (size_t i = 0; i < _countof(featureLevels); i++) {
 		//採用したアダプターでデバイスを生成
-		hr = D3D12CreateDevice(useAdapter, featureLevels[i], IID_PPV_ARGS(&device));
+		hr = D3D12CreateDevice(useAdapter, featureLevels[i], IID_PPV_ARGS(&device_));
 		// 指定したレベルでデバイスが生成できたか確認
 		if (SUCCEEDED(hr)) {
 			// 生成できたのでログ出力を行ってループを抜ける
@@ -196,7 +196,7 @@ void DirectXCommon::InitializeDXGIDevice() {
 		}
 	}
 	// デバイス生成がうまく行かなかったら起動できない
-	assert(device != nullptr);
+	assert(device_ != nullptr);
 	WinAPI::Log("Complete create D3D12Device!!!\n");// 初期化完了のログをだす
 
 }
@@ -233,20 +233,20 @@ void DirectXCommon::InitializeCommand() {
 
 	// コマンドキューを生成する
 	D3D12_COMMAND_QUEUE_DESC commandQueueDesc{};
-	hr = device->CreateCommandQueue(&commandQueueDesc,
+	hr = device_->CreateCommandQueue(&commandQueueDesc,
 		IID_PPV_ARGS(&commandQueue));
 	// コマンドキューの生成がうまく行かなかったら起動できない
 	assert(SUCCEEDED(hr));
 	WinAPI::Log("Complete create CommandQueue!!!\n");// 生成完了のログをだす
 
 	// コマンドアロケータを生成する
-	hr = device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&commandAllocator));
+	hr = device_->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&commandAllocator));
 	// コマンドアロケータの生成がうまく行かなかったら起動できない
 	assert(SUCCEEDED(hr));
 	WinAPI::Log("Complete create CommandAllocator!!!\n");// 生成完了のログをだす
 
 	// コマンドリスト生成する
-	hr = device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, commandAllocator.Get(), nullptr,
+	hr = device_->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, commandAllocator.Get(), nullptr,
 		IID_PPV_ARGS(&commandList));
 	// コマンドリストの生成がうまく行かなかったら起動できない
 	assert(SUCCEEDED(hr));
@@ -347,7 +347,7 @@ void DirectXCommon::InitializePSO() {
 		assert(false);
 	}
 	// バイナリを元に作成
-	hr = device->CreateRootSignature(0, signatureBlob->GetBufferPointer(),
+	hr = device_->CreateRootSignature(0, signatureBlob->GetBufferPointer(),
 		signatureBlob->GetBufferSize(), IID_PPV_ARGS(&rootSignature));
 	assert(SUCCEEDED(hr));
 
@@ -424,7 +424,7 @@ void DirectXCommon::InitializePSO() {
 	graphicsPipelineStateDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
 
 	// 実際に生成
-	hr = device->CreateGraphicsPipelineState(&graphicsPipelineStateDesc,
+	hr = device_->CreateGraphicsPipelineState(&graphicsPipelineStateDesc,
 		IID_PPV_ARGS(&graphicsPipelineState));
 	assert(SUCCEEDED(hr));
 
@@ -498,7 +498,7 @@ void DirectXCommon::InitializePSOP() {
 		assert(false);
 	}
 	// バイナリを元に作成
-	hr = device->CreateRootSignature(0, particleSignatureBlob->GetBufferPointer(),
+	hr = device_->CreateRootSignature(0, particleSignatureBlob->GetBufferPointer(),
 		particleSignatureBlob->GetBufferSize(), IID_PPV_ARGS(&particleRootSignature));
 	assert(SUCCEEDED(hr));
 
@@ -575,7 +575,7 @@ void DirectXCommon::InitializePSOP() {
 	particleGraphicsPipelineStateDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
 
 	// 実際に生成
-	hr = device->CreateGraphicsPipelineState(&particleGraphicsPipelineStateDesc,
+	hr = device_->CreateGraphicsPipelineState(&particleGraphicsPipelineStateDesc,
 		IID_PPV_ARGS(&pGraphicsPipelineState));
 	assert(SUCCEEDED(hr));
 
@@ -586,7 +586,7 @@ void DirectXCommon::InitializePSOP() {
 void DirectXCommon::CreateFinalRenderTargets() {
 
 	// RTV用ディスクリプタヒープの生成
-	rtvDescriptorHeap = CreateDescriptorHeap(device, D3D12_DESCRIPTOR_HEAP_TYPE_RTV, 2, false);
+	rtvDescriptorHeap = CreateDescriptorHeap(device_, D3D12_DESCRIPTOR_HEAP_TYPE_RTV, 2, false);
 
 	// RTVの設定
 	rtvDesc;
@@ -598,11 +598,11 @@ void DirectXCommon::CreateFinalRenderTargets() {
 
 	// まずは1つ目を作る
 	rtvHandles[0] = rtvStartHandle;
-	device->CreateRenderTargetView(swapChainResources[0].Get(), &rtvDesc, rtvHandles[0]);
+	device_->CreateRenderTargetView(swapChainResources[0].Get(), &rtvDesc, rtvHandles[0]);
 	// 2つ目のディスクリプタハンドルを得る(手動で)
-	rtvHandles[1].ptr = rtvHandles[0].ptr + device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+	rtvHandles[1].ptr = rtvHandles[0].ptr + device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 	// 2つ目を作る
-	device->CreateRenderTargetView(swapChainResources[1].Get(), &rtvDesc, rtvHandles[1]);
+	device_->CreateRenderTargetView(swapChainResources[1].Get(), &rtvDesc, rtvHandles[1]);
 
 }
 
@@ -611,16 +611,16 @@ void DirectXCommon::CreateFinalRenderTargets() {
 void DirectXCommon::CreateDepthStencilView() {
 
 	// リソース生成
-	depthStencilTextureResource_ = Resource::CreateDeapStencilTextureResource(device, win_->kClientWidth, win_->kClientHeight);
+	depthStencilTextureResource_ = Resource::CreateDeapStencilTextureResource(device_, win_->kClientWidth, win_->kClientHeight);
 
 	// DSV用のヒープでディスクリプタの数は1。DSVはシェーダー内で触るものではないので、ShaderVisibleはfalse
-	dsvDescriptorHeap_ = CreateDescriptorHeap(device, D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1, false);
+	dsvDescriptorHeap_ = CreateDescriptorHeap(device_, D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1, false);
 
 	// DSVの設定
 	dsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;// Format。基本的にはResourceに合わせる
 	dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;//2Dテクスチャ
 	// DSVHeapの先頭にDSVをつくる
-	device->CreateDepthStencilView(depthStencilTextureResource_.Get(),
+	device_->CreateDepthStencilView(depthStencilTextureResource_.Get(),
 		&dsvDesc, dsvDescriptorHeap_->GetCPUDescriptorHandleForHeapStart());
 
 	dsvHandle = dsvDescriptorHeap_->GetCPUDescriptorHandleForHeapStart();
@@ -658,7 +658,7 @@ void DirectXCommon::CreateFence() {
 	// 初期値0でFenceを作る
 	fence = nullptr;
 	fenceValue = 0;
-	hr = device->CreateFence(fenceValue, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence));
+	hr = device_->CreateFence(fenceValue, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence));
 	assert(SUCCEEDED(hr));
 	// FenceのSignalを待つためのイベントを作成する
 	fenceEvent = CreateEvent(NULL, FALSE, FALSE, NULL);

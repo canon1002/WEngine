@@ -92,10 +92,10 @@ void Sphere::CreateVertexResource() {
 
 	// VertexResourceを生成する(P.42)
 	// 実際に頂点リソースを作る
-	vertexResource = dx_->CreateBufferResource(dx_->device.Get(), sizeof(VertexData) * ((kSubdivision) * (kSubdivision) * 6));
+	vertexResource = dx_->CreateBufferResource(dx_->device_.Get(), sizeof(VertexData) * ((kSubdivision) * (kSubdivision) * 6));
 
 	// マテリアル用のResourceを作る
-	materialResource = dx_->CreateBufferResource(dx_->device.Get(), sizeof(Material));
+	materialResource = dx_->CreateBufferResource(dx_->device_.Get(), sizeof(Material));
 	// マテリアルにデータを書き込む
 	materialData = nullptr;
 	// 書き込むためのアドレスを取得
@@ -105,7 +105,7 @@ void Sphere::CreateVertexResource() {
 	materialData->enableLighting = true;
 
 	// Light
-	directionalLightResource = dx_->CreateBufferResource(dx_->device.Get(), sizeof(DirectionalLight));
+	directionalLightResource = dx_->CreateBufferResource(dx_->device_.Get(), sizeof(DirectionalLight));
 	// データを書き込む
 	directionalLightResource->Map(0, nullptr, reinterpret_cast<void**>(&directionalLightDate));
 	directionalLightDate->color = { 1.0f, 1.0f, 1.0f, 1.0f };
@@ -119,7 +119,7 @@ void Sphere::CreateVertexResource() {
 void Sphere::CreateTransformationRsource() {
 
 	// Transformation用のResourceを作る
-	wvpResource = dx_->CreateBufferResource(dx_->device.Get(), sizeof(TransformationMatrix));
+	wvpResource = dx_->CreateBufferResource(dx_->device_.Get(), sizeof(TransformationMatrix));
 	// データを書き込む
 	// 書き込むためのアドレスを取得
 	wvpResource->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
