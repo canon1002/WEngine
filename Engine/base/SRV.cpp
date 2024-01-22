@@ -1,7 +1,7 @@
 #include "SRV.h"
 #include "../resources/Section/Resource.h"
 #include "../object/model/Model.h"
-#include "../VMQ/Math.h"
+#include "../math/Math.h"
 
 
 // staticメンバ変数で宣言したインスタンスを初期化

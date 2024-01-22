@@ -1,5 +1,5 @@
 #pragma once
-#include "../VMQ/Math.h"
+#include "../math/Math.h"
 #include "../base/DirectXCommon.h"
 #include "../resources/Section/Resource.h"
 #include "../object/worldTransform/WorldTransform.h"
@@ -27,7 +27,7 @@ public:
 	///	座標変更
 	/// </summary>
 	/// <param name="pos">座標</param>
-	void SetTransform(Vector3 pos) {
+	void SetTransform(Vec3 pos) {
 		worldTransform_->translate = pos;
 	}
 
@@ -35,7 +35,7 @@ public:
 	/// 中心座標を移動させる
 	/// </summary>
 	/// <param name="t">移動量</param>
-	void Transform(Vector3 t) {
+	void Transform(Vec3 t) {
 		worldTransform_->translate.x += t.x;
 		worldTransform_->translate.y += t.y;
 		worldTransform_->translate.z += t.z;
@@ -45,7 +45,7 @@ public:
 	/// 回転させる
 	/// </summary>
 	/// <param name="r">回転量</param>
-	void Rotation(Vector3 r) {
+	void Rotation(Vec3 r) {
 		worldTransform_->rotate.x += r.x;
 		worldTransform_->rotate.y += r.y;
 		worldTransform_->rotate.z += r.z;
@@ -55,9 +55,9 @@ public:
 	/// 色変更
 	/// </summary>
 	/// <param name="color"></param>
-	void SetColor(Vector4 color) {
+	void SetColor(Color color) {
 		// 指定した色に書き込む
-		materialData->color = Vector4(color.x, color.y, color.z, color.w);
+		//materialData->color = Color(color.r, color.g, color.b, color.a);
 	}
 
 	const D3D12_VERTEX_BUFFER_VIEW& GetVBV() const { return vertexBufferView; }
@@ -72,7 +72,7 @@ private:
 
 	WorldTransform* worldTransform_ = nullptr;
 	WorldTransform* cameraWorldTransform_ = nullptr;
-	Matrix4x4 cameraM, viewM, projectM, pespectiveM, wvpM;
+	Mat44 cameraM, viewM, projectM, pespectiveM, wvpM;
 	// 半径
 	float rad = 1.0f;
 

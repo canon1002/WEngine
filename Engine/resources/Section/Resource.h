@@ -1,32 +1,33 @@
 #pragma once
-#include "../../VMQ/Math.h"
+#include "../../math/Math.h"
+#include "../../color/Color.h"
 #include "../../base/DirectXCommon.h"
 #include "../../../../externals/DirectXTex/DirectXTex.h" 
 #include <vector>
 #include "../../../../externals/DirectXTex/d3dx12.h"
 
 struct VertexData {
-	Vector4 position;
-	Vector2 texcoord;
-	Vector3 normal;
+	Vec4 position;
+	Vec2 texcoord;
+	Vec3 normal;
 };
 
 struct Material {
-	Vector4 color;
+	Color color;
 	int32_t enableLighting;
 	float paddding[3];
-	Matrix4x4 uvTransform;
+	Mat44 uvTransform;
 };
 
 struct TransformationMatrix {
-	Matrix4x4 WVP;
-	Matrix4x4 World;
+	Mat44 WVP;
+	Mat44 World;
 };
 
 struct ParticleForGPU {
-	Matrix4x4 WVP;
-	Matrix4x4 World;
-	Vector4 color;
+	Mat44 WVP;
+	Mat44 World;
+	Color color;
 };
 
 namespace Resource

@@ -53,13 +53,13 @@ void MatrixCamera::Initialize() {
 
 #pragma endregion
 
-	m_worldMatrix = W::Math::MakeAffineMatrix(); 
-	m_cameraMatrix = W::Math::MakeAffineMatrix(cameraTransform_.scale, cameraTransform_.rotate, cameraTransform_.translate);
-	m_viewMatrix = W::Math::Inverse(m_cameraMatrix);
-	m_projectionMatrix = W::Math::MakePerspectiveMatrix(m_VerticalFOV, m_aspectRatio, m_nearClip, m_farClip);
-	m_viewprojectionMatrix = W::Math::Multiply(m_viewMatrix, m_projectionMatrix);
-	m_worldViewProjectionMatrix = W::Math::Multiply(m_worldMatrix, m_viewprojectionMatrix);
-	m_viewportMatrix = W::Math::MakeViewportMatrix(0, 0, m_windowSize.x, m_windowSize.y, 0.0f, 1.0f);
+	m_worldMatrix = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f }, { 0.0f,0.0f,0.0f });
+	m_cameraMatrix = MakeAffineMatrix(cameraTransform_.scale, cameraTransform_.rotate, cameraTransform_.translate);
+	m_viewMatrix = Inverse(m_cameraMatrix);
+	m_projectionMatrix = MakePerspectiveMatrix(m_VerticalFOV, m_aspectRatio, m_nearClip, m_farClip);
+	m_viewprojectionMatrix = Multiply(m_viewMatrix, m_projectionMatrix);
+	m_worldViewProjectionMatrix = Multiply(m_worldMatrix, m_viewprojectionMatrix);
+	m_viewportMatrix = MakeViewportMatrix(0, 0, m_windowSize.x, m_windowSize.y, 0.0f, 1.0f);
 
 }
 
@@ -68,70 +68,70 @@ void MatrixCamera::Initialize() {
 void MatrixCamera::Update() 
 {
 	m_rotate.y += 0.03f;
-	m_worldMatrix = W::Math::MakeAffineMatrix(m_scale, m_rotate,m_translate);
-	m_cameraMatrix = W::Math::MakeAffineMatrix(m_cameraScale, m_cameraRotate, m_cameraTranslate);
-	m_viewMatrix = W::Math::Inverse(m_cameraMatrix);
-	m_projectionMatrix = W::Math::MakePerspectiveMatrix(m_VerticalFOV, m_aspectRatio, m_nearClip, m_farClip);
-	m_worldViewProjectionMatrix = W::Math::Multiply(m_worldMatrix, W::Math::Multiply(m_viewMatrix, m_projectionMatrix));
-	m_viewportMatrix = W::Math::MakeViewportMatrix(0, 0, m_windowSize.x, m_windowSize.y, 0.0f, 1.0f);
+	m_worldMatrix = MakeAffineMatrix(m_scale, m_rotate,m_translate);
+	m_cameraMatrix = MakeAffineMatrix(m_cameraScale, m_cameraRotate, m_cameraTranslate);
+	m_viewMatrix = Inverse(m_cameraMatrix);
+	m_projectionMatrix = MakePerspectiveMatrix(m_VerticalFOV, m_aspectRatio, m_nearClip, m_farClip);
+	m_worldViewProjectionMatrix = Multiply(m_worldMatrix, Multiply(m_viewMatrix, m_projectionMatrix));
+	m_viewportMatrix = MakeViewportMatrix(0, 0, m_windowSize.x, m_windowSize.y, 0.0f, 1.0f);
 }
 
 
-Vector3 MatrixCamera::GetNdcPos(Vector3 local)
+Vec3 MatrixCamera::GetNdcPos(Vec3 local)
 {
 	// ローカルからNDC座標系に変換
-	Vector3 ndc = W::Math::Transform(local, m_worldViewProjectionMatrix);
+	Vec3 ndc = Transform(local, m_worldViewProjectionMatrix);
 	
 	return ndc;
 }
 
 
-Vector4 MatrixCamera::GetNdcPos(Vector4 local)
+Vec4 MatrixCamera::GetNdcPos(Vec4 local)
 {
 	// ローカルからNDC座標系に変換
-	Vector4 ndc = W::Math::Transform(local, m_worldViewProjectionMatrix);
+	Vec4 ndc = Transform(local, m_worldViewProjectionMatrix);
 
 	return ndc;
 }
 
-Vector3 MatrixCamera::GetScreenPos(Vector3 ndc)
+Vec3 MatrixCamera::GetScreenPos(Vec3 ndc)
 {
 	// スクリーン座標系へ変換
-	Vector3 screen = W::Math::Transform(ndc, m_viewportMatrix);
+	Vec3 screen = Transform(ndc, m_viewportMatrix);
 
 	return screen;
 }
 
-Vector4 MatrixCamera::GetScreenPos(Vector4 ndc)
+Vec4 MatrixCamera::GetScreenPos(Vec4 ndc)
 {
 	// スクリーン座標系へ変換
-	Vector4 screen = W::Math::Transform(ndc, m_viewportMatrix);
+	Vec4 screen = Transform(ndc, m_viewportMatrix);
 
 	return screen;
 }
 
-Matrix4x4 MatrixCamera::GetViewMatrix() {
+Mat44 MatrixCamera::GetViewMatrix() {
 	return m_viewMatrix;
 }
 
 
-Matrix4x4 MatrixCamera::GetViewportMatrix() {
+Mat44 MatrixCamera::GetViewportMatrix() {
 	return m_viewportMatrix;
 }
 
 
-Matrix4x4 MatrixCamera::GetViewprojectionMatrix() {
+Mat44 MatrixCamera::GetViewprojectionMatrix() {
 	return m_viewprojectionMatrix;
 }
 
-void MatrixCamera::SetWorldAffine(Vector3 scale, Vector3 rotate, Vector3 translate) 
+void MatrixCamera::SetWorldAffine(Vec3 scale, Vec3 rotate, Vec3 translate) 
 {
 	m_scale = scale;
 	m_rotate = rotate;
 	m_translate = translate;
 }
 
-void MatrixCamera::SetCameraAffine(Vector3 scale, Vector3 rotate, Vector3 translate) 
+void MatrixCamera::SetCameraAffine(Vec3 scale, Vec3 rotate, Vec3 translate) 
 {
 	m_cameraScale = scale;
 	m_cameraRotate = rotate;

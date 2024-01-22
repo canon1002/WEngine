@@ -62,12 +62,12 @@
     <Filter Include="Engine\command">
       <UniqueIdentifier>{d65dd533-df01-4566-9654-a169c8ae895a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine\color">
+      <UniqueIdentifier>{9f51436a-eb12-40d6-854a-c042c884df61}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Engine\VMQ\Matrix4x4.cpp">
-      <Filter>Engine\math</Filter>
-    </ClCompile>
     <ClCompile Include="Engine\base\WinAPI.cpp">
       <Filter>Engine\base</Filter>
     </ClCompile>
@@ -159,12 +159,21 @@
     <ClCompile Include="Engine\command\InputHandle.cpp">
       <Filter>Engine\command</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="Object3d.VS.hlsl" />
-    <FxCompile Include="Object3d.PS.hlsl" />
-    <FxCompile Include="Particle.PS.hlsl" />
-    <FxCompile Include="Particle.VS.hlsl" />
+    <ClCompile Include="Engine\math\Mat44.cpp">
+      <Filter>Engine\math</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\math\Quaternion.cpp">
+      <Filter>Engine\math</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\math\Vec3.cpp">
+      <Filter>Engine\math</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\math\Vec2.cpp">
+      <Filter>Engine\math</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\math\Vec4.cpp">
+      <Filter>Engine\math</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\base\ImGuiManager.h">
@@ -172,12 +181,6 @@
     </ClInclude>
     <ClInclude Include="Engine\base\WinAPI.h">
       <Filter>Engine\base</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\VMQ\Math.h">
-      <Filter>Engine\math</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\VMQ\Matrix4x4.h">
-      <Filter>Engine\math</Filter>
     </ClInclude>
     <ClInclude Include="Engine\base\System.h">
       <Filter>Engine\base</Filter>
@@ -270,14 +273,31 @@
     <ClInclude Include="Engine\command\InputHandle.h">
       <Filter>Engine\command</Filter>
     </ClInclude>
+    <ClInclude Include="Engine\math\Math.h">
+      <Filter>Engine\math</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\math\Mat44.h">
+      <Filter>Engine\math</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\math\Quaternion.h">
+      <Filter>Engine\math</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\math\Vec3.h">
+      <Filter>Engine\math</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\color\Color.h">
+      <Filter>Engine\color</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\math\Vec2.h">
+      <Filter>Engine\math</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\math\Vec4.h">
+      <Filter>Engine\math</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt">
       <Filter>Externals\imgui</Filter>
     </Text>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Object3d.hlsli" />
-    <None Include="Particle.hlsli" />
   </ItemGroup>
 </Project>

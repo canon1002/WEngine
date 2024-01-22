@@ -1,7 +1,5 @@
 #include "SceneManager.h"
 
-
-
 // コンストラクタ
 SceneManager::SceneManager() {
 

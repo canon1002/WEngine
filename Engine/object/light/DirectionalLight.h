@@ -1,12 +1,13 @@
 #pragma once
-#include"../../VMQ/Math.h"
+#include"../../math/Math.h"
+#include"../color/Color.h"
 
 struct DirectionalLight
 {
 	// ライトの色
-	Vector4 color;
+	Color color;
 	// ライトの向き
-	Vector3 direction;
+	Vec3 direction;
 	// 輝度
 	float intensity;	
 };

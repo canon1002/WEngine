@@ -10,9 +10,9 @@ Model::~Model() {}
 ModelData Model::LoadObjFile(const std::string& directoryPath, const std::string& filename) {
 	/// 変数の宣言
 	ModelData modelData;// 構築するモデルのデータ
-	std::vector<Vector4> positions;//位置
-	std::vector<Vector3> normals;//法線
-	std::vector<Vector2> texcoords;//テクスチャ座標
+	std::vector<Vec4> positions;//位置
+	std::vector<Vec3> normals;//法線
+	std::vector<Vec2> texcoords;//テクスチャ座標
 	std::string line; // ファイルから読んだ一行を格納する
 
 	/// ファイルを開く
@@ -29,21 +29,21 @@ ModelData Model::LoadObjFile(const std::string& directoryPath, const std::string
 
 		// 位置
 		if (identifier == "v") {
-			Vector4 position;
+			Vec4 position;
 			s >> position.x >> position.y >> position.z;
 			position.w = 1.0f;
 			positions.push_back(position);
 		}
 		// テクスチャ座標
 		else if (identifier == "vt") {
-			Vector2 texcoord;
+			Vec2 texcoord;
 			s >> texcoord.x >> texcoord.y;
 			texcoord.y = 1.0f - texcoord.y;
 			texcoords.push_back(texcoord);
 		}
 		// 法線
 		else if (identifier == "vn") {
-			Vector3 normal;
+			Vec3 normal;
 			s >> normal.x >> normal.y >> normal.z;
 			normals.push_back(normal);
 		}
@@ -63,9 +63,9 @@ ModelData Model::LoadObjFile(const std::string& directoryPath, const std::string
 					elementIndices[element] = std::stoi(index);
 				}
 				// 要素へのインデックスから、実際の要素の値を取得しt、頂点を構築する
-				Vector4 position = positions[elementIndices[0] - 1];
-				Vector2 texcoord = texcoords[elementIndices[1] - 1];
-				Vector3 normal = normals[elementIndices[2] - 1];
+				Vec4 position = positions[elementIndices[0] - 1];
+				Vec2 texcoord = texcoords[elementIndices[1] - 1];
+				Vec3 normal = normals[elementIndices[2] - 1];
 				//VertexData vertex = { position,texcoord,normal };
 				//modelData.vertices.push_back(vertex);
 				triangle[faceVertex] = { position,texcoord,normal };
@@ -144,29 +144,29 @@ void Model::Update() {
 	ImGui::DragFloat2("UVScale", &uvTransform_.scale.x, 0.01f, -10.0f, 10.0f);
 	ImGui::DragFloat2("UVTranlate", &uvTransform_.translate.x, 0.01f, -10.0f, 10.0f);
 	ImGui::SliderAngle("UVRotate", &uvTransform_.rotate.z);
-	ImGui::ColorEdit4("Color", &materialData_->color.x);
+	ImGui::ColorEdit4("Color", &materialData_->color.r);
 	ImGui::End();
 
 	//　矩形のワールド行列
-	worldTransform_->worldM = W::Math::MakeAffineMatrix(
+	worldTransform_->worldM = MakeAffineMatrix(
 		worldTransform_->scale, worldTransform_->rotate, worldTransform_->translate);
 
 	// カメラのワールド行列
-	cameraM = W::Math::MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f }, { 0.0f,0.0f,-5.0f });
+	cameraM = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f }, { 0.0f,0.0f,-5.0f });
 	// カメラ行列のビュー行列(カメラのワールド行列の逆行列)
-	viewM = W::Math::Inverse(cameraM);
+	viewM = Inverse(cameraM);
 	// 正規化デバイス座標系(NDC)に変換(正射影行列をかける)
-	pespectiveM = W::Math::MakePerspectiveMatrix(0.45f, (1280.0f / 720.0f), 0.1f, 100.0f);
+	pespectiveM = MakePerspectiveMatrix(0.45f, (1280.0f / 720.0f), 0.1f, 100.0f);
 	// WVPにまとめる
-	wvpM = W::Math::Multiply(viewM, pespectiveM);
+	wvpM = Multiply(viewM, pespectiveM);
 	// 矩形のワールド行列とWVP行列を掛け合わした行列を代入
-	wvpData->WVP = W::Math::Multiply(worldTransform_->worldM, wvpM);
+	wvpData->WVP = Multiply(worldTransform_->worldM, wvpM);
 	wvpData->World = worldTransform_->worldM;
 
 
 
 	/// マテリアル・UVTransform
-	Matrix4x4 uvTransformMatrix = W::Math::MakeAffineMatrix(
+	Mat44 uvTransformMatrix = MakeAffineMatrix(
 		uvTransform_.scale,
 		{ 0.0f,0.0f,uvTransform_.rotate.z },
 		uvTransform_.translate
@@ -222,7 +222,7 @@ void Model::CreateVertexResource() {
 	materialData_->color = { 1.0f, 1.0f, 1.0f, 1.0f };
 	materialData_->enableLighting = true;
 	// UVTransformを設定
-	materialData_->uvTransform = W::Math::MakeIdentity();
+	materialData_->uvTransform = MakeIdentity();
 	uvTransform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 
 	// Light
@@ -244,9 +244,8 @@ void Model::CreateTransformationRsource() {
 	// 書き込むためのアドレスを取得
 	wvpResource->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
 	// 単位行列を書き込む
-	// 単位行列を書き込む
 	wvpData->WVP = mainCamera_->GetWorldViewProjection();
-	wvpData->World = W::Math::MakeIdentity();
+	wvpData->World = MakeIdentity();
 }
 
 //

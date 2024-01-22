@@ -1,5 +1,5 @@
 #pragma once
-#include "../VMQ/Math.h"
+#include "../math/Math.h"
 #include "../base/DirectXCommon.h"
 #include "../resources/Section/Resource.h"
 #include "../object/worldTransform/WorldTransform.h"
@@ -24,7 +24,7 @@ public:
 	///	座標変更
 	/// </summary>
 	/// <param name="pos">座標</param>
-	void SetTransform(Vector3 pos) {
+	void SetTransform(Vec3 pos) {
 		worldtransform_->translate = pos;
 	}
 
@@ -32,7 +32,7 @@ public:
 	/// 中心座標を移動させる
 	/// </summary>
 	/// <param name="t">移動量</param>
-	void Transform(Vector3 t) {
+	void Transform(Vec3 t) {
 		worldtransform_->translate.x += t.x;
 		worldtransform_->translate.y += t.y;
 		worldtransform_->translate.z += t.z;
@@ -42,7 +42,7 @@ public:
 	/// 回転させる
 	/// </summary>
 	/// <param name="r">回転量</param>
-	void Rotation(Vector3 r) {
+	void Rotation(Vec3 r) {
 		worldtransform_->rotate.x += r.x;
 		worldtransform_->rotate.y += r.y;
 		worldtransform_->rotate.z += r.z;
@@ -52,9 +52,9 @@ public:
 	/// 色変更
 	/// </summary>
 	/// <param name="color"></param>
-	void SetColor(Vector4 color) {
+	void SetColor(Color color) {
 		// 指定した色に書き込む
-		*materialData = { Vector4(color.x, color.y, color.z, color.w) };
+		//*materialData = { Color(color.r, color.g, color.b, color.a) };
 	}
 
 	const D3D12_VERTEX_BUFFER_VIEW& GetVBV() const { return vertexBufferView; }
@@ -68,8 +68,8 @@ private:
 	DirectXCommon* dx_ = nullptr;
 
 	WorldTransform* worldtransform_ = nullptr;
-	Matrix4x4 worldM, cameraM, viewM, projectM, wvpM;
-	Vector4 translate_;
+	Mat44 worldM, cameraM, viewM, projectM, wvpM;
+	Vec4 translate_;
 
 	// VertexResourceを生成する(P.42)
 	// 実際に頂点リソースを作る
@@ -91,6 +91,6 @@ private:
 	// マテリアルデータ
 	Material *materialData = nullptr;
 	// UVTransform用の変数
-	Math::Transform uvTransform_;
+	Transformation uvTransform_;
 };
 

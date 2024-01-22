@@ -42,25 +42,25 @@ void VoxelParticle::Update() {
 	ImGui::DragFloat2("UVScale", &uvTransform_.scale.x, 0.01f, -10.0f, 10.0f);
 	ImGui::DragFloat2("UVTranlate", &uvTransform_.translate.x, 0.01f, -10.0f, 10.0f);
 	ImGui::SliderAngle("UVRotate", &uvTransform_.rotate.z);
-	ImGui::ColorEdit4("Color", &materialData_->color.x);
+	ImGui::ColorEdit4("Color", &materialData_->color.r);
 	ImGui::End();
 
 
 	//　矩形のワールド行列
-	worldTransform_->worldM = W::Math::MakeAffineMatrix(
+	worldTransform_->worldM = MakeAffineMatrix(
 		particles[0].transform.scale, particles[0].transform.rotate, particles[0].transform.translate);
 
 
 	// カメラのワールド行列
-	cameraM = W::Math::MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f }, { 0.0f,0.0f,-5.0f });
+	cameraM = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f }, { 0.0f,0.0f,-5.0f });
 	// カメラ行列のビュー行列(カメラのワールド行列の逆行列)
-	viewM = W::Math::Inverse(cameraM);
+	viewM = Inverse(cameraM);
 	// 正規化デバイス座標系(NDC)に変換(正射影行列をかける)
-	pespectiveM = W::Math::MakePerspectiveMatrix(0.45f, (1280.0f / 720.0f), 0.1f, 100.0f);
+	pespectiveM = MakePerspectiveMatrix(0.45f, (1280.0f / 720.0f), 0.1f, 100.0f);
 	// WVPにまとめる
-	wvpM = W::Math::Multiply(viewM, pespectiveM);
+	wvpM = Multiply(viewM, pespectiveM);
 	// 矩形のワールド行列とWVP行列を掛け合わした行列を代入
-	wvpData->WVP = W::Math::Multiply(worldTransform_->worldM, wvpM);
+	wvpData->WVP = Multiply(worldTransform_->worldM, wvpM);
 	wvpData->World = worldTransform_->worldM;
 
 	for (int32_t index = 0; index < kNumMaxInstance; ++index) {
@@ -76,21 +76,21 @@ void VoxelParticle::Update() {
 		float alpha = 1.0f - (particles[index].currentTime / particles[index].lifeTime);
 		alpha = 0.1f;
 		//　ワールド行列
-		worldTransform_->worldM = W::Math::MakeAffineMatrix(
+		worldTransform_->worldM = MakeAffineMatrix(
 			particles[index].transform.scale,
 			particles[index].transform.rotate,
 			particles[index].transform.translate);
-		instancingData_[index].WVP = W::Math::Multiply(worldTransform_->worldM, wvpM);
+		instancingData_[index].WVP = Multiply(worldTransform_->worldM, wvpM);
 		instancingData_[index].World = worldTransform_->worldM;
 		instancingData_[index].color = particles[index].color;
-		instancingData_[index].color.w = alpha;
+		instancingData_[index].color.a = alpha;
 
 		++instanceCount_;
 
 	}
 
 	/// マテリアル・UVTransform
-	Matrix4x4 uvTransformMatrix = W::Math::MakeAffineMatrix(
+	Mat44 uvTransformMatrix = MakeAffineMatrix(
 		uvTransform_.scale,
 		{ 0.0f,0.0f,uvTransform_.rotate.z },
 		uvTransform_.translate
@@ -144,9 +144,9 @@ void VoxelParticle::CreateVertexResource() {
 	instancingResource->Map(0, nullptr, reinterpret_cast<void**>(&instancingData_));
 	// 単位行列を書き込む
 	for (int32_t index = 0; index < kNumMaxInstance; ++index) {
-		instancingData_[index].WVP = W::Math::MakeIdentity();
-		instancingData_[index].World = W::Math::MakeIdentity();
-		instancingData_[index].color = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+		instancingData_[index].WVP = MakeIdentity();
+		instancingData_[index].World = MakeIdentity();
+		instancingData_[index].color = Color(1.0f, 1.0f, 1.0f, 1.0f);
 
 	}
 
@@ -165,7 +165,7 @@ void VoxelParticle::CreateVertexResource() {
 	materialData_->color = { 1.0f, 1.0f, 1.0f, 1.0f };
 	materialData_->enableLighting = true;
 	// UVTransformを設定
-	materialData_->uvTransform = W::Math::MakeIdentity();
+	materialData_->uvTransform = MakeIdentity();
 	uvTransform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 
 	// Light
@@ -191,8 +191,8 @@ void VoxelParticle::CreateTransformationRsource() {
 	wvpResource->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
 	// 単位行列を書き込む
 	wvpData->WVP = mainCamera_->GetWorldViewProjection();
-	wvpData->World = W::Math::MakeIdentity();
-	wvpData->color = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+	wvpData->World = MakeIdentity();
+	wvpData->color = Color(1.0f, 1.0f, 1.0f, 1.0f);
 
 }
 

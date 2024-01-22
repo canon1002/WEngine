@@ -42,27 +42,27 @@ void Sphere::Update() {
 	ImGui::End();
 
 	ImGui::Begin("Light");
-	ImGui::SliderFloat4("color", &directionalLightDate->color.x, 0.0f, 1.0f);
+	ImGui::SliderFloat4("color", &directionalLightDate->color.r, 0.0f, 1.0f);
 	ImGui::DragFloat3("directon", &directionalLightDate->direction.x, 0.05f, -10.0f, 10.0f);
 	ImGui::SliderFloat("intensity", &directionalLightDate->intensity, 0.0f, 1.0f);
 	ImGui::End();
 	
 	//　球体のワールド行列
-	worldTransform_->worldM = W::Math::MakeAffineMatrix(
+	worldTransform_->worldM = MakeAffineMatrix(
 		worldTransform_->scale, worldTransform_->rotate, worldTransform_->translate);
 
 	// カメラのワールド行列
 	
-	cameraM = W::Math::MakeAffineMatrix(
+	cameraM = MakeAffineMatrix(
 		cameraWorldTransform_->scale, cameraWorldTransform_->rotate, cameraWorldTransform_->translate);
 	// カメラ行列のビュー行列(カメラのワールド行列の逆行列)
-	viewM = W::Math::Inverse(cameraM);
+	viewM = Inverse(cameraM);
 	// 正規化デバイス座標系(NDC)に変換(正射影行列をかける)
-	pespectiveM = W::Math::MakePerspectiveMatrix(0.45f, (1280.0f / 720.0f), 0.1f, 100.0f);
+	pespectiveM = MakePerspectiveMatrix(0.45f, (1280.0f / 720.0f), 0.1f, 100.0f);
 	// WVPにまとめる
-	wvpM = W::Math::Multiply(viewM, pespectiveM);
+	wvpM = Multiply(viewM, pespectiveM);
 	// 三角形のワールド行列とWVP行列を掛け合わした行列を代入
-	wvpData->WVP = W::Math::Multiply(worldTransform_->worldM, wvpM);
+	wvpData->WVP = Multiply(worldTransform_->worldM, wvpM);
 	wvpData->World = worldTransform_->worldM;
 }
 
@@ -125,7 +125,7 @@ void Sphere::CreateTransformationRsource() {
 	wvpResource->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
 	// 単位行列を書き込む
 	wvpData->WVP = mainCamera_->GetWorldViewProjection();
-	wvpData->World = W::Math::MakeIdentity();
+	wvpData->World = MakeIdentity();
 
 }
 
@@ -157,19 +157,19 @@ void Sphere::CreateBufferView() {
 			uint32_t start = (latIndex * kSubdivision + lonIndex) * 6;
 			float lon = lonIndex * kLonEvery; //	現在の経度を求める
 
-			Vector3 a = {
+			Vec3 a = {
 				cos(lat) * cos(lon) * rad,
 				sin(lat) * rad,
 				cos(lat) * sin(lon) * rad };
-			Vector3 b = {
+			Vec3 b = {
 				cos(lat + (pi / kSubdivision)) * cos(lon) * rad,
 				sin(lat + (pi / kSubdivision)) * rad,
 				cos(lat + (pi / kSubdivision)) * sin(lon) * rad };
-			Vector3 c = {
+			Vec3 c = {
 				cos(lat) * cos(lon + ((pi * 2) / kSubdivision)) * rad,
 				sin(lat) * rad,
 				cos(lat) * sin(lon + ((pi * 2) / kSubdivision)) * rad };
-			Vector3 d = {
+			Vec3 d = {
 				cos(lat + (pi / kSubdivision)) * cos(lon + ((pi * 2) / kSubdivision)) * rad,
 				sin(lat + (pi / kSubdivision)) * rad,
 				cos(lat + (pi / kSubdivision)) * sin(lon + ((pi * 2) / kSubdivision)) * rad };

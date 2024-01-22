@@ -30,19 +30,19 @@ void Triangle::Update() {
 void Triangle::Draw() {
 
 	//　三角形のワールド行列
-	worldtransform_->worldM = W::Math::MakeAffineMatrix(
+	worldtransform_->worldM = MakeAffineMatrix(
 		worldtransform_->scale, worldtransform_->rotate, worldtransform_->translate);
 	
 	// カメラのワールド行列
-	cameraM = W::Math::MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f }, { 0.0f,0.0f,-5.0f });
+	cameraM = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f }, { 0.0f,0.0f,-5.0f });
 	// カメラ行列のビュー行列(カメラのワールド行列の逆行列)
-	viewM = W::Math::Inverse(cameraM);
+	viewM = Inverse(cameraM);
 	// 正規化デバイス座標系(NDC)に変換(正射影行列をかける)
-	pespectiveM = W::Math::MakePerspectiveMatrix(0.45f, (1280.0f / 720.0f), 0.1f, 100.0f);
+	pespectiveM = MakePerspectiveMatrix(0.45f, (1280.0f / 720.0f), 0.1f, 100.0f);
 	// WVPにまとめる
-	wvpM = W::Math::Multiply(viewM,pespectiveM);
+	wvpM = Multiply(viewM,pespectiveM);
 	// 三角形のワールド行列とWVP行列を掛け合わした行列を代入
-	*wvpData = W::Math::Multiply(worldtransform_->worldM, wvpM);
+	*wvpData = Multiply(worldtransform_->worldM, wvpM);
 
 	dx_->commandList->IASetVertexBuffers(0, 1, &vertexBufferView);
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけばいい
@@ -76,7 +76,7 @@ void Triangle::CreateVertexResource() {
 	// 書き込むためのアドレスを取得
 	materialResource->Map(0, nullptr, reinterpret_cast<void**>(&materialDate));
 	// 色を書き込む
-	*materialDate = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+	*materialDate = Color(1.0f, 1.0f, 1.0f, 1.0f);
 
 }
 
@@ -84,7 +84,7 @@ void Triangle::CreateVertexResource() {
 void Triangle::CreateTransformationRsource() {
 
 	// Transformation用のResourceを作る
-	wvpResource = dx_->CreateBufferResource(dx_->device_.Get(), sizeof(Matrix4x4));
+	wvpResource = dx_->CreateBufferResource(dx_->device_.Get(), sizeof(Mat44));
 	// データを書き込む
 	// 書き込むためのアドレスを取得
 	wvpResource->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));

@@ -1,5 +1,6 @@
 #pragma once
-#include"../../VMQ/Math.h"
+#include"../../math/Math.h"
+#include"../worldTransform/WorldTransform.h"
 
 class MatrixCamera
 {
@@ -45,7 +46,7 @@ public:	// メンバ関数
 	/// <param name="scale"></param>
 	/// <param name="rotate"></param>
 	/// <param name="translate"></param>
-	void SetWorldAffine(Vector3 scale, Vector3 rotate, Vector3 translate);
+	void SetWorldAffine(Vec3 scale, Vec3 rotate, Vec3 translate);
 
 
 	/// <summary>
@@ -54,7 +55,7 @@ public:	// メンバ関数
 	/// <param name="scale"></param>
 	/// <param name="rotate"></param>
 	/// <param name="translate"></param>
-	void SetCameraAffine(Vector3 scale, Vector3 rotate, Vector3 translate);
+	void SetCameraAffine(Vec3 scale, Vec3 rotate, Vec3 translate);
 
 
 	/// <summary>
@@ -76,31 +77,31 @@ public:	// メンバ関数
 
 #pragma region ゲット関数
 
-	Vector3 GetNdcPos(Vector3 local);
-	Vector4 GetNdcPos(Vector4 local);
+	Vec3 GetNdcPos(Vec3 local);
+	Vec4 GetNdcPos(Vec4 local);
 
-	Vector3 GetScreenPos(Vector3 ndc);
-	Vector4 GetScreenPos(Vector4 ndc);
-
-	/// <summary>
-	/// 
-	/// </summary>
-	/// <returns></returns>
-	Matrix4x4 GetViewMatrix();
+	Vec3 GetScreenPos(Vec3 ndc);
+	Vec4 GetScreenPos(Vec4 ndc);
 
 	/// <summary>
 	/// 
 	/// </summary>
 	/// <returns></returns>
-	Matrix4x4 GetViewportMatrix();
+	Mat44 GetViewMatrix();
 
 	/// <summary>
 	/// 
 	/// </summary>
 	/// <returns></returns>
-	Matrix4x4 GetViewprojectionMatrix();
+	Mat44 GetViewportMatrix();
 
-	const Matrix4x4& GetWorldViewProjection() { return m_worldViewProjectionMatrix; }
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <returns></returns>
+	Mat44 GetViewprojectionMatrix();
+
+	const Mat44& GetWorldViewProjection() { return m_worldViewProjectionMatrix; }
 
 #pragma endregion
 
@@ -110,29 +111,29 @@ private: // メンバ変数
 
 #pragma region ワールド座標系
 
-	Math::Transform transform_;
+	Transformation transform_;
 	// 拡大率
-	Vector3 m_scale;
+	Vec3 m_scale;
 	// 回転量
-	Vector3 m_rotate;
+	Vec3 m_rotate;
 	// 移動量
-	Vector3 m_translate;
+	Vec3 m_translate;
 	// 画面サイズ
-	Vector2 m_windowSize;
+	Vec2 m_windowSize;
 
 #pragma endregion
 
 #pragma region カメラ座標系
 
 	//
-	Math::Transform cameraTransform_;
+	Transformation cameraTransform_;
 
 	// 拡大率
-	Vector3 m_cameraScale;
+	Vec3 m_cameraScale;
 	// 回転量
-	Vector3 m_cameraRotate;
+	Vec3 m_cameraRotate;
 	// 移動量
-	Vector3 m_cameraTranslate;
+	Vec3 m_cameraTranslate;
 	// Near(近平面への距離)
 	float m_nearClip;
 	// Far(遠平面への距離)
@@ -146,13 +147,13 @@ private: // メンバ変数
 
 #pragma region 行列
 
-	Matrix4x4 m_worldMatrix;
-	Matrix4x4 m_cameraMatrix;
-	Matrix4x4 m_viewMatrix;
-	Matrix4x4 m_projectionMatrix;
-	Matrix4x4 m_viewprojectionMatrix;
-	Matrix4x4 m_worldViewProjectionMatrix;
-	Matrix4x4 m_viewportMatrix;
+	Mat44 m_worldMatrix;
+	Mat44 m_cameraMatrix;
+	Mat44 m_viewMatrix;
+	Mat44 m_projectionMatrix;
+	Mat44 m_viewprojectionMatrix;
+	Mat44 m_worldViewProjectionMatrix;
+	Mat44 m_viewportMatrix;
 
 #pragma endregion
 	private:

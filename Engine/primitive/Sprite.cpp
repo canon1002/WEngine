@@ -34,34 +34,34 @@ void Sprite::Update() {
 	ImGui::DragFloat2("UVScale", &uvTransform_.scale.x, 0.01f, -10.0f, 10.0f);
 	ImGui::DragFloat2("UVTranlate", &uvTransform_.translate.x, 0.01f, -10.0f, 10.0f);
 	ImGui::SliderAngle("UVRotate", &uvTransform_.rotate.z);
-	ImGui::ColorEdit4("Color", &materialData->color.x);
+	ImGui::ColorEdit4("Color", &materialData->color.r);
 	ImGui::End();
 
 	//　矩形のワールド行列
-	worldtransform_->worldM = W::Math::MakeAffineMatrix(
+	worldtransform_->worldM = MakeAffineMatrix(
 		worldtransform_->scale, worldtransform_->rotate, worldtransform_->translate);
 
 	// カメラのワールド行列
-	cameraM = W::Math::MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f }, { 0.0f,0.0f,-5.0f });
+	cameraM = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f }, { 0.0f,0.0f,-5.0f });
 	// カメラ行列のビュー行列(カメラのワールド行列の逆行列)
-	viewM = W::Math::Inverse(cameraM);
+	viewM = Inverse(cameraM);
 	// 正規化デバイス座標系(NDC)に変換(正射影行列をかける)
-	projectM = W::Math::MakeOrthographicMatrix(0.0f, 0.0f, 1280.0f, 720.0f, 0.1f, 100.0f);
+	projectM = MakeOrthographicMatrix(0.0f, 0.0f, 1280.0f, 720.0f, 0.1f, 100.0f);
 	// WVPにまとめる
-	wvpM = W::Math::Multiply(viewM, projectM);
+	wvpM = Multiply(viewM, projectM);
 	// 矩形のワールド行列とWVP行列を掛け合わした行列を代入
-	wvpData->WVP = W::Math::Multiply(worldtransform_->worldM, wvpM);
+	wvpData->WVP = Multiply(worldtransform_->worldM, wvpM);
 	wvpData->World = worldtransform_->worldM;
 
 	/// マテリアル・UVTransform
-	Matrix4x4 uvTransformMatrix = W::Math::MakeAffineMatrix(
+	Mat44 uvTransformMatrix = MakeAffineMatrix(
 		uvTransform_.scale,
 		{ 0.0f,0.0f,uvTransform_.rotate.z },
 		uvTransform_.translate
 	);
 	// 変換したデータを代入する
 	materialData->uvTransform = uvTransformMatrix;
-	
+
 
 
 }
@@ -109,7 +109,7 @@ void Sprite::CreateVertexResource() {
 	materialData->color = { 1.0f, 1.0f, 1.0f, 1.0f };
 	materialData->enableLighting = false;
 	// UVTransformを設定
-	materialData->uvTransform = W::Math::MakeIdentity();
+	materialData->uvTransform = MakeIdentity();
 	uvTransform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 }
 
@@ -124,7 +124,7 @@ void Sprite::CreateTransformationRsource() {
 	// 単位行列を書き込む
 	// 単位行列を書き込む
 	wvpData->WVP = mainCamera_->GetWorldViewProjection();
-	wvpData->World = W::Math::MakeIdentity();
+	wvpData->World = MakeIdentity();
 }
 
 //
