@@ -1,16 +1,19 @@
 #include "InputHandle.h"
+#include "../Input.h"
 
 ICommand* InputHandle::HandleInput() {
-	if (0) {
+	input_ = Input::GetInstance();
+
+	if (input_->GetPushKey(DIK_W)) {
 		return pressKeyW_;
 	}
-	if (0) {
+	if (input_->GetPushKey(DIK_S)) {
 		return pressKeyS_;
 	}
-	if (0) {
+	if (input_->GetPushKey(DIK_A)) {
 		return pressKeyA_;
 	}
-	if (0) {
+	if (input_->GetPushKey(DIK_D)) {
 		return pressKeyD_;
 	}
 	return nullptr;					

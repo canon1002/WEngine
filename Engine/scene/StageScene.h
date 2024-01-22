@@ -1,7 +1,7 @@
 #pragma once
 #include "IScene.h"
-#include "../command/ICommand.h"
-#include "../command/InputHandle.h"
+#include "../../App/command/ICommand.h"
+#include "../../App/command/InputHandle.h"
 
 #include <memory>
 

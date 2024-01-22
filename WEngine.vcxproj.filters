@@ -59,11 +59,17 @@
     <Filter Include="Engine\scene">
       <UniqueIdentifier>{cb3f15ed-4218-4968-b0ef-876b54aa0080}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engine\command">
-      <UniqueIdentifier>{d65dd533-df01-4566-9654-a169c8ae895a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Engine\color">
       <UniqueIdentifier>{9f51436a-eb12-40d6-854a-c042c884df61}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="App">
+      <UniqueIdentifier>{38a6db3a-45b4-4552-a164-e6fc5ea2f695}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="App\command">
+      <UniqueIdentifier>{d65dd533-df01-4566-9654-a169c8ae895a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="App\object">
+      <UniqueIdentifier>{8950ac9c-34ae-4729-ac8d-0022f6b10d5d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -153,12 +159,6 @@
     <ClCompile Include="Engine\scene\TitleScene.cpp">
       <Filter>Engine\scene</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\command\ICommand.cpp">
-      <Filter>Engine\command</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\command\InputHandle.cpp">
-      <Filter>Engine\command</Filter>
-    </ClCompile>
     <ClCompile Include="Engine\math\Mat44.cpp">
       <Filter>Engine\math</Filter>
     </ClCompile>
@@ -173,6 +173,24 @@
     </ClCompile>
     <ClCompile Include="Engine\math\Vec4.cpp">
       <Filter>Engine\math</Filter>
+    </ClCompile>
+    <ClCompile Include="App\command\ICommand.cpp">
+      <Filter>App\command</Filter>
+    </ClCompile>
+    <ClCompile Include="App\command\InputHandle.cpp">
+      <Filter>App\command</Filter>
+    </ClCompile>
+    <ClCompile Include="App\object\Enemy.cpp">
+      <Filter>App\object</Filter>
+    </ClCompile>
+    <ClCompile Include="App\object\IObject.cpp">
+      <Filter>App\object</Filter>
+    </ClCompile>
+    <ClCompile Include="App\object\Player.cpp">
+      <Filter>App\object</Filter>
+    </ClCompile>
+    <ClCompile Include="App\object\PlayerBullet.cpp">
+      <Filter>App\object</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -267,12 +285,6 @@
     <ClInclude Include="Engine\scene\TitleScene.h">
       <Filter>Engine\scene</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\command\ICommand.h">
-      <Filter>Engine\command</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\command\InputHandle.h">
-      <Filter>Engine\command</Filter>
-    </ClInclude>
     <ClInclude Include="Engine\math\Math.h">
       <Filter>Engine\math</Filter>
     </ClInclude>
@@ -293,6 +305,24 @@
     </ClInclude>
     <ClInclude Include="Engine\math\Vec4.h">
       <Filter>Engine\math</Filter>
+    </ClInclude>
+    <ClInclude Include="App\command\ICommand.h">
+      <Filter>App\command</Filter>
+    </ClInclude>
+    <ClInclude Include="App\command\InputHandle.h">
+      <Filter>App\command</Filter>
+    </ClInclude>
+    <ClInclude Include="App\object\Enemy.h">
+      <Filter>App\object</Filter>
+    </ClInclude>
+    <ClInclude Include="App\object\IObject.h">
+      <Filter>App\object</Filter>
+    </ClInclude>
+    <ClInclude Include="App\object\Player.h">
+      <Filter>App\object</Filter>
+    </ClInclude>
+    <ClInclude Include="App\object\PlayerBullet.h">
+      <Filter>App\object</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

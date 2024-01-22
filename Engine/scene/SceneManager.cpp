@@ -14,7 +14,7 @@ SceneManager::SceneManager() {
 
 	// 各シーンの配列
 	sceneArr_[TITLE] = std::make_unique<TitleScene>();
-	sceneArr_[STAGE] = std::make_unique<StageScene>();
+	sceneArr_[STAGE] = std::make_unique<GameMainScene>();
 	sceneArr_[CLEAR] = std::make_unique<ResultScene>();
 
 	// 初期シーン
@@ -34,26 +34,6 @@ int SceneManager::Run() {
 	input->Init();
 	audio->Init();
 
-	// 球
-	Sphere* sphere = new Sphere;
-	sphere->Initialize();
-
-	// 平面(sprite)
-	Sprite* sprite = new Sprite;
-	sprite->Initialize();
-
-	// モデル
-	Model* model = new Model;
-	model->Initialize();
-
-	// パーティクル
-	VoxelParticle* voxels = new VoxelParticle;
-	voxels->Initialize();
-
-	// 音声データの生成
-	SoundData sound1 = audio->LoadWave("Resources/sound/Alarm01.wav");
-	audio->PlayWave(sound1);
-
 	while (true)	{
 
 		// Windowsのメッセージ処理
@@ -69,10 +49,8 @@ int SceneManager::Run() {
 
 		// 入力処理の更新を行う
 		input->Update();
-
 		// シーンのチェック
 		currentSceneNo_ = sceneArr_[currentSceneNo_]->GetSceneNo();
-
 		// シーン変更チェック
 		if (prevSceneNo_ != currentSceneNo_) {
 			sceneArr_[currentSceneNo_]->Init();
@@ -85,18 +63,11 @@ int SceneManager::Run() {
 		///
 
 		// 開発用UIの表示
-		ImGui::ShowDemoWindow();
-
+		//ImGui::ShowDemoWindow();
 		/// 更新処理
 		sceneArr_[currentSceneNo_]->Update();
-
+		// フレームレートの表示
 		ImGui::Text("FPS : %.2f", ImGui::GetIO().Framerate);
-
-		//sphere->Update();
-		//sprite->Update();
-		//model->Update();
-		//voxels->Update();
-
 		// 描画処理に入る前に、ImGui内部のコマンドを生成する
 		ImGui::Render();
 
@@ -106,14 +77,10 @@ int SceneManager::Run() {
 
 		// 描画前処理
 		dx->DrawBegin();
-
 		/// 描画処理
 		sceneArr_[currentSceneNo_]->Draw();
-
 		// パーティクル
 		dx->DrawPariticleBegin();
-		//voxels->Draw();
-
 		// 描画後処理
 		dx->DrawEnd();
 
@@ -124,20 +91,12 @@ int SceneManager::Run() {
 
 	}
 
-
 	// Comの終了処理
 	CoUninitialize();
 
 	// 解放処理
-	delete voxels;
-	delete model;
-	delete sprite;
-	delete sphere;
 	ImGui_ImplDX12_Shutdown();
 	dx->Delete();
-
-
-
 	win->Delete();
 
 	return 0;

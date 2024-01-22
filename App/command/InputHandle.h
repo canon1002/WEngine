@@ -1,6 +1,8 @@
 #pragma once
 #include "ICommand.h"
 
+class Input;
+
 class InputHandle
 {
 public:
@@ -12,6 +14,9 @@ public:
 	void AssingnMoveRightCommand2PressKeyD();
 
 private:
+
+	// 外部ポインタ
+	Input* input_ = nullptr;
 
 	ICommand* pressKeyW_;
 	ICommand* pressKeyS_;

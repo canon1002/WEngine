@@ -2,7 +2,7 @@
 #include <memory>
 #include "IScene.h"
 #include "TitleScene.h"
-#include "StageScene.h"
+#include "GameMainScene.h"
 #include "ResultScene.h"
 
 #include "../base/DirectXCommon.h"
