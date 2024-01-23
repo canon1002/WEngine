@@ -104,6 +104,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="App\object\IObject.cpp" />
     <ClCompile Include="App\object\Player.cpp" />
     <ClCompile Include="App\object\PlayerBullet.cpp" />
+    <ClCompile Include="Engine\object\3d\Cube.cpp" />
     <ClCompile Include="Engine\base\DirectXCommon.cpp" />
     <ClCompile Include="Engine\base\ImGuiManager.cpp" />
     <ClCompile Include="Engine\base\SRV.cpp" />
@@ -115,7 +116,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\math\Vec4.cpp" />
     <ClCompile Include="Engine\object\camera\MatrixCamera.cpp" />
     <ClCompile Include="Engine\object\light\DirectionalLight.cpp" />
-    <ClCompile Include="Engine\object\model\Model.cpp" />
+    <ClCompile Include="Engine\object\3d\Model.cpp" />
     <ClCompile Include="Engine\object\worldTransform\WorldTransform.cpp" />
     <ClCompile Include="Engine\primitive\Sphere.cpp" />
     <ClCompile Include="Engine\primitive\Sprite.cpp" />
@@ -139,6 +140,9 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Externals\imgui\imgui_widgets.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Engine\object\3d\Object3dCommon.cpp" />
+    <ClCompile Include="Engine\object\3d\Object3d.cpp" />
+    <ClCompile Include="Engine\object\3d\ModelCommon.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App\command\ICommand.h" />
@@ -147,6 +151,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="App\object\IObject.h" />
     <ClInclude Include="App\object\Player.h" />
     <ClInclude Include="App\object\PlayerBullet.h" />
+    <ClInclude Include="Engine\object\3d\Cube.h" />
     <ClInclude Include="Engine\base\DirectXCommon.h" />
     <ClInclude Include="Engine\base\ImGuiManager.h" />
     <ClInclude Include="Engine\base\SRV.h" />
@@ -161,7 +166,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\math\Vec4.h" />
     <ClInclude Include="Engine\object\camera\MatrixCamera.h" />
     <ClInclude Include="Engine\object\light\DirectionalLight.h" />
-    <ClInclude Include="Engine\object\model\Model.h" />
+    <ClInclude Include="Engine\object\3d\Model.h" />
     <ClInclude Include="Engine\object\worldTransform\WorldTransform.h" />
     <ClInclude Include="Engine\primitive\Sphere.h" />
     <ClInclude Include="Engine\primitive\Sprite.h" />
@@ -185,6 +190,9 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Externals\imgui\imstb_textedit.h" />
     <ClInclude Include="Externals\imgui\imstb_truetype.h" />
     <ClInclude Include="Input.h" />
+    <ClInclude Include="Engine\object\3d\Object3dCommon.h" />
+    <ClInclude Include="Engine\object\3d\Object3d.h" />
+    <ClInclude Include="Engine\object\3d\ModelCommon.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\externals\DirectXTex\DirectXTex_Desktop_2022_Win10.vcxproj">

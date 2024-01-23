@@ -11,7 +11,7 @@
 #include "../primitive/Sprite.h"
 #include "../resources/Section/Resource.h"
 #include "../primitive/Sphere.h"
-#include "../object/model/Model.h"
+#include "../object/3d/ModelCommon.h"
 #include "../primitive/VoxelParticle.h"
 #include "../../Input.h"
 #include "../resources/Section/Audio.h"
@@ -38,6 +38,7 @@ private:
 	Input* input;
 	// Audio
 	Audio* audio;
+
 
 public:
 

@@ -3,7 +3,7 @@
 #include "../base/DirectXCommon.h"
 #include "../resources/Section/Resource.h"
 #include "../object/worldTransform/WorldTransform.h"
-#include "../object/model/Model.h"
+#include "../object/3d/Model.h"
 #include "../object/light/DirectionalLight.h"
 #include <random>
 

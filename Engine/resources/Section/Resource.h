@@ -30,6 +30,15 @@ struct ParticleForGPU {
 	Color color;
 };
 
+struct MaterialData {
+	std::string textureFilePath;
+};
+
+struct ModelData {
+	std::vector<VertexData> vertices;
+	MaterialData material;
+};
+
 namespace Resource
 {	
 	// テクスチャ読み込み
@@ -50,6 +59,11 @@ namespace Resource
 	Microsoft::WRL::ComPtr<ID3D12Resource>UpdateTextureData(
 		Microsoft::WRL::ComPtr < ID3D12Resource> texture,
 		const DirectX::ScratchImage& mipImages);
+
+	// .objの読み込み
+	ModelData LoadObjFile(const std::string& directoryPath, const std::string& filename);
+	// .mtlの読み込み
+	MaterialData LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename);
 
 };
 

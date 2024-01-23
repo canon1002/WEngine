@@ -1,6 +1,7 @@
 #include "./Engine/base/DirectXCommon.h"
 #include "./Engine/scene/SceneManager.h"
 #include "./Engine/resources/Section/Audio.h"
+#include "../object/3d/ModelCommon.h"
 #include "./Input.h"
 #include <d3d12.h>
 
@@ -17,6 +18,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Input* input = Input::GetInstance();
 	// Audio
 	Audio* audio = Audio::GetInstance();
+
 	// Scene
 	SceneManager* sceneManager= new SceneManager();
 	sceneManager->Run();

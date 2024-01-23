@@ -12,6 +12,7 @@ SceneManager::SceneManager() {
 	// Audio
 	audio = Audio::GetInstance();
 
+
 	// 各シーンの配列
 	sceneArr_[TITLE] = std::make_unique<TitleScene>();
 	sceneArr_[STAGE] = std::make_unique<GameMainScene>();

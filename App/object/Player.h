@@ -3,7 +3,7 @@
 #include "../worldTransform/WorldTransform.h"
 #include "../math/Math.h"
 #include "../color/Color.h"
-#include "../model/Model.h"
+#include "../3d/Model.h"
 
 class Player
 {

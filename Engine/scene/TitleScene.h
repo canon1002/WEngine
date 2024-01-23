@@ -1,5 +1,7 @@
 #pragma once
 #include "IScene.h"
+#include "../Engine/object/3d/Object3d.h"
+#include "../Engine/object/3d/Model.h"
 
 // 前方宣言
 class Input;
@@ -18,6 +20,9 @@ private:
 
 	// 外部ポインタ
 	Input* input_ = nullptr;
+
+	std::unique_ptr<Object3d> eAxis_ = nullptr;
+	std::unique_ptr<Model> eAxisModel_ = nullptr;
 
 };
 

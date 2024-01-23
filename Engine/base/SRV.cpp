@@ -1,6 +1,6 @@
 #include "SRV.h"
 #include "../resources/Section/Resource.h"
-#include "../object/model/Model.h"
+#include "../object/3d/Model.h"
 #include "../math/Math.h"
 
 

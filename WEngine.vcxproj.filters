@@ -71,6 +71,9 @@
     <Filter Include="App\object">
       <UniqueIdentifier>{8950ac9c-34ae-4729-ac8d-0022f6b10d5d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine\object\3d">
+      <UniqueIdentifier>{bc639819-c07f-4050-bb41-870122750342}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -104,7 +107,7 @@
     <ClCompile Include="Engine\object\light\DirectionalLight.cpp">
       <Filter>Engine\object\Light</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\object\model\Model.cpp">
+    <ClCompile Include="Engine\object\3d\Model.cpp">
       <Filter>Engine\object\Model</Filter>
     </ClCompile>
     <ClCompile Include="Engine\base\DirectXCommon.cpp">
@@ -192,6 +195,10 @@
     <ClCompile Include="App\object\PlayerBullet.cpp">
       <Filter>App\object</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\object\3d\Object3dCommon.cpp" />
+    <ClCompile Include="Engine\object\3d\Object3d.cpp" />
+    <ClCompile Include="Engine\object\3d\Cube.cpp" />
+    <ClCompile Include="Engine\object\3d\ModelCommon.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\base\ImGuiManager.h">
@@ -227,7 +234,7 @@
     <ClInclude Include="Engine\object\light\DirectionalLight.h">
       <Filter>Engine\object\Light</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\object\model\Model.h">
+    <ClInclude Include="Engine\object\3d\Model.h">
       <Filter>Engine\object\Model</Filter>
     </ClInclude>
     <ClInclude Include="Engine\base\DirectXCommon.h">
@@ -324,6 +331,10 @@
     <ClInclude Include="App\object\PlayerBullet.h">
       <Filter>App\object</Filter>
     </ClInclude>
+    <ClInclude Include="Engine\object\3d\Object3dCommon.h" />
+    <ClInclude Include="Engine\object\3d\Object3d.h" />
+    <ClInclude Include="Engine\object\3d\Cube.h" />
+    <ClInclude Include="Engine\object\3d\ModelCommon.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt">
