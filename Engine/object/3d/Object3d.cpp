@@ -5,6 +5,7 @@
 #include <sstream>
 #include "../camera/MatrixCamera.h"
 #include "Model.h"
+#include "ModelManager.h"
 
 Object3d::Object3d() {}
 
@@ -73,4 +74,10 @@ void Object3d::CreateTransformationRsource() {
 	// 単位行列を書き込む
 	wvpData->WVP = mainCamera_->GetWorldViewProjection();
 	wvpData->World = MakeIdentity();
+}
+
+void Object3d::SetModel(const std::string& filepath)
+{
+	// モデルを検索してセット
+	model_ = ModelManager::GetInstance()->FindModel(filepath);
 }

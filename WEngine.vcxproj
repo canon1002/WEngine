@@ -143,6 +143,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\object\3d\Object3dCommon.cpp" />
     <ClCompile Include="Engine\object\3d\Object3d.cpp" />
     <ClCompile Include="Engine\object\3d\ModelCommon.cpp" />
+    <ClCompile Include="Engine\object\3d\ModelManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App\command\ICommand.h" />
@@ -193,6 +194,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\object\3d\Object3dCommon.h" />
     <ClInclude Include="Engine\object\3d\Object3d.h" />
     <ClInclude Include="Engine\object\3d\ModelCommon.h" />
+    <ClInclude Include="Engine\object\3d\ModelManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\externals\DirectXTex\DirectXTex_Desktop_2022_Win10.vcxproj">

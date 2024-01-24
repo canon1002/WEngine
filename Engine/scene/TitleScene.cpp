@@ -2,16 +2,17 @@
 #include "../base/DirectXCommon.h"
 #include "../Input.h"
 #include "../object/3d/ModelCommon.h"
+#include "../3d/ModelManager.h"
 
 //　継承した関数
 void TitleScene::Init() {
 	input_ = Input::GetInstance();
 
-	eAxisModel_ = std::make_unique<Model>();
-	eAxisModel_->Init();
+	// モデルをセットする
+	ModelManager::GetInstance()->LoadModel("emptyAxis.obj");
 	eAxis_ = std::make_unique<Object3d>();
 	eAxis_->Init();
-	eAxis_->SetModel(eAxisModel_.get());
+	eAxis_->SetModel("emptyAxis.obj");
 	
 }
 

@@ -1,9 +1,13 @@
 #include "Model.h"
 #include "ModelCommon.h"
 
-void Model::Init()
+void Model::Initialize(const std::string& directrypath,const std::string& filename)
 {
-	dx_ = DirectXCommon::GetInstance();
+	dx_ = DirectXCommon::GetInstance();	
+	
+	// モデル読み込み
+	modelData = Resource::LoadObjFile(directrypath,filename);
+
 	CreateVertexResource();
 	CreateMaterialResource();
 }
@@ -37,8 +41,6 @@ void Model::Draw()
 //
 void Model::CreateVertexResource() {
 
-	// モデル読み込み
-	modelData = Resource::LoadObjFile("resources/objs", "emptyAxis.obj");
 
 	// 実際に頂点リソースを作る
 	vertexResource = dx_->CreateBufferResource(

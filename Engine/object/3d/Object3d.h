@@ -23,7 +23,7 @@ public: // メンバ関数
 	void Draw();
 
 	void CreateTransformationRsource();
-	void SetModel(Model* model) { this->model_ = model; }
+	void SetModel(const std::string& filepath);
 
 private: // メンバ変数
 

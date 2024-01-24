@@ -12,7 +12,7 @@ class Model
 {
 public:
 
-	void Init();
+	void Initialize(const std::string& directrypath, const std::string& filename);
 	void Update();
 	void Draw();
 
