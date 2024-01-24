@@ -6,7 +6,7 @@
 #include "ResultScene.h"
 
 #include "../base/DirectXCommon.h"
-#include "../object/camera/MatrixCamera.h"
+#include "../object/camera/MainCamera.h"
 #include "../primitive/Triangle.h"
 #include "../primitive/Sprite.h"
 #include "../resources/Section/Resource.h"
@@ -38,7 +38,8 @@ private:
 	Input* input;
 	// Audio
 	Audio* audio;
-
+	// メインカメラ
+	MainCamera* mainCamera;
 
 public:
 

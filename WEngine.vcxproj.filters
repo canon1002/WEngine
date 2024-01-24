@@ -200,6 +200,9 @@
     <ClCompile Include="Engine\object\3d\Cube.cpp" />
     <ClCompile Include="Engine\object\3d\ModelCommon.cpp" />
     <ClCompile Include="Engine\object\3d\ModelManager.cpp" />
+    <ClCompile Include="Engine\object\camera\MainCamera.cpp">
+      <Filter>Engine\object\Camera</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\base\ImGuiManager.h">
@@ -337,6 +340,9 @@
     <ClInclude Include="Engine\object\3d\Cube.h" />
     <ClInclude Include="Engine\object\3d\ModelCommon.h" />
     <ClInclude Include="Engine\object\3d\ModelManager.h" />
+    <ClInclude Include="Engine\object\camera\MainCamera.h">
+      <Filter>Engine\object\Camera</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt">

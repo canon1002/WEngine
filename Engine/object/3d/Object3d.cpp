@@ -3,7 +3,7 @@
 #include <assert.h>
 #include <fstream>
 #include <sstream>
-#include "../camera/MatrixCamera.h"
+#include "../camera/MainCamera.h"
 #include "Model.h"
 #include "ModelManager.h"
 
@@ -14,9 +14,11 @@ Object3d::~ Object3d() {}
 void Object3d::Init() {
 
 	dx_ = DirectXCommon::GetInstance();
-	mainCamera_ = MatrixCamera::GetInstance();
-	worldTransform_ = new WorldTransform;
-
+	mainCamera_ = MainCamera::GetInstance();
+	worldTransform_.scale = { 1.0f,1.0f,1.0f };
+	worldTransform_.rotate = { 0.0f,0.0f,0.0f };
+	worldTransform_.translate = { 0.0f,0.0f,0.0f };
+	worldTransform_.worldM = MakeAffineMatrix(worldTransform_.scale, worldTransform_.rotate, worldTransform_.translate);
 
 	CreateTransformationRsource();
 
@@ -25,20 +27,20 @@ void Object3d::Init() {
 void Object3d::Update() {
 
 	//　矩形のワールド行列
-	worldTransform_->worldM = MakeAffineMatrix(
-		worldTransform_->scale, worldTransform_->rotate, worldTransform_->translate);
+	worldTransform_.worldM = MakeAffineMatrix(
+		worldTransform_.scale, worldTransform_.rotate, worldTransform_.translate);
 
 	// カメラのワールド行列
-	cameraM = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f }, { 0.0f,0.0f,-5.0f });
+	cameraM = mainCamera_->GetWorldMatrix();
 	// カメラ行列のビュー行列(カメラのワールド行列の逆行列)
-	viewM = Inverse(cameraM);
+	viewM = mainCamera_->GetViewMatrix();
 	// 正規化デバイス座標系(NDC)に変換(正射影行列をかける)
-	pespectiveM = MakePerspectiveMatrix(0.45f, (1280.0f / 720.0f), 0.1f, 100.0f);
+	pespectiveM = mainCamera_->GetProjectionMatrix();
 	// WVPにまとめる
-	wvpM = Multiply(viewM, pespectiveM);
+	wvpM = mainCamera_->GetViewProjectionMatrix(); 
 	// 矩形のワールド行列とWVP行列を掛け合わした行列を代入
-	wvpData->WVP = Multiply(worldTransform_->worldM, wvpM);
-	wvpData->World = worldTransform_->worldM;
+	wvpData->WVP = Multiply(worldTransform_.worldM, wvpM);
+	wvpData->World = worldTransform_.worldM;
 
 	// 早期リターン
 	if (model_ == nullptr) {
@@ -72,7 +74,7 @@ void Object3d::CreateTransformationRsource() {
 	// 書き込むためのアドレスを取得
 	wvpResource->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
 	// 単位行列を書き込む
-	wvpData->WVP = mainCamera_->GetWorldViewProjection();
+	wvpData->WVP = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f }, { 0.0f,0.0f,0.0f });
 	wvpData->World = MakeIdentity();
 }
 

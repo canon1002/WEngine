@@ -114,6 +114,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\math\Vec2.cpp" />
     <ClCompile Include="Engine\math\Vec3.cpp" />
     <ClCompile Include="Engine\math\Vec4.cpp" />
+    <ClCompile Include="Engine\object\camera\MainCamera.cpp" />
     <ClCompile Include="Engine\object\camera\MatrixCamera.cpp" />
     <ClCompile Include="Engine\object\light\DirectionalLight.cpp" />
     <ClCompile Include="Engine\object\3d\Model.cpp" />
@@ -165,6 +166,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\math\Vec2.h" />
     <ClInclude Include="Engine\math\Vec3.h" />
     <ClInclude Include="Engine\math\Vec4.h" />
+    <ClInclude Include="Engine\object\camera\MainCamera.h" />
     <ClInclude Include="Engine\object\camera\MatrixCamera.h" />
     <ClInclude Include="Engine\object\light\DirectionalLight.h" />
     <ClInclude Include="Engine\object\3d\Model.h" />

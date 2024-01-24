@@ -11,7 +11,8 @@ SceneManager::SceneManager() {
 	input = Input::GetInstance();
 	// Audio
 	audio = Audio::GetInstance();
-
+	// メインカメラ
+	mainCamera = MainCamera::GetInstance();
 
 	// 各シーンの配列
 	sceneArr_[TITLE] = std::make_unique<TitleScene>();
@@ -34,6 +35,7 @@ int SceneManager::Run() {
 	dx->Initialize(win);
 	input->Init();
 	audio->Init();
+	mainCamera->Initialize({ {1.0f,1.0f,1.0f},{0.314f,-0.314f,0.0f},{2.0f,2.0f,-6.0f} });
 
 	while (true)	{
 
@@ -58,6 +60,9 @@ int SceneManager::Run() {
 		}
 		// 前回のシーン番号を上書き
 		prevSceneNo_ = currentSceneNo_;
+
+		// カメラの更新
+		mainCamera->Update();
 
 		///
 		/// 更新処理(推定)
@@ -97,6 +102,7 @@ int SceneManager::Run() {
 
 	// 解放処理
 	ImGui_ImplDX12_Shutdown();
+	mainCamera->Finalize();
 	dx->Delete();
 	win->Delete();
 

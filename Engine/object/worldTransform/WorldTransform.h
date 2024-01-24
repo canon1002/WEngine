@@ -40,9 +40,8 @@ struct Transformation {
 	}
 };
 
-class WorldTransform
-{
-public: 
+struct WorldTransform
+{ 
 
 	WorldTransform(){
 		// 拡大

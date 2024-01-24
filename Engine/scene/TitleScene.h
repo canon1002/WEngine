@@ -22,7 +22,8 @@ private:
 	Input* input_ = nullptr;
 
 	std::unique_ptr<Object3d> eAxis_ = nullptr;
-	//std::unique_ptr<Model> eAxisModel_ = nullptr;
+	std::unique_ptr<Object3d> eAxis2_ = nullptr;
+	
 
 };
 
