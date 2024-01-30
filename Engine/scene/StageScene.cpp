@@ -1,5 +1,11 @@
 #include "StageScene.h"
 
+void StageScene::Finalize()
+{
+	delete command_;
+	inputHandler_.release();
+}
+
 void StageScene::Init() {
 	inputHandler_ = std::make_unique<InputHandle>();
 

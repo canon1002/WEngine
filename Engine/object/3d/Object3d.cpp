@@ -9,12 +9,15 @@
 
 Object3d::Object3d() {}
 
-Object3d::~ Object3d() {}
+Object3d::~ Object3d() {
+	//delete wvpData;
+	//delete model_;
+}
 
 void Object3d::Init() {
 
 	dx_ = DirectXCommon::GetInstance();
-	mainCamera_ = MainCamera::GetInstance();
+	camera_ = MainCamera::GetInstance();
 	worldTransform_.scale = { 1.0f,1.0f,1.0f };
 	worldTransform_.rotate = { 0.0f,0.0f,0.0f };
 	worldTransform_.translate = { 0.0f,0.0f,0.0f };
@@ -27,17 +30,18 @@ void Object3d::Init() {
 void Object3d::Update() {
 
 	//　矩形のワールド行列
-	worldTransform_.worldM = MakeAffineMatrix(
-		worldTransform_.scale, worldTransform_.rotate, worldTransform_.translate);
+	//worldTransform_.worldM = MakeAffineMatrix(
+	//	worldTransform_.scale, worldTransform_.rotate, worldTransf 
+	// dorm_.translate);
 
 	// カメラのワールド行列
-	cameraM = mainCamera_->GetWorldMatrix();
+	cameraM = camera_->GetWorldMatrix();
 	// カメラ行列のビュー行列(カメラのワールド行列の逆行列)
-	viewM = mainCamera_->GetViewMatrix();
+	viewM = camera_->GetViewMatrix();
 	// 正規化デバイス座標系(NDC)に変換(正射影行列をかける)
-	pespectiveM = mainCamera_->GetProjectionMatrix();
+	pespectiveM = camera_->GetProjectionMatrix();
 	// WVPにまとめる
-	wvpM = mainCamera_->GetViewProjectionMatrix(); 
+	wvpM = camera_->GetViewProjectionMatrix(); 
 	// 矩形のワールド行列とWVP行列を掛け合わした行列を代入
 	wvpData->WVP = Multiply(worldTransform_.worldM, wvpM);
 	wvpData->World = worldTransform_.worldM;

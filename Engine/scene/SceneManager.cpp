@@ -13,6 +13,8 @@ SceneManager::SceneManager() {
 	audio = Audio::GetInstance();
 	// メインカメラ
 	mainCamera = MainCamera::GetInstance();
+	// モデルマネージャー
+	modelManager = ModelManager::GetInstance();
 
 	// 各シーンの配列
 	sceneArr_[TITLE] = std::make_unique<TitleScene>();
@@ -33,9 +35,11 @@ int SceneManager::Run() {
 	// 初期化
 	win->Initialize();
 	dx->Initialize(win);
-	input->Init();
-	audio->Init();
+	input->Initialize();
+	audio->Initialize();
 	mainCamera->Initialize({ {1.0f,1.0f,1.0f},{0.314f,-0.314f,0.0f},{2.0f,2.0f,-6.0f} });
+	//mainCamera->Initialize({ {1.0f,1.0f,1.0f},{0.314f,0.0f,0.0f},{0.0f,16.0f,-48.0f} });
+	modelManager->Initialize();
 
 	while (true)	{
 
@@ -85,8 +89,7 @@ int SceneManager::Run() {
 		dx->DrawBegin();
 		/// 描画処理
 		sceneArr_[currentSceneNo_]->Draw();
-		// パーティクル
-		dx->DrawPariticleBegin();
+	
 		// 描画後処理
 		dx->DrawEnd();
 
@@ -101,10 +104,19 @@ int SceneManager::Run() {
 	CoUninitialize();
 
 	// 解放処理
+	sceneArr_[TITLE]->Finalize();
+	sceneArr_[STAGE]->Finalize();
+	sceneArr_[CLEAR]->Finalize();
+	sceneArr_[TITLE].reset();
+	sceneArr_[STAGE].reset();
+	sceneArr_[CLEAR].reset();
 	ImGui_ImplDX12_Shutdown();
+	modelManager->Finalize();
 	mainCamera->Finalize();
-	dx->Delete();
-	win->Delete();
+	input->Finalize();
+	audio->Finalize();
+	dx->Finalize();
+	win->Finalize();
 
 	return 0;
 }

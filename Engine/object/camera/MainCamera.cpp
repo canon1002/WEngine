@@ -4,17 +4,7 @@
 
 MainCamera* MainCamera::instance = nullptr;
 
-MainCamera::MainCamera()
-	:transform_({ Vec3{ 1.0f,1.0f,1.0f }, Vec3{ 0.0f,0.0f,0.0f },Vec3 { 0.0f,0.0f,0.0f } })
-	, verticalFOV_(0.45f)
-	, aspectRatio_(float(WinAPI::GetInstance()->kClientWidth) / float(WinAPI::GetInstance()->kClientHeight))
-	,nearClip_(0.1f)
-	,farClip_(100.0f)
-	, worldMatrix_(MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate))
-	,viewMatrix_(Inverse(worldMatrix_))
-	, projectionMatrix_(MakePerspectiveMatrix(verticalFOV_, aspectRatio_, nearClip_, farClip_))
-	, viewprojectionMatrix_(Multiply(viewMatrix_, projectionMatrix_))
-{}
+MainCamera::MainCamera() {}
 
 MainCamera* MainCamera::GetInstance()
 {
@@ -32,8 +22,15 @@ void MainCamera::Finalize()
 void MainCamera::Initialize(Transformation transform)
 {
 	transform_ = transform;
+	verticalFOV_ = (0.45f);
+	aspectRatio_ = (float(WinAPI::GetInstance()->kClientWidth) / float(WinAPI::GetInstance()->kClientHeight));
+	nearClip_ = (0.1f);
+	farClip_ = (100.0f);
+	worldMatrix_ = (MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate));
+	viewMatrix_ = (Inverse(worldMatrix_));
+	projectionMatrix_ = (MakePerspectiveMatrix(verticalFOV_, aspectRatio_, nearClip_, farClip_));
+	viewprojectionMatrix_ = (Multiply(viewMatrix_, projectionMatrix_));
 }
-
 void MainCamera::Update()
 {
 	ImGui::Begin("MainCamera");
@@ -52,5 +49,5 @@ void MainCamera::Update()
 	projectionMatrix_ = MakePerspectiveMatrix(verticalFOV_, aspectRatio_, nearClip_, farClip_);
 	// 上記２つをビュープロジェクション行列に合成
 	viewprojectionMatrix_ = Multiply(viewMatrix_, projectionMatrix_);
-	
+
 }

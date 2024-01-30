@@ -5,13 +5,12 @@
 #include "../../object/light/DirectionalLight.h"
 
 class DirectXCommon;
-class ModelCommon;
-
 
 class Model
 {
 public:
 
+	~Model();
 	void Initialize(const std::string& directrypath, const std::string& filename);
 	void Update();
 	void Draw();
@@ -24,7 +23,7 @@ public:
 private:
 
 	// ModelCommonのポインタ
-	ModelCommon* modelCommon_ = nullptr;
+	//ModelCommon* modelCommon_ = nullptr;
 	// DirectXのポインタ
 	DirectXCommon* dx_ = nullptr;
 

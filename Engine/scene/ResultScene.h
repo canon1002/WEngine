@@ -4,6 +4,7 @@ class ResultScene :
     public IScene
 {
 public:
+	void Finalize()override;
 
 	//　継承した関数
 	void Init() override;

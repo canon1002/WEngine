@@ -61,7 +61,7 @@ void WinAPI::Initialize() {
 }
 
 // 消去
-void WinAPI::Delete() {
+void WinAPI::Finalize() {
 
 	// ウィンドウを消去
 	CloseWindow(hwnd);

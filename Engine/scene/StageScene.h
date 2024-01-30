@@ -13,6 +13,8 @@ private:
     ICommand* command_ = nullptr;
     
 public:
+
+    void Finalize()override;
     void Init()override;
     void Update()override;
     void Draw()override;

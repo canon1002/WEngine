@@ -3,9 +3,6 @@
 // staticメンバ変数で宣言したインスタンスを初期化
 Input* Input::instance = nullptr;
 
-Input::Input() {}
-Input::~Input() {}
-
 // インスタンスを取得
 Input* Input::GetInstance() {
 	// 関数内staticは初めて通ったときのみ実行される
@@ -15,7 +12,12 @@ Input* Input::GetInstance() {
 	return instance;
 }
 
-void Input::Init() {
+void Input::Finalize()
+{
+
+}
+
+void Input::Initialize() {
 
 	win_ = WinAPI::GetInstance();
 	dx_ = DirectXCommon::GetInstance();
@@ -62,6 +64,20 @@ bool Input::GetPushKey(BYTE keyNumber) {
 
 	// 指定したキーが入力されていればtrueを返す
 	if (keys[keyNumber]) {
+		return true;
+	}
+
+	// そうでなければfalseを返す
+	return false;
+}
+
+
+// キーの入力をチェック -- 押しっぱ --
+bool Input::GetPressKey(BYTE keyNumber)
+{
+	// 指定したキーが 「前のフレームで入力されている」かつ
+	// 「現在のフレームで入力されている」状態であればtrueを返す
+	if (keys[keyNumber] && preKeys[keyNumber]) {
 		return true;
 	}
 

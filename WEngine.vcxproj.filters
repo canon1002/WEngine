@@ -92,9 +92,6 @@
     <ClCompile Include="Engine\resources\ResourceManager.cpp">
       <Filter>Engine\resouces</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\object\camera\MatrixCamera.cpp">
-      <Filter>Engine\object\Camera</Filter>
-    </ClCompile>
     <ClCompile Include="Engine\object\worldTransform\WorldTransform.cpp">
       <Filter>Engine\object\WorldTransform</Filter>
     </ClCompile>
@@ -197,12 +194,13 @@
     </ClCompile>
     <ClCompile Include="Engine\object\3d\Object3dCommon.cpp" />
     <ClCompile Include="Engine\object\3d\Object3d.cpp" />
-    <ClCompile Include="Engine\object\3d\Cube.cpp" />
-    <ClCompile Include="Engine\object\3d\ModelCommon.cpp" />
     <ClCompile Include="Engine\object\3d\ModelManager.cpp" />
     <ClCompile Include="Engine\object\camera\MainCamera.cpp">
       <Filter>Engine\object\Camera</Filter>
     </ClCompile>
+    <ClCompile Include="App\object\Skydome.cpp" />
+    <ClCompile Include="App\camera\RailCamera.cpp" />
+    <ClCompile Include="Engine\object\camera\CameraCommon.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\base\ImGuiManager.h">
@@ -222,9 +220,6 @@
     </ClInclude>
     <ClInclude Include="Engine\resources\ResourceManager.h">
       <Filter>Engine\resouces</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\object\camera\MatrixCamera.h">
-      <Filter>Engine\object\Camera</Filter>
     </ClInclude>
     <ClInclude Include="Engine\object\worldTransform\WorldTransform.h">
       <Filter>Engine\object\WorldTransform</Filter>
@@ -337,12 +332,13 @@
     </ClInclude>
     <ClInclude Include="Engine\object\3d\Object3dCommon.h" />
     <ClInclude Include="Engine\object\3d\Object3d.h" />
-    <ClInclude Include="Engine\object\3d\Cube.h" />
-    <ClInclude Include="Engine\object\3d\ModelCommon.h" />
     <ClInclude Include="Engine\object\3d\ModelManager.h" />
     <ClInclude Include="Engine\object\camera\MainCamera.h">
       <Filter>Engine\object\Camera</Filter>
     </ClInclude>
+    <ClInclude Include="App\object\Skydome.h" />
+    <ClInclude Include="App\camera\RailCamera.h" />
+    <ClInclude Include="Engine\object\camera\CameraCommon.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt">

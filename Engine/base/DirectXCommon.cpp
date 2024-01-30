@@ -94,11 +94,27 @@ void DirectXCommon::Initialize(WinAPI* win) {
 	// フェンスの生成
 	CreateFence();
 
+	//解放の確認のために名前をつける
+	device_->SetName(L"device");
+	commandQueue->SetName(L"commandQueue");
+	commandAllocator->SetName(L"commandAllocator");
+	commandList->SetName(L"commandList");
+	swapChainResources[0]->SetName(L"swapChainResource[0]");
+	swapChainResources[1]->SetName(L"swapChainResource[1]");
+	rootSignature->SetName(L"rootSignature");
+	graphicsPipelineState->SetName(L"graphicsPipelineState");
+	particleRootSignature->SetName(L"particleRootSignature");
+	pGraphicsPipelineState->SetName(L"pGraphicsPipelineState");
+	rtvDescriptorHeap->SetName(L"rtvDescriptorHeap");
+	depthStencilTextureResource_->SetName(L"depthStencilTextureResource_");
+	dsvDescriptorHeap_->SetName(L"dsvDescriptorHeap_");
+	result_->SetName(L"result_");
+	fence->SetName(L"fence");
 	
 
 }
 
-void DirectXCommon::Delete() {
+void DirectXCommon::Finalize() {
 
 	// 生成順と逆の順番で開放していく
 
@@ -108,7 +124,8 @@ void DirectXCommon::Delete() {
 	//dxcUtils->Release();
 	//graphicsPipelineState->Release();
 	//rootSignature->Release();
-	srv_->Relese();
+	srv_->Finalize();
+	result_->Release();
 	//rtvDescriptorHeap->Release();
 	//swapChainResources[0]->Release();
 	//swapChainResources[1]->Release();
@@ -119,6 +136,8 @@ void DirectXCommon::Delete() {
 	//device->Release();
 	////useAdapter->Release();
 	//dxgiFactory->Release();
+
+	device_->Release();
 
 #ifdef _DEBUG
 	debugController->Release();
@@ -277,11 +296,6 @@ void DirectXCommon::InitializeDXC() {
 /// PipelineStateObjectの初期化
 void DirectXCommon::InitializePSO() {
 
-	// RootSignatureを生成する(P.30)
-
-	// パーティクル・モデル・スプライトごとに分ける...?
-
-	
 	///////////////////////////////////////////////////////////////
 	///	3Dモデル用 ルートシグネチャ
 	///////////////////////////////////////////////////////////////
@@ -346,7 +360,7 @@ void DirectXCommon::InitializePSO() {
 		WinAPI::Log(reinterpret_cast<char*>(errorBlob->GetBufferPointer()));
 		assert(false);
 	}
-	// バイナリを元に作成
+	// バイナリを元に
 	hr = device_->CreateRootSignature(0, signatureBlob->GetBufferPointer(),
 		signatureBlob->GetBufferSize(), IID_PPV_ARGS(&rootSignature));
 	assert(SUCCEEDED(hr));
@@ -524,9 +538,15 @@ void DirectXCommon::InitializePSOP() {
 	// BlendStateの設定を行う(P.34)
 	D3D12_BLEND_DESC pBlendDesc{};
 	// すべての色要素を書き込む
-	pBlendDesc.RenderTarget[0].RenderTargetWriteMask =
-		D3D12_COLOR_WRITE_ENABLE_ALL;
-
+	pBlendDesc.RenderTarget[0].RenderTargetWriteMask =D3D12_COLOR_WRITE_ENABLE_ALL;
+	pBlendDesc.RenderTarget[0].BlendEnable = TRUE;
+	pBlendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
+	pBlendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
+	pBlendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
+	pBlendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
+	pBlendDesc.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
+	pBlendDesc.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
+	pBlendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;
 	// RasterizerStateの設定を行う(P.36)
 	D3D12_RASTERIZER_DESC pRasterizerDesc{};
 	// 裏面を表示しない
@@ -566,8 +586,8 @@ void DirectXCommon::InitializePSOP() {
 	D3D12_DEPTH_STENCIL_DESC particleDepthStencilDesc{};
 	// Depthの機能を有効化
 	particleDepthStencilDesc.DepthEnable = true;
-	// 書き込みを行う
-	particleDepthStencilDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
+	// 書き込みを行わないようにする
+	particleDepthStencilDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
 	// 比較関数はLessEqual。つまり、近ければ描画される
 	particleDepthStencilDesc.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
 	//  DepthStencilの設定
@@ -656,7 +676,6 @@ void DirectXCommon::CreateDepthBuffer() {
 void DirectXCommon::CreateFence() {
 
 	// 初期値0でFenceを作る
-	fence = nullptr;
 	fenceValue = 0;
 	hr = device_->CreateFence(fenceValue, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence));
 	assert(SUCCEEDED(hr));
@@ -773,10 +792,7 @@ void DirectXCommon::DrawEnd() {
 /// バッファリソースの生成
 Microsoft::WRL::ComPtr<ID3D12Resource> DirectXCommon::CreateBufferResource(ID3D12Device* device, size_t sizeInBytes) {
 
-
-	// 返す用の変数を宣言
-	Microsoft::WRL::ComPtr<ID3D12Resource> result = nullptr;
-
+	result_ = nullptr;
 	// VertexResourceを生成する(P.42)
 	// 頂点リソース用のヒープ設定
 	D3D12_HEAP_PROPERTIES uploadHeapProperties{};
@@ -796,10 +812,10 @@ Microsoft::WRL::ComPtr<ID3D12Resource> DirectXCommon::CreateBufferResource(ID3D1
 
 	hr = device->CreateCommittedResource(&uploadHeapProperties, D3D12_HEAP_FLAG_NONE,
 		&vertexResouceDesc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr,
-		IID_PPV_ARGS(&result));
+		IID_PPV_ARGS(&result_));
 	assert(SUCCEEDED(hr));
 
-	return result;
+	return result_;
 }
 
 /// ディスクリプタヒープの生成

@@ -16,20 +16,18 @@ class SRV
 {
 private:
 
-	SRV();
-	~SRV();
-
-public: // ** 静的メンバ関数 ** //
-
+	SRV() = default;
+	~SRV() = default;
 	// コピーコンストラクタと演算子オーバーロードの禁止
 	SRV(const SRV& obj) = delete;
 	SRV& operator=(const SRV& obj) = delete;
 
+public: // ** 静的メンバ関数 ** //
+
 	// インスタンスを取得
 	static SRV* GetInstance();
-
 	// 開放する
-	static void Relese();
+	void Finalize();
 
 public:
 

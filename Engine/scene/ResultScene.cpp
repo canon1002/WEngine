@@ -1,6 +1,11 @@
 #include "ResultScene.h"
 
 //　継承した関数
+void ResultScene::Finalize()
+{
+
+}
+
 void ResultScene::Init() {
 
 }

@@ -1,26 +1,29 @@
 #include "Triangle.h"
-#include "../object/camera/MatrixCamera.h"
+#include "../object/camera/MainCamera.h"
 
 Triangle::Triangle() { this->Initialize(); }
 
 Triangle::~Triangle()
 {
-	/*wvpResource->Release();
-	materialResource->Release();
-	vertexResource->Release();*/
+	delete wvpData;
+	delete vertexData;
+	delete materialData;
 }
 
 void Triangle::Initialize() {
 
 	dx_ = DirectXCommon::GetInstance();
-	mainCamera_ = MatrixCamera::GetInstance();
+	mainCamera_ = MainCamera::GetInstance();
 
-	worldtransform_ = new WorldTransform;
 
 	CreateVertexResource();
 	CreateTransformationRsource();
 	CreateBufferView();
 
+	wvpResource->SetName(L"Tri");
+	materialResource->SetName(L"Tri");
+	vertexResource->SetName(L"Tri");
+	
 }
 
 void Triangle::Update() {
@@ -30,8 +33,8 @@ void Triangle::Update() {
 void Triangle::Draw() {
 
 	//　三角形のワールド行列
-	worldtransform_->worldM = MakeAffineMatrix(
-		worldtransform_->scale, worldtransform_->rotate, worldtransform_->translate);
+	worldTransform_.worldM = MakeAffineMatrix(
+		worldTransform_.scale, worldTransform_.rotate, worldTransform_.translate);
 	
 	// カメラのワールド行列
 	cameraM = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f }, { 0.0f,0.0f,-5.0f });
@@ -42,7 +45,7 @@ void Triangle::Draw() {
 	// WVPにまとめる
 	wvpM = Multiply(viewM,pespectiveM);
 	// 三角形のワールド行列とWVP行列を掛け合わした行列を代入
-	*wvpData = Multiply(worldtransform_->worldM, wvpM);
+	*wvpData = Multiply(worldTransform_.worldM, wvpM);
 
 	dx_->commandList->IASetVertexBuffers(0, 1, &vertexBufferView);
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけばいい
@@ -72,11 +75,11 @@ void Triangle::CreateVertexResource() {
 	// マテリアル用のResourceを作る
 	materialResource = dx_->CreateBufferResource(dx_->device_.Get(), sizeof(VertexData));
 	// マテリアルにデータを書き込む
-	materialDate = nullptr;
+	materialData = nullptr;
 	// 書き込むためのアドレスを取得
-	materialResource->Map(0, nullptr, reinterpret_cast<void**>(&materialDate));
+	materialResource->Map(0, nullptr, reinterpret_cast<void**>(&materialData));
 	// 色を書き込む
-	*materialDate = Color(1.0f, 1.0f, 1.0f, 1.0f);
+	*materialData = Color(1.0f, 1.0f, 1.0f, 1.0f);
 
 }
 
@@ -89,7 +92,7 @@ void Triangle::CreateTransformationRsource() {
 	// 書き込むためのアドレスを取得
 	wvpResource->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
 	// 単位行列を書き込む
-	*wvpData = mainCamera_->GetWorldViewProjection();
+	*wvpData = mainCamera_->GetViewProjectionMatrix();
 
 }
 

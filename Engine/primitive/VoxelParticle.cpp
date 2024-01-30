@@ -1,21 +1,22 @@
 #include "VoxelParticle.h"
-#include "../object/camera/MatrixCamera.h"
+#include "../object/camera/MainCamera.h"
 
 
 VoxelParticle::VoxelParticle() : randomEngine_(seedGenerator_()) {}
 
 VoxelParticle::~VoxelParticle()
 {
-	/*wvpResource->Release();
-	materialResource->Release();
-	vertexResource->Release();*/
 }
 
 void VoxelParticle::Initialize() {
 
 	dx_ = DirectXCommon::GetInstance();
-	mainCamera_ = MatrixCamera::GetInstance();
-	worldTransform_ = new WorldTransform;
+	mainCamera_ = MainCamera::GetInstance();
+	worldTransform_.scale = { 1.0f,1.0f,1.0f };
+	worldTransform_.rotate = { 0.0f,0.0f,0.0f };
+	worldTransform_.translate = { 0.0f,0.0f,0.0f };
+	worldTransform_.worldM = MakeAffineMatrix(worldTransform_.scale, worldTransform_.rotate, worldTransform_.translate);
+	
 	instanceCount_ = kNumMaxInstance;
 
 	CreateVertexResource();
@@ -23,6 +24,12 @@ void VoxelParticle::Initialize() {
 	CreateTransformationRsource();
 	CreateBufferView();
 	instancingHandle_ = dx_->srv_->SetStructuredBuffer(kNumMaxInstance, instancingResource);
+
+	wvpResource->SetName(L"Voxel");
+	materialResource->SetName(L"Voxel");
+	vertexResource->SetName(L"Voxel");
+	directionalLightResource->SetName(L"Voxel");
+	instancingResource->SetName(L"Voxel");
 }
 
 void VoxelParticle::Update() {
@@ -30,14 +37,18 @@ void VoxelParticle::Update() {
 	// Δtを定義 60fps固定してあるが、実時間を計測して可変fpsで動かせるようにしておきたい
 	const float kDeltaTime = 1.0f / 60.0f;
 
+	if (instanceCount_ > kNumMaxInstance) {
+		instanceCount_ = kNumMaxInstance;
+	}
+
 	ImGui::Begin("Pirticle");
-	float treeScale = worldTransform_->scale.x;
+	float treeScale = worldTransform_.scale.x;
 	ImGui::DragFloat("ObjScale", &treeScale, 0.05f);
-	worldTransform_->scale = { treeScale ,treeScale ,treeScale };
-	ImGui::SliderAngle("ObjRotateX", &worldTransform_->rotate.x);
-	ImGui::SliderAngle("ObjRotateY", &worldTransform_->rotate.y);
-	ImGui::SliderAngle("ObjRotateZ", &worldTransform_->rotate.z);
-	ImGui::DragFloat3("ObjTranlate", &worldTransform_->translate.x);
+	worldTransform_.scale = { treeScale ,treeScale ,treeScale };
+	ImGui::SliderAngle("ObjRotateX", &worldTransform_.rotate.x);
+	ImGui::SliderAngle("ObjRotateY", &worldTransform_.rotate.y);
+	ImGui::SliderAngle("ObjRotateZ", &worldTransform_.rotate.z);
+	ImGui::DragFloat3("ObjTranlate", &worldTransform_.translate.x);
 	ImGui::Spacing();
 	ImGui::DragFloat2("UVScale", &uvTransform_.scale.x, 0.01f, -10.0f, 10.0f);
 	ImGui::DragFloat2("UVTranlate", &uvTransform_.translate.x, 0.01f, -10.0f, 10.0f);
@@ -45,27 +56,24 @@ void VoxelParticle::Update() {
 	ImGui::ColorEdit4("Color", &materialData_->color.r);
 	ImGui::End();
 
-
-	//　矩形のワールド行列
-	worldTransform_->worldM = MakeAffineMatrix(
-		particles[0].transform.scale, particles[0].transform.rotate, particles[0].transform.translate);
-
-
+	//　ワールド行列
+	worldTransform_.worldM = MakeAffineMatrix(
+		worldTransform_.scale, worldTransform_.rotate, worldTransform_.translate);
 	// カメラのワールド行列
-	cameraM = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f }, { 0.0f,0.0f,-5.0f });
+	cameraM = mainCamera_->GetWorldMatrix();
 	// カメラ行列のビュー行列(カメラのワールド行列の逆行列)
-	viewM = Inverse(cameraM);
+	viewM = mainCamera_->GetViewMatrix();
 	// 正規化デバイス座標系(NDC)に変換(正射影行列をかける)
-	pespectiveM = MakePerspectiveMatrix(0.45f, (1280.0f / 720.0f), 0.1f, 100.0f);
+	pespectiveM = mainCamera_->GetProjectionMatrix();
 	// WVPにまとめる
-	wvpM = Multiply(viewM, pespectiveM);
+	wvpM = mainCamera_->GetViewProjectionMatrix();
 	// 矩形のワールド行列とWVP行列を掛け合わした行列を代入
-	wvpData->WVP = Multiply(worldTransform_->worldM, wvpM);
-	wvpData->World = worldTransform_->worldM;
+	wvpData->WVP = Multiply(worldTransform_.worldM, wvpM);
+	wvpData->World = worldTransform_.worldM;
 
 	for (int32_t index = 0; index < kNumMaxInstance; ++index) {
 		if (particles[index].lifeTime <= particles[index].currentTime) {
-			//continue;
+			continue;
 		}
 
 		// パーティクルの移動を行う
@@ -74,18 +82,15 @@ void VoxelParticle::Update() {
 		particles[index].currentTime += kDeltaTime;
 		// 徐々に透明にする
 		float alpha = 1.0f - (particles[index].currentTime / particles[index].lifeTime);
-		alpha = 0.1f;
 		//　ワールド行列
-		worldTransform_->worldM = MakeAffineMatrix(
+		worldTransform_.worldM = MakeAffineMatrix(
 			particles[index].transform.scale,
 			particles[index].transform.rotate,
 			particles[index].transform.translate);
-		instancingData_[index].WVP = Multiply(worldTransform_->worldM, wvpM);
-		instancingData_[index].World = worldTransform_->worldM;
+		instancingData_[index].WVP = Multiply(worldTransform_.worldM, wvpM);
+		instancingData_[index].World = worldTransform_.worldM;
 		instancingData_[index].color = particles[index].color;
 		instancingData_[index].color.a = alpha;
-
-		++instanceCount_;
 
 	}
 
@@ -146,7 +151,7 @@ void VoxelParticle::CreateVertexResource() {
 	for (int32_t index = 0; index < kNumMaxInstance; ++index) {
 		instancingData_[index].WVP = MakeIdentity();
 		instancingData_[index].World = MakeIdentity();
-		instancingData_[index].color = Color(1.0f, 1.0f, 1.0f, 1.0f);
+		instancingData_[index].color = Color(1.0f, 1.0f, 1.0f, 0.0f);
 
 	}
 
@@ -180,7 +185,7 @@ void VoxelParticle::CreateVertexResource() {
 //
 void VoxelParticle::CreateTransformationRsource() {
 
-	for (int32_t index = 0; index < kNumMaxInstance; ++index) {
+	for (int32_t index = 0; index < instanceCount_; ++index) {
 		particles[index] = MakeNewParticle(randomEngine_);
 	}
 
@@ -190,7 +195,7 @@ void VoxelParticle::CreateTransformationRsource() {
 	// 書き込むためのアドレスを取得
 	wvpResource->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
 	// 単位行列を書き込む
-	wvpData->WVP = mainCamera_->GetWorldViewProjection();
+	wvpData->WVP = mainCamera_->GetViewProjectionMatrix();
 	wvpData->World = MakeIdentity();
 	wvpData->color = Color(1.0f, 1.0f, 1.0f, 1.0f);
 
@@ -226,7 +231,7 @@ Particle VoxelParticle::MakeNewParticle(std::mt19937& randomEngine) {
 	particle.transform.rotate = { 0.0f,0.0f,0.0f };
 	particle.transform.translate = {distribution(randomEngine),distribution(randomEngine),distribution(randomEngine) };
 	particle.vel = {distribution(randomEngine),distribution(randomEngine),distribution(randomEngine) };
-	particle.color = { distribution(randomEngine),distribution(randomEngine),distribution(randomEngine),0.1f };
+	particle.color = { distribution(randomEngine),distribution(randomEngine),distribution(randomEngine),0.5f };
 
 	// 乱数の最小・最大値
 	std::uniform_real_distribution<float> distTime(-1.0f, 3.0f);

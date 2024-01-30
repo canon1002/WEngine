@@ -6,7 +6,7 @@
 #include "../object/light/DirectionalLight.h"
 
 // 前方宣言
-class MatrixCamera;
+class MainCamera;
 
 class Sphere
 {
@@ -28,7 +28,7 @@ public:
 	/// </summary>
 	/// <param name="pos">座標</param>
 	void SetTransform(Vec3 pos) {
-		worldTransform_->translate = pos;
+		worldTransform_.translate = pos;
 	}
 
 	/// <summary>
@@ -36,9 +36,9 @@ public:
 	/// </summary>
 	/// <param name="t">移動量</param>
 	void Transform(Vec3 t) {
-		worldTransform_->translate.x += t.x;
-		worldTransform_->translate.y += t.y;
-		worldTransform_->translate.z += t.z;
+		worldTransform_.translate.x += t.x;
+		worldTransform_.translate.y += t.y;
+		worldTransform_.translate.z += t.z;
 	}
 
 	/// <summary>
@@ -46,9 +46,9 @@ public:
 	/// </summary>
 	/// <param name="r">回転量</param>
 	void Rotation(Vec3 r) {
-		worldTransform_->rotate.x += r.x;
-		worldTransform_->rotate.y += r.y;
-		worldTransform_->rotate.z += r.z;
+		worldTransform_.rotate.x += r.x;
+		worldTransform_.rotate.y += r.y;
+		worldTransform_.rotate.z += r.z;
 	}
 
 	/// <summary>
@@ -67,11 +67,10 @@ public:
 private:
 
 	// 外部ポインタ
-	MatrixCamera* mainCamera_ = nullptr;
+	MainCamera* mainCamera_ = nullptr;
 	DirectXCommon* dx_ = nullptr;
 
-	WorldTransform* worldTransform_ = nullptr;
-	WorldTransform* cameraWorldTransform_ = nullptr;
+	WorldTransform worldTransform_;
 	Mat44 cameraM, viewM, projectM, pespectiveM, wvpM;
 	// 半径
 	float rad = 1.0f;

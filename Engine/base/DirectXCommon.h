@@ -6,7 +6,6 @@
 #include <thread>
 
 // 前方宣言
-class MatrixCamera;
 struct Vector4;
 struct Matrix4x4;
 struct ModelData;
@@ -49,22 +48,13 @@ public: // ** 静的メンバ関数 ** //
 	// インスタンスを取得
 	static DirectXCommon* GetInstance();
 
-	// 開放する
-	static void Relese();
-
-
 public: // ** メンバ関数 ** //
 
-	/// <summary>
-	/// 
-	/// </summary>
-	/// <param name="win"></param>
+	/// 初期化
 	void Initialize(WinAPI* win);
 
-	/// <summary>
-	/// 
-	/// </summary>
-	void Delete();
+	/// 終了処理
+	void Finalize();
 
 	/// <summary>
 	/// DXGIデバイス初期化
@@ -194,6 +184,9 @@ public: // ** メンバ変数 ** //
 	D3D12_VIEWPORT viewport = {};
 	// シザー矩形
 	D3D12_RECT scissorRect = {};
+
+	// 返す用の変数を宣言
+	Microsoft::WRL::ComPtr<ID3D12Resource> result_ = nullptr;
 
 	// RTVを2つ作るのでディスクリプタを２つ用意
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandles[2];

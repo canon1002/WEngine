@@ -28,77 +28,77 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg
 #include <wrl.h>
 #include <memory>
 
-	class WinAPI final
-	{
-	private: // ** メンバ関数 ** //
-	
-		WinAPI();
-		~WinAPI();
-	
-	public: // ** 静的メンバ関数 ** //
+class WinAPI final
+{
+private: // ** メンバ関数 ** //
 
-		// コピーコンストラクタと演算子オーバーロードの禁止
-		WinAPI(const WinAPI& obj) = delete;
-		WinAPI& operator=(const WinAPI& obj) = delete;
-		
-		// インスタンスを取得
-		static WinAPI* GetInstance();
-	
-	public: // ** メンバ関数 ** //
+	WinAPI();
+	~WinAPI();
 
-		// 初期化
-		void Initialize();
+public: // ** 静的メンバ関数 ** //
 
-		// 消去
-		void Delete();
+	// コピーコンストラクタと演算子オーバーロードの禁止
+	WinAPI(const WinAPI& obj) = delete;
+	WinAPI& operator=(const WinAPI& obj) = delete;
 
-		// システム 及び デバッグメッセージ
+	// インスタンスを取得
+	static WinAPI* GetInstance();
 
-		// ウィンドウプロシージャ
-		static LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
-		// 出力ウィンドウに文字を出す
-		static void Log(const std::string& messege);
-		// シェーダーをコンパイルする
-		static Microsoft::WRL::ComPtr<IDxcBlob> CompileShader(
-			// CompilerするShederファイルへのパス
-			const std::wstring& filePath,
-			// Compilerに使用するProfile
-			const wchar_t* profile,
-			// 初期化で生成したものを3つ
-			Microsoft::WRL::ComPtr < IDxcUtils> dxcUtils,
-			Microsoft::WRL::ComPtr < IDxcCompiler3> dxcCompiler,
-			Microsoft::WRL::ComPtr < IDxcIncludeHandler> includeHandler);
+public: // ** メンバ関数 ** //
 
-		// メッセージ処理
-		bool ProcessMessage();
+	// 初期化
+	void Initialize();
 
-		// ** 変換 ** //
+	// 消去
+	void Finalize();
 
-		// string->wstring
-		static std::wstring ConvertString(const std::string& str);
-		// wstring->string
-		static std::string ConvertString(const std::wstring& str);
+	// システム 及び デバッグメッセージ
+
+	// ウィンドウプロシージャ
+	static LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
+	// 出力ウィンドウに文字を出す
+	static void Log(const std::string& messege);
+	// シェーダーをコンパイルする
+	static Microsoft::WRL::ComPtr<IDxcBlob> CompileShader(
+		// CompilerするShederファイルへのパス
+		const std::wstring& filePath,
+		// Compilerに使用するProfile
+		const wchar_t* profile,
+		// 初期化で生成したものを3つ
+		Microsoft::WRL::ComPtr < IDxcUtils> dxcUtils,
+		Microsoft::WRL::ComPtr < IDxcCompiler3> dxcCompiler,
+		Microsoft::WRL::ComPtr < IDxcIncludeHandler> includeHandler);
+
+	// メッセージ処理
+	bool ProcessMessage();
+
+	// ** 変換 ** //
+
+	// string->wstring
+	static std::wstring ConvertString(const std::string& str);
+	// wstring->string
+	static std::string ConvertString(const std::wstring& str);
 
 
-	public:
+public:
 
-		// ウィンドウクラスの宣言
-		WNDCLASS wc{};
+	// ウィンドウクラスの宣言
+	WNDCLASS wc{};
 
-		// クライアント領域
-		const int32_t kClientWidth = 1280;
-		const int32_t kClientHeight = 720;
+	// クライアント領域
+	const int32_t kClientWidth = 1280;
+	const int32_t kClientHeight = 720;
 
-		// ウィンドウサイズを表す構造体にクライアント領域を入れる
-		RECT wrc = { 0,0,kClientWidth,kClientHeight };
+	// ウィンドウサイズを表す構造体にクライアント領域を入れる
+	RECT wrc = { 0,0,kClientWidth,kClientHeight };
 
-		HWND hwnd;
+	HWND hwnd;
 
-		// メッセージ
-		MSG msg{};
+	// メッセージ
+	MSG msg{};
 
-	private:
-		static WinAPI* instance;
- 	};
+private:
+	static WinAPI* instance;
+};
 
 

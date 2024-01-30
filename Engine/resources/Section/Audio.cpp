@@ -3,10 +3,6 @@
 // staticメンバ変数で宣言したインスタンスを初期化
 Audio* Audio::instance = nullptr;
 
-
-Audio::Audio(){}
-Audio::~Audio(){}
-
 Audio* Audio::GetInstance() {
 	// 関数内staticは初めて通ったときのみ実行される
 	if (instance == nullptr) {
@@ -16,14 +12,14 @@ Audio* Audio::GetInstance() {
 }
 
 // 開放する
-void Audio::Finalize()
-{
-
+void Audio::Finalize(){
+	xAudio2_.Reset();
 }
 
-void Audio::Init() {
+void Audio::Initialize() {
 	HRESULT hr = XAudio2Create(&xAudio2_, 0, XAUDIO2_USE_DEFAULT_PROCESSOR);
 	hr = xAudio2_->CreateMasteringVoice(&masterVoice_);
+
 }
 
 SoundData Audio::LoadWave(const char* filename) {

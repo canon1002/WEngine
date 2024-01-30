@@ -11,25 +11,27 @@ class Input
 {
 private:
 
-	Input();
-	~Input();
-
-public:
-
+	Input() = default;
+	~Input() = default;
 	// コピーコンストラクタと演算子オーバーロードの禁止
 	Input(const Input& obj) = delete;
 	Input& operator=(const Input& obj) = delete;
 
+public:
+
 	// インスタンスを取得
 	static Input* GetInstance();
+	// 終了処理
+	void Finalize();
 
 	// 初期化
-	void Init();
+	void Initialize();
 	// 更新
 	void Update();
 	
 	// キーの入力をチェック
 	bool GetPushKey(BYTE keyNumber);
+	bool GetPressKey(BYTE keyNumber);
 	bool GetTriggerKey(BYTE keyNumber);
 
 	IDirectInput8* directinput = nullptr;

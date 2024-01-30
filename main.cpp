@@ -10,17 +10,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	// リリースチェック
 	D3DResourceLeakChecker leakCheck;
-	// WindowsAPI
-	WinAPI* win = WinAPI::GetInstance();
-	// DirectX
-	DirectXCommon* dx = DirectXCommon::GetInstance();
-	// Input
-	Input* input = Input::GetInstance();
-	// Audio
-	Audio* audio = Audio::GetInstance();
-
+	
 	// Scene
-	SceneManager* sceneManager= new SceneManager();
+	std::unique_ptr<SceneManager> sceneManager = std::make_unique< SceneManager>();
 	sceneManager->Run();
 
 	return 0;

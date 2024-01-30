@@ -1,6 +1,9 @@
 #include "Model.h"
 #include "ModelCommon.h"
 
+Model::~Model() {
+}
+
 void Model::Initialize(const std::string& directrypath,const std::string& filename)
 {
 	dx_ = DirectXCommon::GetInstance();	
@@ -10,6 +13,11 @@ void Model::Initialize(const std::string& directrypath,const std::string& filena
 
 	CreateVertexResource();
 	CreateMaterialResource();
+
+	vertexResource->SetName(L"Model");
+	materialResource->SetName(L"Model");
+	directionalLightResource->SetName(L"Model");
+
 }
 
 void Model::Update()

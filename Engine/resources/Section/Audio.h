@@ -42,25 +42,22 @@ struct SoundData
 class Audio
 {
 private:
-	Audio();
-	~Audio();
-
-public: // ** 静的メンバ関数 ** //
-
+	
+	Audio() = default;
+	~Audio() = default;
 	// コピーコンストラクタと演算子オーバーロードの禁止
 	Audio(const Audio& obj) = delete;
 	Audio& operator=(const Audio& obj) = delete;
 
+
+public: // ** 静的メンバ関数 ** //
+
 	// インスタンスを取得
-
-
 	static Audio* GetInstance();
-
-	// 開放する
-	static void Finalize();
-
-
-	void Init();
+	// 解放処理
+	void Finalize();
+	// 初期化
+	void Initialize();
 
 	SoundData LoadWave(const char* filename);
 	void UnLoadWave(SoundData* soundData);

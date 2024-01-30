@@ -10,6 +10,8 @@ protected:
 
 public:
 
+	virtual void Finalize() = 0;
+
 	// 継承先で実装される関数
 	// 抽象クラスなので純粋仮想関数にする
 	virtual void Init() = 0;

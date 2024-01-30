@@ -5,7 +5,7 @@
 #include "../object/worldTransform/WorldTransform.h"
 
 // 前方宣言
-class MatrixCamera;
+class MainCamera;
 
 class Triangle
 {
@@ -27,7 +27,7 @@ public:
 	/// </summary>
 	/// <param name="pos">座標</param>
 	void SetTransform(Vec3 pos) { 
-		worldtransform_->translate = pos;
+		worldTransform_.translate = pos;
 	}
 	
 	/// <summary>
@@ -35,9 +35,9 @@ public:
 	/// </summary>
 	/// <param name="t">移動量</param>
 	void Transform(Vec3 t) { 
-		worldtransform_->translate.x += t.x;
-		worldtransform_->translate.y += t.y;
-		worldtransform_->translate.z += t.z;
+		worldTransform_.translate.x += t.x;
+		worldTransform_.translate.y += t.y;
+		worldTransform_.translate.z += t.z;
 	}
 
 	/// <summary>
@@ -45,9 +45,9 @@ public:
 	/// </summary>
 	/// <param name="r">回転量</param>
 	void Rotation(Vec3 r) {
-		worldtransform_->rotate.x += r.x;
-		worldtransform_->rotate.y += r.y;
-		worldtransform_->rotate.z += r.z;
+		worldTransform_.rotate.x += r.x;
+		worldTransform_.rotate.y += r.y;
+		worldTransform_.rotate.z += r.z;
 	}
 
 	/// <summary>
@@ -66,10 +66,10 @@ public:
 private:
 
 	// 外部ポインタ
-	MatrixCamera* mainCamera_ = nullptr;
+	MainCamera* mainCamera_ = nullptr;
 	DirectXCommon* dx_ = nullptr;
 
-	WorldTransform* worldtransform_ = nullptr;
+	WorldTransform worldTransform_;
 	Mat44 worldM, cameraM, viewM, projectM, pespectiveM,wvpM;
 	Vec4 translate_;
 
@@ -87,6 +87,6 @@ private:
 	// 頂点バッファビューを作成する
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
 	// マテリアルデータ
-	Color* materialDate = nullptr;
+	Color* materialData = nullptr;
 };
 

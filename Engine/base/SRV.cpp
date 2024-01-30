@@ -7,12 +7,6 @@
 // staticメンバ変数で宣言したインスタンスを初期化
 SRV* SRV::instance = nullptr;
 
-// コンストラクタ
-SRV::SRV() {}
-
-// デストラクタ
-SRV::~SRV() {}
-
 // インスタンスを取得
 SRV* SRV::GetInstance() {
 	// 関数内staticは初めて通ったときのみ実行される
@@ -23,7 +17,8 @@ SRV* SRV::GetInstance() {
 }
 
 // 消去
-void SRV::Relese() {
+void SRV::Finalize() {
+
 	// インスタンスを解放
 	delete instance;
 	// deleteあとにnullptrを代入する
@@ -34,6 +29,8 @@ void SRV::Initialize(DirectXCommon* dx) {
 	dx_ = dx;
 
 	CreateShaderResourceView();
+
+	srvDescriptorHeap->SetName(L"srvDescriptorHeap");
 }
 
 /// シェーダーリソースビュー生成
@@ -56,7 +53,7 @@ void SRV::CreateShaderResourceView() {
 		srvDescriptorHeap->GetGPUDescriptorHandleForHeapStart()
 	);
 
-	defaultTexId_ = LoadTexture("Resources/texture/uvChecker.png");
+	defaultTexId_ = LoadTexture("Resources/texture/circleWhite.png");
 
 }
 

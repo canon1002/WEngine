@@ -1,23 +1,21 @@
 #include "Sphere.h"
-#include "../object/camera/MatrixCamera.h"
+#include "../object/camera/MainCamera.h"
+#include "../camera/MainCamera.h"
 
 Sphere::Sphere() { this->Initialize(); }
 
 Sphere::~Sphere()
 {
-	/*wvpResource->Release();
-	materialResource->Release();
-	vertexResource->Release();*/
+	delete wvpData;
+	delete vertexData;
+	delete materialData;
+	delete directionalLightDate;
 }
 
 void Sphere::Initialize() {
 
 	dx_ = DirectXCommon::GetInstance();
-	mainCamera_ = MatrixCamera::GetInstance();
-
-	worldTransform_ = new WorldTransform;
-	cameraWorldTransform_ = new WorldTransform;
-	cameraWorldTransform_->translate.z = -5.0f;
+	mainCamera_ = MainCamera::GetInstance();
 
 	CreateVertexResource();
 	CreateTransformationRsource();
@@ -28,16 +26,10 @@ void Sphere::Initialize() {
 void Sphere::Update() {
 
 
-	ImGui::Begin("camera");
-	ImGui::SliderFloat3("Scale", &cameraWorldTransform_->scale.x,0.0f,1.0f);
-	ImGui::SliderFloat3("rotate", &cameraWorldTransform_->rotate.x, -2.0f, 2.0f);
-	ImGui::SliderFloat3("translate", &cameraWorldTransform_->translate.x, -20.0f, 20.0f);
-	ImGui::End();
-
 	ImGui::Begin("Sphere");
-	ImGui::DragFloat3("scale", &worldTransform_->scale.x, 0.01f, 0.0f, 5.0f);
-	ImGui::DragFloat3("rotate", &worldTransform_->rotate.x, 0.01f, -2.0f, 2.0f);
-	ImGui::DragFloat3("tranlate", &worldTransform_->translate.x, 0.01f, -2.0f, 2.0f);
+	ImGui::DragFloat3("scale", &worldTransform_.scale.x, 0.01f, 0.0f, 5.0f);
+	ImGui::DragFloat3("rotate", &worldTransform_.rotate.x, 0.01f, -2.0f, 2.0f);
+	ImGui::DragFloat3("tranlate", &worldTransform_.translate.x, 0.01f, -2.0f, 2.0f);
 	ImGui::Checkbox("useBallTex", &useBall);
 	ImGui::End();
 
@@ -48,13 +40,12 @@ void Sphere::Update() {
 	ImGui::End();
 	
 	//　球体のワールド行列
-	worldTransform_->worldM = MakeAffineMatrix(
-		worldTransform_->scale, worldTransform_->rotate, worldTransform_->translate);
+	worldTransform_.worldM = MakeAffineMatrix(
+		worldTransform_.scale, worldTransform_.rotate, worldTransform_.translate);
 
 	// カメラのワールド行列
 	
-	cameraM = MakeAffineMatrix(
-		cameraWorldTransform_->scale, cameraWorldTransform_->rotate, cameraWorldTransform_->translate);
+	cameraM = MainCamera::GetInstance()->GetWorldMatrix();
 	// カメラ行列のビュー行列(カメラのワールド行列の逆行列)
 	viewM = Inverse(cameraM);
 	// 正規化デバイス座標系(NDC)に変換(正射影行列をかける)
@@ -62,8 +53,8 @@ void Sphere::Update() {
 	// WVPにまとめる
 	wvpM = Multiply(viewM, pespectiveM);
 	// 三角形のワールド行列とWVP行列を掛け合わした行列を代入
-	wvpData->WVP = Multiply(worldTransform_->worldM, wvpM);
-	wvpData->World = worldTransform_->worldM;
+	wvpData->WVP = Multiply(worldTransform_.worldM, wvpM);
+	wvpData->World = worldTransform_.worldM;
 }
 
 void Sphere::Draw() const {
@@ -124,7 +115,7 @@ void Sphere::CreateTransformationRsource() {
 	// 書き込むためのアドレスを取得
 	wvpResource->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
 	// 単位行列を書き込む
-	wvpData->WVP = mainCamera_->GetWorldViewProjection();
+	wvpData->WVP = mainCamera_->GetViewProjectionMatrix();
 	wvpData->World = MakeIdentity();
 
 }

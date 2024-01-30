@@ -1,35 +1,38 @@
 #include "Sprite.h"
-#include "../object/camera/MatrixCamera.h"
+#include "../object/camera/MainCamera.h"
 
 Sprite::Sprite() { this->Initialize(); }
 
 Sprite::~Sprite()
 {
-	/*wvpResource->Release();
-	materialResource->Release();
-	vertexResource->Release();*/
+	delete wvpData;
+	delete vertexData;
+	delete materialData;
+	
 }
 
 void Sprite::Initialize() {
 
 	dx_ = DirectXCommon::GetInstance();
-	mainCamera_ = MatrixCamera::GetInstance();
-
-	worldtransform_ = new WorldTransform;
 
 	CreateVertexResource();
 	CreateIndexResource();
 	CreateTransformationRsource();
 	CreateBufferView();
 
+	wvpResource->SetName(L"Sphere");
+	materialResourceSprite->SetName(L"Sphere");
+	vertexResource->SetName(L"Sphere");
+	indexResource->SetName(L"Sphere");
+
 }
 
 void Sprite::Update() {
 
 	ImGui::Begin("Sprite");
-	ImGui::DragFloat3("Scale", &worldtransform_->scale.x);
-	ImGui::DragFloat3("Rotate", &worldtransform_->rotate.x);
-	ImGui::DragFloat3("Tranlate", &worldtransform_->translate.x);
+	ImGui::DragFloat3("Scale", &worldTransform_.scale.x);
+	ImGui::DragFloat3("Rotate", &worldTransform_.rotate.x);
+	ImGui::DragFloat3("Tranlate", &worldTransform_.translate.x);
 	ImGui::Spacing();
 	ImGui::DragFloat2("UVScale", &uvTransform_.scale.x, 0.01f, -10.0f, 10.0f);
 	ImGui::DragFloat2("UVTranlate", &uvTransform_.translate.x, 0.01f, -10.0f, 10.0f);
@@ -38,20 +41,20 @@ void Sprite::Update() {
 	ImGui::End();
 
 	//　矩形のワールド行列
-	worldtransform_->worldM = MakeAffineMatrix(
-		worldtransform_->scale, worldtransform_->rotate, worldtransform_->translate);
+	worldTransform_.worldM = MakeAffineMatrix(
+		worldTransform_.scale, worldTransform_.rotate, worldTransform_.translate);
 
 	// カメラのワールド行列
-	cameraM = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f }, { 0.0f,0.0f,-5.0f });
+	cameraM = MainCamera::GetInstance()->GetWorldMatrix();
 	// カメラ行列のビュー行列(カメラのワールド行列の逆行列)
 	viewM = Inverse(cameraM);
 	// 正規化デバイス座標系(NDC)に変換(正射影行列をかける)
-	projectM = MakeOrthographicMatrix(0.0f, 0.0f, 1280.0f, 720.0f, 0.1f, 100.0f);
+	projectM = MainCamera::GetInstance()->GetProjectionMatrix();
 	// WVPにまとめる
 	wvpM = Multiply(viewM, projectM);
 	// 矩形のワールド行列とWVP行列を掛け合わした行列を代入
-	wvpData->WVP = Multiply(worldtransform_->worldM, wvpM);
-	wvpData->World = worldtransform_->worldM;
+	wvpData->WVP = Multiply(worldTransform_.worldM, wvpM);
+	wvpData->World = worldTransform_.worldM;
 
 	/// マテリアル・UVTransform
 	Mat44 uvTransformMatrix = MakeAffineMatrix(
@@ -122,8 +125,7 @@ void Sprite::CreateTransformationRsource() {
 	// 書き込むためのアドレスを取得
 	wvpResource->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
 	// 単位行列を書き込む
-	// 単位行列を書き込む
-	wvpData->WVP = mainCamera_->GetWorldViewProjection();
+	wvpData->WVP = MainCamera::GetInstance()->GetViewProjectionMatrix();
 	wvpData->World = MakeIdentity();
 }
 
