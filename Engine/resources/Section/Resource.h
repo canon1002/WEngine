@@ -17,6 +17,7 @@ struct Material {
 	int32_t enableLighting;
 	float paddding[3];
 	Mat44 uvTransform;
+	float shininess;
 };
 
 struct TransformationMatrix {
@@ -28,6 +29,11 @@ struct ParticleForGPU {
 	Mat44 WVP;
 	Mat44 World;
 	Color color;
+};
+
+struct CameraForGPU
+{
+	Vec3 worldPosition;
 };
 
 struct MaterialData {

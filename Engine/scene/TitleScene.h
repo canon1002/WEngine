@@ -26,7 +26,7 @@ private:
 	Input* input_ = nullptr;
 
 	std::unique_ptr<Object3d> eAxis_ = nullptr;
-	//std::unique_ptr<Object3d> eAxis2_ = nullptr;
+	std::unique_ptr<Object3d> ball_ = nullptr;
 	std::unique_ptr <VoxelParticle> voxel_ = nullptr;
 
 };

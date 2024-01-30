@@ -1,5 +1,6 @@
 #include "Model.h"
 #include "ModelCommon.h"
+#include "../camera/MainCamera.h"
 
 Model::~Model() {
 }
@@ -38,6 +39,7 @@ void Model::Draw()
 	dx_->commandList->SetGraphicsRootConstantBufferView(0, materialResource->GetGPUVirtualAddress());
 
 	dx_->commandList->SetGraphicsRootConstantBufferView(3, directionalLightResource->GetGPUVirtualAddress());
+	dx_->commandList->SetGraphicsRootConstantBufferView(4, CameraResource->GetGPUVirtualAddress());
 
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である
 	dx_->commandList->SetGraphicsRootDescriptorTable(2, dx_->srv_->textureData_.at(textureHandle_).textureSrvHandleGPU);
@@ -79,13 +81,19 @@ void Model::CreateMaterialResource()
 	// 書き込むためのアドレスを取得
 	materialResource->Map(0, nullptr, reinterpret_cast<void**>(&materialData_));
 	// テクスチャの情報を転送
-	textureHandle_ = dx_->srv_->LoadTexture(modelData.material.textureFilePath);
+	if (modelData.material.textureFilePath.empty()) {
+		textureHandle_ = dx_->srv_->defaultTexId_;
+	}
+	else {
+		textureHandle_ = dx_->srv_->LoadTexture(modelData.material.textureFilePath);
+	}
 	// 色の書き込み・Lightingの無効化
 	materialData_->color = { 1.0f, 1.0f, 1.0f, 1.0f };
 	materialData_->enableLighting = true;
 	// UVTransformを設定
 	materialData_->uvTransform = MakeIdentity();
 	uvTransform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
+	materialData_->shininess = 100.0f;
 
 	// Light
 	directionalLightResource = dx_->CreateBufferResource(dx_->device_.Get(), sizeof(DirectionalLight));
@@ -94,4 +102,11 @@ void Model::CreateMaterialResource()
 	directionalLightDate->color = { 1.0f, 1.0f, 1.0f, 1.0f };
 	directionalLightDate->direction = { 0.0f,-1.0f,0.0f };
 	directionalLightDate->intensity = 1.0f;
+
+	// カメラデータ
+	CameraResource = dx_->CreateBufferResource(dx_->device_.Get(), sizeof(CameraForGPU));
+	// データを書き込む
+	CameraResource->Map(0, nullptr, reinterpret_cast<void**>(&cameraData));
+	cameraData->worldPosition = MainCamera::GetInstance()->GetTranslate();
+
 }

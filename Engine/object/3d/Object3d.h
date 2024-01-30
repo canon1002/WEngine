@@ -33,6 +33,8 @@ public: // メンバ関数
 	void SetCamera(CameraCommon* camera) { camera_ = camera; }
 	const WorldTransform& GetWorldTransform()const  { return worldTransform_; }
 
+	Model* GetModel() { return model_; }
+
 private: // メンバ変数
 
 	// 外部ポインタ

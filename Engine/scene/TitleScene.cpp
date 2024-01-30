@@ -15,16 +15,17 @@ void TitleScene::Init() {
 
 	// モデルをセットする
 	ModelManager::GetInstance()->LoadModel("emptyAxis.obj");
+	ModelManager::GetInstance()->LoadModel("ball.obj");
 
 	// 3dオブジェクトの宣言
 	eAxis_ = std::make_unique<Object3d>();
 	eAxis_->Init();
 	eAxis_->SetModel("emptyAxis.obj");
 	
-	//eAxis2_ = std::make_unique<Object3d>();
-	//eAxis2_->Init();
-	//eAxis2_->SetTranslate(Vec3{2.0f,0.0f,1.0f});
-	//eAxis2_->SetModel("emptyAxis.obj");
+	ball_ = std::make_unique<Object3d>();
+	ball_->Init();
+	ball_->SetTranslate(Vec3{2.0f,0.0f,1.0f});
+	ball_->SetModel("ball.obj");
 
 	voxel_ = std::make_unique<VoxelParticle>();
 	voxel_->Initialize();
@@ -36,7 +37,7 @@ void TitleScene::Update() {
 	ImGui::Text("TitleScene");
 
 	//eAxis_->Update();
-	//eAxis2_->Update();
+	ball_->Update();
 	//voxel_->Update();
 	ImGui::Begin("ResetButton");
 	if (ImGui::Button("VoxelParticle")) {
@@ -54,9 +55,9 @@ void TitleScene::Update() {
 void TitleScene::Draw(){
 
 	//eAxis_->Draw();
-	//eAxis2_->Draw();
+	ball_->Draw();
 
-	DirectXCommon::GetInstance()->DrawPariticleBegin();
-	voxel_->Draw();
+	//DirectXCommon::GetInstance()->DrawPariticleBegin();
+	//voxel_->Draw();
 
 }

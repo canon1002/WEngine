@@ -3,6 +3,7 @@
 #include "../worldTransform/WorldTransform.h"
 #include "../../resources/Section/Resource.h"
 #include "../../object/light/DirectionalLight.h"
+#include "../camera/CameraCommon.h"
 
 class DirectXCommon;
 
@@ -18,7 +19,7 @@ public:
 	void CreateVertexResource();
 	void CreateMaterialResource();
 
-
+	void SetCameraPosition(CameraCommon camera) { cameraData->worldPosition = camera.GetTranslate(); }
 
 private:
 
@@ -52,6 +53,9 @@ private:
 	// 平行光源　
 	DirectionalLight* directionalLightDate = nullptr;
 
+	// 鏡面反射用のリソースを作る
+	Microsoft::WRL::ComPtr<ID3D12Resource> CameraResource = nullptr;
+	CameraForGPU* cameraData = nullptr;
 
 	// UVTransform用の変数
 	Transformation uvTransform_;
