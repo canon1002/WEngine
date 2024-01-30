@@ -61,6 +61,7 @@ public:
 	const D3D12_VERTEX_BUFFER_VIEW& GetVBV() const { return vertexBufferView; }
 	auto* GetMaterial() { return  materialResourceSprite.Get(); }
 	auto* GetWVP() { return wvpResource.Get(); }
+	void SetTexture(std::string filepath){ textureHandle_ = dx_->srv_->LoadTexture(filepath); }
 
 private:
 
@@ -71,6 +72,8 @@ private:
 	WorldTransform worldTransform_;
 	Mat44 worldM, cameraM, viewM, projectM, wvpM;
 	Vec4 translate_;
+	// テクスチャハンドル
+	int32_t textureHandle_ = 0;
 
 	// VertexResourceを生成する(P.42)
 	// 実際に頂点リソースを作る
@@ -93,5 +96,8 @@ private:
 	Material *materialData = nullptr;
 	// UVTransform用の変数
 	Transformation uvTransform_;
+	// 鏡面反射用のリソースを作る
+	Microsoft::WRL::ComPtr<ID3D12Resource> CameraResource = nullptr;
+	CameraForGPU* cameraData = nullptr;
 };
 

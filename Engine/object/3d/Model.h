@@ -44,8 +44,13 @@ private:
 
 	// マテリアル用のResourceを作る
 	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource = nullptr;
+
+public:
+
 	// マテリアルデータ
 	Material* materialData_ = nullptr;
+
+private:
 
 
 	// Light用のリソースデータを作る

@@ -30,23 +30,20 @@ void TitleScene::Init() {
 	voxel_ = std::make_unique<VoxelParticle>();
 	voxel_->Initialize();
 
+	/*sprite_ = std::make_unique<Sprite>();
+	sprite_->Initialize();
+	sprite_->SetTexture("Resources/texture/circleWhite.png");*/
+
 }
 
 void TitleScene::Update() {
 
-	ImGui::Text("TitleScene");
-
 	//eAxis_->Update();
-	ball_->Update();
+	//ball_->Update();
 	//voxel_->Update();
-	ImGui::Begin("ResetButton");
-	if (ImGui::Button("VoxelParticle")) {
-		voxel_->Initialize();
-	}
-	ImGui::End();
+	//sprite_->Update();
 
-
-	if (input_->GetPushKey(DIK_SPACE)) {
+	if (input_->GetTriggerKey(DIK_SPACE)) {
 		// メインゲームに切り替え
 		IScene::sceneNo = STAGE;
 	}
@@ -55,9 +52,11 @@ void TitleScene::Update() {
 void TitleScene::Draw(){
 
 	//eAxis_->Draw();
-	ball_->Draw();
+	//ball_->Draw();
 
 	//DirectXCommon::GetInstance()->DrawPariticleBegin();
 	//voxel_->Draw();
+
+	//sprite_->Draw();
 
 }

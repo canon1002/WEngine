@@ -1,7 +1,7 @@
 #include "Sprite.h"
 #include "../object/camera/MainCamera.h"
 
-Sprite::Sprite() { this->Initialize(); }
+Sprite::Sprite() {}
 
 Sprite::~Sprite()
 {
@@ -29,7 +29,7 @@ void Sprite::Initialize() {
 
 void Sprite::Update() {
 
-	ImGui::Begin("Sprite");
+	/*ImGui::Begin("Sprite");
 	ImGui::DragFloat3("Scale", &worldTransform_.scale.x);
 	ImGui::DragFloat3("Rotate", &worldTransform_.rotate.x);
 	ImGui::DragFloat3("Tranlate", &worldTransform_.translate.x);
@@ -38,7 +38,7 @@ void Sprite::Update() {
 	ImGui::DragFloat2("UVTranlate", &uvTransform_.translate.x, 0.01f, -10.0f, 10.0f);
 	ImGui::SliderAngle("UVRotate", &uvTransform_.rotate.z);
 	ImGui::ColorEdit4("Color", &materialData->color.r);
-	ImGui::End();
+	ImGui::End();*/
 
 	//　矩形のワールド行列
 	worldTransform_.worldM = MakeAffineMatrix(
@@ -82,8 +82,11 @@ void Sprite::Draw() {
 	dx_->commandList->SetGraphicsRootConstantBufferView(0, materialResourceSprite->GetGPUVirtualAddress());
 	//wvp用のCBufferの場所を指定
 	dx_->commandList->SetGraphicsRootConstantBufferView(1, wvpResource->GetGPUVirtualAddress());
+	dx_->commandList->SetGraphicsRootConstantBufferView(4, CameraResource->GetGPUVirtualAddress());
+
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である
-	dx_->commandList->SetGraphicsRootDescriptorTable(2, dx_->srv_->textureData_.at(1).textureSrvHandleGPU);
+	dx_->commandList->SetGraphicsRootDescriptorTable(2, dx_->srv_->textureData_.at(textureHandle_).textureSrvHandleGPU);
+
 
 	// インデックスを使用してドローコール
 	dx_->commandList->DrawIndexedInstanced(6, 1, 0, 0, 0);
@@ -106,6 +109,10 @@ void Sprite::CreateVertexResource() {
 	materialResourceSprite = dx_->CreateBufferResource(dx_->device_.Get(), sizeof(Material));
 	// マテリアルにデータを書き込む
 	materialData = nullptr;
+	// テクスチャの情報を転送
+	if (textureHandle_ = 0) {
+		textureHandle_ = dx_->srv_->defaultTexId_;
+	}
 	// 書き込むためのアドレスを取得
 	materialResourceSprite->Map(0, nullptr, reinterpret_cast<void**>(&materialData));
 	// 色の書き込み・Lightingの無効化
@@ -114,6 +121,12 @@ void Sprite::CreateVertexResource() {
 	// UVTransformを設定
 	materialData->uvTransform = MakeIdentity();
 	uvTransform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
+	// カメラデータ
+	CameraResource = dx_->CreateBufferResource(dx_->device_.Get(), sizeof(CameraForGPU));
+	// データを書き込む
+	CameraResource->Map(0, nullptr, reinterpret_cast<void**>(&cameraData));
+	cameraData->worldPosition = MainCamera::GetInstance()->GetTranslate();
+
 }
 
 //

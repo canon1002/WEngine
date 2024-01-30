@@ -1,4 +1,4 @@
-#include "madeCode/Setting/Heder/CollisionManager.h"
+#include "CollisionManager.h"
 
 CollisionManager::CollisionManager() { this->Initialize(); }
 
@@ -44,9 +44,9 @@ void CollisionManager::CheckCollisionPair(Collider* colliderA, Collider* collide
 	}
 
 	// コライダーのワールド座標を取得
-	Vector3 posA = colliderA->GetWorldPos();
+	Vec3 posA = colliderA->GetWorldPos();
 	float radA = colliderA->GetRadius();
-	Vector3 posB = colliderB->GetWorldPos();
+	Vec3 posB = colliderB->GetWorldPos();
 	float radB = colliderB->GetRadius();
 
 	// 距離の判定

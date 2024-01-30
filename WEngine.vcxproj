@@ -109,6 +109,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\base\ImGuiManager.cpp" />
     <ClCompile Include="Engine\base\SRV.cpp" />
     <ClCompile Include="Engine\base\WinAPI.cpp" />
+    <ClCompile Include="Engine\collision\CollisionManager.cpp" />
     <ClCompile Include="Engine\math\Mat44.cpp" />
     <ClCompile Include="Engine\math\Quaternion.cpp" />
     <ClCompile Include="Engine\math\Vec2.cpp" />
@@ -159,6 +160,9 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\base\SRV.h" />
     <ClInclude Include="Engine\base\System.h" />
     <ClInclude Include="Engine\base\WinAPI.h" />
+    <ClInclude Include="Engine\collision\Collider.h" />
+    <ClInclude Include="Engine\collision\CollisionConfig.h" />
+    <ClInclude Include="Engine\collision\CollisionManager.h" />
     <ClInclude Include="Engine\color\Color.h" />
     <ClInclude Include="Engine\math\Mat44.h" />
     <ClInclude Include="Engine\math\Math.h" />

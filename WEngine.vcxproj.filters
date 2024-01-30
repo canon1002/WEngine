@@ -74,6 +74,9 @@
     <Filter Include="Engine\object\3d">
       <UniqueIdentifier>{bc639819-c07f-4050-bb41-870122750342}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine\collision">
+      <UniqueIdentifier>{f167a84c-a7a8-405d-b221-ebfd20ee2888}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -201,6 +204,9 @@
     <ClCompile Include="App\object\Skydome.cpp" />
     <ClCompile Include="App\camera\RailCamera.cpp" />
     <ClCompile Include="Engine\object\camera\CameraCommon.cpp" />
+    <ClCompile Include="Engine\collision\CollisionManager.cpp">
+      <Filter>Engine\collision</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\base\ImGuiManager.h">
@@ -339,6 +345,15 @@
     <ClInclude Include="App\object\Skydome.h" />
     <ClInclude Include="App\camera\RailCamera.h" />
     <ClInclude Include="Engine\object\camera\CameraCommon.h" />
+    <ClInclude Include="Engine\collision\Collider.h">
+      <Filter>Engine\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\collision\CollisionConfig.h">
+      <Filter>Engine\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\collision\CollisionManager.h">
+      <Filter>Engine\collision</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt">

@@ -11,38 +11,31 @@ Player::~Player() {
 void Player::Init() {
 
 	// モデルをセットする
-	ModelManager::GetInstance()->LoadModel("emptyAxis.obj");
+	ModelManager::GetInstance()->LoadModel("box.obj");
 
 	worldTransform_.scale = { 1.0f,1.0f,1.0f };
 	worldTransform_.rotate = { 0.0f,0.0f,0.0f };
-	worldTransform_.translate = { 0.0f,0.0f,5.0f };
+	worldTransform_.translate = { 0.0f,0.0f,15.0f };
 	worldTransform_.worldM = MakeAffineMatrix(worldTransform_.scale,
 		worldTransform_.rotate, worldTransform_.translate);
 
 	worldTransformRail_ = worldTransform_;
 
-	object_ = std::make_unique<Object3d>();
-	object_->Init();
-	object_->SetModel("emptyAxis.obj");
-	object_->SetWorldTransform(worldTransform_);
-
-	rad_ = { 12,12,12 };
+	rad_ = { 1,1,1 };
 	vel_ = { 0.1f,0.1f,0.1f };
 	speed_ = { 4,4,4 };
 	color_ = { 1.0f,1.0f,1.0f,1.0f };
+
+	object_ = std::make_unique<Object3d>();
+	object_->Init();
+	object_->SetModel("box.obj");
+	object_->SetWorldTransform(worldTransform_);
+
+	collisionAttribute_ = kCollisionAttributePlayer;
+	collisionMask_ = kCollisionAttributeEnemy + kCollisionAttributeEnemyBullet;
 }
 
 void Player::Update() {
-
-
-	ImGui::Begin("Player");
-	ImGui::SliderAngle("RotateX", &worldTransform_.rotate.x);
-	ImGui::SliderAngle("RotateY", &worldTransform_.rotate.y);
-	ImGui::SliderAngle("RotateZ", &worldTransform_.rotate.z);
-	ImGui::DragFloat3("Rotate", &worldTransform_.rotate.x, 0.1f, -100.0f, 100.0f);
-	ImGui::DragFloat3("Transform", &worldTransform_.translate.x, 0.1f, -100.0f, 100.0f);
-	ImGui::End();
-
 
 	// 行列を更新する
 	worldTransform_.worldM = MakeAffineMatrix(worldTransform_.scale,

@@ -20,6 +20,7 @@ SceneManager::SceneManager() {
 	sceneArr_[TITLE] = std::make_unique<TitleScene>();
 	sceneArr_[STAGE] = std::make_unique<GameMainScene>();
 	sceneArr_[CLEAR] = std::make_unique<ResultScene>();
+	//sceneArr_[OVER] = std::make_unique<ResultScene>();
 
 	// 初期シーン
 	currentSceneNo_ = STAGE;
@@ -77,7 +78,7 @@ int SceneManager::Run() {
 		/// 更新処理
 		sceneArr_[currentSceneNo_]->Update();
 		// フレームレートの表示
-		ImGui::Text("FPS : %.2f", ImGui::GetIO().Framerate);
+		//ImGui::Text("FPS : %.2f", ImGui::GetIO().Framerate);
 		// 描画処理に入る前に、ImGui内部のコマンドを生成する
 		ImGui::Render();
 

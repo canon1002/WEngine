@@ -1,6 +1,6 @@
 #pragma once
-#include"madeCode/Setting/Heder/Collider.h"
-#include"madeCode/Setting/Heder/CollisionConfig.h"
+#include"Collider.h"
+#include"CollisionConfig.h"
 
 class CollisionManager 
 {

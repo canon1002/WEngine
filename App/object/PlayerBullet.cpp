@@ -2,6 +2,9 @@
 #include "../3d/ModelManager.h"
 
 void PlayerBullet::Init(Vec3 startPos) {
+
+	ModelManager::GetInstance()->LoadModel("box.obj");
+
 	worldTransform_.scale = { 1.0f,1.0f,1.0f };
 	worldTransform_.rotate = { 0.0f,0.0f,0.0f };
 	worldTransform_.translate = startPos;
@@ -9,12 +12,12 @@ void PlayerBullet::Init(Vec3 startPos) {
 		worldTransform_.rotate, worldTransform_.translate);
 
 	rad_ = { 1,1,1 };
-	vel_ = { 0.00f,0.00f,0.05f };
+	vel_ = { 0.00f,0.00f,1.0f };
 	isActive_ = true;
 
 	object_ = std::make_unique<Object3d>();
 	object_->Init();
-	object_->SetModel("emptyAxis.obj");
+	object_->SetModel("box.obj");
 
 }
 
@@ -31,11 +34,12 @@ void PlayerBullet::Init() {
 	object_->SetModel("emptyAxis.obj");
 	object_->SetWorldTransform(worldTransform_);
 
-	rad_ = { 1,1,1 };
-	vel_ = { 0.00f,0.00f,0.05f };
+	rad_ = { 1.0f,1.0f,1.0f };
+	vel_ = { 0.00f,0.00f,1.0f };
 	isActive_ = true;
 
-	
+	collisionAttribute_ = kCollisionAttributePlayerBullet;
+	collisionMask_ = kCollisionAttributeEnemy + kCollisionAttributeEnemyBullet;
 
 }
 
