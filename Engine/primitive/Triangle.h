@@ -56,7 +56,7 @@ public:
 	/// <param name="color"></param>
 	void SetColor(Color color) {
 		// 指定した色に書き込む
-		//*materialDate = Color(color.r, color.g, color.b, color.a);
+		*materialData = Color(color.r, color.g, color.b, color.a);
 	}
 
 	const D3D12_VERTEX_BUFFER_VIEW& GetVBV() const { return vertexBufferView; }

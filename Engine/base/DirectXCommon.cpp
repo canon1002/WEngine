@@ -6,10 +6,6 @@
 // staticメンバ変数で宣言したインスタンスを初期化
 DirectXCommon* DirectXCommon::instance = nullptr;
 
-DirectXCommon::DirectXCommon(){}
-
-DirectXCommon::~DirectXCommon(){}
-
 // インスタンスを取得
 DirectXCommon* DirectXCommon::GetInstance() {
 	// 関数内staticは初めて通ったときのみ実行される
@@ -157,7 +153,6 @@ void DirectXCommon::InitializeDXGIDevice() {
 
 	// デバッグレイヤーでエラーと警告を受け取る
 #ifdef _DEBUG
-	Microsoft::WRL::ComPtr <ID3D12Debug1> debugController = nullptr;
 	if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController)))) {
 		// デバッグレイヤーを有効化する
 		debugController->EnableDebugLayer();
@@ -831,7 +826,7 @@ Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> DirectXCommon::CreateDescriptorHeap
 	descriptorHeapDesc.Type = heapType;
 	descriptorHeapDesc.NumDescriptors = numDescriptors;
 	descriptorHeapDesc.Flags = shaderVisible ? D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE : D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-	HRESULT hr = device->CreateDescriptorHeap(&descriptorHeapDesc, IID_PPV_ARGS(&resultDescriptorHeap));
+	hr = device->CreateDescriptorHeap(&descriptorHeapDesc, IID_PPV_ARGS(&resultDescriptorHeap));
 	// ディスクリプタヒープが生成できなかったら起動できない
 	assert(SUCCEEDED(hr));
 	// 生成完了のログをだす

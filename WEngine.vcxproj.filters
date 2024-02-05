@@ -144,19 +144,10 @@
     <ClCompile Include="Engine\resources\section\Audio.cpp">
       <Filter>Engine\resouces\section</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\scene\GameMainScene.cpp">
-      <Filter>Engine\scene</Filter>
-    </ClCompile>
     <ClCompile Include="Engine\scene\IScene.cpp">
       <Filter>Engine\scene</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\scene\ResultScene.cpp">
-      <Filter>Engine\scene</Filter>
-    </ClCompile>
     <ClCompile Include="Engine\scene\SceneManager.cpp">
-      <Filter>Engine\scene</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\scene\StageScene.cpp">
       <Filter>Engine\scene</Filter>
     </ClCompile>
     <ClCompile Include="Engine\scene\TitleScene.cpp">
@@ -177,6 +168,39 @@
     <ClCompile Include="Engine\math\Vec4.cpp">
       <Filter>Engine\math</Filter>
     </ClCompile>
+    <ClCompile Include="App\object\IObject.cpp">
+      <Filter>App\object</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\object\camera\MainCamera.cpp">
+      <Filter>Engine\object\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\collision\CollisionManager.cpp">
+      <Filter>Engine\collision</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\object\camera\CameraCommon.cpp">
+      <Filter>Engine\object\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\object\3d\ModelManager.cpp">
+      <Filter>Engine\object\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\object\3d\Object3d.cpp">
+      <Filter>Engine\object\3d</Filter>
+    </ClCompile>
+    <ClCompile Include="App\camera\RailCamera.cpp">
+      <Filter>Engine\object\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\object\3d\Object3dCommon.cpp">
+      <Filter>Engine\object\3d</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\scene\GameMainScene.cpp">
+      <Filter>Engine\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\scene\ResultScene.cpp">
+      <Filter>Engine\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\scene\StageScene.cpp">
+      <Filter>Engine\scene</Filter>
+    </ClCompile>
     <ClCompile Include="App\command\ICommand.cpp">
       <Filter>App\command</Filter>
     </ClCompile>
@@ -186,26 +210,14 @@
     <ClCompile Include="App\object\Enemy.cpp">
       <Filter>App\object</Filter>
     </ClCompile>
-    <ClCompile Include="App\object\IObject.cpp">
-      <Filter>App\object</Filter>
-    </ClCompile>
     <ClCompile Include="App\object\Player.cpp">
       <Filter>App\object</Filter>
     </ClCompile>
     <ClCompile Include="App\object\PlayerBullet.cpp">
       <Filter>App\object</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\object\3d\Object3dCommon.cpp" />
-    <ClCompile Include="Engine\object\3d\Object3d.cpp" />
-    <ClCompile Include="Engine\object\3d\ModelManager.cpp" />
-    <ClCompile Include="Engine\object\camera\MainCamera.cpp">
-      <Filter>Engine\object\Camera</Filter>
-    </ClCompile>
-    <ClCompile Include="App\object\Skydome.cpp" />
-    <ClCompile Include="App\camera\RailCamera.cpp" />
-    <ClCompile Include="Engine\object\camera\CameraCommon.cpp" />
-    <ClCompile Include="Engine\collision\CollisionManager.cpp">
-      <Filter>Engine\collision</Filter>
+    <ClCompile Include="App\object\Skydome.cpp">
+      <Filter>App\object</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -279,19 +291,10 @@
     <ClInclude Include="Engine\resources\section\Audio.h">
       <Filter>Engine\resouces\section</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\scene\GameMainScene.h">
-      <Filter>Engine\scene</Filter>
-    </ClInclude>
     <ClInclude Include="Engine\scene\IScene.h">
       <Filter>Engine\scene</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\scene\ResultScene.h">
-      <Filter>Engine\scene</Filter>
-    </ClInclude>
     <ClInclude Include="Engine\scene\SceneManager.h">
-      <Filter>Engine\scene</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\scene\StageScene.h">
       <Filter>Engine\scene</Filter>
     </ClInclude>
     <ClInclude Include="Engine\scene\TitleScene.h">
@@ -318,33 +321,12 @@
     <ClInclude Include="Engine\math\Vec4.h">
       <Filter>Engine\math</Filter>
     </ClInclude>
-    <ClInclude Include="App\command\ICommand.h">
-      <Filter>App\command</Filter>
-    </ClInclude>
-    <ClInclude Include="App\command\InputHandle.h">
-      <Filter>App\command</Filter>
-    </ClInclude>
-    <ClInclude Include="App\object\Enemy.h">
-      <Filter>App\object</Filter>
-    </ClInclude>
     <ClInclude Include="App\object\IObject.h">
       <Filter>App\object</Filter>
     </ClInclude>
-    <ClInclude Include="App\object\Player.h">
-      <Filter>App\object</Filter>
-    </ClInclude>
-    <ClInclude Include="App\object\PlayerBullet.h">
-      <Filter>App\object</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\object\3d\Object3dCommon.h" />
-    <ClInclude Include="Engine\object\3d\Object3d.h" />
-    <ClInclude Include="Engine\object\3d\ModelManager.h" />
     <ClInclude Include="Engine\object\camera\MainCamera.h">
       <Filter>Engine\object\Camera</Filter>
     </ClInclude>
-    <ClInclude Include="App\object\Skydome.h" />
-    <ClInclude Include="App\camera\RailCamera.h" />
-    <ClInclude Include="Engine\object\camera\CameraCommon.h" />
     <ClInclude Include="Engine\collision\Collider.h">
       <Filter>Engine\collision</Filter>
     </ClInclude>
@@ -354,10 +336,65 @@
     <ClInclude Include="Engine\collision\CollisionManager.h">
       <Filter>Engine\collision</Filter>
     </ClInclude>
+    <ClInclude Include="Engine\object\camera\CameraCommon.h">
+      <Filter>Engine\object\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\object\3d\ModelManager.h">
+      <Filter>Engine\object\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\object\3d\Object3d.h">
+      <Filter>Engine\object\3d</Filter>
+    </ClInclude>
+    <ClInclude Include="App\camera\RailCamera.h">
+      <Filter>Engine\object\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\object\3d\Object3dCommon.h">
+      <Filter>Engine\object\3d</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\scene\GameMainScene.h">
+      <Filter>Engine\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\scene\ResultScene.h">
+      <Filter>Engine\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\scene\StageScene.h">
+      <Filter>Engine\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="App\command\ICommand.h">
+      <Filter>App\command</Filter>
+    </ClInclude>
+    <ClInclude Include="App\command\InputHandle.h">
+      <Filter>App\command</Filter>
+    </ClInclude>
+    <ClInclude Include="App\object\Enemy.h">
+      <Filter>App\object</Filter>
+    </ClInclude>
+    <ClInclude Include="App\object\Player.h">
+      <Filter>App\object</Filter>
+    </ClInclude>
+    <ClInclude Include="App\object\PlayerBullet.h">
+      <Filter>App\object</Filter>
+    </ClInclude>
+    <ClInclude Include="App\object\Skydome.h">
+      <Filter>App\object</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt">
       <Filter>Externals\imgui</Filter>
     </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Sprite2d.hlsli" />
+    <None Include="Object3d.hlsli" />
+    <None Include="Particle.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Sprite2d.PS.hlsl" />
+    <FxCompile Include="Sprite2d.VS.hlsl" />
+    <FxCompile Include="Object3d.PS.hlsl" />
+    <FxCompile Include="Object3d.VS.hlsl" />
+    <FxCompile Include="Particle.PS.hlsl" />
+    <FxCompile Include="Particle.VS.hlsl" />
   </ItemGroup>
 </Project>

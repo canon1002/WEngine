@@ -84,18 +84,18 @@ Mat44 MakeRotateMatrix(const Quaternion& q) {
 }
 
 
-void QuaternionScreenPrintf(int x, int y, Quaternion& vector, const char* label) {
-
-	//// ラベルの表示
-	//Novice::ScreenPrintf(x + 480, y, "%s", label);
-
-	//// 3次元ベクトルの表示
-	//Novice::ScreenPrintf(x, y, "%6.02f", vector.x);
-	//Novice::ScreenPrintf(x + 80, y, "%6.02f", vector.y);
-	//Novice::ScreenPrintf(x + 160, y, "%6.02f", vector.z);
-	//Novice::ScreenPrintf(x + 240, y, "%6.02f", vector.w);
-
-}
+//void QuaternionScreenPrintf(int x, int y, Quaternion& vector, const char* label) {
+//
+//	//// ラベルの表示
+//	//Novice::ScreenPrintf(x + 480, y, "%s", label);
+//
+//	//// 3次元ベクトルの表示
+//	//Novice::ScreenPrintf(x, y, "%6.02f", vector.x);
+//	//Novice::ScreenPrintf(x + 80, y, "%6.02f", vector.y);
+//	//Novice::ScreenPrintf(x + 160, y, "%6.02f", vector.z);
+//	//Novice::ScreenPrintf(x + 240, y, "%6.02f", vector.w);
+//
+//}
 
 // 球面線形補間
 Quaternion Slerp(const Quaternion& q0, const Quaternion& q1, float t) {

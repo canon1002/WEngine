@@ -43,4 +43,4 @@ Vec3 RotateVector(const Vec3& v, const Quaternion& q);
 Mat44 MakeRotateMatrix(const Quaternion& q);
 
 
-void QuaternionScreenPrintf(int x, int y, Quaternion& vector, const char* label);
+//void QuaternionScreenPrintf(int x, int y, Quaternion& vector, const char* label);

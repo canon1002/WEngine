@@ -31,8 +31,8 @@ class DirectXCommon
 private:
 	
 	// 外部からの呼び出し禁止
-	DirectXCommon();
-	~DirectXCommon();
+	DirectXCommon() = default;
+	~DirectXCommon() = default;
 
 	// FPS固定初期化
 	void InitFixFPS();

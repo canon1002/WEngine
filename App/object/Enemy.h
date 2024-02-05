@@ -31,7 +31,7 @@ public:
 
     // 純粋仮想関数
     void OnCollision()override { isActive_ = false; }
-    void OnCollision(Collider* collider)override { isActive_ = false; }
+    void OnCollision(Collider* collider)override { collider; isActive_ = false; }
 
     // ワールド座標
     Vec3 GetWorldPos()override { return worldTransform_.translate; }

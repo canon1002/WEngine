@@ -110,7 +110,7 @@ void Sprite::CreateVertexResource() {
 	// マテリアルにデータを書き込む
 	materialData = nullptr;
 	// テクスチャの情報を転送
-	if (textureHandle_ = 0) {
+	if (textureHandle_ == 0) {
 		textureHandle_ = dx_->srv_->defaultTexId_;
 	}
 	// 書き込むためのアドレスを取得

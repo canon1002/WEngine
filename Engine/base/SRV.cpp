@@ -80,8 +80,8 @@ int SRV::LoadTexture(const std::string filePath) {
 
 	// デスクリプタサイズを取得
 	const uint32_t descriptorSizeSRV = dx_->device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	const uint32_t descriptorSizeRTV = dx_->device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-	const uint32_t descriptorSizeDSV = dx_->device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
+	//const uint32_t descriptorSizeRTV = dx_->device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+	//const uint32_t descriptorSizeDSV = dx_->device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
 
 	textureData.textureSrvHandleCPU = dx_->GetCPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, textureId_);
 	textureData.textureSrvHandleGPU = dx_->GetGPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, textureId_);
