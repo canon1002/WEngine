@@ -62,6 +62,7 @@
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>,;$(ProjectDir)Engine\base,;$(ProjectDir)Engine\collision,;$(ProjectDir)Engine\primitive,;$(ProjectDir)Engine\resources\section,;$(ProjectDir)Engine\scene,;$(ProjectDir)Engine\object\worldTransform,;$(ProjectDir)Engine\object\model,;$(ProjectDir)Engine\color,;$(ProjectDir)Engine\math,;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <Optimization>MinSpace</Optimization>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -84,6 +85,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>,;$(ProjectDir)Engine\base,;$(ProjectDir)Engine\collision,;$(ProjectDir)Engine\primitive,;$(ProjectDir)Engine\resources\section,;$(ProjectDir)Engine\scene,;$(ProjectDir)Engine\object\worldTransform,;$(ProjectDir)Engine\object\model,;$(ProjectDir)Engine\color,;$(ProjectDir)Engine\math,;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <Optimization>MinSpace</Optimization>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -116,6 +118,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\math\Vec2.cpp" />
     <ClCompile Include="Engine\math\Vec3.cpp" />
     <ClCompile Include="Engine\math\Vec4.cpp" />
+    <ClCompile Include="Engine\object\2d\SpriteCommon.cpp" />
     <ClCompile Include="Engine\object\camera\CameraCommon.cpp" />
     <ClCompile Include="Engine\object\camera\MainCamera.cpp" />
     <ClCompile Include="Engine\object\light\DirectionalLight.cpp" />
@@ -171,6 +174,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\math\Vec2.h" />
     <ClInclude Include="Engine\math\Vec3.h" />
     <ClInclude Include="Engine\math\Vec4.h" />
+    <ClInclude Include="Engine\object\2d\SpriteCommon.h" />
     <ClInclude Include="Engine\object\camera\CameraCommon.h" />
     <ClInclude Include="Engine\object\camera\MainCamera.h" />
     <ClInclude Include="Engine\object\light\DirectionalLight.h" />

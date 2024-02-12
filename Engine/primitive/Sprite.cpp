@@ -3,13 +3,7 @@
 
 Sprite::Sprite() {}
 
-Sprite::~Sprite()
-{
-	delete wvpData;
-	delete vertexData;
-	delete materialData;
-	
-}
+Sprite::~Sprite(){}
 
 void Sprite::Initialize() {
 
@@ -19,11 +13,6 @@ void Sprite::Initialize() {
 	CreateIndexResource();
 	CreateTransformationRsource();
 	CreateBufferView();
-
-	wvpResource->SetName(L"Sphere");
-	materialResourceSprite->SetName(L"Sphere");
-	vertexResource->SetName(L"Sphere");
-	indexResource->SetName(L"Sphere");
 
 }
 
@@ -45,11 +34,11 @@ void Sprite::Update() {
 		worldTransform_.scale, worldTransform_.rotate, worldTransform_.translate);
 
 	// カメラのワールド行列
-	cameraM = MainCamera::GetInstance()->GetWorldMatrix();
+	cameraM = MakeAffineMatrix({1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f});
 	// カメラ行列のビュー行列(カメラのワールド行列の逆行列)
 	viewM = Inverse(cameraM);
 	// 正規化デバイス座標系(NDC)に変換(正射影行列をかける)
-	projectM = MainCamera::GetInstance()->GetProjectionMatrix();
+	projectM = MakeOrthographicMatrix(0.0f, 0.0f, 1280.0f, 720.0f, 0.1f, 100.0f);
 	// WVPにまとめる
 	wvpM = Multiply(viewM, projectM);
 	// 矩形のワールド行列とWVP行列を掛け合わした行列を代入
@@ -64,8 +53,6 @@ void Sprite::Update() {
 	);
 	// 変換したデータを代入する
 	materialData->uvTransform = uvTransformMatrix;
-
-
 
 }
 
@@ -82,8 +69,7 @@ void Sprite::Draw() {
 	dx_->commandList->SetGraphicsRootConstantBufferView(0, materialResourceSprite->GetGPUVirtualAddress());
 	//wvp用のCBufferの場所を指定
 	dx_->commandList->SetGraphicsRootConstantBufferView(1, wvpResource->GetGPUVirtualAddress());
-	dx_->commandList->SetGraphicsRootConstantBufferView(4, CameraResource->GetGPUVirtualAddress());
-
+	
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である
 	dx_->commandList->SetGraphicsRootDescriptorTable(2, dx_->srv_->textureData_.at(textureHandle_).textureSrvHandleGPU);
 
@@ -103,10 +89,10 @@ void Sprite::CreateVertexResource() {
 
 	// VertexResourceを生成する(P.42)
 	// 実際に頂点リソースを作る
-	vertexResource = dx_->CreateBufferResource(dx_->device_.Get(), sizeof(VertexData) * 6);
+	vertexResource = dx_->CreateBufferResource(dx_->device_.Get(), sizeof(VertexData2D) * 6);
 
 	// マテリアル用のResourceを作る
-	materialResourceSprite = dx_->CreateBufferResource(dx_->device_.Get(), sizeof(Material));
+	materialResourceSprite = dx_->CreateBufferResource(dx_->device_.Get(), sizeof(Material2D));
 	// マテリアルにデータを書き込む
 	materialData = nullptr;
 	// テクスチャの情報を転送
@@ -117,15 +103,9 @@ void Sprite::CreateVertexResource() {
 	materialResourceSprite->Map(0, nullptr, reinterpret_cast<void**>(&materialData));
 	// 色の書き込み・Lightingの無効化
 	materialData->color = { 1.0f, 1.0f, 1.0f, 1.0f };
-	materialData->enableLighting = false;
 	// UVTransformを設定
 	materialData->uvTransform = MakeIdentity();
 	uvTransform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
-	// カメラデータ
-	CameraResource = dx_->CreateBufferResource(dx_->device_.Get(), sizeof(CameraForGPU));
-	// データを書き込む
-	CameraResource->Map(0, nullptr, reinterpret_cast<void**>(&cameraData));
-	cameraData->worldPosition = MainCamera::GetInstance()->GetTranslate();
 
 }
 
@@ -148,9 +128,9 @@ void Sprite::CreateBufferView() {
 	// リソースの先頭のアドレスから使う
 	vertexBufferView.BufferLocation = vertexResource->GetGPUVirtualAddress();
 	// 使用するリソースサイズは頂点6つ分のサイズ
-	vertexBufferView.SizeInBytes = sizeof(VertexData) * 4;
+	vertexBufferView.SizeInBytes = sizeof(VertexData2D) * 4;
 	// 1頂点あたりのサイズ
-	vertexBufferView.StrideInBytes = sizeof(VertexData);
+	vertexBufferView.StrideInBytes = sizeof(VertexData2D);
 
 	// Resourceにデータを書き込む
 
@@ -161,19 +141,15 @@ void Sprite::CreateBufferView() {
 	//　左上
 	vertexData[0].position = { 0.0f,0.0f,0.0f,1.0f };
 	vertexData[0].texcoord = { 0.0f,0.0f };
-	vertexData[0].normal = { 0.0f,0.0f,-1.0f };
 	//　右上
 	vertexData[1].position = { 640.0f,0.0f,0.0f,1.0f };
 	vertexData[1].texcoord = { 1.0f,0.0f };
-	vertexData[1].normal = { 0.0f,0.0f,-1.0f };
 	// 左下
 	vertexData[2].position = { 0.0f,360.0f,0.0f,1.0f };
 	vertexData[2].texcoord = { 0.0f,1.0f };
-	vertexData[2].normal = { 0.0f,0.0f,-1.0f };
 	// 右下
 	vertexData[3].position = { 640.0f,360.0f,0.0f,1.0f };
 	vertexData[3].texcoord = { 1.0f,1.0f };
-	vertexData[3].normal = { 0.0f,0.0f,-1.0f };
 
 	indexResource = dx_->CreateBufferResource(dx_->device_.Get(), sizeof(uint32_t) * 6);
 	indexBufferView.BufferLocation = indexResource->GetGPUVirtualAddress();

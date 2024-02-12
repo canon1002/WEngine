@@ -29,15 +29,15 @@ void Object3d::Init() {
 
 void Object3d::Update() {
 
-	/*ImGui::Begin("Sphere");
-	ImGui::SliderAngle("RotateX", &worldTransform_.rotate.x);
-	ImGui::SliderAngle("RotateY", &worldTransform_.rotate.y);
-	ImGui::SliderAngle("RotateZ", &worldTransform_.rotate.z);
-	ImGui::DragFloat3("Rotate", &worldTransform_.rotate.x);
-	ImGui::DragFloat3("translate", &worldTransform_.translate.x);
-	ImGui::DragFloat("shininess", &model_->materialData_->shininess);
-	ImGui::ColorPicker4("color", &model_->materialData_->color.r);
-	ImGui::End();*/
+	//ImGui::Begin("Sphere");
+	//ImGui::SliderAngle("RotateX", &worldTransform_.rotate.x);
+	//ImGui::SliderAngle("RotateY", &worldTransform_.rotate.y);
+	//ImGui::SliderAngle("RotateZ", &worldTransform_.rotate.z);
+	//ImGui::DragFloat3("Rotate", &worldTransform_.rotate.x);
+	//ImGui::DragFloat3("translate", &worldTransform_.translate.x);
+	//ImGui::DragFloat("shininess", &model_->materialData_->shininess);
+	//ImGui::ColorEdit4("Color",&model_->materialData_->color.r);
+	//ImGui::End();
 
 	//　矩形のワールド行列
 	worldTransform_.worldM = MakeAffineMatrix(

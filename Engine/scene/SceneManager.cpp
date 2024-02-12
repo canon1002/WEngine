@@ -16,6 +16,9 @@ SceneManager::SceneManager() {
 	// モデルマネージャー
 	modelManager = ModelManager::GetInstance();
 
+	// スプライト基盤クラス
+	spriteCommon = SpriteCommon::GetInstance();
+
 	// 各シーンの配列
 	sceneArr_[TITLE] = std::make_unique<TitleScene>();
 	sceneArr_[STAGE] = std::make_unique<GameMainScene>();
@@ -38,9 +41,10 @@ int SceneManager::Run() {
 	dx->Initialize(win);
 	input->Initialize();
 	audio->Initialize();
-	mainCamera->Initialize({ {1.0f,1.0f,1.0f},{0.314f,-0.314f,0.0f},{2.0f,2.0f,-6.0f} });
+	mainCamera->Initialize({ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,-6.0f} });
 	//mainCamera->Initialize({ {1.0f,1.0f,1.0f},{0.314f,0.0f,0.0f},{0.0f,16.0f,-48.0f} });
 	modelManager->Initialize();
+	spriteCommon->Initialize();
 
 	while (true)	{
 
@@ -112,6 +116,7 @@ int SceneManager::Run() {
 	sceneArr_[STAGE].reset();
 	sceneArr_[CLEAR].reset();
 	ImGui_ImplDX12_Shutdown();
+	spriteCommon->Finalize();
 	modelManager->Finalize();
 	mainCamera->Finalize();
 	input->Finalize();

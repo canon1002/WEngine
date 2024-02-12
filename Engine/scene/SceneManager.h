@@ -12,6 +12,7 @@
 #include "../resources/Section/Resource.h"
 #include "../primitive/Sphere.h"
 #include "../object/3d/ModelManager.h"
+#include "../object/2d/SpriteCommon.h"
 #include "../primitive/VoxelParticle.h"
 #include "../../Input.h"
 #include "../resources/Section/Audio.h"
@@ -42,6 +43,9 @@ private:
 	MainCamera* mainCamera;
 	// モデルマネージャー
 	ModelManager* modelManager;
+
+	// スプライト基盤クラス
+	SpriteCommon* spriteCommon;
 
 public:
 

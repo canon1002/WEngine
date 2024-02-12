@@ -4,6 +4,7 @@
 #include "../Engine/object/3d/Model.h"
 #include "../Engine/primitive/VoxelParticle.h"
 #include "../Engine/primitive/Sprite.h"
+#include "../Engine/object/2d/SpriteCommon.h"
 
 // 前方宣言
 class Input;
@@ -29,7 +30,7 @@ private:
 	std::unique_ptr<Object3d> eAxis_ = nullptr;
 	std::unique_ptr<Object3d> ball_ = nullptr;
 	std::unique_ptr <VoxelParticle> voxel_ = nullptr;
-	//std::unique_ptr<Sprite> sprite_ = nullptr;
+	std::unique_ptr<Sprite> sprite_ = nullptr;
 
 };
 

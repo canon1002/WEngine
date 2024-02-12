@@ -77,6 +77,12 @@
     <Filter Include="Engine\collision">
       <UniqueIdentifier>{f167a84c-a7a8-405d-b221-ebfd20ee2888}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine\object\2d">
+      <UniqueIdentifier>{6b0fbe17-3e38-41b5-afb6-fd0cf5afd2de}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\object\Sprite">
+      <UniqueIdentifier>{872ae062-3e4e-4376-af30-003abaf5194c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -218,6 +224,9 @@
     </ClCompile>
     <ClCompile Include="App\object\Skydome.cpp">
       <Filter>App\object</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\object\2d\SpriteCommon.cpp">
+      <Filter>Engine\object\2d</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -377,6 +386,9 @@
     </ClInclude>
     <ClInclude Include="App\object\Skydome.h">
       <Filter>App\object</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\object\2d\SpriteCommon.h">
+      <Filter>Engine\object\2d</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

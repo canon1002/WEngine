@@ -41,7 +41,7 @@ void VoxelParticle::Update() {
 		instanceCount_ = kNumMaxInstance;
 	}
 
-	ImGui::Begin("Pirticle");
+	/*ImGui::Begin("Pirticle");
 	float treeScale = worldTransform_.scale.x;
 	ImGui::DragFloat("ObjScale", &treeScale, 0.05f);
 	worldTransform_.scale = { treeScale ,treeScale ,treeScale };
@@ -54,7 +54,7 @@ void VoxelParticle::Update() {
 	ImGui::DragFloat2("UVTranlate", &uvTransform_.translate.x, 0.01f, -10.0f, 10.0f);
 	ImGui::SliderAngle("UVRotate", &uvTransform_.rotate.z);
 	ImGui::ColorEdit4("Color", &materialData_->color.r);
-	ImGui::End();
+	ImGui::End();*/
 
 	//　ワールド行列
 	worldTransform_.worldM = MakeAffineMatrix(

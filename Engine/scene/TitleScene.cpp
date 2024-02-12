@@ -21,6 +21,7 @@ void TitleScene::Init() {
 	eAxis_ = std::make_unique<Object3d>();
 	eAxis_->Init();
 	eAxis_->SetModel("emptyAxis.obj");
+	eAxis_->SetTranslate({ 4.35f,1.75f,5.0f });
 	
 	ball_ = std::make_unique<Object3d>();
 	ball_->Init();
@@ -30,33 +31,103 @@ void TitleScene::Init() {
 	voxel_ = std::make_unique<VoxelParticle>();
 	voxel_->Initialize();
 
-	/*sprite_ = std::make_unique<Sprite>();
+	sprite_ = std::make_unique<Sprite>();
 	sprite_->Initialize();
-	sprite_->SetTexture("Resources/texture/circleWhite.png");*/
+	sprite_->SetTexture("Resources/texture/uvChecker.png");
 
 }
 
 void TitleScene::Update() {
 
-	//eAxis_->Update();
-	//ball_->Update();
-	//voxel_->Update();
-	//sprite_->Update();
+	eAxis_->Update();
+	ball_->Update();
+	voxel_->Update();
+	sprite_->Update();
 
+	// スペースキーでパーティクル再表示
 	if (input_->GetTriggerKey(DIK_SPACE)) {
-		// メインゲームに切り替え
-		IScene::sceneNo = STAGE;
+		voxel_->Initialize();
 	}
+
+	// 手前に回転
+	if (input_->GetPushKey(DIK_W)) {
+		ball_->SetRotate({
+			ball_->GetWorldTransform().rotate.x - 0.05f,
+			ball_->GetWorldTransform().rotate.y,
+			ball_->GetWorldTransform().rotate.z 
+			});
+	}
+	// 奥に回転
+	if (input_->GetPushKey(DIK_S)) {
+		ball_->SetRotate({
+			ball_->GetWorldTransform().rotate.x + 0.05f,
+			ball_->GetWorldTransform().rotate.y,
+			ball_->GetWorldTransform().rotate.z 
+			});
+	}
+	// 左回転
+	if (input_->GetPushKey(DIK_A)) {
+		ball_->SetRotate({
+			ball_->GetWorldTransform().rotate.x,
+			ball_->GetWorldTransform().rotate.y + 0.05f,
+			ball_->GetWorldTransform().rotate.z
+			});
+	}
+	// 右回転
+	if (input_->GetPushKey(DIK_D)) {
+		ball_->SetRotate({
+			ball_->GetWorldTransform().rotate.x,
+			ball_->GetWorldTransform().rotate.y - 0.05f,
+			ball_->GetWorldTransform().rotate.z
+			});
+	}
+
+	// 右移動
+	if (input_->GetPushKey(DIK_RIGHT)) {
+		ball_->SetTranslate({
+			ball_->GetWorldTransform().translate.x + 0.05f,
+			ball_->GetWorldTransform().translate.y,
+			ball_->GetWorldTransform().translate.z
+			});
+	}
+	// 左移動
+	if (input_->GetPushKey(DIK_LEFT)) {
+		ball_->SetTranslate({
+			ball_->GetWorldTransform().translate.x - 0.05f,
+			ball_->GetWorldTransform().translate.y,
+			ball_->GetWorldTransform().translate.z
+			});
+	}
+	// 上移動
+	if (input_->GetPushKey(DIK_UP)) {
+		ball_->SetTranslate({
+			ball_->GetWorldTransform().translate.x,
+			ball_->GetWorldTransform().translate.y + 0.05f,
+			ball_->GetWorldTransform().translate.z
+			});
+	}
+	// 右移動
+	if (input_->GetPushKey(DIK_DOWN)) {
+		ball_->SetTranslate({
+			ball_->GetWorldTransform().translate.x,
+			ball_->GetWorldTransform().translate.y - 0.05f,
+			ball_->GetWorldTransform().translate.z
+			});
+	}
+
 }
 
 void TitleScene::Draw(){
 
-	//eAxis_->Draw();
-	//ball_->Draw();
+	eAxis_->Draw();
+	ball_->Draw();
+	
+	// 2D画像の描画開始コマンド
+	SpriteCommon::GetInstance()->DrawBegin();
+	sprite_->Draw();
 
-	//DirectXCommon::GetInstance()->DrawPariticleBegin();
-	//voxel_->Draw();
+	DirectXCommon::GetInstance()->DrawPariticleBegin();
+	voxel_->Draw();
 
-	//sprite_->Draw();
 
 }

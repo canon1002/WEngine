@@ -12,12 +12,22 @@ struct VertexData {
 	Vec3 normal;
 };
 
+struct VertexData2D {
+	Vec4 position;
+	Vec2 texcoord;
+};
+
 struct Material {
 	Color color;
 	int32_t enableLighting;
 	float paddding[3];
 	Mat44 uvTransform;
 	float shininess;
+};
+
+struct Material2D {
+	Color color;
+	Mat44 uvTransform;
 };
 
 struct TransformationMatrix {
