@@ -129,5 +129,4 @@ void TitleScene::Draw(){
 	DirectXCommon::GetInstance()->DrawPariticleBegin();
 	voxel_->Draw();
 
-
 }

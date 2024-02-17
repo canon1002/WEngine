@@ -63,20 +63,23 @@ void SRV::CreateSRVDescriptorHeap() {
 
 int SRV::LoadTexture(const std::string filePath) {
 
+
+	// 新たにデータを登録する
 	TextureData textureData;
+	textureData.filePath = filePath;
 	++textureId_;
 
 	// テクスチャを読んで転送する
 	DirectX::ScratchImage mipImages = Resource::LoadTextrue(filePath);
-	const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
-	textureData.textureResource = Resource::CreateTextureResource(dx_->device_, metadata);
+	textureData.metadata = mipImages.GetMetadata();
+	textureData.textureResource = Resource::CreateTextureResource(dx_->device_, textureData.metadata);
 	textureData.intermediaResource = Resource::UpdateTextureData(textureData.textureResource, mipImages);
 
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
-	srvDesc.Format = metadata.format;
+	srvDesc.Format = textureData.metadata.format;
 	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-	srvDesc.Texture2D.MipLevels = UINT(metadata.mipLevels);
+	srvDesc.Texture2D.MipLevels = UINT(textureData.metadata.mipLevels);
 
 	// デスクリプタサイズを取得
 	const uint32_t descriptorSizeSRV = dx_->device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
@@ -115,4 +118,10 @@ int SRV::SetStructuredBuffer(int32_t kNumInstance, Microsoft::WRL::ComPtr<ID3D12
 
 	return  textureId_;
 
+}
+
+const DirectX::TexMetadata& SRV::GetMetaData(uint32_t textureId)
+{
+	TextureData& textureData = textureData_.at(textureId);
+	return textureData.metadata;
 }

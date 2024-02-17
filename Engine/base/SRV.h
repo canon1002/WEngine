@@ -6,6 +6,8 @@
 class DirectXCommon;
 
 struct TextureData {
+	std::string filePath;
+	DirectX::TexMetadata metadata;
 	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU;
 	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU;
 	Microsoft::WRL::ComPtr<ID3D12Resource> textureResource = nullptr;
@@ -39,6 +41,8 @@ public:
 		int32_t kNumInstance, Microsoft::WRL::ComPtr<ID3D12Resource> instancingResource
 	);
 	
+	// メタデータ取得
+	const DirectX::TexMetadata& GetMetaData(uint32_t textureId);
 
 private:
 

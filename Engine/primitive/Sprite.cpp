@@ -8,7 +8,6 @@ Sprite::~Sprite(){}
 void Sprite::Initialize() {
 
 	dx_ = DirectXCommon::GetInstance();
-
 	CreateVertexResource();
 	CreateIndexResource();
 	CreateTransformationRsource();
@@ -18,8 +17,8 @@ void Sprite::Initialize() {
 
 void Sprite::Update() {
 
-	/*ImGui::Begin("Sprite");
-	ImGui::DragFloat3("Scale", &worldTransform_.scale.x);
+	ImGui::Begin("Sprite");
+	ImGui::DragFloat3("Scale", &worldTransform_.scale.x, 0.1f, 0.1f, 2.0f);
 	ImGui::DragFloat3("Rotate", &worldTransform_.rotate.x);
 	ImGui::DragFloat3("Tranlate", &worldTransform_.translate.x);
 	ImGui::Spacing();
@@ -27,7 +26,9 @@ void Sprite::Update() {
 	ImGui::DragFloat2("UVTranlate", &uvTransform_.translate.x, 0.01f, -10.0f, 10.0f);
 	ImGui::SliderAngle("UVRotate", &uvTransform_.rotate.z);
 	ImGui::ColorEdit4("Color", &materialData->color.r);
-	ImGui::End();*/
+	ImGui::End();
+
+	//worldTransform_.rotate.z += 0.05f;
 
 	//　矩形のワールド行列
 	worldTransform_.worldM = MakeAffineMatrix(
@@ -53,6 +54,31 @@ void Sprite::Update() {
 	);
 	// 変換したデータを代入する
 	materialData->uvTransform = uvTransformMatrix;
+
+	// アンカーポイント反映
+	float left = (0.0f - anchorPoint.x) * 360.0f;
+	float right = (1.0f - anchorPoint.x) * 360.0f;
+	float top = (0.0f - anchorPoint.y) * 360.0f;
+	float bottom = (1.0f - anchorPoint.y) * 360.0f;
+
+	vertexData[0].position = { left,top,0.0f,1.0f };
+	vertexData[1].position = { right,top,0.0f,1.0f };
+	vertexData[2].position = { left,bottom,0.0f,1.0f };
+	vertexData[3].position = { right,bottom,0.0f,1.0f };
+
+	// テクスチャ範囲指定
+	const DirectX::TexMetadata& metadata =
+		dx_->srv_->GetMetaData(textureHandle_);
+	float tex_left = textureLeftTop_.x / metadata.width;
+	float tex_right = (textureLeftTop_.x + textureSize_.x) / metadata.width;
+	float tex_top = textureLeftTop_.y / metadata.height;
+	float tex_bottom = (textureLeftTop_.y + textureSize_.y) / metadata.height;
+
+	// 頂点リソースにデータを書き込む
+	vertexData[0].texcoord = { tex_left,tex_top };
+	vertexData[1].texcoord = { tex_right,tex_top };
+	vertexData[2].texcoord = { tex_left,tex_bottom };
+	vertexData[3].texcoord = { tex_right,tex_bottom };
 
 }
 
@@ -142,13 +168,13 @@ void Sprite::CreateBufferView() {
 	vertexData[0].position = { 0.0f,0.0f,0.0f,1.0f };
 	vertexData[0].texcoord = { 0.0f,0.0f };
 	//　右上
-	vertexData[1].position = { 640.0f,0.0f,0.0f,1.0f };
+	vertexData[1].position = { 360.0f,0.0f,0.0f,1.0f };
 	vertexData[1].texcoord = { 1.0f,0.0f };
 	// 左下
 	vertexData[2].position = { 0.0f,360.0f,0.0f,1.0f };
 	vertexData[2].texcoord = { 0.0f,1.0f };
 	// 右下
-	vertexData[3].position = { 640.0f,360.0f,0.0f,1.0f };
+	vertexData[3].position = { 360.0f,360.0f,0.0f,1.0f };
 	vertexData[3].texcoord = { 1.0f,1.0f };
 
 	indexResource = dx_->CreateBufferResource(dx_->device_.Get(), sizeof(uint32_t) * 6);

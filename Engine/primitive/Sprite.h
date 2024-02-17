@@ -25,6 +25,8 @@ public:
 	auto* GetWVP() { return wvpResource.Get(); }
 	void SetTexture(std::string filepath){ textureHandle_ = dx_->srv_->LoadTexture(filepath); }
 
+
+
 private:
 
 	// 外部ポインタ
@@ -58,6 +60,14 @@ private:
 	Material2D *materialData = nullptr;
 	// UVTransform用の変数
 	Transformation uvTransform_;
+
+	// アンカーポイント
+	Vec2 anchorPoint = { 0.0f,0.0f };
+
+	// テクスチャ左上座標
+	Vec2 textureLeftTop_ = { 0.0f,0.0f };
+	// テクスチャ切り出しサイズ
+	Vec2 textureSize_ = { 64.0f,64.0f };
 
 };
 
