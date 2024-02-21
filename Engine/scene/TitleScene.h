@@ -31,6 +31,9 @@ private:
 	std::unique_ptr<Object3d> ball_ = nullptr;
 	std::unique_ptr <VoxelParticle> voxel_ = nullptr;
 	std::unique_ptr<Sprite> sprite_ = nullptr;
-
+	
+	float alpth_ = 0.0f;
+	bool isSceneChange = false;
+	int32_t fadeTimer_ = 60;
 };
 

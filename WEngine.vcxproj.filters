@@ -104,9 +104,6 @@
     <ClCompile Include="Engine\object\worldTransform\WorldTransform.cpp">
       <Filter>Engine\object\WorldTransform</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\primitive\Sprite.cpp">
-      <Filter>Engine\primitive</Filter>
-    </ClCompile>
     <ClCompile Include="Engine\primitive\Sphere.cpp">
       <Filter>Engine\primitive</Filter>
     </ClCompile>
@@ -228,6 +225,9 @@
     <ClCompile Include="Engine\object\2d\SpriteCommon.cpp">
       <Filter>Engine\object\2d</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\primitive\Sprite.cpp">
+      <Filter>Engine\object\Sprite</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\base\ImGuiManager.h">
@@ -250,9 +250,6 @@
     </ClInclude>
     <ClInclude Include="Engine\object\worldTransform\WorldTransform.h">
       <Filter>Engine\object\WorldTransform</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\primitive\Sprite.h">
-      <Filter>Engine\primitive</Filter>
     </ClInclude>
     <ClInclude Include="Engine\primitive\Sphere.h">
       <Filter>Engine\primitive</Filter>
@@ -389,6 +386,9 @@
     </ClInclude>
     <ClInclude Include="Engine\object\2d\SpriteCommon.h">
       <Filter>Engine\object\2d</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\primitive\Sprite.h">
+      <Filter>Engine\object\Sprite</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

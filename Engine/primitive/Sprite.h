@@ -23,7 +23,13 @@ public:
 	const D3D12_VERTEX_BUFFER_VIEW& GetVBV() const { return vertexBufferView; }
 	auto* GetMaterial() { return  materialResourceSprite.Get(); }
 	auto* GetWVP() { return wvpResource.Get(); }
-	void SetTexture(std::string filepath){ textureHandle_ = dx_->srv_->LoadTexture(filepath); }
+	void SetTexture(std::string filepath){
+		textureHandle_ = dx_->srv_->LoadTexture(filepath); 
+		AdjustTextureSize();
+	}
+	void SetColor(Color color) { materialData->color = color; }
+	void SetTextureSize(Vec2 size) { textureSize_ = size; }
+	void SetSpriteSize(Vec2 size) { spriteSize = size; }
 
 private:
 

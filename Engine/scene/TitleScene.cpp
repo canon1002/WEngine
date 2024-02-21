@@ -34,6 +34,14 @@ void TitleScene::Init() {
 	sprite_ = std::make_unique<Sprite>();
 	sprite_->Initialize();
 	sprite_->SetTexture("Resources/texture/uvChecker.png");
+	sprite_->SetTextureSize({ 64.0f,64.0f });
+	sprite_->SetSpriteSize({ 1280.0f,720.0f });
+	sprite_->SetColor({ 0.0f,0.0f,0.0f,0.0f });
+
+	// シーン切り替え用
+	alpth_ = 0.0f;
+	isSceneChange = false;
+	fadeTimer_ = 60;
 
 }
 
@@ -44,75 +52,98 @@ void TitleScene::Update() {
 	voxel_->Update();
 	sprite_->Update();
 
-	// スペースキーでパーティクル再表示
-	if (input_->GetTriggerKey(DIK_SPACE)) {
-		voxel_->Initialize();
-	}
+	if (isSceneChange == true) {
+		if (alpth_ < 1.0f) {
+			alpth_ += 0.05f;
+		}
+		sprite_->SetColor({ 0.0f,0.0f,0.0f,alpth_ });
 
-	// 手前に回転
-	if (input_->GetPushKey(DIK_W)) {
-		ball_->SetRotate({
-			ball_->GetWorldTransform().rotate.x - 0.05f,
-			ball_->GetWorldTransform().rotate.y,
-			ball_->GetWorldTransform().rotate.z 
-			});
-	}
-	// 奥に回転
-	if (input_->GetPushKey(DIK_S)) {
-		ball_->SetRotate({
-			ball_->GetWorldTransform().rotate.x + 0.05f,
-			ball_->GetWorldTransform().rotate.y,
-			ball_->GetWorldTransform().rotate.z 
-			});
-	}
-	// 左回転
-	if (input_->GetPushKey(DIK_A)) {
-		ball_->SetRotate({
-			ball_->GetWorldTransform().rotate.x,
-			ball_->GetWorldTransform().rotate.y + 0.05f,
-			ball_->GetWorldTransform().rotate.z
-			});
-	}
-	// 右回転
-	if (input_->GetPushKey(DIK_D)) {
-		ball_->SetRotate({
-			ball_->GetWorldTransform().rotate.x,
-			ball_->GetWorldTransform().rotate.y - 0.05f,
-			ball_->GetWorldTransform().rotate.z
-			});
-	}
+		if (alpth_ >= 1.0f) {
 
-	// 右移動
-	if (input_->GetPushKey(DIK_RIGHT)) {
-		ball_->SetTranslate({
-			ball_->GetWorldTransform().translate.x + 0.05f,
-			ball_->GetWorldTransform().translate.y,
-			ball_->GetWorldTransform().translate.z
-			});
+			sceneNo = STAGE;
+		}
 	}
-	// 左移動
-	if (input_->GetPushKey(DIK_LEFT)) {
-		ball_->SetTranslate({
-			ball_->GetWorldTransform().translate.x - 0.05f,
-			ball_->GetWorldTransform().translate.y,
-			ball_->GetWorldTransform().translate.z
-			});
-	}
-	// 上移動
-	if (input_->GetPushKey(DIK_UP)) {
-		ball_->SetTranslate({
-			ball_->GetWorldTransform().translate.x,
-			ball_->GetWorldTransform().translate.y + 0.05f,
-			ball_->GetWorldTransform().translate.z
-			});
-	}
-	// 右移動
-	if (input_->GetPushKey(DIK_DOWN)) {
-		ball_->SetTranslate({
-			ball_->GetWorldTransform().translate.x,
-			ball_->GetWorldTransform().translate.y - 0.05f,
-			ball_->GetWorldTransform().translate.z
-			});
+	else {
+
+		//
+		if (input_->GetTriggerKey(DIK_RETURN)) {
+			isSceneChange = true;
+
+		}
+
+
+
+		// スペースキーでパーティクル再表示
+		if (input_->GetTriggerKey(DIK_SPACE)) {
+			voxel_->Initialize();
+		}
+
+		// 手前に回転
+		if (input_->GetPushKey(DIK_W)) {
+			ball_->SetRotate({
+				ball_->GetWorldTransform().rotate.x - 0.05f,
+				ball_->GetWorldTransform().rotate.y,
+				ball_->GetWorldTransform().rotate.z
+				});
+		}
+		// 奥に回転
+		if (input_->GetPushKey(DIK_S)) {
+			ball_->SetRotate({
+				ball_->GetWorldTransform().rotate.x + 0.05f,
+				ball_->GetWorldTransform().rotate.y,
+				ball_->GetWorldTransform().rotate.z
+				});
+		}
+		// 左回転
+		if (input_->GetPushKey(DIK_A)) {
+			ball_->SetRotate({
+				ball_->GetWorldTransform().rotate.x,
+				ball_->GetWorldTransform().rotate.y + 0.05f,
+				ball_->GetWorldTransform().rotate.z
+				});
+		}
+		// 右回転
+		if (input_->GetPushKey(DIK_D)) {
+			ball_->SetRotate({
+				ball_->GetWorldTransform().rotate.x,
+				ball_->GetWorldTransform().rotate.y - 0.05f,
+				ball_->GetWorldTransform().rotate.z
+				});
+		}
+
+		// 右移動
+		if (input_->GetPushKey(DIK_RIGHT)) {
+			ball_->SetTranslate({
+				ball_->GetWorldTransform().translate.x + 0.05f,
+				ball_->GetWorldTransform().translate.y,
+				ball_->GetWorldTransform().translate.z
+				});
+		}
+		// 左移動
+		if (input_->GetPushKey(DIK_LEFT)) {
+			ball_->SetTranslate({
+				ball_->GetWorldTransform().translate.x - 0.05f,
+				ball_->GetWorldTransform().translate.y,
+				ball_->GetWorldTransform().translate.z
+				});
+		}
+		// 上移動
+		if (input_->GetPushKey(DIK_UP)) {
+			ball_->SetTranslate({
+				ball_->GetWorldTransform().translate.x,
+				ball_->GetWorldTransform().translate.y + 0.05f,
+				ball_->GetWorldTransform().translate.z
+				});
+		}
+		// 右移動
+		if (input_->GetPushKey(DIK_DOWN)) {
+			ball_->SetTranslate({
+				ball_->GetWorldTransform().translate.x,
+				ball_->GetWorldTransform().translate.y - 0.05f,
+				ball_->GetWorldTransform().translate.z
+				});
+		}
+
 	}
 
 }
