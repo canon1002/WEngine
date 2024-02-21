@@ -13,6 +13,9 @@ void Sprite::Initialize() {
 	CreateTransformationRsource();
 	CreateBufferView();
 
+	// テクスチャサイズをイメージに合わせる
+	AdjustTextureSize();
+
 }
 
 void Sprite::Update() {
@@ -56,23 +59,24 @@ void Sprite::Update() {
 	materialData->uvTransform = uvTransformMatrix;
 
 	// アンカーポイント反映
-	float left = (0.0f - anchorPoint.x) * 360.0f;
-	float right = (1.0f - anchorPoint.x) * 360.0f;
-	float top = (0.0f - anchorPoint.y) * 360.0f;
-	float bottom = (1.0f - anchorPoint.y) * 360.0f;
+	float left = (0.0f - anchorPoint.x) * spriteSize.x;
+	float right = (1.0f - anchorPoint.x) * spriteSize.x;
+	float top = (0.0f - anchorPoint.y) * spriteSize.y;
+	float bottom = (1.0f - anchorPoint.y) * spriteSize.y;
 
 	vertexData[0].position = { left,top,0.0f,1.0f };
 	vertexData[1].position = { right,top,0.0f,1.0f };
 	vertexData[2].position = { left,bottom,0.0f,1.0f };
 	vertexData[3].position = { right,bottom,0.0f,1.0f };
 
+	
+
 	// テクスチャ範囲指定
-	const DirectX::TexMetadata& metadata =
-		dx_->srv_->GetMetaData(textureHandle_);
-	float tex_left = textureLeftTop_.x / metadata.width;
-	float tex_right = (textureLeftTop_.x + textureSize_.x) / metadata.width;
-	float tex_top = textureLeftTop_.y / metadata.height;
-	float tex_bottom = (textureLeftTop_.y + textureSize_.y) / metadata.height;
+	textureSize_ = textureFullSize_;
+	float tex_left = textureLeftTop_.x / textureFullSize_.x;
+	float tex_right = (textureLeftTop_.x + textureSize_.x) / textureFullSize_.x;
+	float tex_top = textureLeftTop_.y / textureFullSize_.y;
+	float tex_bottom = (textureLeftTop_.y + textureSize_.y) / textureFullSize_.y;
 
 	// 頂点リソースにデータを書き込む
 	vertexData[0].texcoord = { tex_left,tex_top };
@@ -187,4 +191,16 @@ void Sprite::CreateBufferView() {
 	indexResource->Map(0, nullptr, reinterpret_cast<void**>(&indexData));
 	indexData[0] = 0; indexData[1] = 1; indexData[2] = 2;
 	indexData[3] = 1; indexData[4] = 3; indexData[5] = 2;
+}
+
+void Sprite::AdjustTextureSize()
+{
+	// テクスチャメタデータ取得
+	const DirectX::TexMetadata& metadata = dx_->srv_->GetMetaData(textureHandle_);
+	textureFullSize_.x = static_cast<float>(metadata.width);
+	textureFullSize_.y = static_cast<float>(metadata.height);
+
+	// 画像サイズをテクスチャサイズに合わせる
+	spriteSize = textureFullSize_;
+
 }

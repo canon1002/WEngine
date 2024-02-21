@@ -25,7 +25,10 @@ public:
 	auto* GetWVP() { return wvpResource.Get(); }
 	void SetTexture(std::string filepath){ textureHandle_ = dx_->srv_->LoadTexture(filepath); }
 
+private:
 
+	// テクスチャサイズをイメージに合わせる
+	void AdjustTextureSize();
 
 private:
 
@@ -64,8 +67,13 @@ private:
 	// アンカーポイント
 	Vec2 anchorPoint = { 0.0f,0.0f };
 
+	// スプライトのサイズ
+	Vec2 spriteSize = { 256.0f,256.0f };
+
 	// テクスチャ左上座標
 	Vec2 textureLeftTop_ = { 0.0f,0.0f };
+	// テクスチャ全体サイズ
+	Vec2 textureFullSize_ = { 64.0f,64.0f };
 	// テクスチャ切り出しサイズ
 	Vec2 textureSize_ = { 64.0f,64.0f };
 
