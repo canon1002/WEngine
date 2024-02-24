@@ -45,7 +45,15 @@ void GameMainScene::Init() {
 	// レールカメラ
 	railCamera_ = std::make_unique<RailCamera>();
 	railCamera_->Initialize();
-	railCamera_->SetTranslate({ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,-48.0f} });
+	railCamera_->SetTranslate({ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,-40.0f} });
+	
+	isActiveRailCamera_ = true;
+	player_->SetCamera(railCamera_.get());
+	enemy_->SetCamera(railCamera_.get());
+	skydome_->SetCamera(railCamera_.get());
+	for (const auto& bullet : playerBullets_) {
+		bullet->SetCamera(railCamera_.get());
+	}
 
 }
 
@@ -65,13 +73,8 @@ void GameMainScene::Update() {
 		if (Input::GetInstance()->GetTriggerKey(DIK_RETURN)) {
 
 			std::unique_ptr<PlayerBullet> newBullet = std::make_unique<PlayerBullet>();
-			if (isActiveRailCamera_) {
-				newBullet->Init(player_->GetWorldRailT());
-				newBullet->SetCamera(railCamera_.get());
-			}
-			else {
-				newBullet->Init(player_->GetWorld().translate);
-			}
+			newBullet->Init(player_->GetWorld().translate);
+			newBullet->SetCamera(railCamera_.get());
 
 			playerBullets_.push_back(std::move(newBullet));
 		}
@@ -83,23 +86,13 @@ void GameMainScene::Update() {
 		player_->Update();
 
 		// プレイヤーの弾 -- 更新 --
-		//for (const auto& bullet : playerBullets_) {
-		//	// Bulletが消失条件を満たす場合
-		//	if (bullet->GetIsActive() == false) {
-		//		// ここでbulletを削除
-		//	}
-		//	else {
-		//		bullet->Update();
-		//	}
-		//}
-
 		auto it = playerBullets_.begin();  // イテレータを初期化
 
 		while (it != playerBullets_.end()) {
 			const auto& bullet = *it;
 
 			// Bulletが消失条件を満たす場合
-			if (!bullet->GetIsActive()) {
+			if (bullet->GetIsActive() == false) {
 				it = playerBullets_.erase(it);  // erase()は削除された要素の次の有効なイテレータを返す
 			}
 			else {

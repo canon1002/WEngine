@@ -72,9 +72,9 @@ private:
 	 bool isActive_ = true;
 
 	 //
-	 uint32_t collisionAttribute_ = 0xffffffff;
+	 uint32_t collisionAttribute_ = kCollisionAttributePlayer;
 	 // 
-	 uint32_t collisionMask_ = 0xffffffff;
+	 uint32_t collisionMask_ = kCollisionAttributeEnemy + kCollisionAttributeEnemyBullet;
 
 };
 

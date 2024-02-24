@@ -45,8 +45,13 @@ void Enemy::Update() {
 		}
 	}*/
 
-	worldTransform_.worldM = MakeAffineMatrix(worldTransform_.scale,
-		worldTransform_.rotate, worldTransform_.translate);
+	worldTransform_.worldM = MakeAffineMatrix(
+		worldTransform_.scale,
+		worldTransform_.rotate, {
+		worldTransform_.translate.x + camera_->GetTransform().translate.x,
+		worldTransform_.translate.y + camera_->GetTransform().translate.y,
+		worldTransform_.translate.z + camera_->GetTransform().translate.z
+		});
 	object_->SetWorldTransform(worldTransform_);
 	object_->Update();
 

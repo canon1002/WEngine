@@ -19,13 +19,16 @@ void PlayerBullet::Init(Vec3 startPos) {
 	object_->Init();
 	object_->SetModel("box.obj");
 
+	collisionAttribute_ = kCollisionAttributePlayerBullet;
+	collisionMask_ = kCollisionAttributeEnemy + kCollisionAttributeEnemyBullet;
+
 }
 
 void PlayerBullet::Init() {
 	
 	worldTransform_.scale = { 1.0f,1.0f,1.0f };
 	worldTransform_.rotate = { 0.0f,0.0f,0.0f };
-	worldTransform_.translate = { 0.0f,0.0f,0.0f };
+	worldTransform_.translate = { 0.0f,0.0f,5.0f };
 	worldTransform_.worldM = MakeAffineMatrix(worldTransform_.scale,
 		worldTransform_.rotate, worldTransform_.translate);
 	
@@ -35,7 +38,7 @@ void PlayerBullet::Init() {
 	object_->SetWorldTransform(worldTransform_);
 
 	rad_ = { 1.0f,1.0f,1.0f };
-	vel_ = { 0.00f,0.00f,1.0f };
+	vel_ = { 0.00f,0.00f,0.1f };
 	isActive_ = true;
 
 	collisionAttribute_ = kCollisionAttributePlayerBullet;
@@ -47,15 +50,29 @@ void PlayerBullet::Update() {
 	// 早期リターン
 	if (!isActive_) { return; }
 
+	ImGui::Begin("PlayerBullet");
+	ImGui::SliderAngle("RotateX", &worldTransform_.rotate.x);
+	ImGui::SliderAngle("RotateY", &worldTransform_.rotate.y);
+	ImGui::SliderAngle("RotateZ", &worldTransform_.rotate.z);
+	ImGui::DragFloat3("Rotate", &worldTransform_.rotate.x, 0.1f, -100.0f, 100.0f);
+	ImGui::DragFloat3("Transform", &worldTransform_.translate.x, 0.1f, -100.0f, 100.0f);
+	ImGui::End();
+
 	if (isActive_) {
 		worldTransform_.translate.z += vel_.z;
-		if (worldTransform_.translate.z > 50.0f) {
+		if (worldTransform_.translate.z > 200.0f) {
 			isActive_ = false;
 		}
 	}
 
-	worldTransform_.worldM = MakeAffineMatrix(worldTransform_.scale,
-		worldTransform_.rotate, worldTransform_.translate);
+	worldTransform_.worldM = MakeAffineMatrix(
+		worldTransform_.scale,
+		worldTransform_.rotate, {
+		worldTransform_.translate.x + camera_->GetTransform().translate.x,
+		worldTransform_.translate.y + camera_->GetTransform().translate.y,
+		worldTransform_.translate.z + camera_->GetTransform().translate.z
+		});
+
 	object_->SetWorldTransform(worldTransform_);
 	object_->Update();
 }

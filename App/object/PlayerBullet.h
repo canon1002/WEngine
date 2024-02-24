@@ -17,15 +17,19 @@ public:
     void Update();
     void Draw();
     bool GetIsActive()const { return isActive_; }
-    void SetCamera(CameraCommon* camera) { object_->SetCamera(camera); }
+    void SetCamera(CameraCommon* camera) { object_->SetCamera(camera);
+    camera_ = camera;
+    }
     WorldTransform GetWorld()const { return worldTransform_; }
     Vec3 GetRad()const { return rad_; }
 
 public:
 
     // 純粋仮想関数
-    void OnCollision()override { isActive_ = false; }
-    void OnCollision(Collider* collider)override { collider; isActive_ = false; }
+    void OnCollision()override {// isActive_ = false; 
+    }
+    void OnCollision(Collider* collider)override {// collider; isActive_ = false;
+    }
 
     // ワールド座標
     Vec3 GetWorldPos()override { return worldTransform_.translate; }
@@ -41,6 +45,9 @@ public:
 
 
 private:
+
+    // 参照用
+    CameraCommon* camera_ = nullptr;
 
     std::unique_ptr<Object3d> object_;
     WorldTransform worldTransform_;

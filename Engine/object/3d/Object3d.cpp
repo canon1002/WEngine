@@ -39,9 +39,7 @@ void Object3d::Update() {
 	//ImGui::ColorEdit4("Color",&model_->materialData_->color.r);
 	//ImGui::End();
 
-	//　矩形のワールド行列
-	worldTransform_.worldM = MakeAffineMatrix(
-	worldTransform_.scale, worldTransform_.rotate, worldTransform_.translate);
+
 	// カメラのワールド行列
 	cameraM = camera_->GetWorldMatrix();
 	// カメラ行列のビュー行列(カメラのワールド行列の逆行列)
