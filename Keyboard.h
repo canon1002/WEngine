@@ -2,36 +2,35 @@
 
 #define DIRECTINPUT_VERSION 0x0800	// DirectInputのバージョン指定
 #include <dinput.h>
+
 #pragma comment(lib,"dinput8.lib")
 #pragma comment(lib,"dxguid.lib")
 
-#include <Xinput.h>
-#pragma comment (lib, "xinput.lib")
-
-#include "./Engine/base/DirectXCommon.h"
-
-class Input
+class Keyboard
 {
 private:
 
-	Input() = default;
-	~Input() = default;
+	Keyboard() = default;
+	~Keyboard() = default;
 	// コピーコンストラクタと演算子オーバーロードの禁止
-	Input(const Input& obj) = delete;
-	Input& operator=(const Input& obj) = delete;
+	Keyboard(const Keyboard& obj) = delete;
+	Keyboard& operator=(const Keyboard& obj) = delete;
 
 public:
 
 	// インスタンスを取得
-	static Input* GetInstance();
+	static Keyboard* GetInstance();
 	// 終了処理
 	void Finalize();
 
 	// 初期化
 	void Initialize();
 	// 更新
-	void Update();
-	
+	void Input();
+	// デバッグUIの表示
+	void DrawGUI();
+
+
 	// キーの入力をチェック
 	bool GetPushKey(BYTE keyNumber);	// 入力時
 	bool GetPressKey(BYTE keyNumber);	// 単押し
@@ -39,13 +38,11 @@ public:
 
 	IDirectInput8* directinput = nullptr;
 
+
 private:
 
 	// インスタンス
-	static Input* instance;
-	// 外部
-	WinAPI* win_ = nullptr;
-	DirectXCommon* dx_ = nullptr;
+	static Keyboard* instance;
 
 	// キーボードデバイス
 	IDirectInputDevice8* keyboard = nullptr;
@@ -53,9 +50,7 @@ private:
 	BYTE keys[256] = {};
 	BYTE preKeys[256] = {};
 
-	// コントローラー
-	static unsigned short preButton;
-	static XINPUT_STATE state;
-	static XINPUT_VIBRATION vibration;
+	//XINPUT_KEYSTROKE keyState;
+
 };
 

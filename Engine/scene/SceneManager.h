@@ -14,7 +14,7 @@
 #include "../object/3d/ModelManager.h"
 #include "../object/2d/SpriteCommon.h"
 #include "../primitive/VoxelParticle.h"
-#include "../../Input.h"
+#include "../../InputManager.h"
 #include "../resources/Section/Audio.h"
 
 class SceneManager
@@ -36,7 +36,7 @@ private:
 	// DirectX
 	DirectXCommon* dx;
 	// Input
-	Input* input;
+	InputManager* inputManager;
 	// Audio
 	Audio* audio;
 	// メインカメラ

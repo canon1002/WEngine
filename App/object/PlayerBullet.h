@@ -12,7 +12,7 @@ class PlayerBullet :
     public Collider
 {
 public:
-    void Init(Vec3 startPos);
+    void Init(Vec3 pos,Vec3 vel);
     void Init();
     void Update();
     void Draw();

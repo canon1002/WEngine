@@ -32,6 +32,8 @@ public:
 	std::list<std::unique_ptr<PlayerBullet>> playerBullets_;
 	// エネミー
 	std::unique_ptr<Enemy> enemy_;
+	std::unique_ptr<Enemy> enemy1_;
+	std::unique_ptr<Enemy> enemy2_;
 
 
 	// 天球
@@ -46,5 +48,14 @@ private:
 	ICommand* command_ = nullptr;
 	// エネミーの生存人数
 	int aliveEnemyCount_;
+	// 弾の上限
+	int32_t bulletSaveMax = 3;
+	int32_t bulletSaveCount = 3;
+
+	std::unique_ptr<Sprite> sprite_ = nullptr;
+	float alpth_ = 0.0f;
+	bool isSceneChange = false;
+	int32_t fadeTimer_ = 60;
+
 };
 

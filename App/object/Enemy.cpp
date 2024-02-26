@@ -33,6 +33,34 @@ void Enemy::Init() {
 	collisionMask_ = kCollisionAttributePlayer + kCollisionAttributePlayerBullet;
 }
 
+
+void Enemy::Init(Vec3 pos) {
+
+	// モデルをセットする
+	ModelManager::GetInstance()->LoadModel("box.obj");
+
+	worldTransform_.scale = { 1.0f,1.0f,1.0f };
+	worldTransform_.rotate = { 0.0f,0.0f,0.0f };
+	worldTransform_.translate = pos;
+	worldTransform_.worldM = MakeAffineMatrix(worldTransform_.scale,
+		worldTransform_.rotate, worldTransform_.translate);
+
+	worldTransformRail_ = worldTransform_;
+
+	object_ = std::make_unique<Object3d>();
+	object_->Init();
+	object_->SetModel("box.obj");
+	object_->SetWorldTransform(worldTransform_);
+
+	rad_ = { 1.0f,1.0f,1.0f };
+	vel_ = { 0.0f,0.0f,0.0f };
+	isActive_ = true;
+
+
+	collisionAttribute_ = kCollisionAttributeEnemy;
+	collisionMask_ = kCollisionAttributePlayer + kCollisionAttributePlayerBullet;
+}
+
 void Enemy::Update() {
 
 	// 早期リターン
@@ -45,14 +73,18 @@ void Enemy::Update() {
 		}
 	}*/
 
+	Vec3 newRotate = { 0.0f,object_->GetWorldTransform().rotate.y + 0.05f,0.0f};
+
 	worldTransform_.worldM = MakeAffineMatrix(
 		worldTransform_.scale,
-		worldTransform_.rotate, {
+		newRotate, {
 		worldTransform_.translate.x + camera_->GetTransform().translate.x,
 		worldTransform_.translate.y + camera_->GetTransform().translate.y,
 		worldTransform_.translate.z + camera_->GetTransform().translate.z
 		});
 	object_->SetWorldTransform(worldTransform_);
+	object_->SetRotate(newRotate);
+	object_->UpdateWorldMat();
 	object_->Update();
 
 }

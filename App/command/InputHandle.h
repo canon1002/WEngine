@@ -1,7 +1,7 @@
 #pragma once
 #include "ICommand.h"
 
-class Input;
+class InputManager;
 
 class InputHandle
 {
@@ -20,7 +20,7 @@ public:
 private:
 
 	// 外部ポインタ
-	Input* input_ = nullptr;
+	InputManager* input_ = nullptr;
 
 	ICommand* pressKeyW_;
 	ICommand* pressKeyWA_;

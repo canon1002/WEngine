@@ -1,6 +1,6 @@
 #include "TitleScene.h"
 #include "../base/DirectXCommon.h"
-#include "../Input.h"
+#include "../InputManager.h"
 #include "../object/3d/ModelCommon.h"
 #include "../3d/ModelManager.h"
 
@@ -11,7 +11,8 @@ void TitleScene::Finalize()
 
 //　継承した関数
 void TitleScene::Init() {
-	input_ = Input::GetInstance();
+	
+	input_->GetInstance();
 
 	// モデルをセットする
 	ModelManager::GetInstance()->LoadModel("emptyAxis.obj");
@@ -25,7 +26,7 @@ void TitleScene::Init() {
 	
 	ball_ = std::make_unique<Object3d>();
 	ball_->Init();
-	ball_->SetTranslate(Vec3{2.0f,0.0f,1.0f});
+	ball_->SetTranslate(Vec3{0.0f,0.0f,1.0f});
 	ball_->SetModel("ball.obj");
 
 	voxel_ = std::make_unique<VoxelParticle>();
@@ -43,14 +44,46 @@ void TitleScene::Init() {
 	isSceneChange = false;
 	fadeTimer_ = 60;
 
+	titleUI01 = std::make_unique<Sprite>();
+	titleUI01->Initialize();
+	titleUI01->SetTexture("Resources/texture/TitleUI01.png");
+	titleUI01->SetTextureSize({ 512.0f,96.0f });
+	titleUI01->SetSpriteSize({ 512.0f,96.0f });
+	titleUI01->SetColor({ 1.0f,1.0f,1.0f,1.0f });
+
+	titleUI02 = std::make_unique<Sprite>();
+	titleUI02->Initialize();
+	titleUI02->SetTexture("Resources/texture/TitleUI02.png");
+	titleUI02->SetTextureSize({ 512.0f,96.0f });
+	titleUI02->SetSpriteSize({ 512.0f,96.0f });
+	titleUI02->SetColor({ 1.0f,1.0f,1.0f,1.0f });
+	
+	UI00 = std::make_unique<Sprite>();
+	UI00->Initialize();
+	UI00->SetTexture("Resources/texture/UI00.png");
+	UI00->SetTextureSize({ 1280.0f,720.0f });
+	UI00->SetSpriteSize({ 1280.0f,720.0f });
+	UI00->SetColor({ 1.0f,1.0f,1.0f,1.0f });
+
+	UItimeCount = 15;
+	isSelect = false;
+
 }
 
 void TitleScene::Update() {
 
+	eAxis_->UpdateWorldMat();
 	eAxis_->Update();
+	Vec3 newRotate = { 0.0f,ball_->GetWorldTransform().rotate.y + 0.01f,0.0f };
+	ball_->SetRotate(newRotate);
+	ball_->UpdateWorldMat();
 	ball_->Update();
 	voxel_->Update();
 	sprite_->Update();
+
+	titleUI01->Update();
+	titleUI02->Update();
+	UI00->Update();
 
 	if (isSceneChange == true) {
 		if (alpth_ < 1.0f) {
@@ -66,84 +99,20 @@ void TitleScene::Update() {
 	else {
 
 		//
-		if (input_->GetTriggerKey(DIK_RETURN)) {
-			isSceneChange = true;
+		if (input_->GetKey()->GetTriggerKey(DIK_RETURN)||
+			(Gamepad::getTriger(Gamepad::Triger::RIGHT))
+			) {
+			isSelect = true;
 
 		}
 
+	}
+	if (isSelect && UItimeCount > 0) {
+		UItimeCount--;
+	}
 
-
-		// スペースキーでパーティクル再表示
-		if (input_->GetTriggerKey(DIK_SPACE)) {
-			voxel_->Initialize();
-		}
-
-		// 手前に回転
-		if (input_->GetPushKey(DIK_W)) {
-			ball_->SetRotate({
-				ball_->GetWorldTransform().rotate.x - 0.05f,
-				ball_->GetWorldTransform().rotate.y,
-				ball_->GetWorldTransform().rotate.z
-				});
-		}
-		// 奥に回転
-		if (input_->GetPushKey(DIK_S)) {
-			ball_->SetRotate({
-				ball_->GetWorldTransform().rotate.x + 0.05f,
-				ball_->GetWorldTransform().rotate.y,
-				ball_->GetWorldTransform().rotate.z
-				});
-		}
-		// 左回転
-		if (input_->GetPushKey(DIK_A)) {
-			ball_->SetRotate({
-				ball_->GetWorldTransform().rotate.x,
-				ball_->GetWorldTransform().rotate.y + 0.05f,
-				ball_->GetWorldTransform().rotate.z
-				});
-		}
-		// 右回転
-		if (input_->GetPushKey(DIK_D)) {
-			ball_->SetRotate({
-				ball_->GetWorldTransform().rotate.x,
-				ball_->GetWorldTransform().rotate.y - 0.05f,
-				ball_->GetWorldTransform().rotate.z
-				});
-		}
-
-		// 右移動
-		if (input_->GetPushKey(DIK_RIGHT)) {
-			ball_->SetTranslate({
-				ball_->GetWorldTransform().translate.x + 0.05f,
-				ball_->GetWorldTransform().translate.y,
-				ball_->GetWorldTransform().translate.z
-				});
-		}
-		// 左移動
-		if (input_->GetPushKey(DIK_LEFT)) {
-			ball_->SetTranslate({
-				ball_->GetWorldTransform().translate.x - 0.05f,
-				ball_->GetWorldTransform().translate.y,
-				ball_->GetWorldTransform().translate.z
-				});
-		}
-		// 上移動
-		if (input_->GetPushKey(DIK_UP)) {
-			ball_->SetTranslate({
-				ball_->GetWorldTransform().translate.x,
-				ball_->GetWorldTransform().translate.y + 0.05f,
-				ball_->GetWorldTransform().translate.z
-				});
-		}
-		// 右移動
-		if (input_->GetPushKey(DIK_DOWN)) {
-			ball_->SetTranslate({
-				ball_->GetWorldTransform().translate.x,
-				ball_->GetWorldTransform().translate.y - 0.05f,
-				ball_->GetWorldTransform().translate.z
-				});
-		}
-
+	if (UItimeCount == 0) {
+		isSceneChange = true;
 	}
 
 }
@@ -156,6 +125,18 @@ void TitleScene::Draw(){
 	// 2D画像の描画開始コマンド
 	SpriteCommon::GetInstance()->DrawBegin();
 	sprite_->Draw();
+
+	if (UItimeCount >= 15 ||
+		(UItimeCount <= 10 && UItimeCount >= 5) ||
+		UItimeCount == 0) {
+		titleUI01->Draw();
+	}
+	else {
+		titleUI02->Draw();
+		
+	}
+
+	UI00->Draw();
 
 	DirectXCommon::GetInstance()->DrawPariticleBegin();
 	voxel_->Draw();

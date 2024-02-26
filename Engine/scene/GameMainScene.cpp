@@ -1,7 +1,7 @@
 #include "GameMainScene.h"
 #include "../base/DirectXCommon.h"
 #include "../object/camera/MainCamera.h"
-#include "../Input.h"
+#include "../InputManager.h"
 
 void GameMainScene::Finalize()
 {
@@ -34,9 +34,13 @@ void GameMainScene::Init() {
 	// プレイヤーの宣言
 	enemy_ = std::make_unique<Enemy>();
 	enemy_->Init();
+	enemy1_ = std::make_unique<Enemy>();
+	enemy1_->Init({ -5.0f,0.0f,40.0f });
+	enemy2_ = std::make_unique<Enemy>();
+	enemy2_->Init({ 5.0f,0.0f,40.0f });
 
 	// エネミーの生存人数
-	aliveEnemyCount_ = 1;
+	aliveEnemyCount_ = 3;
 
 	// 天球
 	skydome_ = std::make_unique<Skydome>();
@@ -45,16 +49,41 @@ void GameMainScene::Init() {
 	// レールカメラ
 	railCamera_ = std::make_unique<RailCamera>();
 	railCamera_->Initialize();
-	railCamera_->SetTranslate({ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,-40.0f} });
+	railCamera_->SetTranslate({ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} });
 	
 	isActiveRailCamera_ = true;
 	player_->SetCamera(railCamera_.get());
 	enemy_->SetCamera(railCamera_.get());
+	enemy1_->SetCamera(railCamera_.get());
+	enemy2_->SetCamera(railCamera_.get());
 	skydome_->SetCamera(railCamera_.get());
 	for (const auto& bullet : playerBullets_) {
 		bullet->SetCamera(railCamera_.get());
 	}
 
+	// プレイヤーの弾 -- 更新 --
+	auto it = playerBullets_.begin();  // イテレータを初期化
+
+	while (it != playerBullets_.end()) {
+		const auto& bullet = *it;
+		it = playerBullets_.erase(it);  // erase()は削除された要素の次の有効なイテレータを返す
+	}
+
+	// 弾の上限
+	bulletSaveMax = 3;
+	bulletSaveCount = 3;
+
+	sprite_ = std::make_unique<Sprite>();
+	sprite_->Initialize();
+	sprite_->SetTexture("Resources/texture/uvChecker.png");
+	sprite_->SetTextureSize({ 64.0f,64.0f });
+	sprite_->SetSpriteSize({ 1280.0f,720.0f });
+	sprite_->SetColor({ 0.0f,0.0f,0.0f,0.0f });
+
+	// シーン切り替え用
+	alpth_ = 0.0f;
+	isSceneChange = false;
+	fadeTimer_ = 60;
 }
 
 void GameMainScene::Update() {
@@ -67,13 +96,23 @@ void GameMainScene::Update() {
 		command_->Exec(*player_);
 	}
 
+	sprite_->Update();
+
+	if (aliveEnemyCount_ <= 0) {
+		isSceneChange = true;
+	}
+
 	if (aliveEnemyCount_ > 0) {
 
 		// 弾の発射(後日コマンドに移行)
-		if (Input::GetInstance()->GetTriggerKey(DIK_RETURN)) {
+		if (InputManager::GetInstance()->GetKey()->GetTriggerKey(DIK_RETURN) ||
+			Gamepad::getTriger(Gamepad::Triger::RIGHT)
+			) {
 
 			std::unique_ptr<PlayerBullet> newBullet = std::make_unique<PlayerBullet>();
-			newBullet->Init(player_->GetWorld().translate);
+			Vec3 bulletVel = player_->GetReticleAxis();
+
+			newBullet->Init(player_->GetWorld().translate, bulletVel);
 			newBullet->SetCamera(railCamera_.get());
 
 			playerBullets_.push_back(std::move(newBullet));
@@ -103,37 +142,17 @@ void GameMainScene::Update() {
 
 		// エネミー 更新
 		enemy_->Update();
-		if (enemy_->GetIsActive() == false) {
+		enemy1_->Update();
+		enemy2_->Update();
+		if (enemy_->GetIsActive() == false &&
+			enemy1_->GetIsActive() == false &&
+			enemy2_->GetIsActive() == false) {
 			aliveEnemyCount_--;
 		}
 
 		// レールカメラ 更新
-/*		float newZ = railCamera_->GetTranslate().z + 0.02f;
-		railCamera_->SetTranslate(Vec3{ railCamera_->GetTranslate().x,
-			railCamera_->GetTranslate().y,newZ })*/;
 		railCamera_->Update();
 
-		// レールカメラとメインカメラの切り替え
-		if (Input::GetInstance()->GetTriggerKey(DIK_9)) {
-			if (!isActiveRailCamera_) {
-				isActiveRailCamera_ = true;
-				player_->SetCamera(railCamera_.get());
-				enemy_->SetCamera(railCamera_.get());
-				skydome_->SetCamera(railCamera_.get());
-				for (const auto& bullet : playerBullets_) {
-					bullet->SetCamera(railCamera_.get());
-				}
-			}
-			else if (isActiveRailCamera_) {
-				isActiveRailCamera_ = false;
-				player_->SetCamera(MainCamera::GetInstance());
-				enemy_->SetCamera(MainCamera::GetInstance());
-				skydome_->SetCamera(MainCamera::GetInstance());
-				for (const auto& bullet : playerBullets_) {
-					bullet->SetCamera(MainCamera::GetInstance());
-				}
-			}
-		}
 
 		///////////////////////////////////////////////////////////////
 		/// 衝突判定
@@ -145,6 +164,8 @@ void GameMainScene::Update() {
 		// コライダーを衝突マネージャーのリストに登録
 		cManager->SetCollider(player_.get());
 		cManager->SetCollider(enemy_.get());
+		cManager->SetCollider(enemy1_.get());
+		cManager->SetCollider(enemy2_.get());
 		//for (Enemy* m_enemy : m_enemys) {
 		//	cManager->SetCollider(m_enemy);
 		//}
@@ -160,10 +181,18 @@ void GameMainScene::Update() {
 		cManager->Update();
 
 	}
-	else if (aliveEnemyCount_ <= 0) {
-		// メインゲームに切り替え
-		IScene::sceneNo = CLEAR;
+	else if (isSceneChange == true) {
+		if (alpth_ < 1.0f) {
+			alpth_ += 0.05f;
+		}
+		sprite_->SetColor({ 0.0f,0.0f,0.0f,alpth_ });
+
+		if (alpth_ >= 1.0f) {
+
+			sceneNo = CLEAR;
+		}
 	}
+
 }
 
 void GameMainScene::Draw() {
@@ -179,5 +208,11 @@ void GameMainScene::Draw() {
 
 	// エネミー 描画
 	enemy_->Draw();
+	enemy1_->Draw();
+	enemy2_->Draw();
 
+	// 2dSpriteの描画準備
+	SpriteCommon::GetInstance()->DrawBegin();
+	player_->GetReticle()->Draw();
+	sprite_->Draw();
 }

@@ -1,18 +1,18 @@
 #include "PlayerBullet.h"
 #include "../3d/ModelManager.h"
 
-void PlayerBullet::Init(Vec3 startPos) {
+void PlayerBullet::Init(Vec3 pos, Vec3 vel) {
 
 	ModelManager::GetInstance()->LoadModel("box.obj");
 
 	worldTransform_.scale = { 1.0f,1.0f,1.0f };
 	worldTransform_.rotate = { 0.0f,0.0f,0.0f };
-	worldTransform_.translate = startPos;
+	worldTransform_.translate = pos;
 	worldTransform_.worldM = MakeAffineMatrix(worldTransform_.scale,
 		worldTransform_.rotate, worldTransform_.translate);
 
 	rad_ = { 1,1,1 };
-	vel_ = { 0.00f,0.00f,1.0f };
+	vel_ = vel;
 	isActive_ = true;
 
 	object_ = std::make_unique<Object3d>();
@@ -49,6 +49,7 @@ void PlayerBullet::Init() {
 void PlayerBullet::Update() {
 	// 早期リターン
 	if (!isActive_) { return; }
+#ifdef _DEBUG
 
 	ImGui::Begin("PlayerBullet");
 	ImGui::SliderAngle("RotateX", &worldTransform_.rotate.x);
@@ -58,9 +59,13 @@ void PlayerBullet::Update() {
 	ImGui::DragFloat3("Transform", &worldTransform_.translate.x, 0.1f, -100.0f, 100.0f);
 	ImGui::End();
 
+#endif // _DEBUG
+
 	if (isActive_) {
+		worldTransform_.translate.x += vel_.x;
+		worldTransform_.translate.y += vel_.y;
 		worldTransform_.translate.z += vel_.z;
-		if (worldTransform_.translate.z > 200.0f) {
+		if (worldTransform_.translate.z > 100.0f) {
 			isActive_ = false;
 		}
 	}

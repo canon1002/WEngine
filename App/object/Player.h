@@ -5,6 +5,7 @@
 #include "../color/Color.h"
 #include "../3d/Object3d.h"
 #include "../collision/Collider.h"
+#include "Reticle.h"
 
 class Player:
 	public Collider
@@ -32,10 +33,14 @@ public:
 
 	void SetCamera(CameraCommon* camera) {
 		object_->SetCamera(camera); 
+		reticle->SetCamera(camera);
 		camera_= camera;
 	}
 	
 	bool GetIsActive() { return isActive_; }
+
+	Reticle* GetReticle() { return reticle.get(); }
+	Vec3 GetReticleAxis();
 
 public: // コリジョン
 
@@ -75,6 +80,9 @@ private:
 	 uint32_t collisionAttribute_ = kCollisionAttributePlayer;
 	 // 
 	 uint32_t collisionMask_ = kCollisionAttributeEnemy + kCollisionAttributeEnemyBullet;
+
+	 // レティクル
+	 std::unique_ptr<Reticle> reticle;
 
 };
 

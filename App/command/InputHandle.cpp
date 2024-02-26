@@ -1,32 +1,44 @@
 #include "InputHandle.h"
-#include "../Input.h"
+#include "../InputManager.h"
 
 ICommand* InputHandle::HandleInput() {
-	input_ = Input::GetInstance();
+	input_ = InputManager::GetInstance();
 
-	if (input_->GetPressKey(DIK_W) && input_->GetPressKey(DIK_A)) {
+	if ((input_->GetKey()->GetPressKey(DIK_W) && input_->GetKey()->GetPressKey(DIK_A))||
+		(Gamepad::getStick((Gamepad::Stick::LEFT_X)) < -3000&& Gamepad::getStick((Gamepad::Stick::LEFT_Y)) > 3000)
+	){
 
 		return pressKeyWA_;
 	}
-	if (input_->GetPressKey(DIK_W) && input_->GetPressKey(DIK_D)) {
+	if ((input_->GetKey()->GetPressKey(DIK_W) && input_->GetKey()->GetPressKey(DIK_D)) ||
+		(Gamepad::getStick((Gamepad::Stick::LEFT_X)) > 3000 && Gamepad::getStick((Gamepad::Stick::LEFT_Y)) > 3000)
+	){
 		return pressKeyWD_;
 	}
-	if (input_->GetPressKey(DIK_W)) {
+	if (input_->GetKey()->GetPressKey(DIK_W) ||
+		Gamepad::getStick((Gamepad::Stick::LEFT_Y)) > 3000) {
 		return pressKeyW_;
 	}
-	if (input_->GetPressKey(DIK_S) && input_->GetPressKey(DIK_A)) {
+	if ((input_->GetKey()->GetPressKey(DIK_S) && input_->GetKey()->GetPressKey(DIK_A)) ||
+		(Gamepad::getStick((Gamepad::Stick::LEFT_X)) < -3000 && Gamepad::getStick((Gamepad::Stick::LEFT_Y)) < -3000)
+		){
 		return pressKeySA_;
 	}
-	if (input_->GetPressKey(DIK_S) && input_->GetPressKey(DIK_D)) {
+	if ((input_->GetKey()->GetPressKey(DIK_S) && input_->GetKey()->GetPressKey(DIK_D)) ||
+		(Gamepad::getStick((Gamepad::Stick::LEFT_X)) > 3000 && Gamepad::getStick((Gamepad::Stick::LEFT_Y)) < -3000)
+		){
 		return pressKeySD_;
 	}
-	if (input_->GetPressKey(DIK_S)) {
+	if (input_->GetKey()->GetPressKey(DIK_S) ||
+		Gamepad::getStick((Gamepad::Stick::LEFT_Y)) < -3000) {
 		return pressKeyS_;
 	}
-	if (input_->GetPressKey(DIK_A)) {
+	if (input_->GetKey()->GetPressKey(DIK_A) ||
+		Gamepad::getStick((Gamepad::Stick::LEFT_X)) < -3000) {
 		return pressKeyA_;
 	}
-	if (input_->GetPressKey(DIK_D)) {
+	if (input_->GetKey()->GetPressKey(DIK_D) ||
+		Gamepad::getStick((Gamepad::Stick::LEFT_X)) > 3000) {
 		return pressKeyD_;
 	}
 	return nullptr;					

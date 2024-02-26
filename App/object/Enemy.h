@@ -11,6 +11,7 @@ public:
     Enemy();
     ~Enemy();
     void Init();
+    void Init(Vec3 pos);
     void Update();
     void Draw();
     bool GetIsActive()const { return isActive_; }

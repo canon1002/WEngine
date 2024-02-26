@@ -32,6 +32,10 @@ public: // メンバ関数
 	void SetWorldTransform(WorldTransform w) { worldTransform_ = w; }
 	void SetCamera(CameraCommon* camera) { camera_ = camera; }
 	const WorldTransform& GetWorldTransform()const  { return worldTransform_; }
+	void UpdateWorldMat() {
+		worldTransform_.worldM = MakeAffineMatrix(worldTransform_.scale,
+			worldTransform_.rotate, worldTransform_.translate);
+	}
 
 	Model* GetModel() { return model_; }
 

@@ -2,6 +2,9 @@
 
 // staticメンバ変数で宣言したインスタンスを初期化
 Input* Input::instance = nullptr;
+XINPUT_STATE Input::state = { 0 };
+XINPUT_VIBRATION Input::vibration = { 0 };
+unsigned short Input::preButton = 0;
 
 // インスタンスを取得
 Input* Input::GetInstance() {
@@ -53,9 +56,37 @@ void Input::Update() {
 	// 全キーの入力状態を取得する
 	keyboard->GetDeviceState(sizeof(keys), keys);
 
-	if (GetPushKey(DIK_0)) {
-		OutputDebugStringA("Trigger 0\n");
-	}
+	////////////////////////////////////////////
+	/// コントローラー
+	////////////////////////////////////////////
+
+	/// 前フレームの入力情報を保存
+	preButton = state.Gamepad.wButtons;
+	// コントローラー入力情報を取得
+	XInputGetState(0, &state);
+
+	//ImGui::Begin("GamePad");
+	//ImGui::Text("LeftX = %d", getStick(Stick::LEFT_X));
+	//ImGui::Text("LeftY = %d", getStick(Stick::LEFT_Y));
+	//ImGui::Text("RightX = %d", getStick(Stick::RIGHT_X));
+	//ImGui::Text("RightY = %d", getStick(Stick::RIGHT_Y));
+	//ImGui::Text("UP = %d", getButton(Button::UP));
+	//ImGui::Text("DOWN = %d", getButton(Button::DOWN));
+	//ImGui::Text("LEFT = %d", getButton(Button::LEFT));
+	//ImGui::Text("RIGHT = %d", getButton(Button::RIGHT));
+	//ImGui::Text("START = %d", getButton(Button::START));
+	//ImGui::Text("BACK = %d", getButton(Button::BACK));
+	//ImGui::Text("LEFT_THUMB = %d", getButton(Button::LEFT_THUMB));
+	//ImGui::Text("RIGHT_THUMB = %d", getButton(Button::RIGHT_THUMB));
+	//ImGui::Text("LEFT_SHOULDER = %d", getButton(Button::LEFT_SHOULDER));
+	//ImGui::Text("RIGHT_SHOULDER = %d", getButton(Button::RIGHT_SHOULDER));
+	//ImGui::Text("A = %d", getButton(Button::A));
+	//ImGui::Text("B = %d", getButton(Button::B));
+	//ImGui::Text("X = %d", getButton(Button::X));
+	//ImGui::Text("Y = %d", getButton(Button::Y));
+	//ImGui::Text("LEFT_TRIGER = %d", getTriger(Triger::LEFT));
+	//ImGui::Text("RIGHT_TRIGER = %d", getTriger(Triger::RIGHT));
+	//ImGui::End();
 
 }
 

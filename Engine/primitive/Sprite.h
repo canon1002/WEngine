@@ -8,8 +8,8 @@
 class Sprite
 {
 public:
-	Sprite();
-	~Sprite();
+	Sprite() = default;
+	~Sprite() = default;
 
 	void Initialize();
 	void Update();
@@ -30,6 +30,11 @@ public:
 	void SetColor(Color color) { materialData->color = color; }
 	void SetTextureSize(Vec2 size) { textureSize_ = size; }
 	void SetSpriteSize(Vec2 size) { spriteSize = size; }
+	void SetPos(Vec2 pos) {
+		worldTransform_.translate.x = pos.x;
+		worldTransform_.translate.y = pos.y;
+	}
+	void SetAnchorPoint(Vec2 point) { anchorPoint = point; }
 
 private:
 

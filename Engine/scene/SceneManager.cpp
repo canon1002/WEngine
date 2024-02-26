@@ -8,7 +8,7 @@ SceneManager::SceneManager() {
 	// DirectX
 	dx = DirectXCommon::GetInstance();
 	// Input
-	input = Input::GetInstance();
+	inputManager = InputManager::GetInstance();
 	// Audio
 	audio = Audio::GetInstance();
 	// メインカメラ
@@ -39,7 +39,7 @@ int SceneManager::Run() {
 	// 初期化
 	win->Initialize();
 	dx->Initialize(win);
-	input->Initialize();
+	inputManager->Initialize();
 	audio->Initialize();
 	mainCamera->Initialize({ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,-6.0f} });
 	//mainCamera->Initialize({ {1.0f,1.0f,1.0f},{0.314f,0.0f,0.0f},{0.0f,16.0f,-48.0f} });
@@ -60,7 +60,7 @@ int SceneManager::Run() {
 		ImGui::NewFrame();
 
 		// 入力処理の更新を行う
-		input->Update();
+		inputManager->Update();
 		// シーンのチェック
 		currentSceneNo_ = sceneArr_[currentSceneNo_]->GetSceneNo();
 		// シーン変更チェック
@@ -72,6 +72,8 @@ int SceneManager::Run() {
 
 		// カメラの更新
 		mainCamera->Update();
+
+		inputManager->DrawGUI();
 
 		///
 		/// 更新処理(推定)
@@ -99,7 +101,7 @@ int SceneManager::Run() {
 		dx->DrawEnd();
 
 		// ESCキーが押されたらループを抜ける
-		if (input->GetTriggerKey(DIK_ESCAPE)) {
+		if (inputManager->GetKey()->GetTriggerKey(DIK_ESCAPE)) {
 			break;
 		}
 
@@ -119,7 +121,7 @@ int SceneManager::Run() {
 	spriteCommon->Finalize();
 	modelManager->Finalize();
 	mainCamera->Finalize();
-	input->Finalize();
+	inputManager->Finalize();
 	audio->Finalize();
 	dx->Finalize();
 	win->Finalize();

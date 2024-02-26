@@ -1,10 +1,6 @@
 #include "Sprite.h"
 #include "../object/camera/MainCamera.h"
 
-Sprite::Sprite() {}
-
-Sprite::~Sprite(){}
-
 void Sprite::Initialize() {
 
 	dx_ = DirectXCommon::GetInstance();
@@ -20,16 +16,16 @@ void Sprite::Initialize() {
 
 void Sprite::Update() {
 
-	ImGui::Begin("Sprite");
-	ImGui::DragFloat3("Scale", &worldTransform_.scale.x, 0.1f, 0.1f, 2.0f);
-	ImGui::DragFloat3("Rotate", &worldTransform_.rotate.x);
-	ImGui::DragFloat3("Tranlate", &worldTransform_.translate.x);
-	ImGui::Spacing();
-	ImGui::DragFloat2("UVScale", &uvTransform_.scale.x, 0.01f, -10.0f, 10.0f);
-	ImGui::DragFloat2("UVTranlate", &uvTransform_.translate.x, 0.01f, -10.0f, 10.0f);
-	ImGui::SliderAngle("UVRotate", &uvTransform_.rotate.z);
-	ImGui::ColorEdit4("Color", &materialData->color.r);
-	ImGui::End();
+	//ImGui::Begin("Sprite");
+	//ImGui::DragFloat3("Scale", &worldTransform_.scale.x, 0.1f, 0.1f, 2.0f);
+	//ImGui::DragFloat3("Rotate", &worldTransform_.rotate.x);
+	//ImGui::DragFloat3("Tranlate", &worldTransform_.translate.x);
+	//ImGui::Spacing();
+	//ImGui::DragFloat2("UVScale", &uvTransform_.scale.x, 0.01f, -10.0f, 10.0f);
+	//ImGui::DragFloat2("UVTranlate", &uvTransform_.translate.x, 0.01f, -10.0f, 10.0f);
+	//ImGui::SliderAngle("UVRotate", &uvTransform_.rotate.z);
+	//ImGui::ColorEdit4("Color", &materialData->color.r);
+	//ImGui::End();
 
 	//worldTransform_.rotate.z += 0.05f;
 
