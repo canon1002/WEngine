@@ -82,22 +82,26 @@ void Reticle::Update()
 #pragma region 2D->3D
 
 	// 左
-	if (Gamepad::getStick((Gamepad::Stick::RIGHT_X)) < -3000) {
+	if (InputManager::GetInstance()->GetKey()->GetPushKey(DIK_LEFT)||
+		Gamepad::getStick((Gamepad::Stick::RIGHT_X)) < -3000) {
 		reticle2dPos.x -= 8.0f;
 	}
 
 	// 右
-	if (Gamepad::getStick((Gamepad::Stick::RIGHT_X)) > 3000) {
+	if (InputManager::GetInstance()->GetKey()->GetPushKey(DIK_RIGHT) || 
+		Gamepad::getStick((Gamepad::Stick::RIGHT_X)) > 3000) {
 		reticle2dPos.x += 8.0f;
 	}
 
 	// 下
-	if (Gamepad::getStick((Gamepad::Stick::RIGHT_Y)) < -3000) {
+	if (InputManager::GetInstance()->GetKey()->GetPushKey(DIK_DOWN) || 
+		Gamepad::getStick((Gamepad::Stick::RIGHT_Y)) < -3000) {
 		reticle2dPos.y += 8.0f;
 	}
 
 	// 上
-	if (Gamepad::getStick((Gamepad::Stick::RIGHT_Y)) > 3000) {
+	if (InputManager::GetInstance()->GetKey()->GetPushKey(DIK_UP) || 
+		Gamepad::getStick((Gamepad::Stick::RIGHT_Y)) > 3000) {
 		reticle2dPos.y -= 8.0f;
 	}
 
