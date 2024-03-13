@@ -1,6 +1,6 @@
 #include "MainCamera.h"
-#include "../base/WinAPI.h"
-#include "../base/DirectXCommon.h"
+#include "Engine/Base/WinAPI.h"
+#include "Engine/Base/DirectXCommon.h"
 
 MainCamera* MainCamera::instance = nullptr;
 

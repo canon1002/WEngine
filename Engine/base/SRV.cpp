@@ -1,7 +1,7 @@
 #include "SRV.h"
-#include "../resources/Section/Resource.h"
-#include "../object/3d/Model.h"
-#include "../math/Math.h"
+#include "Engine/Object/Texture/Resource.h"
+#include "Engine/Object/Model/Model.h"
+#include "Engine/Math/Math.h"
 
 
 // staticメンバ変数で宣言したインスタンスを初期化

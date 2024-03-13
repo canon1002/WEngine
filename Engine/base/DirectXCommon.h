@@ -1,7 +1,7 @@
 #pragma once
 #include "WinAPI.h"
 #include "SRV.h"
-#include "../../../Externals/DirectXTex/DirectXTex.h"
+#include "Externals/DirectXTex/DirectXTex.h"
 #include <chrono>
 #include <thread>
 

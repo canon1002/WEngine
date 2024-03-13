@@ -1,8 +1,5 @@
-#include "./Engine/base/DirectXCommon.h"
-#include "./Engine/scene/SceneManager.h"
-#include "./Engine/resources/Section/Audio.h"
-#include "../object/3d/ModelCommon.h"
-#include "./Input.h"
+#include "Engine/base/DirectXCommon.h"
+#include "Engine/scene/SceneManager.h"
 #include <d3d12.h>
 
 // Windowsアプリでのエントリーポイント(main関数)

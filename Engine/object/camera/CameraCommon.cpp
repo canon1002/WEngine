@@ -1,6 +1,6 @@
 #include "CameraCommon.h"
-#include "../base/WinAPI.h"
-#include "../base/DirectXCommon.h"
+#include "Engine/Base/WinAPI.h"
+#include "Engine/Base/DirectXCommon.h"
 
 CameraCommon::CameraCommon()
 	:transform_({ Vec3{ 1.0f,1.0f,1.0f }, Vec3{ 0.0f,0.0f,0.0f },Vec3 { 0.0f,0.0f,0.0f } })

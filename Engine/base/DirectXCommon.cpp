@@ -1,7 +1,7 @@
 #include "DirectXCommon.h"
-#include "../resources/Section/Resource.h"
-#include "../object/3d/Model.h"
-#include "../math/Math.h"
+#include "Engine/Object/Texture/Resource.h"
+#include "Engine/Object/Model/Model.h"
+#include "Engine/Math/Math.h"
 
 // staticメンバ変数で宣言したインスタンスを初期化
 DirectXCommon* DirectXCommon::instance = nullptr;
@@ -404,11 +404,11 @@ void DirectXCommon::InitializePSO() {
 	rasterizerDesc.FillMode = D3D12_FILL_MODE_SOLID;
 
 	// Shaderをcompileする(P.37)
-	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob = WinAPI::CompileShader(L"Object3D.VS.hlsl",
+	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob = WinAPI::CompileShader(L"Object3d.VS.hlsl",
 		L"vs_6_0", dxcUtils, dxcCompiler, includeHandler);
 	assert(vertexShaderBlob != nullptr);
 
-	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob = WinAPI::CompileShader(L"Object3D.PS.hlsl",
+	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob = WinAPI::CompileShader(L"Object3d.PS.hlsl",
 		L"ps_6_0", dxcUtils, dxcCompiler, includeHandler);
 	assert(pixelShaderBlob != nullptr);
 

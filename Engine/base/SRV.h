@@ -1,7 +1,7 @@
 #pragma once
 #include "WinAPI.h"
 #include <unordered_map>
-#include "../../../Externals/DirectXTex/DirectXTex.h"
+#include "Externals/DirectXTex/DirectXTex.h"
 
 class DirectXCommon;
 

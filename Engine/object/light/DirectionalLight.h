@@ -1,6 +1,6 @@
 #pragma once
-#include"../../math/Math.h"
-#include"../color/Color.h"
+#include "Engine/Math/Math.h"
+#include "Engine/Object/Texture/Color.h"
 
 struct DirectionalLight
 {

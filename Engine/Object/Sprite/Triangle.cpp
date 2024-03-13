@@ -1,0 +1,132 @@
+#include "Triangle.h"
+#include "Engine/Object/Camera/MainCamera.h"
+
+Triangle::Triangle() { this->Initialize(); }
+
+Triangle::~Triangle()
+{
+	delete wvpData;
+	delete vertexData;
+	delete materialData;
+}
+
+void Triangle::Initialize() {
+
+	dx_ = DirectXCommon::GetInstance();
+	mainCamera_ = MainCamera::GetInstance();
+
+
+	CreateVertexResource();
+	CreateTransformationRsource();
+	CreateBufferView();
+
+	wvpResource->SetName(L"Tri");
+	materialResource->SetName(L"Tri");
+	vertexResource->SetName(L"Tri");
+	
+}
+
+void Triangle::Update() {
+
+}
+
+void Triangle::Draw() {
+
+	//　三角形のワールド行列
+	worldTransform_.worldM = MakeAffineMatrix(
+		worldTransform_.scale, worldTransform_.rotate, worldTransform_.translate);
+	
+	// カメラのワールド行列
+	cameraM = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f }, { 0.0f,0.0f,-5.0f });
+	// カメラ行列のビュー行列(カメラのワールド行列の逆行列)
+	viewM = Inverse(cameraM);
+	// 正規化デバイス座標系(NDC)に変換(正射影行列をかける)
+	pespectiveM = MakePerspectiveMatrix(0.45f, (1280.0f / 720.0f), 0.1f, 100.0f);
+	// WVPにまとめる
+	wvpM = Multiply(viewM,pespectiveM);
+	// 三角形のワールド行列とWVP行列を掛け合わした行列を代入
+	*wvpData = Multiply(worldTransform_.worldM, wvpM);
+
+	dx_->commandList->IASetVertexBuffers(0, 1, &vertexBufferView);
+	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけばいい
+	dx_->commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	/// CBV設定
+
+	// マテリアルのCBufferの場所を指定
+	dx_->commandList->SetGraphicsRootConstantBufferView(0, materialResource->GetGPUVirtualAddress());
+	//wvp用のCBufferの場所を指定
+	dx_->commandList->SetGraphicsRootConstantBufferView(1, wvpResource->GetGPUVirtualAddress());
+	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である
+	dx_->commandList->SetGraphicsRootDescriptorTable(2, dx_->srv_->textureData_.at(1).textureSrvHandleGPU);
+
+	// インスタンス生成
+	dx_->commandList->DrawInstanced(3, 1, 0, 0);
+
+}
+
+//
+void Triangle::CreateVertexResource() {
+
+	// VertexResourceを生成する(P.42)
+	// 実際に頂点リソースを作る
+	vertexResource = dx_->CreateBufferResource(dx_->device_.Get(), sizeof(VertexData) * 3);
+
+	// マテリアル用のResourceを作る
+	materialResource = dx_->CreateBufferResource(dx_->device_.Get(), sizeof(VertexData));
+	// マテリアルにデータを書き込む
+	materialData = nullptr;
+	// 書き込むためのアドレスを取得
+	materialResource->Map(0, nullptr, reinterpret_cast<void**>(&materialData));
+	// 色を書き込む
+	*materialData = Color(1.0f, 1.0f, 1.0f, 1.0f);
+
+}
+
+//
+void Triangle::CreateTransformationRsource() {
+
+	// Transformation用のResourceを作る
+	wvpResource = dx_->CreateBufferResource(dx_->device_.Get(), sizeof(Mat44));
+	// データを書き込む
+	// 書き込むためのアドレスを取得
+	wvpResource->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
+	// 単位行列を書き込む
+	*wvpData = mainCamera_->GetViewProjectionMatrix();
+
+}
+
+//
+void Triangle::CreateBufferView() {
+
+	// VertexBufferViewを作成する(P.43)
+	// 頂点バッファビューを作成する
+	vertexBufferView = {};
+	// リソースの先頭のアドレスから使う
+	vertexBufferView.BufferLocation = vertexResource->GetGPUVirtualAddress();
+	// 使用するリソースサイズは頂点3つ分のサイズ
+	vertexBufferView.SizeInBytes = sizeof(VertexData) * 3;
+	// 1頂点あたりのサイズ
+	vertexBufferView.StrideInBytes = sizeof(VertexData);
+
+	// Resourceにデータを書き込む
+
+	// 書き込むためのアドレスを取得
+	vertexResource->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
+	// 左下
+	vertexData[0].position = { -0.5f,-0.5f,0.0f,1.0f };
+	vertexData[0].texcoord = { 0.0f,1.0f };
+	// 上
+	vertexData[1].position = { 0.0f,0.5f,0.0f,1.0f };
+	vertexData[1].texcoord = { 0.5f,0.0f };
+	// 右下
+	vertexData[2].position = { 0.5f,-0.5f,0.0f,1.0f };
+	vertexData[2].texcoord = { 1.0f,1.0f };
+
+}
+
+//
+void Triangle::DrawBeginResource() {
+
+
+}

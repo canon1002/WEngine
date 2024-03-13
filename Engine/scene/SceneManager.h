@@ -5,17 +5,17 @@
 #include "GameMainScene.h"
 #include "ResultScene.h"
 
-#include "../base/DirectXCommon.h"
-#include "../object/camera/MainCamera.h"
-#include "../primitive/Triangle.h"
-#include "../primitive/Sprite.h"
-#include "../resources/Section/Resource.h"
-#include "../primitive/Sphere.h"
-#include "../object/3d/ModelManager.h"
-#include "../object/2d/SpriteCommon.h"
-#include "../primitive/VoxelParticle.h"
-#include "../../InputManager.h"
-#include "../resources/Section/Audio.h"
+#include "Engine/base/DirectXCommon.h"
+#include "Engine/object/camera/MainCamera.h"
+#include "Engine/Object/Sprite/Triangle.h"
+#include "Engine/Object/Sprite/Sprite.h"
+#include "Engine/Object/Texture/Resource.h"
+#include "Engine/Object/Sprite/Sphere.h"
+#include "Engine/object/Model/ModelManager.h"
+#include "Engine/object/Sprite/SpriteCommon.h"
+#include "Engine/Object/Particle/VoxelParticle.h"
+#include "Engine/Input/InputManager.h"
+#include "Engine/Object/Audio/Audio.h"
 
 class SceneManager
 {

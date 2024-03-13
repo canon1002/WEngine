@@ -1,6 +1,6 @@
 #pragma once
-#include"../math/Math.h"
-#include"../worldTransform/WorldTransform.h"
+#include "Engine/Math/Math.h"
+#include "Engine/Object/WorldTransform/WorldTransform.h"
 
 class CameraCommon
 {

@@ -1,7 +1,9 @@
 #pragma once
-#include"../math/Math.h"
-#include"../worldTransform/WorldTransform.h"
-#include "CameraCommon.h"
+#include "Engine/Math/Math.h"
+#include "Engine/Base/DirectXCommon.h"
+#include "Engine/Object/Texture/Resource.h"
+#include "Engine/Object/WorldTransform/WorldTransform.h"
+#include "Engine/Object/Camera/CameraCommon.h"
 
 class MainCamera:
 	public CameraCommon

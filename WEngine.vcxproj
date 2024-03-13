@@ -60,10 +60,11 @@
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
-      <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>,;$(ProjectDir)Engine\base,;$(ProjectDir)Engine\collision,;$(ProjectDir)Engine\primitive,;$(ProjectDir)Engine\resources\section,;$(ProjectDir)Engine\scene,;$(ProjectDir)Engine\object\worldTransform,;$(ProjectDir)Engine\object\model,;$(ProjectDir)Engine\color,;$(ProjectDir)Engine\math,;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Engine;$(ProjectDir)\\Externals;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -74,6 +75,9 @@
       <Command>copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxcompiler.dll" "$(TargetDir)dxcompiler.dll"
 copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dxil.dll"</Command>
     </PostBuildEvent>
+    <FxCompile>
+      <AdditionalIncludeDirectories>$(ProjectDir)Shaders;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </FxCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -83,11 +87,12 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>,;$(ProjectDir)Engine\base,;$(ProjectDir)Engine\collision,;$(ProjectDir)Engine\primitive,;$(ProjectDir)Engine\resources\section,;$(ProjectDir)Engine\scene,;$(ProjectDir)Engine\object\worldTransform,;$(ProjectDir)Engine\object\model,;$(ProjectDir)Engine\color,;$(ProjectDir)Engine\math,;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -100,46 +105,39 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <Command>copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxcompiler.dll" "$(TargetDir)dxcompiler.dll"
 copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dxil.dll"</Command>
     </PostBuildEvent>
+    <FxCompile>
+      <AdditionalIncludeDirectories>$(ProjectDir)Shaders;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="App\camera\RailCamera.cpp" />
-    <ClCompile Include="App\command\ICommand.cpp" />
-    <ClCompile Include="App\command\InputHandle.cpp" />
-    <ClCompile Include="App\object\Enemy.cpp" />
-    <ClCompile Include="App\object\IObject.cpp" />
-    <ClCompile Include="App\object\Player.cpp" />
-    <ClCompile Include="App\object\PlayerBullet.cpp" />
-    <ClCompile Include="App\object\Reticle.cpp" />
-    <ClCompile Include="App\object\Skydome.cpp" />
-    <ClCompile Include="Engine\base\DirectXCommon.cpp" />
-    <ClCompile Include="Engine\base\ImGuiManager.cpp" />
-    <ClCompile Include="Engine\base\SRV.cpp" />
-    <ClCompile Include="Engine\base\WinAPI.cpp" />
-    <ClCompile Include="Engine\collision\CollisionManager.cpp" />
-    <ClCompile Include="Engine\math\Mat44.cpp" />
-    <ClCompile Include="Engine\math\Quaternion.cpp" />
-    <ClCompile Include="Engine\math\Vec2.cpp" />
-    <ClCompile Include="Engine\math\Vec3.cpp" />
-    <ClCompile Include="Engine\math\Vec4.cpp" />
-    <ClCompile Include="Engine\object\2d\SpriteCommon.cpp" />
-    <ClCompile Include="Engine\object\camera\CameraCommon.cpp" />
-    <ClCompile Include="Engine\object\camera\MainCamera.cpp" />
-    <ClCompile Include="Engine\object\light\DirectionalLight.cpp" />
-    <ClCompile Include="Engine\object\3d\Model.cpp" />
-    <ClCompile Include="Engine\object\worldTransform\WorldTransform.cpp" />
-    <ClCompile Include="Engine\primitive\Sphere.cpp" />
-    <ClCompile Include="Engine\primitive\Sprite.cpp" />
-    <ClCompile Include="Engine\primitive\Triangle.cpp" />
-    <ClCompile Include="Engine\primitive\VoxelParticle.cpp" />
-    <ClCompile Include="Engine\resources\ResourceManager.cpp" />
-    <ClCompile Include="Engine\resources\section\Audio.cpp" />
-    <ClCompile Include="Engine\resources\section\Resource.cpp" />
-    <ClCompile Include="Engine\scene\GameMainScene.cpp" />
-    <ClCompile Include="Engine\scene\IScene.cpp" />
-    <ClCompile Include="Engine\scene\ResultScene.cpp" />
-    <ClCompile Include="Engine\scene\SceneManager.cpp" />
-    <ClCompile Include="Engine\scene\StageScene.cpp" />
-    <ClCompile Include="Engine\scene\TitleScene.cpp" />
+    <ClCompile Include="Engine\Base\DirectXCommon.cpp" />
+    <ClCompile Include="Engine\Base\ImGuiManager.cpp" />
+    <ClCompile Include="Engine\Base\SRV.cpp" />
+    <ClCompile Include="Engine\Base\WinAPI.cpp" />
+    <ClCompile Include="Engine\Collision\CollisionManager.cpp" />
+    <ClCompile Include="Engine\Math\Mat44.cpp" />
+    <ClCompile Include="Engine\Math\Quaternion.cpp" />
+    <ClCompile Include="Engine\Math\Vec2.cpp" />
+    <ClCompile Include="Engine\Math\Vec3.cpp" />
+    <ClCompile Include="Engine\Math\Vec4.cpp" />
+    <ClCompile Include="Engine\Object\Sprite\SpriteCommon.cpp" />
+    <ClCompile Include="Engine\Object\Camera\CameraCommon.cpp" />
+    <ClCompile Include="Engine\Object\Camera\MainCamera.cpp" />
+    <ClCompile Include="Engine\Object\Light\DirectionalLight.cpp" />
+    <ClCompile Include="Engine\Object\Model\Model.cpp" />
+    <ClCompile Include="Engine\Object\WorldTransform\WorldTransform.cpp" />
+    <ClCompile Include="Engine\Object\Sprite\Sphere.cpp" />
+    <ClCompile Include="Engine\Object\Sprite\Sprite.cpp" />
+    <ClCompile Include="Engine\Object\Sprite\Triangle.cpp" />
+    <ClCompile Include="Engine\Object\Particle\VoxelParticle.cpp" />
+    <ClCompile Include="Engine\Object\Audio\Audio.cpp" />
+    <ClCompile Include="Engine\Object\Texture\Resource.cpp" />
+    <ClCompile Include="Engine\Scene\GameMainScene.cpp" />
+    <ClCompile Include="Engine\Scene\IScene.cpp" />
+    <ClCompile Include="Engine\Scene\ResultScene.cpp" />
+    <ClCompile Include="Engine\Scene\SceneManager.cpp" />
+    <ClCompile Include="Engine\Scene\StageScene.cpp" />
+    <ClCompile Include="Engine\Scene\TitleScene.cpp" />
     <ClCompile Include="Externals\imgui\imgui.cpp" />
     <ClCompile Include="Externals\imgui\imgui_demo.cpp" />
     <ClCompile Include="Externals\imgui\imgui_draw.cpp" />
@@ -147,58 +145,49 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Externals\imgui\imgui_impl_win32.cpp" />
     <ClCompile Include="Externals\imgui\imgui_tables.cpp" />
     <ClCompile Include="Externals\imgui\imgui_widgets.cpp" />
-    <ClCompile Include="Gamepad.cpp" />
-    <ClCompile Include="InputManager.cpp" />
-    <ClCompile Include="Keyboard.cpp" />
+    <ClCompile Include="Engine\Input\Gamepad.cpp" />
+    <ClCompile Include="Engine\Input\InputManager.cpp" />
+    <ClCompile Include="Engine\Input\Keyboard.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Engine\object\3d\Object3dCommon.cpp" />
-    <ClCompile Include="Engine\object\3d\Object3d.cpp" />
-    <ClCompile Include="Engine\object\3d\ModelManager.cpp" />
+    <ClCompile Include="Engine\Object\Object3dCommon.cpp" />
+    <ClCompile Include="Engine\Object\Object3d.cpp" />
+    <ClCompile Include="Engine\Object\Model\ModelManager.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="App\camera\RailCamera.h" />
-    <ClInclude Include="App\command\ICommand.h" />
-    <ClInclude Include="App\command\InputHandle.h" />
-    <ClInclude Include="App\object\Enemy.h" />
-    <ClInclude Include="App\object\IObject.h" />
-    <ClInclude Include="App\object\Player.h" />
-    <ClInclude Include="App\object\PlayerBullet.h" />
-    <ClInclude Include="App\object\Reticle.h" />
-    <ClInclude Include="App\object\Skydome.h" />
-    <ClInclude Include="Engine\base\DirectXCommon.h" />
-    <ClInclude Include="Engine\base\ImGuiManager.h" />
-    <ClInclude Include="Engine\base\SRV.h" />
-    <ClInclude Include="Engine\base\System.h" />
-    <ClInclude Include="Engine\base\WinAPI.h" />
-    <ClInclude Include="Engine\collision\Collider.h" />
-    <ClInclude Include="Engine\collision\CollisionConfig.h" />
-    <ClInclude Include="Engine\collision\CollisionManager.h" />
-    <ClInclude Include="Engine\color\Color.h" />
-    <ClInclude Include="Engine\math\Mat44.h" />
-    <ClInclude Include="Engine\math\Math.h" />
-    <ClInclude Include="Engine\math\Quaternion.h" />
-    <ClInclude Include="Engine\math\Vec2.h" />
-    <ClInclude Include="Engine\math\Vec3.h" />
-    <ClInclude Include="Engine\math\Vec4.h" />
-    <ClInclude Include="Engine\object\2d\SpriteCommon.h" />
-    <ClInclude Include="Engine\object\camera\CameraCommon.h" />
-    <ClInclude Include="Engine\object\camera\MainCamera.h" />
-    <ClInclude Include="Engine\object\light\DirectionalLight.h" />
-    <ClInclude Include="Engine\object\3d\Model.h" />
-    <ClInclude Include="Engine\object\worldTransform\WorldTransform.h" />
-    <ClInclude Include="Engine\primitive\Sphere.h" />
-    <ClInclude Include="Engine\primitive\Sprite.h" />
-    <ClInclude Include="Engine\primitive\Triangle.h" />
-    <ClInclude Include="Engine\primitive\VoxelParticle.h" />
-    <ClInclude Include="Engine\resources\ResourceManager.h" />
-    <ClInclude Include="Engine\resources\section\Audio.h" />
-    <ClInclude Include="Engine\resources\section\Resource.h" />
-    <ClInclude Include="Engine\scene\GameMainScene.h" />
-    <ClInclude Include="Engine\scene\IScene.h" />
-    <ClInclude Include="Engine\scene\ResultScene.h" />
-    <ClInclude Include="Engine\scene\SceneManager.h" />
-    <ClInclude Include="Engine\scene\StageScene.h" />
-    <ClInclude Include="Engine\scene\TitleScene.h" />
+    <ClInclude Include="Engine\Base\DirectXCommon.h" />
+    <ClInclude Include="Engine\Base\ImGuiManager.h" />
+    <ClInclude Include="Engine\Base\SRV.h" />
+    <ClInclude Include="Engine\Base\System.h" />
+    <ClInclude Include="Engine\Base\WinAPI.h" />
+    <ClInclude Include="Engine\Collision\Collider.h" />
+    <ClInclude Include="Engine\Collision\CollisionConfig.h" />
+    <ClInclude Include="Engine\Collision\CollisionManager.h" />
+    <ClInclude Include="Engine\Object\Texture\Color.h" />
+    <ClInclude Include="Engine\Math\Mat44.h" />
+    <ClInclude Include="Engine\Math\Math.h" />
+    <ClInclude Include="Engine\Math\Quaternion.h" />
+    <ClInclude Include="Engine\Math\Vec2.h" />
+    <ClInclude Include="Engine\Math\Vec3.h" />
+    <ClInclude Include="Engine\Math\Vec4.h" />
+    <ClInclude Include="Engine\Object\Sprite\SpriteCommon.h" />
+    <ClInclude Include="Engine\Object\Camera\CameraCommon.h" />
+    <ClInclude Include="Engine\Object\Camera\MainCamera.h" />
+    <ClInclude Include="Engine\Object\Light\DirectionalLight.h" />
+    <ClInclude Include="Engine\Object\Model\Model.h" />
+    <ClInclude Include="Engine\Object\Texture\Material.h" />
+    <ClInclude Include="Engine\Object\WorldTransform\WorldTransform.h" />
+    <ClInclude Include="Engine\Object\Sprite\Sphere.h" />
+    <ClInclude Include="Engine\Object\Sprite\Sprite.h" />
+    <ClInclude Include="Engine\Object\Sprite\Triangle.h" />
+    <ClInclude Include="Engine\Object\Particle\VoxelParticle.h" />
+    <ClInclude Include="Engine\Object\Audio\Audio.h" />
+    <ClInclude Include="Engine\Object\Texture\Resource.h" />
+    <ClInclude Include="Engine\Scene\GameMainScene.h" />
+    <ClInclude Include="Engine\Scene\IScene.h" />
+    <ClInclude Include="Engine\Scene\ResultScene.h" />
+    <ClInclude Include="Engine\Scene\SceneManager.h" />
+    <ClInclude Include="Engine\Scene\StageScene.h" />
+    <ClInclude Include="Engine\Scene\TitleScene.h" />
     <ClInclude Include="Externals\imgui\imconfig.h" />
     <ClInclude Include="Externals\imgui\imgui.h" />
     <ClInclude Include="Externals\imgui\imgui_impl_dx12.h" />
@@ -207,17 +196,12 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Externals\imgui\imstb_rectpack.h" />
     <ClInclude Include="Externals\imgui\imstb_textedit.h" />
     <ClInclude Include="Externals\imgui\imstb_truetype.h" />
-    <ClInclude Include="Gamepad.h" />
-    <ClInclude Include="Engine\object\3d\Object3dCommon.h" />
-    <ClInclude Include="Engine\object\3d\Object3d.h" />
-    <ClInclude Include="Engine\object\3d\ModelManager.h" />
-    <ClInclude Include="InputManager.h" />
-    <ClInclude Include="Keyboard.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\externals\DirectXTex\DirectXTex_Desktop_2022_Win10.vcxproj">
-      <Project>{371b9fa9-4c90-4ac6-a123-aced756d6c77}</Project>
-    </ProjectReference>
+    <ClInclude Include="Engine\Input\Gamepad.h" />
+    <ClInclude Include="Engine\Object\Object3dCommon.h" />
+    <ClInclude Include="Engine\Object\Object3d.h" />
+    <ClInclude Include="Engine\Object\Model\ModelManager.h" />
+    <ClInclude Include="Engine\Input\InputManager.h" />
+    <ClInclude Include="Engine\Input\Keyboard.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt" />
@@ -261,6 +245,11 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="Externals\DirectXTex\DirectXTex_Desktop_2022_Win10.vcxproj">
+      <Project>{371b9fa9-4c90-4ac6-a123-aced756d6c77}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

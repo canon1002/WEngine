@@ -118,7 +118,7 @@ Microsoft::WRL::ComPtr <IDxcBlob> WinAPI::CompileShader(
 	// これからシェーダーをコンパイル旨をログに出す
 	WinAPI::Log(WinAPI::ConvertString(std::format(L"Bigin CompileShader,path:{},profile:{}\n", filePath, profile)));
 	// hlslファイルを読む
-	Microsoft::WRL::ComPtr < IDxcBlobEncoding> shaderSource = nullptr;
+	IDxcBlobEncoding* shaderSource = nullptr;
 	HRESULT hr = dxcUtils->LoadFile(filePath.c_str(), nullptr, &shaderSource);
 	// 読めなかったら止める
 	assert(SUCCEEDED(hr));
@@ -131,22 +131,22 @@ Microsoft::WRL::ComPtr <IDxcBlob> WinAPI::CompileShader(
 	/// 手順2.Compileする
 
 	LPCWSTR arguments[] = {
-		filePath.c_str(),//	コンパイル対象のhlslファイル名
-		L"-E",L"main",// エントリーポイントの指定。基本的にmain以外にはしない。
-		L"-T",profile,// ShaderProfileの設定
-		L"-Zi",L"Qembed_debug",// デバッグ用の情報を埋め込む
-		L"-Od",// 最適化を外しておく
-		L"-Zpr",// コンパイル結果
+		filePath.c_str(),		//コンパイル対象のhlslファイル名
+		L"-E",L"main",			// エントリーポイントの指定。基本的にmain以外にはしない。
+		L"-T",profile,			// ShaderProfileの設定
+		L"-Zi",L"Qembed_debug",	// デバッグ用の情報を埋め込む
+		L"-Od",					// 最適化を外しておく
+		L"-Zpr",				// コンパイル結果
 	};
 
 	// 実際にShaderをコンパイルする
-	Microsoft::WRL::ComPtr < IDxcResult> shaderResult = nullptr;
+	IDxcResult* shaderResult = nullptr;
 	hr = dxcCompiler->Compile(
-		&shaderSourceBuffer,	// 読み込んだファイル
-		arguments,				// コンパイルオプション
-		_countof(arguments),	// コンパイルオプション
-		includeHandler.Get(),			// Includeが含まれた諸々
-		IID_PPV_ARGS(&shaderResult)// コンパイル結果
+		&shaderSourceBuffer,				// 読み込んだファイル
+		arguments,						// コンパイルオプション
+		_countof(arguments),			// コンパイルオプション
+		includeHandler.Get(),		// Includeが含まれた諸々
+		IID_PPV_ARGS(&shaderResult)	// コンパイル結果
 	);
 	// コンパイルエラーではなくdxcが起動できないなど致命的な状況
 	assert(SUCCEEDED(hr));
@@ -154,7 +154,7 @@ Microsoft::WRL::ComPtr <IDxcBlob> WinAPI::CompileShader(
 	///	手順3.警告・エラーがでていないかの確認
 
 	// 警告・エラーが出てたらログに出して止める
-	Microsoft::WRL::ComPtr < IDxcBlobUtf8> shaderError = nullptr;
+	IDxcBlobUtf8* shaderError = nullptr;
 	shaderResult->GetOutput(DXC_OUT_ERRORS, IID_PPV_ARGS(&shaderError), nullptr);
 	if (shaderError != nullptr && shaderError->GetStringLength() != 0) {
 		WinAPI::Log(shaderError->GetStringPointer());
@@ -166,7 +166,7 @@ Microsoft::WRL::ComPtr <IDxcBlob> WinAPI::CompileShader(
 
 	// コンパイル結果から実行用のバイナリ部分を取得
 	Microsoft::WRL::ComPtr < IDxcBlob> shaderBlob = nullptr;
-	hr = shaderResult->GetOutput(DXC_OUT_OBJECT, IID_PPV_ARGS(&shaderBlob), nullptr);
+	shaderResult->GetOutput(DXC_OUT_OBJECT, IID_PPV_ARGS(&shaderBlob), nullptr);
 	assert(SUCCEEDED(hr));
 	// 成功したログを出す
 	WinAPI::Log(WinAPI::ConvertString(std::format(L"Compile Succeeded,path:{},profile:{}\n", filePath, profile)));
