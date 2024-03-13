@@ -137,11 +137,11 @@ void SpriteCommon::CreateGraphicsPipeline()
 	rasterizerDesc.FillMode = D3D12_FILL_MODE_SOLID;
 
 	// Shaderをcompileする(P.37)
-	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob = WinAPI::CompileShader(L"Sprite2d.VS.hlsl",
+	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob = WinAPI::CompileShader(L"Shaders/Sprite2d.VS.hlsl",
 		L"vs_6_0", dx_->dxcUtils, dx_->dxcCompiler, dx_->includeHandler);
 	assert(vertexShaderBlob != nullptr);
 
-	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob = WinAPI::CompileShader(L"Sprite2d.PS.hlsl",
+	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob = WinAPI::CompileShader(L"Shaders/Sprite2d.PS.hlsl",
 		L"ps_6_0", dx_->dxcUtils, dx_->dxcCompiler, dx_->includeHandler);
 	assert(pixelShaderBlob != nullptr);
 

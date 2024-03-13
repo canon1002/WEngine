@@ -348,16 +348,16 @@
     </Text>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Sprite2d.hlsli" />
-    <None Include="Particle.hlsli" />
-    <None Include="Object3d.hlsli" />
+    <None Include="Shaders\Sprite2d.hlsli" />
+    <None Include="Shaders\Particle.hlsli" />
+    <None Include="Shaders\Object3d.hlsli" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Sprite2d.PS.hlsl" />
-    <FxCompile Include="Sprite2d.VS.hlsl" />
-    <FxCompile Include="Object3d.PS.hlsl" />
-    <FxCompile Include="Object3d.VS.hlsl" />
-    <FxCompile Include="Particle.PS.hlsl" />
-    <FxCompile Include="Particle.VS.hlsl" />
+    <FxCompile Include="Shaders\Sprite2d.PS.hlsl" />
+    <FxCompile Include="Shaders\Sprite2d.VS.hlsl" />
+    <FxCompile Include="Shaders\Object3d.PS.hlsl" />
+    <FxCompile Include="Shaders\Object3d.VS.hlsl" />
+    <FxCompile Include="Shaders\Particle.PS.hlsl" />
+    <FxCompile Include="Shaders\Particle.VS.hlsl" />
   </ItemGroup>
 </Project>

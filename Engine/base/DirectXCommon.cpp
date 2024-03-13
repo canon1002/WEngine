@@ -404,11 +404,11 @@ void DirectXCommon::InitializePSO() {
 	rasterizerDesc.FillMode = D3D12_FILL_MODE_SOLID;
 
 	// Shaderをcompileする(P.37)
-	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob = WinAPI::CompileShader(L"Object3d.VS.hlsl",
+	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob = WinAPI::CompileShader(L"Shaders/Object3d.VS.hlsl",
 		L"vs_6_0", dxcUtils, dxcCompiler, includeHandler);
 	assert(vertexShaderBlob != nullptr);
 
-	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob = WinAPI::CompileShader(L"Object3d.PS.hlsl",
+	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob = WinAPI::CompileShader(L"Shaders/Object3d.PS.hlsl",
 		L"ps_6_0", dxcUtils, dxcCompiler, includeHandler);
 	assert(pixelShaderBlob != nullptr);
 
@@ -561,11 +561,11 @@ void DirectXCommon::InitializePSOP() {
 	pRasterizerDesc.FillMode = D3D12_FILL_MODE_SOLID;
 
 	// パーティクル用
-	Microsoft::WRL::ComPtr<IDxcBlob> particleVSBlob = WinAPI::CompileShader(L"Particle.VS.hlsl",
+	Microsoft::WRL::ComPtr<IDxcBlob> particleVSBlob = WinAPI::CompileShader(L"Shaders/Particle.VS.hlsl",
 		L"vs_6_0", dxcUtils, dxcCompiler, includeHandler);
 	assert(particleVSBlob != nullptr);
 
-	Microsoft::WRL::ComPtr<IDxcBlob> particlePSBlob = WinAPI::CompileShader(L"Particle.PS.hlsl",
+	Microsoft::WRL::ComPtr<IDxcBlob> particlePSBlob = WinAPI::CompileShader(L"Shaders/Particle.PS.hlsl",
 		L"ps_6_0", dxcUtils, dxcCompiler, includeHandler);
 	assert(particlePSBlob != nullptr);
 
