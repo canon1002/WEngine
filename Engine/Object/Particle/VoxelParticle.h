@@ -70,6 +70,10 @@ public:
 		*materialData_ = { Color(color.r, color.g, color.b, color.a) };
 	}
 
+	void SetTexture(int32_t textureId) {
+		textureHandle_ = textureId;
+	}
+
 	const D3D12_VERTEX_BUFFER_VIEW& GetVBV() const { return vertexBufferView; }
 	auto* GetMaterial() { return  materialResource.Get(); }
 	auto* GetWVP() { return wvpResource.Get(); }
