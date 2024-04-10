@@ -1,13 +1,26 @@
 #pragma once
+#include <vector>
 
 struct Vec3 {
 	float x, y, z;
 
 };
-Vec3 operator+(Vec3 obj);
-Vec3& operator+=(Vec3& a, const Vec3& b);
-Vec3 operator-(Vec3 obj);
-Vec3 operator*(Vec3 obj, float f);
+
+//グローバル算術演算子のオーバーロード
+Vec3 operator+(const Vec3& num1, const Vec3& num2);
+Vec3 operator-(const Vec3& num1, const Vec3& num2);
+Vec3 operator*(const Vec3& num1, const float num2);
+Vec3 operator*(const float num1, const Vec3& num2);
+Vec3 operator*(const Vec3& num1, const Vec3& num2);
+Vec3 operator/(const Vec3& num1, const float num2);
+Vec3 operator+=(Vec3& num1, const Vec3& num2);
+Vec3 operator-=(Vec3& num1, const Vec3& num2);
+Vec3 operator*=(Vec3& num1, const float num2);
+Vec3 operator*=(Vec3& num1, const Vec3& num2);
+Vec3 operator/=(Vec3& num1, const Vec3& num2);
+Vec3 operator/=(Vec3& num1, const float num2);
+bool operator==(const Vec3& num1, const Vec3& num2);
+
 
 
 Vec3 Add(const Vec3& v1, const Vec3& v2);
@@ -16,7 +29,27 @@ Vec3 Subtract(const Vec3& v1, const Vec3& v2);
 
 Vec3 Scalar(float scalar, const Vec3& v);
 
-Vec3 Leap(const Vec3& p0, const Vec3& p1, const float t);
+Vec3 Lerp(const Vec3& p0, const Vec3& p1, const float t);
+Vec3 Slerp(const Vec3& p0, const Vec3& p1, const float t);
+
+/// <summary>
+/// CatmullRom補間
+/// </summary>
+/// <param name="p0">点0の座標</param>
+/// <param name="p1">点0の座標</param>
+/// <param name="p2">点0の座標</param>
+/// <param name="p3">点0の座標</param>
+/// <param name="t">点1を0.0f、点2を1.0fとした割合指定</param>
+/// <returns>点1と点2の間で指定された座標</returns>
+Vec3 CatmullRomInterpolation(const Vec3& p0, const Vec3& p1, const Vec3& p2, const Vec3& p3, const float t);
+
+/// <summary>
+/// CatmullRomスプライン曲線上の制御点を得る
+/// </summary>
+/// <param name="points"></param>
+/// <param name="t"></param>
+/// <returns></returns>
+Vec3 CatmullRomPosition(const std::vector<Vec3>& points, float t);
 
 /// <summary>
 /// ベクトルの長さを求める
@@ -30,7 +63,7 @@ static float Length(const Vec3& v);
 /// </summary>
 /// <param name="v"></param>
 /// <returns></returns>
-Vec3 Nomalize(const Vec3& v);
+Vec3 Normalize(const Vec3& v);
 
 /// <summary>
 /// クロス積・外積

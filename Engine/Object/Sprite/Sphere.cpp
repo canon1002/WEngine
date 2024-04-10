@@ -1,5 +1,6 @@
 #include "Sphere.h"
 #include "Engine/Object/Camera/MainCamera.h"
+#include "Engine/Base/ImGuiManager.h"
 
 Sphere::Sphere() { this->Initialize(); }
 

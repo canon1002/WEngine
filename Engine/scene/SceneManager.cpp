@@ -7,6 +7,11 @@ SceneManager::SceneManager() {
 	win = WinAPI::GetInstance();
 	// DirectX
 	dx = DirectXCommon::GetInstance();
+#ifdef _DEBUG
+	// ImGuiManager
+	imGuiManager_ = ImGuiManager::GetInstance();
+#endif // _DEBUG
+
 	// Input
 	inputManager = InputManager::GetInstance();
 	// Audio
@@ -39,6 +44,9 @@ int SceneManager::Run() {
 	// 初期化
 	win->Initialize();
 	dx->Initialize(win);
+#ifdef _DEBUG
+	imGuiManager_->Initialize();
+#endif // _DEBUG
 	inputManager->Initialize();
 	audio->Initialize();
 	mainCamera->Initialize({ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,-6.0f} });
@@ -46,19 +54,11 @@ int SceneManager::Run() {
 	modelManager->Initialize();
 	spriteCommon->Initialize();
 
-	while (true)	{
+	// Windowsのメッセージ処理があればゲームループを抜ける
+	while (!win->ProcessMessage())	{
 
-		// Windowsのメッセージ処理
-		if (win->ProcessMessage()) {
-			// ゲームループを抜ける
-			break;
-		}
-
-		// フレームの先頭でImGuiに、ここからフレームが始まる旨を伝える
-		ImGui_ImplDX12_NewFrame();
-		ImGui_ImplWin32_NewFrame();
-		ImGui::NewFrame();
-
+		// ImGuiの入力を受け付ける
+		imGuiManager_->Begin();
 		// 入力処理の更新を行う
 		inputManager->Update();
 		// シーンのチェック
@@ -72,21 +72,22 @@ int SceneManager::Run() {
 
 		// カメラの更新
 		mainCamera->Update();
-
+		// 入力結果をImGuiで表示する
 		inputManager->DrawGUI();
 
 		///
 		/// 更新処理(推定)
 		///
 
-		// 開発用UIの表示
-		//ImGui::ShowDemoWindow();
 		/// 更新処理
 		sceneArr_[currentSceneNo_]->Update();
+		#ifdef _DEBUG
+		// 開発用UIの表示
+		//ImGui::ShowDemoWindow();
 		// フレームレートの表示
-		//ImGui::Text("FPS : %.2f", ImGui::GetIO().Framerate);
-		// 描画処理に入る前に、ImGui内部のコマンドを生成する
-		ImGui::Render();
+		ImGui::Text("FPS : %.2f", ImGui::GetIO().Framerate);
+		imGuiManager_->End();
+		#endif // _DEBUG
 
 		///
 		/// 描画処理(推定) 
@@ -97,6 +98,11 @@ int SceneManager::Run() {
 		/// 描画処理
 		sceneArr_[currentSceneNo_]->Draw();
 	
+#ifdef _DEBUG
+		// ImGuiの描画
+		imGuiManager_->Draw();
+#endif // _DEBUG
+
 		// 描画後処理
 		dx->DrawEnd();
 
@@ -117,7 +123,8 @@ int SceneManager::Run() {
 	sceneArr_[TITLE].reset();
 	sceneArr_[STAGE].reset();
 	sceneArr_[CLEAR].reset();
-	ImGui_ImplDX12_Shutdown();
+	
+
 	spriteCommon->Finalize();
 	modelManager->Finalize();
 	mainCamera->Finalize();

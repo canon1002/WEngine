@@ -64,6 +64,8 @@ public:
 	// 次に使用可能なテクスチャデータの番地
 	int32_t textureId_ = 0;
 	int32_t defaultTexId_;
+	// パーティクルの使用する番地を1000~にする
+	int32_t particleId_ = 1000;
 
 	D3D12_CPU_DESCRIPTOR_HANDLE instancingSrvHandleCPU;
 	D3D12_GPU_DESCRIPTOR_HANDLE instancingSrvHandleGPU;

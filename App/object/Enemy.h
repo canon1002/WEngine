@@ -2,7 +2,8 @@
 #include "IObject.h"
 #include "PlayerBullet.h"
 #include <list>
-#include "../collision/Collider.h"
+#include "Engine/Collision/Collider.h"
+#include "App/command/EnemyState/EnemyStateManager.h"
 
 class Enemy :
     public Collider
@@ -30,9 +31,13 @@ public:
 
 public:
 
-    // 純粋仮想関数
-    void OnCollision()override { isActive_ = false; }
-    void OnCollision(Collider* collider)override { collider; isActive_ = false; }
+    void OnCollision()override { 
+        //isActive_ = false;
+    }
+    void OnCollision(Collider* collider)override{ 
+        collider; 
+        //isActive_ = false;
+    }
 
     // ワールド座標
     Vec3 GetWorldPos()override { return worldTransform_.translate; }
@@ -45,7 +50,10 @@ public:
     uint32_t GetCollisionMask()override { return collisionMask_; };
     // 
     void SetCollisionMask(uint32_t collisionMask)override { collisionMask_ = collisionMask; }
-
+    void ShotBullet() { isBulletShot_ = true; }
+    bool GetIsShotBullet() { return isBulletShot_; }
+    // 弾を打ったらクールタイムを再設定する(他のクラスにて設定済み)
+    void SetCoolDown() { isBulletShot_ = false; }
 public:
 
     // 参照用
@@ -55,14 +63,16 @@ public:
     WorldTransform worldTransform_;
     WorldTransform worldTransformRail_;
 
-    Vec3 rad_;
-    Vec3 vel_;
-    bool isActive_;
+    Vec3 rad_;      // 半径
+    Vec3 vel_;      // 移動量
+    bool isActive_;     // 生存しているか
+    bool isBulletShot_; // 弾を発射するか
 
     //
     uint32_t collisionAttribute_ = 0xffffffff;
     // 
     uint32_t collisionMask_ = 0xffffffff;
 
+    std::unique_ptr<EnemyStateManager> stateManager_ = nullptr;
 };
 

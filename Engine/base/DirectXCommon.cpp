@@ -90,24 +90,6 @@ void DirectXCommon::Initialize(WinAPI* win) {
 	// フェンスの生成
 	CreateFence();
 
-	//解放の確認のために名前をつける
-	device_->SetName(L"device");
-	commandQueue->SetName(L"commandQueue");
-	commandAllocator->SetName(L"commandAllocator");
-	commandList->SetName(L"commandList");
-	swapChainResources[0]->SetName(L"swapChainResource[0]");
-	swapChainResources[1]->SetName(L"swapChainResource[1]");
-	rootSignature->SetName(L"rootSignature");
-	graphicsPipelineState->SetName(L"graphicsPipelineState");
-	particleRootSignature->SetName(L"particleRootSignature");
-	pGraphicsPipelineState->SetName(L"pGraphicsPipelineState");
-	rtvDescriptorHeap->SetName(L"rtvDescriptorHeap");
-	depthStencilTextureResource_->SetName(L"depthStencilTextureResource_");
-	dsvDescriptorHeap_->SetName(L"dsvDescriptorHeap_");
-	result_->SetName(L"result_");
-	fence->SetName(L"fence");
-	
-
 }
 
 void DirectXCommon::Finalize() {
@@ -748,8 +730,7 @@ void DirectXCommon::DrawPariticleBegin()
 /// 描画後処理
 void DirectXCommon::DrawEnd() {
 
-	// ImGuiの描画
-	ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), commandList.Get());
+	
 
 	// 画面に描く処理は全て終わり、画面に映すので状態を遷移
 	// 今回はRenderTargetからPresentにする

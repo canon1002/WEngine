@@ -1,5 +1,5 @@
 #pragma once
-#include "../math/Math.h"
+#include "Engine/Math/Math.h"
 
 class IObject
 {

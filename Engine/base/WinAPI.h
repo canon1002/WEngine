@@ -18,11 +18,6 @@
 // FPS固定
 #pragma comment(lib,"winmm.lib")
 
-// ImGui
-#include "../../Externals/imgui/imgui.h"
-#include "../../Externals/imgui/imgui_impl_dx12.h"
-#include "../../Externals/imgui/imgui_impl_win32.h"
-extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 // Comポインタ
 #include <wrl.h>
@@ -51,6 +46,11 @@ public: // ** メンバ関数 ** //
 
 	// 消去
 	void Finalize();
+
+public: // -- アクセッサ -- //
+
+	HWND GetHWND() { return hwnd; }
+
 
 	// システム 及び デバッグメッセージ
 

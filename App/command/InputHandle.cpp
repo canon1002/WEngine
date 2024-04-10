@@ -1,5 +1,5 @@
 #include "InputHandle.h"
-#include "../InputManager.h"
+#include "Engine/Input/InputManager.h"
 
 ICommand* InputHandle::HandleInput() {
 	input_ = InputManager::GetInstance();

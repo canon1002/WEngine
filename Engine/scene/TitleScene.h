@@ -28,8 +28,8 @@ private:
 	std::unique_ptr<Object3d> ball_;
 
 	// パーティクル
-	VoxelParticle* particleVox = { nullptr };
-	VoxelParticle* particleCiacle = { nullptr };
+	std::unique_ptr<VoxelParticle> particleVox = { nullptr };
+	std::unique_ptr<VoxelParticle> particleCiacle = { nullptr };
 	
 };
 

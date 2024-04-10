@@ -1,6 +1,7 @@
 #include "MainCamera.h"
 #include "Engine/Base/WinAPI.h"
 #include "Engine/Base/DirectXCommon.h"
+#include "Engine/Base/ImGuiManager.h"
 
 MainCamera* MainCamera::instance = nullptr;
 
@@ -33,13 +34,13 @@ void MainCamera::Initialize(Transformation transform)
 }
 void MainCamera::Update()
 {
-	/*ImGui::Begin("MainCamera");
+	ImGui::Begin("MainCamera");
 	ImGui::SliderAngle("RotateX", &transform_.rotate.x);
 	ImGui::SliderAngle("RotateY", &transform_.rotate.y);
 	ImGui::SliderAngle("RotateZ", &transform_.rotate.z);
 	ImGui::DragFloat3("Rotate", &transform_.rotate.x, 0.1f, -100.0f, 100.0f);
 	ImGui::DragFloat3("Transform", &transform_.translate.x, 0.1f, -100.0f, 100.0f);
-	ImGui::End();*/
+	ImGui::End();
 
 	// ワールド行列の計算
 	worldMatrix_ = MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);

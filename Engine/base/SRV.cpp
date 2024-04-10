@@ -2,7 +2,7 @@
 #include "Engine/Object/Texture/Resource.h"
 #include "Engine/Object/Model/Model.h"
 #include "Engine/Math/Math.h"
-
+#include "Engine/Base/ImGuiManager.h"
 
 // staticメンバ変数で宣言したインスタンスを初期化
 SRV* SRV::instance = nullptr;
@@ -39,20 +39,6 @@ void SRV::CreateShaderResourceView() {
 	// STV用ディスクリプタヒープの生成
 	// タンスの部分
 	srvDescriptorHeap = dx_->CreateDescriptorHeap(dx_->device_, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 128, true);
-
-	// ImGuiの初期化
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGui::StyleColorsDark();
-	ImGui_ImplWin32_Init(dx_->win_->hwnd);
-	ImGui_ImplDX12_Init(dx_->device_.Get(),
-		dx_->swapChainDesc.BufferCount,
-		dx_->rtvDesc.Format,
-		srvDescriptorHeap.Get(),
-		srvDescriptorHeap->GetCPUDescriptorHandleForHeapStart(),
-		srvDescriptorHeap->GetGPUDescriptorHandleForHeapStart()
-	);
-
 	defaultTexId_ = LoadTexture("Resources/texture/circleWhite.png");
 
 }
@@ -99,7 +85,7 @@ int SRV::LoadTexture(const std::string filePath) {
 
 int SRV::SetStructuredBuffer(int32_t kNumInstance, Microsoft::WRL::ComPtr<ID3D12Resource> instancingResource) {
 
-	++textureId_;
+	++particleId_;
 
 	// SRVの設定をおこなう
 	D3D12_SHADER_RESOURCE_VIEW_DESC instancingSrvDesc{};
@@ -112,11 +98,11 @@ int SRV::SetStructuredBuffer(int32_t kNumInstance, Microsoft::WRL::ComPtr<ID3D12
 	instancingSrvDesc.Buffer.StructureByteStride = sizeof(TransformationMatrix);
 	// デスクリプタサイズを取得
 	const uint32_t descriptorSizeSRV = dx_->device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	instancingSrvHandleCPU = dx_->GetCPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, textureId_);
-	instancingSrvHandleGPU = dx_->GetGPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, textureId_);
+	instancingSrvHandleCPU = dx_->GetCPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, particleId_);
+	instancingSrvHandleGPU = dx_->GetGPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, particleId_);
 	dx_->device_->CreateShaderResourceView(instancingResource.Get(), &instancingSrvDesc, instancingSrvHandleCPU);
 
-	return  textureId_;
+	return  particleId_;
 
 }
 

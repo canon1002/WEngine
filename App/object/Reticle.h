@@ -1,11 +1,11 @@
 #pragma once
 #include <stdint.h>
-#include "../worldTransform/WorldTransform.h"
-#include "../base/DirectXCommon.h"
-#include "../math/Math.h"
-#include "../object/3d/Object3d.h"
-#include "../primitive/Sprite.h"
-#include "../Engine/object/2d/SpriteCommon.h"
+#include "Engine/Object/WorldTransform/WorldTransform.h"
+#include "Engine/Math/Math.h"
+#include "Engine/Object/Object3d.h"
+#include "Engine/Collision/Collider.h"
+#include "Engine/Object/Sprite/Sprite.h"
+#include "Engine/object/Sprite/SpriteCommon.h"
 #include <memory>
 
 class Reticle

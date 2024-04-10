@@ -1,12 +1,12 @@
 #include "Skydome.h"
-#include "../3d/ModelManager.h"
+#include "Engine/Object/Model/ModelManager.h"
 
 void Skydome::Initialize()
 {
 	// モデルをセットする
 	ModelManager::GetInstance()->LoadModel("skydome.obj");
 
-	worldTransform_.scale = { 64.0f,64.0f,64.0f };
+	worldTransform_.scale = { 256.0f,256.0f,256.0f };
 	worldTransform_.rotate = { 0.0f,0.0f,0.0f };
 	worldTransform_.translate = { 0.0f,0.0f,0.0f };
 	worldTransform_.worldM = MakeAffineMatrix(worldTransform_.scale,

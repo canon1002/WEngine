@@ -5,6 +5,7 @@
 #include "Engine/Object/Texture/Color.h"
 #include "Engine/Object/Object3d.h"
 #include "Engine/Collision/Collider.h"
+#include "App/object/Reticle.h"
 
 class Player:
 	public Collider
@@ -32,7 +33,7 @@ public:
 
 	void SetCamera(CameraCommon* camera) {
 		object_->SetCamera(camera); 
-		reticle->SetCamera(camera);
+		//reticle->SetCamera(camera);
 		camera_= camera;
 	}
 	
@@ -58,7 +59,7 @@ public: // コリジョン
 	uint32_t GetCollisionMask()override { return collisionMask_; };
 	// 
 	void SetCollisionMask(uint32_t collisionMask)override { collisionMask_ = collisionMask; }
-
+	void AddRotate(Vec3 rotation) { worldTransform_.rotate += rotation; }
 
 private:
 
@@ -69,10 +70,10 @@ private:
 	std::unique_ptr<Object3d> object_;
 	WorldTransform worldTransform_;
 	WorldTransform worldTransformRail_;
-	 Vec3 rad_;
-	 Vec3 vel_;
-	 Vec3 speed_;
-	 Color color_;
+	 Vec3 rad_ = { 1,1,1 };
+	 Vec3 vel_ = { 0.1f,0.1f,0.1f };
+	 Vec3 speed_ = { 4,4,4 };
+	 Color color_ = { 1.0f,1.0f,1.0f,1.0f };
 	 bool isActive_ = true;
 
 	 //

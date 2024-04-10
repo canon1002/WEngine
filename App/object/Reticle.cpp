@@ -1,7 +1,7 @@
 #include "Reticle.h"
-#include "../3d/ModelManager.h"
-
-#include "../InputManager.h"
+#include "Engine/Object/Model/ModelManager.h"
+#include "Engine/Input/InputManager.h"
+#include "Engine/Base/ImGuiManager.h"
 
 void Reticle::Initialze()
 {
@@ -29,6 +29,10 @@ void Reticle::Initialze()
 	reticle3d->Init();
 	reticle3d->SetModel("box.obj");
 	reticle3d->SetWorldTransform(worldTransformReticle3d);
+
+	if (camera_ == nullptr) {
+		camera_ = MainCamera::GetInstance();
+	}
 
 
 }
@@ -120,10 +124,6 @@ void Reticle::Update()
 	// マウス座標をレティクルの座標に代入
 	// m_sprite2DReticle->SetPosition({(float)mousePosition.x, (float)mousePosition.y});
 
-	if (camera_ == nullptr) {
-		camera_ = MainCamera::GetInstance();
-	}
-
 	const static Mat44 viewport = MakeViewportMatrix(
 		0, 0, 1280.0f, 720.0f, 0.0f, 1.0f);
 
@@ -141,10 +141,10 @@ void Reticle::Update()
 	Vec3 mouseDirction = Subtract(posFar, posNear);
 
 	// 自機から3Dレティクルへの距離
-	const float kDistanceTestObject = 30.0f;
+	const float kDistanceTestObject = 50.0f;
 
 	// ベクトルの長さを整える
-	mouseDirction = Nomalize(mouseDirction);
+	mouseDirction = Normalize(mouseDirction);
 	mouseDirction.x *= kDistanceTestObject;
 	mouseDirction.y *= kDistanceTestObject;
 	mouseDirction.z *= kDistanceTestObject;
@@ -172,9 +172,9 @@ void Reticle::Update()
 	worldTransformReticle3d.worldM = MakeAffineMatrix(
 		worldTransformReticle3d.scale,
 		worldTransformReticle3d.rotate, {
-		worldTransformReticle3d.translate.x + camera_->GetTransform().translate.x,
-		worldTransformReticle3d.translate.y + camera_->GetTransform().translate.y,
-		worldTransformReticle3d.translate.z + camera_->GetTransform().translate.z
+		worldTransformReticle3d.translate.x,
+		worldTransformReticle3d.translate.y,
+		worldTransformReticle3d.translate.z
 		});
 
 	//reticle3d->SetTranslate(worldTransformReticle3d.translate);

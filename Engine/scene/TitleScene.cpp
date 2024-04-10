@@ -1,10 +1,7 @@
 #include "TitleScene.h"
 #include "Engine/Object/Model/ModelManager.h"
 
-void TitleScene::Finalize(){
-	delete particleVox;
-	delete particleCiacle;
-}
+void TitleScene::Finalize(){}
 
 //　継承した関数
 void TitleScene::Init() {
@@ -27,12 +24,12 @@ void TitleScene::Init() {
 	ball_->SetTranslate(Vec3{ 0.0f,0.0f,1.0f });
 	ball_->SetModel("ball.obj");
 
-	particleVox = new VoxelParticle();
+	/*particleVox = new VoxelParticle();
 	particleVox->Initialize();
 	
 	particleCiacle = new VoxelParticle();
 	particleCiacle->Initialize();
-	particleCiacle->SetTexture(DirectXCommon::GetInstance()->srv_->defaultTexId_);
+	particleCiacle->SetTexture(DirectXCommon::GetInstance()->srv_->defaultTexId_);*/
 }
 
 void TitleScene::Update() {
@@ -97,8 +94,8 @@ void TitleScene::Update() {
 	ball_->UpdateWorldMat();
 	ball_->Update();
 
-	particleVox->Update();
-	particleCiacle->Update();
+	//particleVox->Update();
+	//particleCiacle->Update();
 }
 
 void TitleScene::Draw(){
@@ -108,6 +105,6 @@ void TitleScene::Draw(){
 
 	// パーティクル描画
 	DirectXCommon::GetInstance()->DrawPariticleBegin();
-	particleVox->Draw();
-	particleCiacle->Draw();
+	//particleVox->Draw();
+	//particleCiacle->Draw();
 }

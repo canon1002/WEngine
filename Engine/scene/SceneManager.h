@@ -6,6 +6,7 @@
 #include "ResultScene.h"
 
 #include "Engine/base/DirectXCommon.h"
+#include "Engine/base/ImGuiManager.h"
 #include "Engine/object/camera/MainCamera.h"
 #include "Engine/Object/Sprite/Triangle.h"
 #include "Engine/Object/Sprite/Sprite.h"
@@ -35,8 +36,13 @@ private:
 	WinAPI* win;
 	// DirectX
 	DirectXCommon* dx;
+#ifdef _DEBUG
+	// ImGuiManager
+	ImGuiManager* imGuiManager_ = nullptr;
+#endif // _DEBUG
 	// Input
 	InputManager* inputManager;
+	
 	// Audio
 	Audio* audio;
 	// メインカメラ

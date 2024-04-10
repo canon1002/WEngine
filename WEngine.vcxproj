@@ -65,6 +65,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -111,6 +112,19 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="App\camera\RailCamera.cpp" />
+    <ClCompile Include="App\command\ICommand.cpp" />
+    <ClCompile Include="App\command\InputHandle.cpp" />
+    <ClCompile Include="App\object\Enemy.cpp" />
+    <ClCompile Include="App\object\IObject.cpp" />
+    <ClCompile Include="App\object\Player.cpp" />
+    <ClCompile Include="App\object\PlayerBullet.cpp" />
+    <ClCompile Include="App\object\Reticle.cpp" />
+    <ClCompile Include="App\object\Skydome.cpp" />
+    <ClCompile Include="App\command\EnemyState\EnemyStateApproach.cpp" />
+    <ClCompile Include="App\command\EnemyState\EnemyStateManager.cpp" />
+    <ClCompile Include="App\command\EnemyState\EnemyStateLeave.cpp" />
+    <ClCompile Include="App\object\EnemyBullet.cpp" />
     <ClCompile Include="Engine\Base\DirectXCommon.cpp" />
     <ClCompile Include="Engine\Base\ImGuiManager.cpp" />
     <ClCompile Include="Engine\Base\SRV.cpp" />
@@ -149,12 +163,26 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\Input\Gamepad.cpp" />
     <ClCompile Include="Engine\Input\InputManager.cpp" />
     <ClCompile Include="Engine\Input\Keyboard.cpp" />
+    <ClCompile Include="App\command\EnemyState\IEnemyState.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Engine\Object\Object3dCommon.cpp" />
     <ClCompile Include="Engine\Object\Object3d.cpp" />
     <ClCompile Include="Engine\Object\Model\ModelManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="App\camera\RailCamera.h" />
+    <ClInclude Include="App\command\ICommand.h" />
+    <ClInclude Include="App\command\InputHandle.h" />
+    <ClInclude Include="App\object\Enemy.h" />
+    <ClInclude Include="App\object\IObject.h" />
+    <ClInclude Include="App\object\Player.h" />
+    <ClInclude Include="App\object\PlayerBullet.h" />
+    <ClInclude Include="App\object\Reticle.h" />
+    <ClInclude Include="App\object\Skydome.h" />
+    <ClInclude Include="App\command\EnemyState\EnemyStateApproach.h" />
+    <ClInclude Include="App\command\EnemyState\EnemyStateManager.h" />
+    <ClInclude Include="App\command\EnemyState\EnemyStateLeave.h" />
+    <ClInclude Include="App\object\EnemyBullet.h" />
     <ClInclude Include="Engine\Base\DirectXCommon.h" />
     <ClInclude Include="Engine\Base\ImGuiManager.h" />
     <ClInclude Include="Engine\Base\SRV.h" />
@@ -203,6 +231,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\Object\Model\ModelManager.h" />
     <ClInclude Include="Engine\Input\InputManager.h" />
     <ClInclude Include="Engine\Input\Keyboard.h" />
+    <ClInclude Include="App\command\EnemyState\IEnemyState.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt" />

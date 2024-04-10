@@ -1,9 +1,9 @@
 #include "Player.h"
-#include "../3d/ModelManager.h"
+#include "Engine/Object/Model/ModelManager.h"
+#include "Engine/Base/ImGuiManager.h"
+#include "Engine/Input/InputManager.h"
 
-Player::Player() {
-
-}
+Player::Player() {}
 
 Player::~Player() {
 }
@@ -38,6 +38,8 @@ void Player::Init() {
 	reticle = std::make_unique<Reticle>();
 	reticle->Initialze();
 
+	// 描画のためのカメラオブジェクトのポインタがなければ取得しておく
+	if (camera_ == nullptr) { camera_ = MainCamera::GetInstance(); }
 }
 
 void Player::Update() {
@@ -54,26 +56,33 @@ void Player::Update() {
 	ImGui::DragFloat3("Transform", &worldTransform_.translate.x, 0.1f, -100.0f, 100.0f);
 	ImGui::End();
 
-
 #endif // _DEBUG
 
+	if (InputManager::GetInstance()->GetKey()->GetPushKey(DIK_Q)) {
+		worldTransform_.rotate.y -= 0.05f;
+	}
+	
+	if (InputManager::GetInstance()->GetKey()->GetPushKey(DIK_E)) {
+		worldTransform_.rotate.y += 0.05f;
+	}
 
-	if (camera_ != nullptr) {
-		worldTransform_.worldM = MakeAffineMatrix(
-			worldTransform_.scale,
-			worldTransform_.rotate, {
-			worldTransform_.translate.x + camera_->GetTransform().translate.x,
-			worldTransform_.translate.y + camera_->GetTransform().translate.y,
-			worldTransform_.translate.z + camera_->GetTransform().translate.z
-			});
-	}
-	else {
-		worldTransform_.worldM = MakeAffineMatrix(
-			worldTransform_.scale,
-			worldTransform_.rotate,
-			worldTransform_.translate
-		);
-	}
+	//if (camera_ != nullptr) {
+	//	worldTransform_.worldM = MakeAffineMatrix(
+	//		worldTransform_.scale,
+	//		worldTransform_.rotate, {
+	//		worldTransform_.translate.x + camera_->GetTransform().translate.x,
+	//		worldTransform_.translate.y + camera_->GetTransform().translate.y,
+	//		worldTransform_.translate.z + camera_->GetTransform().translate.z
+	//		});
+	//}
+	//else {
+	//}
+
+	worldTransform_.worldM = MakeAffineMatrix(
+		worldTransform_.scale,
+		worldTransform_.rotate,
+		worldTransform_.translate
+	);
 
 	object_->SetWorldTransform(worldTransform_);
 
@@ -144,7 +153,7 @@ Vec3 Player::GetReticleAxis()
 	Vec3 SubPos{ 0, 0, 0 };
 	SubPos = Subtract(reticle->GetWorld().translate, worldTransform_.translate);
 	// 長さを調整
-	SubPos = Nomalize(SubPos);
+	SubPos = Normalize(SubPos);
 
 	Vec3 velocity{ 0, 0, 0 };
 	velocity.x = SubPos.x * kBulletSpeed;

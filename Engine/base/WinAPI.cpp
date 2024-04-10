@@ -1,6 +1,7 @@
 #include "WinAPI.h"
+#include "Engine/Base/ImGuiManager.h"
 
-// インスタンス雨を初期化
+// インスタンスを初期化
 WinAPI* WinAPI::instance = nullptr;
 
 // コンストラクタ
@@ -23,6 +24,8 @@ void WinAPI::Initialize() {
 	// COMの初期化
 	CoInitializeEx(0, COINIT_MULTITHREADED);
 
+	// 初期化
+	wc = {};
 	// ウィンドウプロシージャ
 	wc.lpfnWndProc = WindowProc;
 	// ウィンドウクラス名

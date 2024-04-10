@@ -1,9 +1,10 @@
 #pragma once
 #include <memory>
-#include "../worldTransform/WorldTransform.h"
-#include "../math/Math.h"
-#include "../color/Color.h"
-#include "../3d/Object3d.h"
+#include "Engine/Object/WorldTransform/WorldTransform.h"
+#include "Engine/Math/Math.h"
+#include "Engine/Object/Texture/Color.h"
+#include "Engine/Object/Object3d.h"
+#include "Engine/Collision/Collider.h"
 
 class Skydome
 {

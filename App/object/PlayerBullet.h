@@ -1,19 +1,20 @@
 #pragma once
 #include "IObject.h"
 #include <stdint.h>
-#include "../worldTransform/WorldTransform.h"
-#include "../math/Math.h"
-#include "../color/Color.h"
-#include "../3d/Object3d.h"
-#include "../collision/Collider.h"
+#include "Engine/Object/WorldTransform/WorldTransform.h"
+#include "Engine/Math/Math.h"
+#include "Engine/Object/Texture/Color.h"
+#include "Engine/Object/Object3d.h"
+#include "Engine/Collision/Collider.h"
 
+class Player;
 
 class PlayerBullet :
     public Collider
 {
 public:
     void Init(Vec3 pos,Vec3 vel);
-    void Init();
+    void Init(Player* player);
     void Update();
     void Draw();
     bool GetIsActive()const { return isActive_; }
@@ -26,9 +27,11 @@ public:
 public:
 
     // 純粋仮想関数
-    void OnCollision()override {// isActive_ = false; 
+    void OnCollision()override {
+        isActive_ = false; 
     }
-    void OnCollision(Collider* collider)override {// collider; isActive_ = false;
+    void OnCollision(Collider* collider)override {
+        collider; isActive_ = false;
     }
 
     // ワールド座標
@@ -48,11 +51,13 @@ private:
 
     // 参照用
     CameraCommon* camera_ = nullptr;
+    Player* player_ = nullptr;
 
     std::unique_ptr<Object3d> object_;
     WorldTransform worldTransform_;
 
     Vec3 rad_;
+    Vec3 direction;
     Vec3 vel_;
     Vec3 speed_;
     Color color_;

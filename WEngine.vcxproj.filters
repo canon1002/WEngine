@@ -23,15 +23,6 @@
     <Filter Include="Engine\object\Camera">
       <UniqueIdentifier>{23a8e57e-719a-435a-9bf4-559d53aaa05a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engine\resouces">
-      <UniqueIdentifier>{f83658ba-df8f-4545-b3ec-e574ed48a7c5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\primitive">
-      <UniqueIdentifier>{0512642e-ded2-4cf3-bd3a-15c74a008ad5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\resouces\section">
-      <UniqueIdentifier>{f0a45819-e0a1-4a18-8c1a-98dc693afa94}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Engine\object\Light">
       <UniqueIdentifier>{3aabf391-e7d4-4cee-a79d-2de8f3ca0524}</UniqueIdentifier>
     </Filter>
@@ -83,9 +74,23 @@
     <Filter Include="Engine\object\Sprite">
       <UniqueIdentifier>{872ae062-3e4e-4376-af30-003abaf5194c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine\Input">
+      <UniqueIdentifier>{0c0618fc-3e73-419f-94e7-55cad856a744}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\object\resouces">
+      <UniqueIdentifier>{f83658ba-df8f-4545-b3ec-e574ed48a7c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\object\resouces\section">
+      <UniqueIdentifier>{f0a45819-e0a1-4a18-8c1a-98dc693afa94}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\object\primitive">
+      <UniqueIdentifier>{0512642e-ded2-4cf3-bd3a-15c74a008ad5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="App\command\EnemyState">
+      <UniqueIdentifier>{1c141ced-152d-4abb-8b8a-47bcd0e157ef}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp" />
     <ClCompile Include="Engine\Base\WinAPI.cpp">
       <Filter>Engine\base</Filter>
     </ClCompile>
@@ -93,16 +98,16 @@
       <Filter>Engine\base</Filter>
     </ClCompile>
     <ClCompile Include="Engine\Object\Sprite\Triangle.cpp">
-      <Filter>Engine\primitive</Filter>
+      <Filter>Engine\object\primitive</Filter>
     </ClCompile>
     <ClCompile Include="Engine\Object\Texture\Resource.cpp">
-      <Filter>Engine\resouces\section</Filter>
+      <Filter>Engine\object\resouces\section</Filter>
     </ClCompile>
     <ClCompile Include="Engine\Object\WorldTransform\WorldTransform.cpp">
       <Filter>Engine\object\WorldTransform</Filter>
     </ClCompile>
     <ClCompile Include="Engine\Object\Sprite\Sphere.cpp">
-      <Filter>Engine\primitive</Filter>
+      <Filter>Engine\object\primitive</Filter>
     </ClCompile>
     <ClCompile Include="Engine\Object\Light\DirectionalLight.cpp">
       <Filter>Engine\object\Light</Filter>
@@ -117,7 +122,7 @@
       <Filter>Engine\base\DirectX\SRV</Filter>
     </ClCompile>
     <ClCompile Include="Engine\Object\Particle\VoxelParticle.cpp">
-      <Filter>Engine\primitive</Filter>
+      <Filter>Engine\object\primitive</Filter>
     </ClCompile>
     <ClCompile Include="Externals\imgui\imgui.cpp">
       <Filter>Externals\imgui</Filter>
@@ -141,7 +146,7 @@
       <Filter>Externals\imgui</Filter>
     </ClCompile>
     <ClCompile Include="Engine\Object\Audio\Audio.cpp">
-      <Filter>Engine\resouces\section</Filter>
+      <Filter>Engine\object\resouces\section</Filter>
     </ClCompile>
     <ClCompile Include="Engine\Scene\IScene.cpp">
       <Filter>Engine\scene</Filter>
@@ -200,9 +205,54 @@
     <ClCompile Include="Engine\Object\Sprite\Sprite.cpp">
       <Filter>Engine\object\Sprite</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Input\Gamepad.cpp" />
-    <ClCompile Include="Engine\Input\InputManager.cpp" />
-    <ClCompile Include="Engine\Input\Keyboard.cpp" />
+    <ClCompile Include="App\object\Player.cpp">
+      <Filter>App\object</Filter>
+    </ClCompile>
+    <ClCompile Include="App\object\PlayerBullet.cpp">
+      <Filter>App\object</Filter>
+    </ClCompile>
+    <ClCompile Include="App\camera\RailCamera.cpp">
+      <Filter>App\object</Filter>
+    </ClCompile>
+    <ClCompile Include="App\object\Reticle.cpp">
+      <Filter>App\object</Filter>
+    </ClCompile>
+    <ClCompile Include="App\object\Skydome.cpp">
+      <Filter>App\object</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Input\InputManager.cpp">
+      <Filter>Engine\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Input\Keyboard.cpp">
+      <Filter>Engine\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Input\Gamepad.cpp">
+      <Filter>Engine\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Engine\object\resouces</Filter>
+    </ClCompile>
+    <ClCompile Include="App\object\Enemy.cpp">
+      <Filter>App\object</Filter>
+    </ClCompile>
+    <ClCompile Include="App\object\IObject.cpp">
+      <Filter>App\object</Filter>
+    </ClCompile>
+    <ClCompile Include="App\command\ICommand.cpp">
+      <Filter>App\command</Filter>
+    </ClCompile>
+    <ClCompile Include="App\command\InputHandle.cpp">
+      <Filter>App\command</Filter>
+    </ClCompile>
+    <ClCompile Include="App\command\EnemyState\EnemyStateApproach.cpp">
+      <Filter>App\command\EnemyState</Filter>
+    </ClCompile>
+    <ClCompile Include="App\command\EnemyState\IEnemyState.cpp">
+      <Filter>App\command\EnemyState</Filter>
+    </ClCompile>
+    <ClCompile Include="App\command\EnemyState\EnemyStateManager.cpp" />
+    <ClCompile Include="App\command\EnemyState\EnemyStateLeave.cpp" />
+    <ClCompile Include="App\object\EnemyBullet.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Base\ImGuiManager.h">
@@ -215,16 +265,16 @@
       <Filter>Engine\base</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Object\Sprite\Triangle.h">
-      <Filter>Engine\primitive</Filter>
+      <Filter>Engine\object\primitive</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Object\Texture\Resource.h">
-      <Filter>Engine\resouces\section</Filter>
+      <Filter>Engine\object\resouces\section</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Object\WorldTransform\WorldTransform.h">
       <Filter>Engine\object\WorldTransform</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Object\Sprite\Sphere.h">
-      <Filter>Engine\primitive</Filter>
+      <Filter>Engine\object\primitive</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Object\Light\DirectionalLight.h">
       <Filter>Engine\object\Light</Filter>
@@ -239,7 +289,7 @@
       <Filter>Engine\base\DirectX\SRV</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Object\Particle\VoxelParticle.h">
-      <Filter>Engine\primitive</Filter>
+      <Filter>Engine\object\primitive</Filter>
     </ClInclude>
     <ClInclude Include="Externals\imgui\imconfig.h">
       <Filter>Externals\imgui</Filter>
@@ -266,7 +316,7 @@
       <Filter>Externals\imgui</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Object\Audio\Audio.h">
-      <Filter>Engine\resouces\section</Filter>
+      <Filter>Engine\object\resouces\section</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Scene\IScene.h">
       <Filter>Engine\scene</Filter>
@@ -337,10 +387,52 @@
     <ClInclude Include="Engine\Object\Sprite\Sprite.h">
       <Filter>Engine\object\Sprite</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Input\Gamepad.h" />
-    <ClInclude Include="Engine\Input\InputManager.h" />
-    <ClInclude Include="Engine\Input\Keyboard.h" />
     <ClInclude Include="Engine\Object\Texture\Material.h" />
+    <ClInclude Include="App\object\Player.h">
+      <Filter>App\object</Filter>
+    </ClInclude>
+    <ClInclude Include="App\object\PlayerBullet.h">
+      <Filter>App\object</Filter>
+    </ClInclude>
+    <ClInclude Include="App\camera\RailCamera.h">
+      <Filter>App\object</Filter>
+    </ClInclude>
+    <ClInclude Include="App\object\Reticle.h">
+      <Filter>App\object</Filter>
+    </ClInclude>
+    <ClInclude Include="App\object\Skydome.h">
+      <Filter>App\object</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Input\InputManager.h">
+      <Filter>Engine\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Input\Keyboard.h">
+      <Filter>Engine\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Input\Gamepad.h">
+      <Filter>Engine\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="App\object\Enemy.h">
+      <Filter>App\object</Filter>
+    </ClInclude>
+    <ClInclude Include="App\object\IObject.h">
+      <Filter>App\object</Filter>
+    </ClInclude>
+    <ClInclude Include="App\command\ICommand.h">
+      <Filter>App\command</Filter>
+    </ClInclude>
+    <ClInclude Include="App\command\InputHandle.h">
+      <Filter>App\command</Filter>
+    </ClInclude>
+    <ClInclude Include="App\command\EnemyState\EnemyStateApproach.h">
+      <Filter>App\command\EnemyState</Filter>
+    </ClInclude>
+    <ClInclude Include="App\command\EnemyState\IEnemyState.h">
+      <Filter>App\command\EnemyState</Filter>
+    </ClInclude>
+    <ClInclude Include="App\command\EnemyState\EnemyStateManager.h" />
+    <ClInclude Include="App\command\EnemyState\EnemyStateLeave.h" />
+    <ClInclude Include="App\object\EnemyBullet.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt">
