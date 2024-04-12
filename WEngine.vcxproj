@@ -168,6 +168,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\Object\Object3dCommon.cpp" />
     <ClCompile Include="Engine\Object\Object3d.cpp" />
     <ClCompile Include="Engine\Object\Model\ModelManager.cpp" />
+    <ClCompile Include="App\command\TimedCall.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App\camera\RailCamera.h" />
@@ -232,6 +233,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\Input\InputManager.h" />
     <ClInclude Include="Engine\Input\Keyboard.h" />
     <ClInclude Include="App\command\EnemyState\IEnemyState.h" />
+    <ClInclude Include="App\command\TimedCall.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt" />

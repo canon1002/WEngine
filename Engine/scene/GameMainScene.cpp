@@ -1,6 +1,8 @@
 #include "GameMainScene.h"
 #include "Engine/Input/InputManager.h"
 #include "Engine/Object/Sprite/SpriteCommon.h"
+#include <cassert>
+#include <fstream>
 
 void GameMainScene::Finalize()
 {
@@ -33,8 +35,8 @@ void GameMainScene::Init() {
 	player_->Init();
 
 	// プレイヤーの宣言
-	enemy_ = std::make_unique<Enemy>();
-	enemy_->Init();
+	//enemys_ = std::make_unique<Enemy>();
+	//enemys_->Init();
 
 	// エネミーの生存人数
 	aliveEnemyCount_ = 1;
@@ -48,6 +50,8 @@ void GameMainScene::Init() {
 	railCamera_->Initialize();
 	railCamera_->SetTranslate({ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,-48.0f} });
 
+	LoadEnemyPopDate();
+
 }
 
 void GameMainScene::Update() {
@@ -56,6 +60,9 @@ void GameMainScene::Update() {
 	if (InputManager::GetInstance()->GetKey()->GetTriggerKey(DIK_SPACE)) {
 		sceneNo = TITLE;
 	}
+
+	// 敵発生コマンドの更新を行う
+	UpdateEnemyPopCommands();
 
 	// get command
 	// Initializeにてコマンドをあーだこーだしておくこと
@@ -69,7 +76,9 @@ void GameMainScene::Update() {
 	if (aliveEnemyCount_ > 0) {
 
 		// プレイヤーの弾の発射(後日コマンドに移行)
-		if (input_->GetKey()->GetTriggerKey(DIK_RETURN)) {
+		if (input_->GetKey()->GetTriggerKey(DIK_RETURN)||
+			Gamepad::getTriger(Gamepad::Triger::RIGHT)
+			) {
 
 			std::unique_ptr<PlayerBullet> newBullet = std::make_unique<PlayerBullet>();
 			if (isActiveRailCamera_) {
@@ -84,21 +93,39 @@ void GameMainScene::Update() {
 			playerBullets_.push_back(std::move(newBullet));
 		}
 
-		// エネミーの弾の発射
-		if (enemy_->GetIsShotBullet()) {
-
-			std::unique_ptr<EnemyBullet> newBullet = std::make_unique<EnemyBullet>();
-			if (isActiveRailCamera_) {
-
-				newBullet->Init(enemy_.get(),player_.get());
-				newBullet->SetCamera(railCamera_.get());
+		// エネミーの弾の発射 & 更新処理
+		auto itE = enemies_.begin();  // イテレータを初期化
+		while (itE != enemies_.end()) {
+			const auto& enemy = *itE;
+			
+			// 消失条件を満たす場合
+			if (!enemy->GetIsActive()) {
+				itE = enemies_.erase(itE);  // erase()は削除された要素の次の有効なイテレータを返す
+				//aliveEnemyCount_--;
 			}
 			else {
-				newBullet->Init(enemy_.get(), player_.get());
+			
+				// 弾の発射
+				if (enemy->GetIsShotBullet()) {
+
+					std::unique_ptr<EnemyBullet> newBullet = std::make_unique<EnemyBullet>();
+					if (isActiveRailCamera_) {
+
+						newBullet->Init(enemy.get(), player_.get());
+						newBullet->SetCamera(railCamera_.get());
+					}
+					else {
+						newBullet->Init(enemy.get(), player_.get());
+					}
+
+					enemyBullets_.push_back(std::move(newBullet));
+					enemy->SetCoolDown();
+				}
+
+				enemy->Update();
+				++itE;  // イテレータを次に進める
 			}
 
-			enemyBullets_.push_back(std::move(newBullet));
-			enemy_->SetCoolDown();
 		}
 
 		// 天球
@@ -123,11 +150,6 @@ void GameMainScene::Update() {
 			}
 		}
 
-		// エネミー 更新
-		enemy_->Update();
-		if (enemy_->GetIsActive() == false) {
-			//aliveEnemyCount_--;
-		}
 		// エネミーの弾 -- 更新 --
 		auto itEB = enemyBullets_.begin();  // イテレータを初期化
 		while (itEB != enemyBullets_.end()) {
@@ -154,8 +176,10 @@ void GameMainScene::Update() {
 			if (!isActiveRailCamera_) {
 				isActiveRailCamera_ = true;
 				player_->SetCamera(railCamera_.get());
-				enemy_->SetCamera(railCamera_.get());
 				skydome_->SetCamera(railCamera_.get());
+				for (const auto& enemy : enemies_) {
+					enemy->SetCamera(railCamera_.get());
+				}
 				for (const auto& bullet : playerBullets_) {
 					bullet->SetCamera(railCamera_.get());
 				}
@@ -166,8 +190,10 @@ void GameMainScene::Update() {
 			else if (isActiveRailCamera_) {
 				isActiveRailCamera_ = false;
 				player_->SetCamera(MainCamera::GetInstance());
-				enemy_->SetCamera(MainCamera::GetInstance());
 				skydome_->SetCamera(MainCamera::GetInstance());
+				for (const auto& enemy : enemies_) {
+					enemy->SetCamera(MainCamera::GetInstance());
+				}
 				for (const auto& bullet : playerBullets_) {
 					bullet->SetCamera(MainCamera::GetInstance());
 				}
@@ -186,10 +212,9 @@ void GameMainScene::Update() {
 
 		// コライダーを衝突マネージャーのリストに登録
 		cManager->SetCollider(player_.get());
-		cManager->SetCollider(enemy_.get());
-		//for (Enemy* m_enemy : m_enemys) {
-		//	cManager->SetCollider(m_enemy);
-		//}
+		for (const auto& enemy : enemies_) {
+			cManager->SetCollider(enemy.get());
+		}
 		for (const auto& pBullet : playerBullets_) {
 			cManager->SetCollider(pBullet.get());
 		}
@@ -220,7 +245,9 @@ void GameMainScene::Draw() {
 	}
 
 	// エネミー 描画
-	enemy_->Draw();
+	for (const auto& enemy : enemies_) {
+		enemy->Draw();
+	}
 	// プレイヤーの弾 -- 描画 --
 	for (const auto& bullet : enemyBullets_) {
 		bullet->Draw();
@@ -229,4 +256,98 @@ void GameMainScene::Draw() {
 	SpriteCommon::GetInstance()->DrawBegin();
 	player_->GetReticle()->Draw();
 
+}
+
+// 敵発生データの読み込み
+void GameMainScene::LoadEnemyPopDate()
+{
+	// ファイルを開く
+	std::ifstream file;
+	file.open("./Resources/csv/enemyPop.csv");
+	assert(file.is_open());
+
+	// ファイルの内容をストリームにコピー
+	enemyPopCommands << file.rdbuf();
+
+	// ファイルを閉じる
+	file.close();
+
+}
+
+
+void GameMainScene::UpdateEnemyPopCommands()
+{
+	// 待機処理
+	if (m_isWait)
+	{
+		m_waitTime--;
+		if (m_waitTime <= 0)
+		{
+			m_isWait = false;
+		}
+		return;
+	}
+
+	// 1行分の文字列を入れる変数
+	std::string line;
+
+	// コマンド実行ループ
+	while (getline(enemyPopCommands, line))
+	{
+		// 1行分の文字列をストリームに変換して解析しやすくする
+		std::istringstream line_stream(line);
+
+		std::string word;
+		// ,区切りで行の先頭文字列を取得
+		getline(line_stream, word, ',');
+
+		// "//"から始まる行はコメント
+		if (word.find("//") == 0)
+		{
+			// コメント行を飛ばす
+			continue;
+		}
+
+		// POPコマンド
+		if (word.find("POP") == 0)
+		{
+			//ｘ座標
+			getline(line_stream, word, ',');
+			float x = (float)std::atof(word.c_str());
+
+			// y座標
+			getline(line_stream, word, ',');
+			float y = (float)std::atof(word.c_str());
+
+			// z座標
+			getline(line_stream, word, ',');
+			float z = (float)std::atof(word.c_str());
+
+			// 敵を発生させる
+			std::unique_ptr<Enemy> newEnemy = std::make_unique<Enemy>();
+			newEnemy->Init(Vec3(x, y, z));
+			// 敵キャラにゲームシーンとプレイヤーを渡す
+			//newEnemy->SetGameScene(this);
+			//newEnemy->SetPlayer(m_player);
+			// 敵キャラをリストに登録する
+			enemies_.push_back(std::move(newEnemy));
+
+		}
+
+		// WAITコマンド
+		else if (word.find("WAIT") == 0)
+		{
+			getline(line_stream, word, ',');
+
+			// 待ち時間
+			int32_t waitTime = atoi(word.c_str());
+
+			// 待機開始
+			m_isWait = true;
+			m_waitTime = waitTime;
+
+			// コマンドループを抜ける
+			break;
+		}
+	}
 }

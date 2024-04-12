@@ -58,7 +58,9 @@ int SceneManager::Run() {
 	while (!win->ProcessMessage())	{
 
 		// ImGuiの入力を受け付ける
+#ifdef _DEBUG
 		imGuiManager_->Begin();
+#endif // _DEBUG
 		// 入力処理の更新を行う
 		inputManager->Update();
 		// シーンのチェック
@@ -73,7 +75,7 @@ int SceneManager::Run() {
 		// カメラの更新
 		mainCamera->Update();
 		// 入力結果をImGuiで表示する
-		inputManager->DrawGUI();
+		//inputManager->DrawGUI();
 
 		///
 		/// 更新処理(推定)

@@ -6,7 +6,7 @@ void EnemyStateApproach::Init(Enemy* enemy){
 
 	// 弾の射撃する間隔
 	// 最初は長めに待つ
-	shotCoolTIme_ = 180;
+	shotCoolTIme_ = 120;
 }
 
 void EnemyStateApproach::Update(){
@@ -22,7 +22,7 @@ void EnemyStateApproach::Update(){
 		enemy_->ShotBullet();
 		// クールタイムを再設定
 		// 二発目以降は短めにする
-		shotCoolTIme_ = 60;
+		shotCoolTIme_ = 15;
 	}
 
 	enemy_->worldTransform_.translate.z -= 0.05f;

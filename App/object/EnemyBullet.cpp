@@ -49,9 +49,10 @@ void EnemyBullet::Init(Enemy* enemy, Player* player) {
 	// 正規化してベクトルの長さを整える
 	direction = Normalize(direction);
 	// 移動量は方向*移動速度
-	vel_.x = direction.x * 0.5f;
-	vel_.y = direction.y * 0.5f;
-	vel_.z = direction.z * 0.5f;
+	//vel_.x = direction.x * 0.5f;
+	//vel_.y = direction.y * 0.5f;
+	//vel_.z = direction.z * 0.5f;
+	vel_ = Normalize(Subtract(player_->GetWorldPos(), enemy_->GetWorldPos()));
 	//回転
 	Vec3 rotate = { 0.0f,0.0f,0.0f };
 	const float PI = 3.14f;
@@ -104,7 +105,6 @@ void EnemyBullet::Update() {
 		Vec3 toPlayer = player_->GetWorldPos();
 		// ベクトルを正規化
 		toPlayer = Normalize(toPlayer);
-		vel_ = Normalize(Subtract(player_->GetWorldPos(), enemy_->GetWorldPos()));
 		// 球面線形補間(Slerp)により、今の速度とプレイヤーへのベクトルを内挿し、新たな速度にする
 		vel_ = Slerp(vel_, toPlayer, 0.75f) * -0.5f;
 

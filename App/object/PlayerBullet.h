@@ -31,7 +31,8 @@ public:
         isActive_ = false; 
     }
     void OnCollision(Collider* collider)override {
-        collider; isActive_ = false;
+        collider; 
+        isActive_ = false;
     }
 
     // ワールド座標

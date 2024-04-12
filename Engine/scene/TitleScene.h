@@ -4,6 +4,7 @@
 #include "Engine/Object/Particle/VoxelParticle.h"
 #include "Engine/Input/InputManager.h"
 #include "Engine/Object/Camera/MainCamera.h"
+#include "Engine/Object/Sprite/Sprite.h"
 
 class TitleScene :
     public IScene
@@ -31,5 +32,12 @@ private:
 	std::unique_ptr<VoxelParticle> particleVox = { nullptr };
 	std::unique_ptr<VoxelParticle> particleCiacle = { nullptr };
 	
+	std::unique_ptr<Sprite> sprite_ = nullptr;
+	float alpth_ = 0.0f;
+	bool isSceneChange = false;
+	bool isSelect = false;
+	int32_t fadeTimer_ = 60;
+	int32_t UItimeCount = 60;
+
 };
 

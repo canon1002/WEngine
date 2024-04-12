@@ -35,8 +35,9 @@ public:
         //isActive_ = false;
     }
     void OnCollision(Collider* collider)override{ 
-        collider; 
-        //isActive_ = false;
+        if (collider->GetCollisionAttribute() == kCollisionAttributePlayerBullet) {
+            isActive_ = false;
+        }
     }
 
     // ワールド座標

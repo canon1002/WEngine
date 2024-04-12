@@ -253,6 +253,7 @@
     <ClCompile Include="App\command\EnemyState\EnemyStateManager.cpp" />
     <ClCompile Include="App\command\EnemyState\EnemyStateLeave.cpp" />
     <ClCompile Include="App\object\EnemyBullet.cpp" />
+    <ClCompile Include="App\command\TimedCall.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Base\ImGuiManager.h">
@@ -433,6 +434,7 @@
     <ClInclude Include="App\command\EnemyState\EnemyStateManager.h" />
     <ClInclude Include="App\command\EnemyState\EnemyStateLeave.h" />
     <ClInclude Include="App\object\EnemyBullet.h" />
+    <ClInclude Include="App\command\TimedCall.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt">

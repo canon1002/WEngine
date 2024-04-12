@@ -1,5 +1,6 @@
 #include "TitleScene.h"
 #include "Engine/Object/Model/ModelManager.h"
+#include "Engine/Object/Sprite/SpriteCommon.h"
 
 void TitleScene::Finalize(){}
 
@@ -30,62 +31,61 @@ void TitleScene::Init() {
 	particleCiacle = new VoxelParticle();
 	particleCiacle->Initialize();
 	particleCiacle->SetTexture(DirectXCommon::GetInstance()->srv_->defaultTexId_);*/
+
+	sprite_ = std::make_unique<Sprite>();
+	sprite_->Initialize();
+	sprite_->SetTexture("Resources/texture/uvChecker.png");
+	sprite_->SetTextureSize({ 64.0f,64.0f });
+	sprite_->SetSpriteSize({ 1280.0f,720.0f });
+	sprite_->SetColor({ 0.0f,0.0f,0.0f,0.0f });
+	sprite_->SetAnchorPoint(Vec2(0.0f, 0.0f));
+	sprite_->SetPos(Vec2(0.0f, 0.0f));
+
+	// シーン切り替え用
+	alpth_ = 0.0f;
+	isSceneChange = false;
+	fadeTimer_ = 60;
+
+
 }
 
 void TitleScene::Update() {
 
 	// スペースキー入力でシーン切り替え
 	if (input_->GetKey()->GetTriggerKey(DIK_SPACE)) {
-		sceneNo = STAGE;
+		//sceneNo = STAGE;
 	}
 
-	if (input_->GetKey()->GetPushKey(DIK_W)) {
-		camera_->SetTranslate(Vec3(
-			camera_->GetTranslate().x,
-			camera_->GetTranslate().y + 0.5f,
-			camera_->GetTranslate().z
-		));
+	if (isSceneChange == true) {
+		if (alpth_ < 1.0f) {
+			alpth_ += 0.05f;
+		}
+		sprite_->SetColor({ 0.0f,0.0f,0.0f,alpth_ });
+
+		if (alpth_ >= 1.0f) {
+
+			sceneNo = STAGE;
+		}
+	}
+	else {
+
+		//
+		if (input_->GetKey()->GetTriggerKey(DIK_RETURN) ||
+			(Gamepad::getTriger(Gamepad::Triger::RIGHT))
+			) {
+			isSelect = true;
+
+		}
+
+	}
+	if (isSelect && UItimeCount > 0) {
+		UItimeCount--;
 	}
 
-	if (input_->GetKey()->GetPushKey(DIK_A)) {
-		camera_->SetTranslate(Vec3(
-			camera_->GetTranslate().x - 0.5f,
-			camera_->GetTranslate().y,
-			camera_->GetTranslate().z
-		));
+	if (UItimeCount == 0) {
+		isSceneChange = true;
 	}
 
-	if (input_->GetKey()->GetPushKey(DIK_S)) {
-		camera_->SetTranslate(Vec3(
-			camera_->GetTranslate().x,
-			camera_->GetTranslate().y - 0.5f,
-			camera_->GetTranslate().z
-		));
-	}
-
-	if (input_->GetKey()->GetPushKey(DIK_D)) {
-		camera_->SetTranslate(Vec3(
-			camera_->GetTranslate().x + 0.5f,
-			camera_->GetTranslate().y,
-			camera_->GetTranslate().z
-		));
-	}
-
-	if (input_->GetKey()->GetPushKey(DIK_Q)) {
-		camera_->SetTranslate(Vec3(
-			camera_->GetTranslate().x,
-			camera_->GetTranslate().y,
-			camera_->GetTranslate().z + 0.5f
-		));
-	}
-
-	if (input_->GetKey()->GetPushKey(DIK_E)) {
-		camera_->SetTranslate(Vec3(
-			camera_->GetTranslate().x,
-			camera_->GetTranslate().y,
-			camera_->GetTranslate().z - 0.5f
-		));
-	}
 
 	eAxis_->UpdateWorldMat();
 	eAxis_->Update();
@@ -93,6 +93,7 @@ void TitleScene::Update() {
 	ball_->SetRotate(newRotate);
 	ball_->UpdateWorldMat();
 	ball_->Update();
+	sprite_->Update();
 
 	//particleVox->Update();
 	//particleCiacle->Update();
@@ -102,6 +103,10 @@ void TitleScene::Draw(){
 
 	eAxis_->Draw();
 	ball_->Draw();
+
+	// 2D画像の描画開始コマンド
+	SpriteCommon::GetInstance()->DrawBegin();
+	sprite_->Draw();
 
 	// パーティクル描画
 	DirectXCommon::GetInstance()->DrawPariticleBegin();

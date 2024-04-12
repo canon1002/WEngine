@@ -25,12 +25,15 @@ public:
 	void Update() override;
 	void Draw() override;
 
+	void LoadEnemyPopDate();
+	void UpdateEnemyPopCommands();
+
 	// プレイヤー
 	std::unique_ptr<Player> player_;
 	// プレイヤーの弾
 	std::list<std::unique_ptr<PlayerBullet>> playerBullets_;
 	// エネミー
-	std::unique_ptr<Enemy> enemy_;
+	std::list< std::unique_ptr<Enemy>> enemies_;
 	// エネミーの弾
 	std::list<std::unique_ptr<EnemyBullet>> enemyBullets_;
 	// 天球
@@ -51,6 +54,12 @@ private:
 	// エネミーの生存人数
 	int aliveEnemyCount_;
 
+	// 敵発生コマンド
+	std::stringstream enemyPopCommands;
+	// 待機中フラグ
+	bool m_isWait;
+	//  待機中タイマー
+	int32_t m_waitTime;
 
 };
 
