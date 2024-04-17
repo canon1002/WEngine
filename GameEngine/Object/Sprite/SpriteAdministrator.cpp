@@ -60,20 +60,20 @@ void SpriteAdministrator::CreateRootSignature()
 	// シリアライズしてバイナリにする
 	Microsoft::WRL::ComPtr<ID3DBlob> signatureBlob = nullptr;
 	Microsoft::WRL::ComPtr<ID3DBlob> errorBlob = nullptr;
-	dxCommon_->hr = D3D12SerializeRootSignature(&descriptionRootSignature,
+	HRESULT hr = D3D12SerializeRootSignature(&descriptionRootSignature,
 		D3D_ROOT_SIGNATURE_VERSION_1,
 		&signatureBlob,
 		&errorBlob
 	);
-	if (FAILED(dxCommon_->hr)) {
+	if (FAILED(hr)) {
 		WinAPI::Log(reinterpret_cast<char*>(errorBlob->GetBufferPointer()));
 		assert(false);
 	}
 
 	// バイナリを元に
-	dxCommon_->hr = dxCommon_->device_->CreateRootSignature(0, signatureBlob->GetBufferPointer(),
+	hr = dxCommon_->device_->CreateRootSignature(0, signatureBlob->GetBufferPointer(),
 		signatureBlob->GetBufferSize(), IID_PPV_ARGS(&rootSignature));
-	assert(SUCCEEDED(dxCommon_->hr));
+	assert(SUCCEEDED(hr));
 }
 
 void SpriteAdministrator::CreateGraphicsPipeline()
@@ -164,9 +164,9 @@ void SpriteAdministrator::CreateGraphicsPipeline()
 	graphicsPipelineStateDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
 
 	// 実際に生成
-	dxCommon_->hr = dxCommon_->device_->CreateGraphicsPipelineState(&graphicsPipelineStateDesc,
+	HRESULT hr = dxCommon_->device_->CreateGraphicsPipelineState(&graphicsPipelineStateDesc,
 		IID_PPV_ARGS(&graphicsPipelineState));
-	assert(SUCCEEDED(dxCommon_->hr));
+	assert(SUCCEEDED(hr));
 
 
 }

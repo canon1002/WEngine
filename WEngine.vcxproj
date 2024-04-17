@@ -113,6 +113,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="GameEngine\Base\DirectX\DSV.cpp" />
     <ClCompile Include="GameEngine\Base\Engine.cpp" />
     <ClCompile Include="GameEngine\Base\Debug\ImGuiManager.cpp" />
     <ClCompile Include="GameEngine\Base\DirectX\DirectXCommon.cpp" />
@@ -156,9 +157,11 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="GameEngine\Object\3d\Object3d.cpp" />
     <ClCompile Include="GameEngine\Object\Model\ModelManager.cpp" />
     <ClCompile Include="GameEngine\Object\Particle\ParticleManager.cpp" />
-    <ClCompile Include="ObjectAdministrator.cpp" />
+    <ClCompile Include="GameEngine\Object\ObjectAdministrator.cpp" />
+    <ClCompile Include="GameEngine\Base\DirectX\RTV.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="GameEngine\Base\DirectX\DSV.h" />
     <ClInclude Include="GameEngine\Base\Engine.h" />
     <ClInclude Include="GameEngine\Base\Debug\ImGuiManager.h" />
     <ClInclude Include="GameEngine\Base\DirectX\DirectXCommon.h" />
@@ -208,7 +211,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="GameEngine\Input\InputManager.h" />
     <ClInclude Include="GameEngine\Input\Keyboard.h" />
     <ClInclude Include="GameEngine\Object\Particle\ParticleManager.h" />
-    <ClInclude Include="ObjectAdministrator.h" />
+    <ClInclude Include="GameEngine\Object\ObjectAdministrator.h" />
+    <ClInclude Include="GameEngine\Base\DirectX\RTV.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt" />

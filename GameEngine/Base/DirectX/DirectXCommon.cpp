@@ -20,8 +20,9 @@ void DirectXCommon::Initialize(WinAPI* win) {
 
 	// 外部のやつ
 	win_ = win;
-	srv_ = SRV::GetInstance();
-
+	rtv_ = std::make_unique<RTV>();
+	srv_ = std::make_unique<SRV>();
+	dsv_ = std::make_unique<DSV>();
 	// デバイスの初期化
 	InitializeDXGIDevice();
 
@@ -67,9 +68,13 @@ void DirectXCommon::Initialize(WinAPI* win) {
 	// pipelineStateObject
 	InitializePSOP();
 
-	CreateFinalRenderTargets();
+	// レンダーターゲットを生成
+	rtv_->Initialize(this);
+	// シェーダーリソースを生成
 	srv_->Initialize(this);
-	CreateDepthStencilView();
+	// ディープステンシルの生成
+	dsv_->Initialize(this);
+
 	InitializeViewPort();
 	// 深度バッファ生成
 	//CreateDepthBuffer();
@@ -78,35 +83,7 @@ void DirectXCommon::Initialize(WinAPI* win) {
 }
 
 void DirectXCommon::Finalize() {
-
-	// 生成順と逆の順番で開放していく
-
-
-#ifdef _DEBUG
-	//debugController->Release();
-#endif // _DEBUG
-
 	CloseHandle(fenceEvent);
-	//fence.Reset();
-	//includeHandler.Reset();
-	//dxcUtils.Reset();
-	//graphicsPipelineState.Reset();
-	//rootSignature.Reset();
-	//srv_->Finalize();
-	//result_.Reset();
-	//rtvDescriptorHeap.Reset();
-
-	//commandList.Reset();
-	//commandAllocator.Reset();
-
-	//swapChainResources[0].Reset();
-	//swapChainResources[1].Reset();
-	//swapChain.Reset();
-
-	//commandQueue.Reset();
-	////useAdapter_->Release();
-	//device_.Reset();
-	//dxgiFactory.Reset();
 }
 
 /// DXGIデバイス初期化
@@ -114,7 +91,7 @@ void DirectXCommon::InitializeDXGIDevice() {
 
 	// DXGIファクトリーの生成
 	dxgiFactory = nullptr;
-	hr = CreateDXGIFactory(IID_PPV_ARGS(&dxgiFactory));
+	HRESULT hr = CreateDXGIFactory(IID_PPV_ARGS(&dxgiFactory));
 	assert(SUCCEEDED(hr));
 
 	// 使用するアダプタ用の変数。最初にnullptrを入れておく
@@ -179,7 +156,7 @@ void DirectXCommon::CreateSwapChain() {
 	swapChainDesc.BufferCount = 2;	// ダブルバッファ
 	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;	// モニタに映したら、中身を破棄
 	// コマンドキュー、ウィンドウハンドル、設定を渡して生成する
-	hr = dxgiFactory->CreateSwapChainForHwnd(commandQueue.Get(), win_->hwnd, &swapChainDesc, nullptr, nullptr,
+	HRESULT hr = dxgiFactory->CreateSwapChainForHwnd(commandQueue.Get(), win_->hwnd, &swapChainDesc, nullptr, nullptr,
 		reinterpret_cast<IDXGISwapChain1**>(swapChain.GetAddressOf()));
 	assert(SUCCEEDED(hr));
 	WinAPI::Log("Complete create SwapChain!!!\n");// 生成完了のログをだす
@@ -200,7 +177,7 @@ void DirectXCommon::InitializeCommand() {
 
 	// コマンドキューを生成する
 	D3D12_COMMAND_QUEUE_DESC commandQueueDesc{};
-	hr = device_->CreateCommandQueue(&commandQueueDesc,
+	HRESULT hr = device_->CreateCommandQueue(&commandQueueDesc,
 		IID_PPV_ARGS(&commandQueue));
 	// コマンドキューの生成がうまく行かなかったら起動できない
 	assert(SUCCEEDED(hr));
@@ -226,7 +203,7 @@ void DirectXCommon::InitializeDXC() {
 
 	dxcUtils = nullptr;
 	dxcCompiler = nullptr;
-	hr = DxcCreateInstance(CLSID_DxcUtils, IID_PPV_ARGS(&dxcUtils));
+	HRESULT hr = DxcCreateInstance(CLSID_DxcUtils, IID_PPV_ARGS(&dxcUtils));
 	assert(SUCCEEDED(hr));
 	WinAPI::Log("Complete create dxcUtils!!!\n");// 生成完了のログをだす
 	hr = DxcCreateInstance(CLSID_DxcCompiler, IID_PPV_ARGS(&dxcCompiler));
@@ -298,7 +275,7 @@ void DirectXCommon::InitializePSOP() {
 	// シリアライズしてバイナリにする
 	Microsoft::WRL::ComPtr<ID3DBlob> particleSignatureBlob = nullptr;
 	Microsoft::WRL::ComPtr<ID3DBlob> particleErrorBlob = nullptr;
-	hr = D3D12SerializeRootSignature(&particleRootSignatureDesc,
+	HRESULT hr = D3D12SerializeRootSignature(&particleRootSignatureDesc,
 		D3D_ROOT_SIGNATURE_VERSION_1,
 		&particleSignatureBlob,
 		&particleErrorBlob
@@ -398,50 +375,6 @@ void DirectXCommon::InitializePSOP() {
 
 }
 
-/// レンダーターゲット生成
-void DirectXCommon::CreateFinalRenderTargets() {
-
-	// RTV用ディスクリプタヒープの生成
-	rtvDescriptorHeap = CreateDescriptorHeap(device_, D3D12_DESCRIPTOR_HEAP_TYPE_RTV, 2, false);
-
-	// RTVの設定
-	rtvDesc;
-	rtvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB; // 出力結果をSRGBに変換して書き込む
-	rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D; // 2Dテクスチャとして書き込む
-	// ディスクリプタの先頭を取得する
-	D3D12_CPU_DESCRIPTOR_HANDLE rtvStartHandle = rtvDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
-	// RTVを2つ作るのでディスクリプタを２つ用意
-
-	// まずは1つ目を作る
-	rtvHandles[0] = rtvStartHandle;
-	device_->CreateRenderTargetView(swapChainResources[0].Get(), &rtvDesc, rtvHandles[0]);
-	// 2つ目のディスクリプタハンドルを得る(手動で)
-	rtvHandles[1].ptr = rtvHandles[0].ptr + device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-	// 2つ目を作る
-	device_->CreateRenderTargetView(swapChainResources[1].Get(), &rtvDesc, rtvHandles[1]);
-
-}
-
-
-/// ディープステンシルビューの生成
-void DirectXCommon::CreateDepthStencilView() {
-
-	// リソース生成
-	depthStencilTextureResource_ = Resource::CreateDeapStencilTextureResource(device_, win_->kClientWidth, win_->kClientHeight);
-
-	// DSV用のヒープでディスクリプタの数は1。DSVはシェーダー内で触るものではないので、ShaderVisibleはfalse
-	dsvDescriptorHeap_ = CreateDescriptorHeap(device_, D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1, false);
-
-	// DSVの設定
-	dsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;// Format。基本的にはResourceに合わせる
-	dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;//2Dテクスチャ
-	// DSVHeapの先頭にDSVをつくる
-	device_->CreateDepthStencilView(depthStencilTextureResource_.Get(),
-		&dsvDesc, dsvDescriptorHeap_->GetCPUDescriptorHandleForHeapStart());
-
-	dsvHandle = dsvDescriptorHeap_->GetCPUDescriptorHandleForHeapStart();
-
-}
 
 ///
 void DirectXCommon::InitializeViewPort() {
@@ -473,7 +406,7 @@ void DirectXCommon::CreateFence() {
 
 	// 初期値0でFenceを作る
 	fenceValue = 0;
-	hr = device_->CreateFence(fenceValue, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence));
+	HRESULT hr = device_->CreateFence(fenceValue, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence));
 	assert(SUCCEEDED(hr));
 	// FenceのSignalを待つためのイベントを作成する
 	fenceEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
@@ -503,15 +436,15 @@ void DirectXCommon::DrawBegin() {
 
 
 	// 描画先のRTVとDSVを設定する
-	commandList->OMSetRenderTargets(1, &rtvHandles[backBufferIndex], false, &dsvHandle);
+	commandList->OMSetRenderTargets(1, &rtv_->rtvHandles[backBufferIndex], false, &dsv_->dsvHandle);
 
 	// 指定した深度で画面全体をクリアにする
 	// フレームの最初に最も遠く(1.0)でクリアする
-	commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+	commandList->ClearDepthStencilView(dsv_->dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 
 	// 指定した色で画面全体をクリアにする
 	float clearColor[] = { 0.1f,0.25f,0.5f,1.0f };	// 青っぽい色 RGBAの順
-	commandList->ClearRenderTargetView(rtvHandles[backBufferIndex], clearColor, 0, nullptr);
+	commandList->ClearRenderTargetView(rtv_->rtvHandles[backBufferIndex], clearColor, 0, nullptr);
 
 	// 描画用のディスクリプタヒープの設定
 	ID3D12DescriptorHeap* descriptorHeaps[] = { srv_->srvDescriptorHeap.Get() };
@@ -543,7 +476,7 @@ void DirectXCommon::DrawEnd() {
 	commandList->ResourceBarrier(1, &barrier);
 
 	// コマンドリストの内容を確定させる。すべてのコマンドを積んでからCloseすること
-	hr = commandList->Close();
+	HRESULT hr = commandList->Close();
 	assert(SUCCEEDED(hr));
 
 	// GPUにコマンドリストの実行を行わせる
@@ -599,7 +532,7 @@ Microsoft::WRL::ComPtr<ID3D12Resource> DirectXCommon::CreateBufferResource(ID3D1
 	// バッファの場合はこれにする決まり
 	vertexResouceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
 
-	hr = device->CreateCommittedResource(&uploadHeapProperties, D3D12_HEAP_FLAG_NONE,
+	HRESULT hr = device->CreateCommittedResource(&uploadHeapProperties, D3D12_HEAP_FLAG_NONE,
 		&vertexResouceDesc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr,
 		IID_PPV_ARGS(&result_));
 	assert(SUCCEEDED(hr));
@@ -616,7 +549,7 @@ Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> DirectXCommon::CreateDescriptorHeap
 	descriptorHeapDesc.Type = heapType;
 	descriptorHeapDesc.NumDescriptors = numDescriptors;
 	descriptorHeapDesc.Flags = shaderVisible ? D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE : D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-	hr = device->CreateDescriptorHeap(&descriptorHeapDesc, IID_PPV_ARGS(&resultDescriptorHeap));
+	HRESULT hr = device->CreateDescriptorHeap(&descriptorHeapDesc, IID_PPV_ARGS(&resultDescriptorHeap));
 	// ディスクリプタヒープが生成できなかったら起動できない
 	assert(SUCCEEDED(hr));
 	// 生成完了のログをだす

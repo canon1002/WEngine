@@ -1,6 +1,9 @@
 #pragma once
 #include "GameEngine/Base/WinApp/WinAPI.h"
+#include "RTV.h"
 #include "SRV.h"
+#include "DSV.h"
+
 #include "Externals/DirectXTex/DirectXTex.h"
 #include <chrono>
 #include <thread>
@@ -66,15 +69,7 @@ public: // ** メンバ関数 ** //
 	/// </summary>
 	void InitializeCommand();
 
-	/// <summary>
-	/// レンダーターゲット生成
-	/// </summary>
-	void CreateFinalRenderTargets();
 
-	/// <summary>
-	/// ディープステンシルビューの生成
-	/// </summary>
-	void CreateDepthStencilView();
 
 	/// <summary>
 	/// 深度バッファ生成
@@ -140,30 +135,25 @@ public: // ** メンバ変数 ** //
 	
 	// 外部
 	WinAPI* win_ = nullptr;
-	SRV* srv_ = nullptr;
+	std::unique_ptr<RTV> rtv_ = nullptr;
+	std::unique_ptr<SRV> srv_ = nullptr;
+	std::unique_ptr<DSV> dsv_ = nullptr;
 
 	// DXGIファクトリーの生成
 	Microsoft::WRL::ComPtr <IDXGIFactory7> dxgiFactory = nullptr;
 	// D3D12Deviceの生成
 	Microsoft::WRL::ComPtr <ID3D12Device> device_ = nullptr;
-	//
-	HRESULT hr;
-
-#ifdef _DEBUG
-	//ID3D12Debug1* debugController = nullptr;
-#endif // _DEBUG
-
 	// コマンドアロケータ
 	Microsoft::WRL::ComPtr < ID3D12CommandAllocator> commandAllocator = nullptr;
 	// コマンドキュー
 	Microsoft::WRL::ComPtr < ID3D12CommandQueue> commandQueue = nullptr;
 	// コマンドリスト
 	Microsoft::WRL::ComPtr < ID3D12GraphicsCommandList> commandList = nullptr;
-	// スワップチェインを生成する
+	// スワップチェイン
 	Microsoft::WRL::ComPtr < IDXGISwapChain4> swapChain = nullptr;
 	// スワップチェーンデスク
 	DXGI_SWAP_CHAIN_DESC1 swapChainDesc{};
-	// SwapChainからResourceを引っ張ってくる
+	// SwapChainResource
 	Microsoft::WRL::ComPtr < ID3D12Resource> swapChainResources[2] = { nullptr };
 
 	// TransitionBarrierの設定
@@ -177,20 +167,6 @@ public: // ** メンバ変数 ** //
 	// 返す用の変数を宣言
 	Microsoft::WRL::ComPtr<ID3D12Resource> result_ = nullptr;
 
-	// RTVを2つ作るのでディスクリプタを２つ用意
-	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandles[2];
-	// RTVの設定
-	D3D12_RENDER_TARGET_VIEW_DESC rtvDesc{};
-	// RTV用ディスクリプタヒープ
-	Microsoft::WRL::ComPtr < ID3D12DescriptorHeap> rtvDescriptorHeap = nullptr;
-	// DSV用デスクリプタヒープ
-	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> dsvDescriptorHeap_ = nullptr;
-	// DSVの設定
-	D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc{};
-	//　ディープステンシル用のリソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> depthStencilTextureResource_ = nullptr;
-	//　ディスクリプタ
-	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle;
 
 	// グラフィックパイプライン
 	Microsoft::WRL::ComPtr <ID3D12PipelineState> pGraphicsPipelineState = nullptr;

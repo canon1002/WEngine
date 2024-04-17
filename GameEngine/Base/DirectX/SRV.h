@@ -14,45 +14,29 @@ struct TextureData {
 	Microsoft::WRL::ComPtr<ID3D12Resource> intermediaResource = nullptr;
 };
 
-class SRV
-{
-private:
+class SRV{
+public: // -- public メンバ関数 -- // 
 
 	SRV() = default;
 	~SRV() = default;
-	// コピーコンストラクタと演算子オーバーロードの禁止
-	SRV(const SRV& obj) = delete;
-	SRV& operator=(const SRV& obj) = delete;
-
-public: // ** 静的メンバ関数 ** //
-
-	// インスタンスを取得
-	static SRV* GetInstance();
-	// 開放する
-	void Finalize();
-
-public:
 
 	void Initialize(DirectXCommon* dx);
 	void CreateShaderResourceView();
 	void CreateSRVDescriptorHeap();
 	int LoadTexture(const std::string filePath);
-	int SetStructuredBuffer(
-		int32_t kNumInstance, Microsoft::WRL::ComPtr<ID3D12Resource> instancingResource
-	);
+	int SetStructuredBuffer(int32_t kNumInstance, Microsoft::WRL::ComPtr<ID3D12Resource> instancingResource);
 	
 	// メタデータ取得
 	const DirectX::TexMetadata& GetMetaData(uint32_t textureId);
 
-private:
+private: // -- private メンバ関数 -- // 
 
-	// インスタンス
-	static SRV* instance;
 
-	// ポインタ
-	DirectXCommon* dxCommon_;
+	// コピーコンストラクタと演算子オーバーロードの禁止
+	SRV(const SRV& obj) = delete;
+	SRV& operator=(const SRV& obj) = delete;
 
-public:
+public: // -- public メンバ変数 -- // 
 
 	// SRVはディスクリプタを128つ
 	D3D12_CPU_DESCRIPTOR_HANDLE srtHandles[128];
@@ -69,5 +53,10 @@ public:
 
 	D3D12_CPU_DESCRIPTOR_HANDLE instancingSrvHandleCPU;
 	D3D12_GPU_DESCRIPTOR_HANDLE instancingSrvHandleGPU;
+
+private: // -- private メンバ変数 -- // 
+
+	// ポインタ
+	DirectXCommon* dxCommon_;
 
 };

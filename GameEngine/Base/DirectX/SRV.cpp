@@ -4,27 +4,6 @@
 #include "GameEngine/Math/Math.h"
 #include "GameEngine/Base/Debug/ImGuiManager.h"
 
-// staticメンバ変数で宣言したインスタンスを初期化
-SRV* SRV::instance = nullptr;
-
-// インスタンスを取得
-SRV* SRV::GetInstance() {
-	// 関数内staticは初めて通ったときのみ実行される
-	if (instance == nullptr) {
-		instance = new SRV;
-	}
-	return instance;
-}
-
-// 消去
-void SRV::Finalize() {
-	
-	srvDescriptorHeap.Reset();
-	// インスタンスを解放
-	delete instance;
-	// deleteあとにnullptrを代入する
-	instance = nullptr;
-}
 
 void SRV::Initialize(DirectXCommon* dx) {
 	dxCommon_ = dx;
