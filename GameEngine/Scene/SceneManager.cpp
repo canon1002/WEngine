@@ -25,7 +25,7 @@ void SceneManager::Init(WinAPI* winApp, DirectXCommon* dxCommon){
 	// モデルマネージャー
 	modelManager_ = std::make_unique<ModelManager>();
 	// スプライト基盤クラス
-	spriteCommon_ = std::make_unique<SpriteCommon>();
+	spriteCommon_ = std::make_unique<SpriteAdministrator>();
 
 	// 各シーンの配列
 	sceneArr_[TITLE] = std::make_unique<TitleScene>();
@@ -100,6 +100,9 @@ int SceneManager::Run() {
 
 		// 描画前処理
 		dxCommon_->DrawBegin();
+
+		modelManager_->PostDraw();
+
 		/// 描画処理
 		sceneArr_[currentSceneNo_]->Draw();
 	

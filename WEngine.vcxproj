@@ -95,6 +95,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <Optimization>MinSpace</Optimization>
+      <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -123,7 +124,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="GameEngine\Math\Vec2.cpp" />
     <ClCompile Include="GameEngine\Math\Vec3.cpp" />
     <ClCompile Include="GameEngine\Math\Vec4.cpp" />
-    <ClCompile Include="GameEngine\Object\Sprite\SpriteCommon.cpp" />
+    <ClCompile Include="GameEngine\Object\Sprite\SpriteAdministrator.cpp" />
     <ClCompile Include="GameEngine\Object\Camera\CameraCommon.cpp" />
     <ClCompile Include="GameEngine\Object\Camera\MainCamera.cpp" />
     <ClCompile Include="GameEngine\Object\Light\DirectionalLight.cpp" />
@@ -155,6 +156,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="GameEngine\Object\3d\Object3d.cpp" />
     <ClCompile Include="GameEngine\Object\Model\ModelManager.cpp" />
     <ClCompile Include="GameEngine\Object\Particle\ParticleManager.cpp" />
+    <ClCompile Include="ObjectAdministrator.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameEngine\Base\Engine.h" />
@@ -173,7 +175,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="GameEngine\Math\Vec2.h" />
     <ClInclude Include="GameEngine\Math\Vec3.h" />
     <ClInclude Include="GameEngine\Math\Vec4.h" />
-    <ClInclude Include="GameEngine\Object\Sprite\SpriteCommon.h" />
+    <ClInclude Include="GameEngine\Object\Sprite\SpriteAdministrator.h" />
     <ClInclude Include="GameEngine\Object\Camera\CameraCommon.h" />
     <ClInclude Include="GameEngine\Object\Camera\MainCamera.h" />
     <ClInclude Include="GameEngine\Object\Light\DirectionalLight.h" />
@@ -206,6 +208,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="GameEngine\Input\InputManager.h" />
     <ClInclude Include="GameEngine\Input\Keyboard.h" />
     <ClInclude Include="GameEngine\Object\Particle\ParticleManager.h" />
+    <ClInclude Include="ObjectAdministrator.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt" />

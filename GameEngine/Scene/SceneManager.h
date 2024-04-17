@@ -13,7 +13,7 @@
 #include "GameEngine/Resource/Texture/Resource.h"
 #include "GameEngine/Object/Sprite/Sphere.h"
 #include "GameEngine/object/Model/ModelManager.h"
-#include "GameEngine/object/Sprite/SpriteCommon.h"
+#include "GameEngine/object/Sprite/SpriteAdministrator.h"
 #include "GameEngine/Object/Particle/VoxelParticle.h"
 #include "GameEngine/Input/InputManager.h"
 #include "GameEngine/Resource/Audio/Audio.h"
@@ -51,7 +51,7 @@ private:
 	// モデルマネージャー
 	std::unique_ptr<ModelManager> modelManager_;
 	// スプライト基盤クラス
-	std::unique_ptr<SpriteCommon> spriteCommon_;
+	std::unique_ptr<SpriteAdministrator> spriteCommon_;
 
 public:
 

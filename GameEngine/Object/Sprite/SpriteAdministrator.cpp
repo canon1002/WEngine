@@ -1,16 +1,16 @@
-#include "SpriteCommon.h"
+#include "SpriteAdministrator.h"
 
-void SpriteCommon::Finalize(){
+void SpriteAdministrator::Finalize(){
 	graphicsPipelineState.Reset();
 	rootSignature.Reset();
 }
 
-void SpriteCommon::Initialize(DirectXCommon* dxComoon){
+void SpriteAdministrator::Initialize(DirectXCommon* dxComoon){
 	dxCommon_ = dxComoon;
 	CreateGraphicsPipeline();
 }
 
-void SpriteCommon::CreateRootSignature()
+void SpriteAdministrator::CreateRootSignature()
 {
 	// RootSignatureを生成する
 	D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature{};
@@ -76,7 +76,7 @@ void SpriteCommon::CreateRootSignature()
 	assert(SUCCEEDED(dxCommon_->hr));
 }
 
-void SpriteCommon::CreateGraphicsPipeline()
+void SpriteAdministrator::CreateGraphicsPipeline()
 {
 	// ルートシグネチャを作成
 	CreateRootSignature();
@@ -171,7 +171,7 @@ void SpriteCommon::CreateGraphicsPipeline()
 
 }
 
-void SpriteCommon::DrawBegin()
+void SpriteAdministrator::PostDraw()
 {
 	// RootSignatureを設定。PSOに設定しているが、別途設定が必要
 	dxCommon_->commandList->SetGraphicsRootSignature(rootSignature.Get());

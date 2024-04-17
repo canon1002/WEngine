@@ -19,9 +19,9 @@ public: // メンバ関数
 	~Object3d();
 
 	///	初期化
-	void Init(DirectXCommon* dxCommon,CameraCommon* camera, ModelManager* modelManager);
+	void Init(DirectXCommon* dxCommon, ModelManager* modelManager);
 	/// 更新
-	void Update();
+	void Update(const CameraCommon& camera);
 	/// 描画
 	void Draw();
 
@@ -31,7 +31,6 @@ public: // メンバ関数
 	void SetRotate(Vec3 rotate) { worldTransform_.rotation = rotate; }
 	void SetTranslate(Vec3 translate) { worldTransform_.translation = translate; }
 	void SetWorldTransform(WorldTransform w) { worldTransform_ = w; }
-	void SetCamera(CameraCommon* camera) { camera_ = camera; }
 	const WorldTransform& GetWorldTransform()const  { return worldTransform_; }
 
 	Model* GetModel() { return model_; }
@@ -39,7 +38,6 @@ public: // メンバ関数
 private: // メンバ変数
 
 	// 外部ポインタ
-	CameraCommon* camera_ = nullptr;
 	DirectXCommon* dxCommon_ = nullptr;
 	Object3dCommon* object3dCommon_ = nullptr;
 	Model* model_ = nullptr;

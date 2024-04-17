@@ -1,15 +1,15 @@
 #pragma once
 #include "GameEngine/Base/DirectX/DirectXCommon.h"
 
-class SpriteCommon{
+class SpriteAdministrator{
 
 public: // メンバ関数
 
 
 	// コンストラクタ
-	SpriteCommon() = default;
+	SpriteAdministrator() = default;
 	// デストラクタ
-	~SpriteCommon() = default;
+	~SpriteAdministrator() = default;
 	
 	// 終了処理
 	void Finalize();
@@ -19,7 +19,7 @@ public: // メンバ関数
 	void CreateRootSignature();
 	void CreateGraphicsPipeline();
 	void Update();
-	void DrawBegin();
+	void PostDraw();
 
 private: // メンバ変数
 
@@ -28,7 +28,7 @@ private: // メンバ変数
 	// グラフィックパイプライン
 	Microsoft::WRL::ComPtr <ID3D12PipelineState> graphicsPipelineState = nullptr;
 	// ルートシグネチャー
-	Microsoft::WRL::ComPtr < ID3D12RootSignature> rootSignature = nullptr;
+	Microsoft::WRL::ComPtr <ID3D12RootSignature> rootSignature = nullptr;
 
 };
 

@@ -21,5 +21,7 @@ public:
 
 private:
 
+	std::unique_ptr<Object3d> testObject_;
+
 };
 

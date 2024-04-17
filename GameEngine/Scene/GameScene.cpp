@@ -1,6 +1,6 @@
 #include "GameScene.h"
 #include "GameEngine/Input/InputManager.h"
-#include "GameEngine/Object/Sprite/SpriteCommon.h"
+#include "GameEngine/Object/Sprite/SpriteAdministrator.h"
 #include <cassert>
 #include <fstream>
 

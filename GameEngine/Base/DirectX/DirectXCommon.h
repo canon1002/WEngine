@@ -7,14 +7,12 @@
 
 // 前方宣言
 struct Vector4;
-struct Matrix4x4;
 struct ModelData;
 
 
 // リソースリークチェック
 struct D3DResourceLeakChecker {
-	~D3DResourceLeakChecker()
-	{
+	~D3DResourceLeakChecker(){
 		Microsoft::WRL::ComPtr<IDXGIDebug1> debug;
 		if (SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&debug)))) {
 			debug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_ALL);
@@ -96,7 +94,6 @@ public: // ** メンバ関数 ** //
 	/// <summary>
 	/// 
 	/// </summary>
-	void InitializePSO();
 	void InitializePSOP();
 	
 	/// <summary>
@@ -196,10 +193,8 @@ public: // ** メンバ変数 ** //
 	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle;
 
 	// グラフィックパイプライン
-	Microsoft::WRL::ComPtr <ID3D12PipelineState> graphicsPipelineState = nullptr;
 	Microsoft::WRL::ComPtr <ID3D12PipelineState> pGraphicsPipelineState = nullptr;
 	// ルートシグネチャー
-	Microsoft::WRL::ComPtr < ID3D12RootSignature> rootSignature = nullptr;
 	Microsoft::WRL::ComPtr < ID3D12RootSignature> particleRootSignature = nullptr;
 
 	// dxCompilerを初期化

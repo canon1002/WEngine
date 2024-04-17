@@ -193,7 +193,7 @@
     <ClCompile Include="GameEngine\Scene\ResultScene.cpp">
       <Filter>Engine\scene</Filter>
     </ClCompile>
-    <ClCompile Include="GameEngine\Object\Sprite\SpriteCommon.cpp">
+    <ClCompile Include="GameEngine\Object\Sprite\SpriteAdministrator.cpp">
       <Filter>Engine\object\2d</Filter>
     </ClCompile>
     <ClCompile Include="GameEngine\Object\Sprite\Sprite.cpp">
@@ -214,6 +214,7 @@
     <ClCompile Include="GameEngine\Base\Debug\ImGuiManager.cpp" />
     <ClCompile Include="GameEngine\Base\Engine.cpp" />
     <ClCompile Include="GameEngine\Object\Particle\ParticleManager.cpp" />
+    <ClCompile Include="ObjectAdministrator.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameEngine\Base\WinApp\WinAPI.h">
@@ -336,7 +337,7 @@
     <ClInclude Include="GameEngine\Scene\ResultScene.h">
       <Filter>Engine\scene</Filter>
     </ClInclude>
-    <ClInclude Include="GameEngine\Object\Sprite\SpriteCommon.h">
+    <ClInclude Include="GameEngine\Object\Sprite\SpriteAdministrator.h">
       <Filter>Engine\object\2d</Filter>
     </ClInclude>
     <ClInclude Include="GameEngine\Object\Sprite\Sprite.h">
@@ -355,6 +356,7 @@
     <ClInclude Include="GameEngine\Base\Debug\ImGuiManager.h" />
     <ClInclude Include="GameEngine\Base\Engine.h" />
     <ClInclude Include="GameEngine\Object\Particle\ParticleManager.h" />
+    <ClInclude Include="ObjectAdministrator.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt">
