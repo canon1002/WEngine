@@ -12,11 +12,12 @@
 #include "GameEngine/Object/Sprite/Sprite.h"
 #include "GameEngine/Resource/Texture/Resource.h"
 #include "GameEngine/Object/Sprite/Sphere.h"
-#include "GameEngine/object/Model/ModelManager.h"
-#include "GameEngine/object/Sprite/SpriteAdministrator.h"
+
 #include "GameEngine/Object/Particle/VoxelParticle.h"
 #include "GameEngine/Input/InputManager.h"
 #include "GameEngine/Resource/Audio/Audio.h"
+
+#include "GameEngine/Object/ObjectAdministrator.h"
 
 class SceneManager
 {
@@ -48,10 +49,9 @@ private:
 	Audio* audio_;
 	// メインカメラ
 	std::unique_ptr<MainCamera> mainCamera_ = nullptr;
-	// モデルマネージャー
-	std::unique_ptr<ModelManager> modelManager_;
-	// スプライト基盤クラス
-	std::unique_ptr<SpriteAdministrator> spriteCommon_;
+	
+	// オブジェクト管理者クラス
+	ObjectAdministrator* objectAdmin_;
 
 public:
 

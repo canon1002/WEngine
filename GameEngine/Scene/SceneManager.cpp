@@ -22,10 +22,9 @@ void SceneManager::Init(WinAPI* winApp, DirectXCommon* dxCommon){
 	audio_ = Audio::GetInstance();
 	// メインカメラ
 	mainCamera_ = std::make_unique<MainCamera>();
-	// モデルマネージャー
-	modelManager_ = std::make_unique<ModelManager>();
-	// スプライト基盤クラス
-	spriteCommon_ = std::make_unique<SpriteAdministrator>();
+	
+	// オブジェクト管理者クラス
+	objectAdmin_ = ObjectAdministrator::GetInstance();
 
 	// 各シーンの配列
 	sceneArr_[TITLE] = std::make_unique<TitleScene>();
@@ -52,9 +51,7 @@ int SceneManager::Run() {
 	mainCamera_->Initialize(winApp_);
 	mainCamera_->worldTransform_.translation = { 0.0f,0.0f,-6.0f };
 	
-
-	modelManager_->Initialize(dxCommon_,mainCamera_.get());
-	spriteCommon_->Initialize(dxCommon_);
+	objectAdmin_->Init(dxCommon_);
 
 
 	// Windowsのメッセージ処理があればゲームループを抜ける
@@ -101,11 +98,14 @@ int SceneManager::Run() {
 		// 描画前処理
 		dxCommon_->DrawBegin();
 
-		modelManager_->PostDraw();
+		//modelManager_->PreDraw();
 
 		/// 描画処理
 		sceneArr_[currentSceneNo_]->Draw();
-	
+		
+		// 最終的にここだけで描画処理を呼び出したい
+		objectAdmin_->Draw();
+
 #ifdef _DEBUG
 		// ImGuiの描画
 		imGuiManager_->Draw();
@@ -132,13 +132,8 @@ int SceneManager::Run() {
 	sceneArr_[STAGE].reset();
 	sceneArr_[CLEAR].reset();
 	
-	
-	spriteCommon_->Finalize();
-	modelManager_->Finalize();
 	inputManager_->Finalize();
 	audio_->Finalize();
-
-	
 
 	return 0;
 }

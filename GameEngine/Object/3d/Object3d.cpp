@@ -13,10 +13,11 @@ Object3d::~ Object3d() {
 	//delete model_;
 }
 
-void Object3d::Init(DirectXCommon* dxCommon,ModelManager* modelManager) {
 
-	dxCommon_ = dxCommon;
-	modelManager_ = modelManager;
+void Object3d::Init() {
+
+	dxCommon_ = DirectXCommon::GetInstance();
+	modelManager_ = ModelManager::GetInstance();
 	worldTransform_.scale = { 1.0f,1.0f,1.0f };
 	worldTransform_.rotation = { 0.0f,0.0f,0.0f };
 	worldTransform_.translation = { 0.0f,0.0f,0.0f };
@@ -25,7 +26,7 @@ void Object3d::Init(DirectXCommon* dxCommon,ModelManager* modelManager) {
 
 }
 
-void Object3d::Update(const CameraCommon& camera) {
+void Object3d::Update(const CameraCommon* camera) {
 
 	//ImGui::Begin("Sphere");
 	//ImGui::SliderAngle("RotateX", &worldTransform_.rotate.x);
@@ -39,11 +40,11 @@ void Object3d::Update(const CameraCommon& camera) {
 
 
 	// カメラ行列のビュー行列(カメラのワールド行列の逆行列)
-	viewM = camera.GetViewMatrix();
+	viewM = camera->GetViewMatrix();
 	// 正規化デバイス座標系(NDC)に変換(正射影行列をかける)
-	pespectiveM = camera.GetProjectionMatrix();
+	pespectiveM = camera->GetProjectionMatrix();
 	// WVPにまとめる
-	wvpM = camera.GetViewProjectionMatrix(); 
+	wvpM = camera->GetViewProjectionMatrix(); 
 	// 矩形のワールド行列とWVP行列を掛け合わした行列を代入
 	wvpData->WVP = Multiply(worldTransform_.GetWorldMatrix(), wvpM);
 	wvpData->World = worldTransform_.GetWorldMatrix();
@@ -87,5 +88,6 @@ void Object3d::CreateTransformationRsource() {
 void Object3d::SetModel(const std::string& filepath)
 {
 	// モデルを検索してセット
+	modelManager_->LoadModel(filepath);
 	model_ = modelManager_->FindModel(filepath);
 }

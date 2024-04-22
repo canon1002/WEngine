@@ -19,19 +19,31 @@ WorldTransform::WorldTransform(Vec3 t, Vec3 r, Vec3 s){
 	translation = t;
 	rotation = r;
 	scale = s;
+	parent_ = nullptr;
+}
+
+WorldTransform::~WorldTransform(){
+	if (parent_ != nullptr) {
+		delete parent_;
+	}
 }
 
 void WorldTransform::Init() {
 	scale = { 1.0f,1.0f,1.0f };
 	rotation = { 0.0f,0.0f,0.0f };
 	translation = { 0.0f,0.0f,0.0f };
+	parent_ = nullptr;
 }
 
 Mat44 WorldTransform::GetWorldMatrix() const{
 	Mat44 result = MakeAffineMatrix(scale, rotation, translation);
+	if (parent_ == nullptr) {
+		
+		return result;
+	}
 	// 親があれば親のワールド行列を掛ける
-	if (parent_) {
-		result = Multiply(result, parent_->GetWorldMatrix());
+	if (parent_ != nullptr) {
+		//result = Multiply(result, parent_->GetWorldMatrix());
 	}
 	return result;
 }

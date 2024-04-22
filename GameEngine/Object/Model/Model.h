@@ -5,14 +5,16 @@
 #include "GameEngine/Object/Light/DirectionalLight.h"
 #include "GameEngine/Object/Camera/CameraCommon.h"
 
-class DirectXCommon;
 
 class Model
 {
 public:
 
+	
+
 	~Model();
 	void Initialize(DirectXCommon* dxCommon,CameraCommon* camera, const std::string& directrypath, const std::string& filename);
+	void Initialize(const std::string& directrypath, const std::string& filename);
 	void Update();
 	void Draw();
 
@@ -21,7 +23,7 @@ public:
 
 	void SetCameraPosition(CameraCommon camera) { cameraData->worldPosition = camera.GetTranslate(); }
 
-private:
+public:
 
 	// ModelCommonのポインタ
 	//ModelCommon* modelCommon_ = nullptr;
@@ -49,9 +51,6 @@ public:
 
 	// マテリアルデータ
 	Material* materialData_ = nullptr;
-
-private:
-
 
 	// Light用のリソースデータを作る
 	Microsoft::WRL::ComPtr<ID3D12Resource> directionalLightResource = nullptr;

@@ -19,9 +19,9 @@ public: // メンバ関数
 	~Object3d();
 
 	///	初期化
-	void Init(DirectXCommon* dxCommon, ModelManager* modelManager);
+	void Init();
 	/// 更新
-	void Update(const CameraCommon& camera);
+	void Update(const CameraCommon* camera);
 	/// 描画
 	void Draw();
 
@@ -35,7 +35,7 @@ public: // メンバ関数
 
 	Model* GetModel() { return model_; }
 
-private: // メンバ変数
+public: // メンバ変数
 
 	// 外部ポインタ
 	DirectXCommon* dxCommon_ = nullptr;

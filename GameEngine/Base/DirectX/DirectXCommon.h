@@ -35,6 +35,10 @@ public:
 	DirectXCommon() = default;
 	~DirectXCommon() = default;
 
+	// シングルトン インスタンス取得
+	static DirectXCommon* GetInstance();
+
+
 	// FPS固定初期化
 	void InitFixFPS();
 	// FPS固定更新
@@ -68,13 +72,6 @@ public: // ** メンバ関数 ** //
 	/// コマンド関連初期化
 	/// </summary>
 	void InitializeCommand();
-
-
-
-	/// <summary>
-	/// 深度バッファ生成
-	/// </summary>
-	void CreateDepthBuffer();
 
 	/// <summary>
 	/// フェンス生成
@@ -186,4 +183,10 @@ public: // ** メンバ変数 ** //
 
 	// 記録時間(FPS固定用)
 	std::chrono::steady_clock::time_point reference_;
+
+private:
+
+	// インスタンス
+	static DirectXCommon* instance;
+
 };

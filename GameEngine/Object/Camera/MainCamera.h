@@ -13,6 +13,9 @@ public: // -- public メンバ関数 -- //
 	MainCamera() = default;
 	~MainCamera() = default;
 
+	// インスタンス取得
+	static MainCamera* GetInstance();
+
 	/// <summary>
 	/// 初期化処理
 	/// </summary>
@@ -30,5 +33,9 @@ private: // -- private メンバ関数 -- //
 	MainCamera(const MainCamera& obj) = delete;
 	MainCamera& operator=(const MainCamera& obj) = delete;
 	
+private: // -- private メンバ変数 -- //
+
+	static MainCamera* instance;
+
 };
 

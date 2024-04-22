@@ -9,7 +9,7 @@ public: // -- public メンバ関数 -- //
 	WorldTransform(Vec3 t);
 	WorldTransform(Vec3 t, Vec3 r);
 	WorldTransform(Vec3 t, Vec3 r, Vec3 s);
-	~WorldTransform() = default;
+	~WorldTransform();
 
 	/// <summary>
 	/// 初期化

@@ -3,6 +3,19 @@
 #include "GameEngine/Object/Model/Model.h"
 #include "GameEngine/Math/Math.h"
 
+// staticメンバ変数で宣言したインスタンスを初期化
+DirectXCommon* DirectXCommon::instance = nullptr;
+
+// インスタンスを取得
+DirectXCommon* DirectXCommon::GetInstance() {
+	// 関数内staticは初めて通ったときのみ実行される
+	//static DirectXCommon* instance = nullptr;
+	if (instance == nullptr) {
+		instance = new DirectXCommon;
+	}
+	return instance;
+}
+
 void DirectXCommon::Initialize(WinAPI* win) {
 
 	// FPS固定
@@ -394,11 +407,6 @@ void DirectXCommon::InitializeViewPort() {
 	scissorRect.right = win_->kClientWidth;
 	scissorRect.top = 0;
 	scissorRect.bottom = win_->kClientHeight;
-}
-
-/// 深度バッファ生成
-void DirectXCommon::CreateDepthBuffer() {
-
 }
 
 /// フェンス生成

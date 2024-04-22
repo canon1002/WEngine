@@ -1,5 +1,6 @@
 #pragma once
 #include <unordered_map>
+#include <map>
 #include <sstream>
 #include "Model.h"
 
@@ -9,12 +10,25 @@ public: // -- public メンバ関数 -- //
 	ModelManager() = default;
 	~ModelManager() = default;
 
+	static ModelManager* GetInstance();
+
 	void Finalize();
 	void Initialize(DirectXCommon* dxCommon, CameraCommon* camera);
 	void LoadModel(const std::string& filepath);
 	Model* FindModel(const std::string filepath);
 
-	void PostDraw();
+	static std::shared_ptr<Model> Create(const std::string& filepath, const std::string filename);
+
+	/// <summary>
+	///  描画前処理
+	/// </summary>
+	void PreDraw();
+	
+	/// <summary>
+	///  描画処理
+	/// </summary>
+	void Draw();
+
 
 private: // -- private メンバ関数 -- //
 
@@ -32,8 +46,10 @@ private: // -- private メンバ関数 -- //
 	ModelManager(const ModelManager& obj) = delete;
 	ModelManager& operator=(const ModelManager& obj) = delete;
 
-
 private: // -- private メンバ変数 -- //
+
+	//
+	static std::map<std::string, std::shared_ptr<Model>> sModels_;
 
 	// ポインタ
 	DirectXCommon* dxCommon_ = nullptr;
@@ -46,6 +62,9 @@ private: // -- private メンバ変数 -- //
 	Microsoft::WRL::ComPtr <ID3D12PipelineState> graphicsPipelineState = nullptr;
 	// ルートシグネチャー
 	Microsoft::WRL::ComPtr <ID3D12RootSignature> rootSignature = nullptr;
+
+	// インスタンス
+	static ModelManager* instance;
 
 };
 

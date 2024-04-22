@@ -20,6 +20,19 @@ void Model::Initialize(DirectXCommon* dxCommon,CameraCommon* camera,const std::s
 
 }
 
+void Model::Initialize(const std::string& directrypath, const std::string& filename){
+
+	dxCommon_ = DirectXCommon::GetInstance();
+	camera_ = MainCamera::GetInstance();
+
+	// モデル読み込み
+	modelData = Resource::LoadObjFile(directrypath, filename);
+
+	CreateVertexResource();
+	CreateMaterialResource();
+
+}
+
 void Model::Update()
 {
 

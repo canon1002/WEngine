@@ -10,7 +10,7 @@ class Engine{
 public:
 	void Run();
 	std::unique_ptr<WinAPI>winApp_ = nullptr;
-	std::unique_ptr<DirectXCommon>dxCommon_ = nullptr;
+	DirectXCommon* dxCommon_ = nullptr;
 	std::unique_ptr<SceneManager>sceneManager_ = nullptr;
 
 };

@@ -1,6 +1,25 @@
 #include "ModelManager.h"
 
-void ModelManager::Finalize() {}
+std::map<std::string, std::shared_ptr<Model>> ModelManager::sModels_;
+
+// インスタンス
+ModelManager* ModelManager::instance = nullptr;
+
+ModelManager* ModelManager::GetInstance(){
+	// インスタンスがnullptrであれば新しく生成する
+	if (instance == nullptr) {
+		instance = new ModelManager();
+	}
+	// インスタンスを返す
+	return instance;
+}
+
+void ModelManager::Finalize() {
+
+	// インスタンスをdeleteし、nullptrを代入する
+	delete instance;
+	instance = nullptr;
+}
 
 void ModelManager::Initialize(DirectXCommon* dxCommon, CameraCommon* camera){
 	dxCommon_ = dxCommon;
@@ -37,7 +56,17 @@ Model* ModelManager::FindModel(const std::string filepath)
 	return nullptr;
 }
 
-void ModelManager::PostDraw(){
+std::shared_ptr<Model> ModelManager::Create(const std::string& filepath, const std::string filename){
+	// 登録されていなければ新たにモデルを登録・生成
+	if (sModels_.find(filepath) == sModels_.end()) {
+		sModels_[filepath] = std::make_shared<Model>();
+		sModels_[filepath]->Initialize(filepath, filename);
+	}
+	// モデルのポインタを返す
+	return sModels_[filepath];
+}
+
+void ModelManager::PreDraw(){
 
 	// RootSignatureを設定。PSOに設定しているが、別途設定が必要
 	dxCommon_->commandList->SetGraphicsRootSignature(rootSignature.Get());

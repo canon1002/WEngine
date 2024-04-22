@@ -3,6 +3,17 @@
 #include "GameEngine/Base/DirectX/DirectXCommon.h"
 #include "GameEngine/Base/Debug/ImGuiManager.h"
 
+
+MainCamera* MainCamera::instance = nullptr;
+
+
+MainCamera* MainCamera::GetInstance(){
+	if (instance == nullptr) {
+		instance = new MainCamera();
+	}
+	return instance;
+}
+
 void MainCamera::Initialize(WinAPI* winApp){
 	winApp_ = winApp;
 	worldTransform_.Init();

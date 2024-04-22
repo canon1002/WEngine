@@ -9,7 +9,7 @@ void Engine::Run(){
 	// WinApp
 	winApp_ = std::make_unique<WinAPI>();
 	// DirectXCommon
-	dxCommon_ = std::make_unique<DirectXCommon>();
+	dxCommon_ = DirectXCommon::GetInstance();
 	// Scene
 	sceneManager_ = std::make_unique<SceneManager>();
 	
@@ -22,7 +22,7 @@ void Engine::Run(){
 	// DirectXCommon
 	dxCommon_->Initialize(winApp_.get());
 	// Scene
-	sceneManager_->Init(winApp_.get(), dxCommon_.get());
+	sceneManager_->Init(winApp_.get(), dxCommon_);
 	sceneManager_->Run();
 
 	//
