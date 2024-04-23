@@ -19,12 +19,12 @@ public: // -- アクセッサ -- //
 
 #pragma region Setter
 	
-	void SetRotate(Vec3 r) { worldTransform_.rotation = r; }
-	void SetTranslate(Vec3 t) { worldTransform_.translation = t; }
+	void SetRotate(Vec3 r) { worldTransform_->rotation = r; }
+	void SetTranslate(Vec3 t) { worldTransform_->translation = t; }
 	void SetTransform(Vec3 s, Vec3 r, Vec3 t) {
-		worldTransform_.scale = s;
-		worldTransform_.scale = r;
-		worldTransform_.scale = t;
+		worldTransform_->scale = s;
+		worldTransform_->scale = r;
+		worldTransform_->scale = t;
 	}
 	void SetFovY() {}
 	void SetAspectRatio() {}
@@ -39,15 +39,15 @@ public: // -- アクセッサ -- //
 	const Mat44& GetViewMatrix() const { return viewMatrix_; }
 	const Mat44& GetProjectionMatrix() const { return projectionMatrix_; }
 	const Mat44& GetViewProjectionMatrix() const { return viewprojectionMatrix_; }
-	const Vec3& GetRotate()const { return worldTransform_.rotation; }
-	const Vec3& GetTranslate()const { return worldTransform_.translation; }
+	Vec3 GetRotate()const { return worldTransform_->rotation; }
+	Vec3 GetTranslate()const { return worldTransform_->GetWorldPosition(); }
 
 #pragma endregion
 
 public: // -- public メンバ変数 -- //
 
 	// WorldTransform
-	WorldTransform worldTransform_;
+	WorldTransform* worldTransform_;
 
 protected: // -- protected メンバ変数 -- //
 

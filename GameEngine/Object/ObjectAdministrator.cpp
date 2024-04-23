@@ -51,8 +51,8 @@ void ObjectAdministrator::Update(){
 		// WVPにまとめる
 		object->wvpM = camera.GetViewProjectionMatrix();
 		// 矩形のワールド行列とWVP行列を掛け合わした行列を代入
-		object->wvpData->WVP = Multiply(object->worldTransform_.GetWorldMatrix(), object->wvpM);
-		object->wvpData->World = object->worldTransform_.GetWorldMatrix();
+		object->wvpData->WVP = Multiply(object->worldTransform_->GetWorldMatrix(), object->wvpM);
+		object->wvpData->World = object->worldTransform_->GetWorldMatrix();
 	}
 
 }

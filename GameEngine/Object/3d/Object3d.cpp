@@ -5,12 +5,14 @@
 #include <sstream>
 #include "GameEngine/Object/Camera/MainCamera.h"
 #include "GameEngine/Object/Model/ModelManager.h"
+#include "GameEngine/Base/Debug/ImGuiManager.h"
 
 Object3d::Object3d() {}
 
-Object3d::~ Object3d() {
+Object3d::~Object3d() {
 	//delete wvpData;
 	//delete model_;
+	delete worldTransform_;
 }
 
 
@@ -18,36 +20,35 @@ void Object3d::Init() {
 
 	dxCommon_ = DirectXCommon::GetInstance();
 	modelManager_ = ModelManager::GetInstance();
-	worldTransform_.scale = { 1.0f,1.0f,1.0f };
-	worldTransform_.rotation = { 0.0f,0.0f,0.0f };
-	worldTransform_.translation = { 0.0f,0.0f,0.0f };
+	worldTransform_ = new WorldTransform();
 
 	CreateTransformationRsource();
 
 }
 
-void Object3d::Update(const CameraCommon* camera) {
+void Object3d::Update() {
 
-	//ImGui::Begin("Sphere");
-	//ImGui::SliderAngle("RotateX", &worldTransform_.rotate.x);
-	//ImGui::SliderAngle("RotateY", &worldTransform_.rotate.y);
-	//ImGui::SliderAngle("RotateZ", &worldTransform_.rotate.z);
-	//ImGui::DragFloat3("Rotate", &worldTransform_.rotate.x);
-	//ImGui::DragFloat3("translate", &worldTransform_.translate.x);
-	//ImGui::DragFloat("shininess", &model_->materialData_->shininess);
-	//ImGui::ColorEdit4("Color",&model_->materialData_->color.r);
-	//ImGui::End();
+	ImGui::Begin("Object3D");
+	ImGui::SliderAngle("RotateX", &worldTransform_->rotation.x);
+	ImGui::SliderAngle("RotateY", &worldTransform_->rotation.y);
+	ImGui::SliderAngle("RotateZ", &worldTransform_->rotation.z);
+	ImGui::DragFloat3("Scale", &worldTransform_->scale.x);
+	ImGui::DragFloat3("Rotate", &worldTransform_->rotation.x);
+	ImGui::DragFloat3("translate", &worldTransform_->translation.x);
+	ImGui::DragFloat("shininess", &model_->materialData_->shininess);
+	ImGui::ColorEdit4("Color",&model_->materialData_->color.r);
+	ImGui::End();
 
-
+	MainCamera* camera = MainCamera::GetInstance();
 	// カメラ行列のビュー行列(カメラのワールド行列の逆行列)
 	viewM = camera->GetViewMatrix();
 	// 正規化デバイス座標系(NDC)に変換(正射影行列をかける)
 	pespectiveM = camera->GetProjectionMatrix();
 	// WVPにまとめる
-	wvpM = camera->GetViewProjectionMatrix(); 
+	wvpM = camera->GetViewProjectionMatrix();
 	// 矩形のワールド行列とWVP行列を掛け合わした行列を代入
-	wvpData->WVP = Multiply(worldTransform_.GetWorldMatrix(), wvpM);
-	wvpData->World = worldTransform_.GetWorldMatrix();
+	wvpData->WVP = Multiply(worldTransform_->GetWorldMatrix(), wvpM);
+	wvpData->World = worldTransform_->GetWorldMatrix();
 
 	// 早期リターン
 	if (model_ == nullptr) {
@@ -55,7 +56,7 @@ void Object3d::Update(const CameraCommon* camera) {
 	}
 
 	model_->Update();
-	
+
 }
 
 void Object3d::Draw() {
@@ -88,6 +89,6 @@ void Object3d::CreateTransformationRsource() {
 void Object3d::SetModel(const std::string& filepath)
 {
 	// モデルを検索してセット
-	modelManager_->LoadModel(filepath);
+	//modelManager_->LoadModel(filepath);
 	model_ = modelManager_->FindModel(filepath);
 }

@@ -21,17 +21,17 @@ public: // メンバ関数
 	///	初期化
 	void Init();
 	/// 更新
-	void Update(const CameraCommon* camera);
+	void Update();
 	/// 描画
 	void Draw();
 
 	void CreateTransformationRsource();
 	void SetModel(const std::string& filepath);
-	void SetScale(Vec3 scale) { worldTransform_.scale = scale; }
-	void SetRotate(Vec3 rotate) { worldTransform_.rotation = rotate; }
-	void SetTranslate(Vec3 translate) { worldTransform_.translation = translate; }
-	void SetWorldTransform(WorldTransform w) { worldTransform_ = w; }
-	const WorldTransform& GetWorldTransform()const  { return worldTransform_; }
+	void SetScale(Vec3 scale) { worldTransform_->scale = scale; }
+	void SetRotate(Vec3 rotate) { worldTransform_->rotation = rotate; }
+	void SetTranslate(Vec3 translate) { worldTransform_->translation = translate; }
+	void SetWorldTransform(WorldTransform* w) { worldTransform_ = w; }
+	const WorldTransform* GetWorldTransform()const  { return worldTransform_; }
 
 	Model* GetModel() { return model_; }
 
@@ -49,7 +49,7 @@ public: // メンバ変数
 	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource = nullptr;
 	// データを書き込む
 	TransformationMatrix* wvpData = nullptr;
-	WorldTransform worldTransform_;
+	WorldTransform* worldTransform_;
 
 
 };

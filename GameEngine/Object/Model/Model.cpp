@@ -24,6 +24,7 @@ void Model::Initialize(const std::string& directrypath, const std::string& filen
 
 	dxCommon_ = DirectXCommon::GetInstance();
 	camera_ = MainCamera::GetInstance();
+	
 
 	// モデル読み込み
 	modelData = Resource::LoadObjFile(directrypath, filename);
@@ -119,6 +120,7 @@ void Model::CreateMaterialResource()
 	CameraResource = dxCommon_->CreateBufferResource(dxCommon_->device_.Get(), sizeof(CameraForGPU));
 	// データを書き込む
 	CameraResource->Map(0, nullptr, reinterpret_cast<void**>(&cameraData));
+	camera_->Initialize(dxCommon_->win_);
 	cameraData->worldPosition = camera_->GetTranslate();
 
 }
