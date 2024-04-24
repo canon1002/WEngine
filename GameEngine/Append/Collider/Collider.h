@@ -15,7 +15,7 @@ public:
 	virtual void OnCollision(Collider* collider) = 0;
 	
 	// ワールド座標
-	virtual Vec3 GetWorldPos() = 0;
+	virtual Vector3 GetWorldPos() = 0;
 	
 	// 半径
 	void SetRadius(float radius) { m_radius = radius; }

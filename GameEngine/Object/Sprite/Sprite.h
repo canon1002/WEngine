@@ -48,7 +48,7 @@ private:
 	DirectXCommon* dxCommon_ = nullptr;
 
 	WorldTransform worldTransform_;
-	Mat44 worldM, cameraM, viewM, projectM, wvpM;
+	Matrix4x4 worldM, cameraM, viewM, projectM, wvpM;
 	Vec4 translate_;
 	// テクスチャハンドル
 	int32_t textureHandle_ = 0;

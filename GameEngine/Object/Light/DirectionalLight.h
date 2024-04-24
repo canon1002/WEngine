@@ -7,7 +7,7 @@ struct DirectionalLight
 	// ライトの色
 	Color color;
 	// ライトの向き
-	Vec3 direction;
+	Vector3 direction;
 	// 輝度
 	float intensity;	
 };

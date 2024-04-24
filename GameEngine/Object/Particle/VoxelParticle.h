@@ -9,10 +9,10 @@
 class CameraCommon;
 
 struct Particle {
-	Vec3 scale;
-	Vec3 rotation;
-	Vec3 translation;
-	Vec3 vel;
+	Vector3 scale;
+	Vector3 rotation;
+	Vector3 translation;
+	Vector3 vel;
 	Color color;
 	float lifeTime;
 	float currentTime;
@@ -39,7 +39,7 @@ public:
 	///	座標変更
 	/// </summary>
 	/// <param name="pos">座標</param>
-	void SetTransform(Vec3 pos) {
+	void SetTransform(Vector3 pos) {
 		worldTransform_.translation = pos;
 	}
 
@@ -57,7 +57,7 @@ public:
 	/// 回転させる
 	/// </summary>
 	/// <param name="r">回転量</param>
-	void Rotation(Vec3 r) {
+	void Rotation(Vector3 r) {
 		worldTransform_.rotation.x += r.x;
 		worldTransform_.rotation.y += r.y;
 		worldTransform_.rotation.z += r.z;
@@ -87,7 +87,7 @@ private:
 	DirectXCommon* dxCommon_ = nullptr;
 
 	WorldTransform worldTransform_;
-	Mat44 cameraM, viewM, projectM, pespectiveM, wvpM;
+	Matrix4x4 cameraM, viewM, projectM, pespectiveM, wvpM;
 	// 半径
 	float rad = 1.0f;
 

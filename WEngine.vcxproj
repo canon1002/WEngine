@@ -124,10 +124,10 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="GameEngine\Base\DirectX\SRV.cpp" />
     <ClCompile Include="GameEngine\Base\WinApp\WinAPI.cpp" />
     <ClCompile Include="GameEngine\Append\Collider\CollisionManager.cpp" />
-    <ClCompile Include="GameEngine\Math\Mat44.cpp" />
+    <ClCompile Include="GameEngine\Math\Matrix4x4.cpp" />
     <ClCompile Include="GameEngine\Math\Quaternion.cpp" />
     <ClCompile Include="GameEngine\Math\Vec2.cpp" />
-    <ClCompile Include="GameEngine\Math\Vec3.cpp" />
+    <ClCompile Include="GameEngine\Math\Vector3.cpp" />
     <ClCompile Include="GameEngine\Math\Vec4.cpp" />
     <ClCompile Include="GameEngine\Object\Sprite\SpriteAdministrator.cpp" />
     <ClCompile Include="GameEngine\Object\Camera\CameraCommon.cpp" />
@@ -176,11 +176,11 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="GameEngine\Append\Collider\CollisionConfig.h" />
     <ClInclude Include="GameEngine\Append\Collider\CollisionManager.h" />
     <ClInclude Include="GameEngine\Resource\Material\Color.h" />
-    <ClInclude Include="GameEngine\Math\Mat44.h" />
+    <ClInclude Include="GameEngine\Math\Matrix4x4.h" />
     <ClInclude Include="GameEngine\Math\Math.h" />
     <ClInclude Include="GameEngine\Math\Quaternion.h" />
     <ClInclude Include="GameEngine\Math\Vec2.h" />
-    <ClInclude Include="GameEngine\Math\Vec3.h" />
+    <ClInclude Include="GameEngine\Math\Vector3.h" />
     <ClInclude Include="GameEngine\Math\Vec4.h" />
     <ClInclude Include="GameEngine\Object\Sprite\SpriteAdministrator.h" />
     <ClInclude Include="GameEngine\Object\Camera\CameraCommon.h" />

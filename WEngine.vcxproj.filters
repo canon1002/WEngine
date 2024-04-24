@@ -154,13 +154,13 @@
     <ClCompile Include="GameEngine\Scene\TitleScene.cpp">
       <Filter>Engine\scene</Filter>
     </ClCompile>
-    <ClCompile Include="GameEngine\Math\Mat44.cpp">
+    <ClCompile Include="GameEngine\Math\Matrix4x4.cpp">
       <Filter>Engine\math</Filter>
     </ClCompile>
     <ClCompile Include="GameEngine\Math\Quaternion.cpp">
       <Filter>Engine\math</Filter>
     </ClCompile>
-    <ClCompile Include="GameEngine\Math\Vec3.cpp">
+    <ClCompile Include="GameEngine\Math\Vector3.cpp">
       <Filter>Engine\math</Filter>
     </ClCompile>
     <ClCompile Include="GameEngine\Math\Vec2.cpp">
@@ -291,13 +291,13 @@
     <ClInclude Include="GameEngine\Math\Math.h">
       <Filter>Engine\math</Filter>
     </ClInclude>
-    <ClInclude Include="GameEngine\Math\Mat44.h">
+    <ClInclude Include="GameEngine\Math\Matrix4x4.h">
       <Filter>Engine\math</Filter>
     </ClInclude>
     <ClInclude Include="GameEngine\Math\Quaternion.h">
       <Filter>Engine\math</Filter>
     </ClInclude>
-    <ClInclude Include="GameEngine\Math\Vec3.h">
+    <ClInclude Include="GameEngine\Math\Vector3.h">
       <Filter>Engine\math</Filter>
     </ClInclude>
     <ClInclude Include="GameEngine\Resource\Material\Color.h">

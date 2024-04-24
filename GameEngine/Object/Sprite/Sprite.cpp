@@ -47,7 +47,7 @@ void Sprite::Update() {
 	wvpData->World = worldTransform_.GetWorldMatrix();
 
 	/// マテリアル・UVTransform
-	Mat44 uvTransformMatrix = MakeAffineMatrix(
+	Matrix4x4 uvTransformMatrix = MakeAffineMatrix(
 		uvTransform_.scale,
 		{ 0.0f,0.0f,uvTransform_.rotation.z },
 		uvTransform_.translation

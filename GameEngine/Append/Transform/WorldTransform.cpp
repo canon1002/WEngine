@@ -4,18 +4,18 @@ WorldTransform::WorldTransform(){
 	this->Init();
 }
 
-WorldTransform::WorldTransform(Vec3 t){
+WorldTransform::WorldTransform(Vector3 t){
 	this->Init();
 	translation = t;
 }
 
-WorldTransform::WorldTransform(Vec3 t, Vec3 r){
+WorldTransform::WorldTransform(Vector3 t, Vector3 r){
 	this->Init();
 	translation = t;
 	rotation = r;
 }
 
-WorldTransform::WorldTransform(Vec3 t, Vec3 r, Vec3 s){
+WorldTransform::WorldTransform(Vector3 t, Vector3 r, Vector3 s){
 	translation = t;
 	rotation = r;
 	scale = s;
@@ -35,8 +35,8 @@ void WorldTransform::Init() {
 	parent_ = nullptr;
 }
 
-Mat44 WorldTransform::GetWorldMatrix() const{
-	Mat44 result = MakeAffineMatrix(scale, rotation, translation);
+Matrix4x4 WorldTransform::GetWorldMatrix() const{
+	Matrix4x4 result = MakeAffineMatrix(scale, rotation, translation);
 
 	// 親があれば親のワールド行列を掛ける
 	if (parent_ != nullptr) {
@@ -45,10 +45,10 @@ Mat44 WorldTransform::GetWorldMatrix() const{
 	return result;
 }
 
-Vec3 WorldTransform::GetWorldPosition(){
+Vector3 WorldTransform::GetWorldPosition(){
 	// ワールド行列を生成
-	Mat44 worldMatrix = GetWorldMatrix();
-	return Vec3(worldMatrix.m[3][0], worldMatrix.m[3][1], worldMatrix.m[3][2]);
+	Matrix4x4 worldMatrix = GetWorldMatrix();
+	return Vector3(worldMatrix.m[3][0], worldMatrix.m[3][1], worldMatrix.m[3][2]);
 }
 
 void WorldTransform::SetParent(WorldTransform* parent){

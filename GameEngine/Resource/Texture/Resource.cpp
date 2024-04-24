@@ -143,7 +143,7 @@ namespace Resource
 		/// 変数の宣言
 		ModelData modelData;// 構築するモデルのデータ
 		std::vector<Vec4> positions;//位置
-		std::vector<Vec3> normals;//法線
+		std::vector<Vector3> normals;//法線
 		std::vector<Vec2> texcoords;//テクスチャ座標
 		std::string line; // ファイルから読んだ一行を格納する
 
@@ -232,7 +232,7 @@ namespace Resource
 		/// 変数の宣言
 		ModelData modelData;// 構築するモデルのデータ
 		std::vector<Vec4> positions;//位置
-		std::vector<Vec3> normals;//法線
+		std::vector<Vector3> normals;//法線
 		std::vector<Vec2> texcoords;//テクスチャ座標
 		std::string line; // ファイルから読んだ一行を格納する
 
@@ -265,7 +265,7 @@ namespace Resource
 			}
 			// 法線
 			else if (identifier == "vn") {
-				Vec3 normal;
+				Vector3 normal;
 				s >> normal.x >> normal.y >> normal.z;
 				normals.push_back(normal);
 			}
@@ -287,7 +287,7 @@ namespace Resource
 					// 要素へのインデックスから、実際の要素の値を取得しt、頂点を構築する
 					Vec4 position = positions[elementIndices[0] - 1];
 					Vec2 texcoord = texcoords[elementIndices[1] - 1];
-					Vec3 normal = normals[elementIndices[2] - 1];
+					Vector3 normal = normals[elementIndices[2] - 1];
 					//VertexData vertex = { position,texcoord,normal };
 					//modelData.vertices.push_back(vertex);
 					triangle[faceVertex] = { position,texcoord,normal };
@@ -337,6 +337,70 @@ namespace Resource
 
 		// MaterialDataを返す
 		return materialData;
+	}
+
+	Animation LoadAnmation(const std::string& directoryPath, const std::string& filePath){
+		Animation animation;
+		Assimp::Importer impoter;
+		std::string fullPath = directoryPath + "/" + filePath;
+		const aiScene* scene = impoter.ReadFile(fullPath.c_str(), 0);
+		assert(scene->mNumAnimations != 0);// アニメーションがなければ停止
+
+		// 最初のアニメーションだけ採用 そのうち複数対応する
+		aiAnimation* animationAssimp = scene->mAnimations[0];
+		// 時間の単位を秒に変換
+		// mTicksPerSecond -- 周波数 -- 
+		// mDuration -- mTicksPerSecondで指定された周波数における長さ -- 
+		animation.duration = float(animationAssimp->mDuration / animationAssimp->mTicksPerSecond);
+
+		// -- ここから "NodeAnimation" を解析する -- //
+		
+		// assimpでは個々のNodeのAnimationをchannelとよんでいるのでchannelを回してNodeAnimationの情報を取ってくる
+		for (uint32_t channelIndex = 0; channelIndex < animationAssimp->mNumChannels; ++channelIndex) {
+			aiNodeAnim* nodeAnimationAssimp = animationAssimp->mChannels[channelIndex];
+			// AniamtionのNameを取得する
+			NodeAnimation& nodeAnimation = animation.nodeAnimations[nodeAnimationAssimp->mNodeName.C_Str()];
+
+			// -- キーフレームごとの情報を取得する -- //
+			
+			// translation
+			for (uint32_t keyIndex = 0; keyIndex < nodeAnimationAssimp->mNumPositionKeys; ++keyIndex) {
+				aiVectorKey& keyAssimp = nodeAnimationAssimp->mPositionKeys[keyIndex];
+				KeyframeVector3 keyframe{};
+				// 時間の単位を秒に変換する
+				keyframe.time = float(keyAssimp.mTime / animationAssimp->mTicksPerSecond);
+				// translationを取得する
+				// 左手座標系 -> 右手座標系 (xを反転させる)
+				keyframe.value = { -keyAssimp.mValue.x,keyAssimp.mValue.y,keyAssimp.mValue.z };
+				nodeAnimation.translation.push_back(keyframe);
+			}	
+			
+			// rotation
+			for (uint32_t keyIndex = 0; keyIndex < nodeAnimationAssimp->mNumRotationKeys; ++keyIndex) {
+				aiQuatKey& keyAssimp = nodeAnimationAssimp->mRotationKeys[keyIndex];
+				KeyframeQuaternion keyframe{};
+				// 時間の単位を秒に変換する
+				keyframe.time = float(keyAssimp.mTime / animationAssimp->mTicksPerSecond);
+				// rotationを取得する
+				// 左手座標系 -> 右手座標系 (yとzを反転させる)
+				keyframe.value = { keyAssimp.mValue.x,-keyAssimp.mValue.y,-keyAssimp.mValue.z ,keyAssimp.mValue.w };
+				nodeAnimation.rotation.push_back(keyframe);
+			}
+
+			// scale
+			for (uint32_t keyIndex = 0; keyIndex < nodeAnimationAssimp->mNumScalingKeys; ++keyIndex) {
+				aiVectorKey& keyAssimp = nodeAnimationAssimp->mScalingKeys[keyIndex];
+				KeyframeVector3 keyframe{};
+				// 時間の単位を秒に変換する
+				keyframe.time = float(keyAssimp.mTime / animationAssimp->mTicksPerSecond);
+				// scaleを取得する
+				keyframe.value = { keyAssimp.mValue.x,keyAssimp.mValue.y,keyAssimp.mValue.z };
+				nodeAnimation.scale.push_back(keyframe);
+			}
+		}
+
+		// 解析が完了したら結果を返す
+		return animation;
 	}
 
 

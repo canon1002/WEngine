@@ -21,7 +21,7 @@ private:
 
 	//WorldTransform* worldTransform_ = nullptr;
 	//WorldTransform* cameraWorldTransform_ = nullptr;
-	//Mat44 cameraM, viewM, projectM, pespectiveM, wvpM;
+	//Matrix4x4 cameraM, viewM, projectM, pespectiveM, wvpM;
 	//// 半径
 	//float rad = 1.0f;
 

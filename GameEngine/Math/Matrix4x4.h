@@ -1,147 +1,127 @@
 #pragma once
 
-struct Vector2 { float x, y; };
+// 前方宣言
+struct Vector3;
+struct Vec4;
 
-struct Vector3 { float x, y, z; };
+// 
+struct Matrix4x4{
+	float m[4][4];
+};
 
-Vector3 operator+(Vector3 obj);
-Vector3& operator+=(Vector3& a, const Vector3& b);
-Vector3 operator-(Vector3 obj);
-Vector3 operator*(Vector3 obj,float f);
+/// <summary>
+ /// 行列の和を返す関数
+ /// </summary>
+ /// <param name="matrix1">行列1</param>
+ /// <param name="matrix2">行列2</param>
+ /// <returns>"行列1"と"行列2"の積を返す</returns>
+Matrix4x4 Add(Matrix4x4 matrix1, Matrix4x4 matrix2);
 
-struct Vector4 { float x, y, z, w; };
-Vector4 operator+(Vector4 obj);
-Vector4 operator-(Vector4 obj);
+/// <summary>
+/// 行列の差を返す関数
+/// </summary>
+/// <param name="matrix1">行列1</param>
+/// <param name="matrix2">行列2</param>
+/// <returns>"行列1"と"行列2"の積を返す</returns>
+Matrix4x4 Subtract(Matrix4x4 matrix1, Matrix4x4 matrix2);
 
-namespace Math {
-    struct Transform {
-        Vector3 scale;
-        Vector3 rotate;
-        Vector3 translate;
-    };
+/// <summary>
+/// 行列の積を返す関数
+/// </summary>
+/// <param name="matrix1">行列1</param>
+/// <param name="matrix2">行列2</param>
+/// <returns>"行列1"と"行列2"の積を返す</returns>
+Matrix4x4 Multiply(Matrix4x4 matrix1, Matrix4x4 matrix2);
 
-    Transform operator+(Transform obj);
-    Transform operator-(Transform obj);
-  
-}
+/// <summary>
+/// 行列とベクトルの積を返す関数
+/// </summary>
+/// <param name="v"></param>
+/// <param name="m"></param>
+/// <returns></returns>
+Vector3 Multiply(const Vector3& v, const Matrix4x4& m);
 
-struct Matrix3x3 final { float m[3][3]; };
-struct Matrix4x4 final { float m[4][4]; };
+/// <summary>
+/// 逆行列を作成する
+/// </summary>
+/// <param name="matrix">4x4の正方行列</param>
+/// <returns>引数の逆行列を返す</returns>
+Matrix4x4 Inverse(Matrix4x4 m);
 
+/// <summary>
+/// 転置行列の計算
+/// </summary>
+/// <param name="matrix">4x4の行列</param>
+/// <returns>引数の行列の"列"と"行"を入れ替えた転置行列を返す</returns>
+Matrix4x4 Transpose(Matrix4x4 m);
 
-namespace W::Math {
+/// <summary>
+/// 単位行列の作成
+/// </summary>
+/// <returns>作成した4x4の単位行列を返す</returns>
+Matrix4x4 MakeIdentity();
 
-    /// <summary>
-    /// 行列の和を返す関数
-    /// </summary>
-    /// <param name="matrix1">行列1</param>
-    /// <param name="matrix2">行列2</param>
-    /// <returns>"行列1"と"行列2"の積を返す</returns>
-    Matrix4x4 Add(Matrix4x4 matrix1, Matrix4x4 matrix2);
+/// <summary>
+// 平行移動行列の作成
+/// <summary>
+Matrix4x4 MakeTranslateMatrix(const Vector3 translate);
 
-    /// <summary>
-    /// 行列の差を返す関数
-    /// </summary>
-    /// <param name="matrix1">行列1</param>
-    /// <param name="matrix2">行列2</param>
-    /// <returns>"行列1"と"行列2"の積を返す</returns>
-    Matrix4x4 Subtract(Matrix4x4 matrix1, Matrix4x4 matrix2);
+/// <summary>
+// 拡大縮小行列の作成
+/// <summary>
+Matrix4x4 MakeScaleMatrix(const Vector3 scale);
 
-    /// <summary>
-    /// 行列の積を返す関数
-    /// </summary>
-    /// <param name="matrix1">行列1</param>
-    /// <param name="matrix2">行列2</param>
-    /// <returns>"行列1"と"行列2"の積を返す</returns>
-    Matrix4x4 Multiply(Matrix4x4 matrix1, Matrix4x4 matrix2);
+/// <summary>
+// 回転行列の作成(X)
+/// <summary>
+Matrix4x4 MakeRoatateXMatrix(float rad);
 
-    /// <summary>
-    /// 行列とベクトルの積を返す関数
-    /// </summary>
-    /// <param name="v"></param>
-    /// <param name="m"></param>
-    /// <returns></returns>
-    Vector3 Multiply(const Vector3& v, const Matrix4x4& m);
+/// <summary>
+// 回転行列の作成(Y)
+/// <summary>
+Matrix4x4 MakeRoatateYMatrix(float rad);
 
-    /// <summary>
-    /// 逆行列を作成する
-    /// </summary>
-    /// <param name="matrix">4x4の正方行列</param>
-    /// <returns>引数の逆行列を返す</returns>
-    Matrix4x4 Inverse(Matrix4x4 m);
+/// <summary>
+// 回転行列の作成(Z)
+/// <summary>
+Matrix4x4 MakeRoatateZMatrix(float rad);
 
-    /// <summary>
-    /// 転置行列の計算
-    /// </summary>
-    /// <param name="matrix">4x4の行列</param>
-    /// <returns>引数の行列の"列"と"行"を入れ替えた転置行列を返す</returns>
-    Matrix4x4 Transpose(Matrix4x4 m);
+/// <summary>
+/// 座標変換
+/// </summary>
+Vector3 Transform(const Vector3& v, const Matrix4x4& m);
 
-    /// <summary>
-    /// 単位行列の作成
-    /// </summary>
-    /// <returns>作成した4x4の単位行列を返す</returns>
-    Matrix4x4 MakeIdentity();
+/// <summary>
+/// 座標変換
+/// </summary>
+Vec4 Transform(const Vec4& v, const Matrix4x4& m);
 
-    /// <summary>
-    // 平行移動行列の作成
-    /// <summary>
-    Matrix4x4 MakeTranslateMatrix(const Vector3 translate);
+/// <summary>
+/// ベクトル変換
+/// </summary>
+/// <param name="v"></param>
+/// <param name="m"></param>
+/// <returns></returns>
+Vector3 TransformNomal(const Vector3& v, const Matrix4x4& m);
 
-    /// <summary>
-    // 拡大縮小行列の作成
-    /// <summary>
-    Matrix4x4 MakeScaleMatrix(const Vector3 scale);
+/// <summary>
+/// アフィン行列の作成
+/// <summary>
+Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Vector3& rotate, const Vector3& translate);
 
-    /// <summary>
-    // 回転行列の作成(X)
-    /// <summary>
-    Matrix4x4 MakeRoatateXMatrix(float rad);
+/// <summary>
+/// 透視投影行列の作成
+/// <summary>
+Matrix4x4 MakePerspectiveMatrix(float fovY, float aspectRatio, float nearClip, float farClip);
 
-    /// <summary>
-    // 回転行列の作成(Y)
-    /// <summary>
-    Matrix4x4 MakeRoatateYMatrix(float rad);
+/// <summary>
+/// 正射影行列の作成
+/// <summary>
+Matrix4x4 MakeOrthographicMatrix(
+    float left, float top, float right, float bottom, float nearClip, float farClip);
 
-    /// <summary>
-    // 回転行列の作成(Z)
-    /// <summary>
-    Matrix4x4 MakeRoatateZMatrix(float rad);
-
-    /// <summary>
-    /// 座標変換
-    /// </summary>
-    Vector3 Transform(const Vector3& v, const Matrix4x4& m);
-    Vector4 Transform(const Vector4& v, const Matrix4x4& m);
-
-    /// <summary>
-    /// ベクトル変換
-    /// </summary>
-    /// <param name="v"></param>
-    /// <param name="m"></param>
-    /// <returns></returns>
-    Vector3 TransformNomal(const Vector3& v, const Matrix4x4& m);
-
-    /// <summary>
-    /// アフィン行列の作成
-    /// <summary>
-    Matrix4x4 MakeAffineMatrix(const Vector3& scale = { 1.0f,1.0f,1.0f }, const Vector3& rotate = { 0.0f,0.0f,0.0f }, const Vector3& translate = { 0.0f,0.0f,0.0f });
-
-    /// <summary>
-    /// 透視投影行列の作成
-    /// <summary>
-    Matrix4x4 MakePerspectiveMatrix(float fovY, float aspectRatio, float nearClip, float farClip);
-
-    /// <summary>
-    /// 正射影行列の作成
-    /// <summary>
-    Matrix4x4 MakeOrthographicMatrix(
-        float left, float top, float right, float bottom, float nearClip, float farClip);
-
-    /// <summary>
-    /// ビューポート変換行列の作成
-    /// <summary>
-    Matrix4x4 MakeViewportMatrix(
-        float left, float top, float width, float height, float minDepth, float maxDepth);
-
-}
+/// <summary>
+/// ビューポート変換行列の作成
+/// <summary>
+Matrix4x4 MakeViewportMatrix(
+    float left, float top, float width, float height, float minDepth, float maxDepth);

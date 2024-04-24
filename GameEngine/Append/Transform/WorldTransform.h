@@ -6,9 +6,9 @@ class WorldTransform
 public: // -- public メンバ関数 -- //
 
 	WorldTransform();
-	WorldTransform(Vec3 t);
-	WorldTransform(Vec3 t, Vec3 r);
-	WorldTransform(Vec3 t, Vec3 r, Vec3 s);
+	WorldTransform(Vector3 t);
+	WorldTransform(Vector3 t, Vector3 r);
+	WorldTransform(Vector3 t, Vector3 r, Vector3 s);
 	~WorldTransform();
 
 	/// <summary>
@@ -20,13 +20,13 @@ public: // -- public メンバ関数 -- //
 	/// ワールド行列を返す
 	/// </summary>
 	/// <returns></returns>
-	Mat44 GetWorldMatrix() const;
+	Matrix4x4 GetWorldMatrix() const;
 
 	/// <summary>
 	/// ワールド座標を返す
 	/// </summary>
 	/// <returns></returns>
-	Vec3 GetWorldPosition();
+	Vector3 GetWorldPosition();
 
 	/// <summary>
 	/// 親となるWorldTrandsfromを登録する
@@ -36,11 +36,11 @@ public: // -- public メンバ関数 -- //
 public: // -- public メンバ変数 -- //
 
 	// 拡大
-	Vec3 scale;
+	Vector3 scale;
 	// 縮小
-	Vec3 rotation;
+	Vector3 rotation;
 	// 平行移動
-	Vec3 translation;
+	Vector3 translation;
 
 private: // -- private メンバ変数 -- //
 

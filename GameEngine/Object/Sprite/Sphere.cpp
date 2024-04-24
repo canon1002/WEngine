@@ -142,19 +142,19 @@ void Sphere::CreateBufferView() {
 			uint32_t start = (latIndex * kSubdivision + lonIndex) * 6;
 			float lon = lonIndex * kLonEvery; //	現在の経度を求める
 
-			Vec3 a = {
+			Vector3 a = {
 				cos(lat) * cos(lon) * rad,
 				sin(lat) * rad,
 				cos(lat) * sin(lon) * rad };
-			Vec3 b = {
+			Vector3 b = {
 				cos(lat + (pi / kSubdivision)) * cos(lon) * rad,
 				sin(lat + (pi / kSubdivision)) * rad,
 				cos(lat + (pi / kSubdivision)) * sin(lon) * rad };
-			Vec3 c = {
+			Vector3 c = {
 				cos(lat) * cos(lon + ((pi * 2) / kSubdivision)) * rad,
 				sin(lat) * rad,
 				cos(lat) * sin(lon + ((pi * 2) / kSubdivision)) * rad };
-			Vec3 d = {
+			Vector3 d = {
 				cos(lat + (pi / kSubdivision)) * cos(lon + ((pi * 2) / kSubdivision)) * rad,
 				sin(lat + (pi / kSubdivision)) * rad,
 				cos(lat + (pi / kSubdivision)) * sin(lon + ((pi * 2) / kSubdivision)) * rad };

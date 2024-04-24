@@ -19,9 +19,9 @@ public: // -- アクセッサ -- //
 
 #pragma region Setter
 	
-	void SetRotate(Vec3 r) { worldTransform_->rotation = r; }
-	void SetTranslate(Vec3 t) { worldTransform_->translation = t; }
-	void SetTransform(Vec3 s, Vec3 r, Vec3 t) {
+	void SetRotate(Vector3 r) { worldTransform_->rotation = r; }
+	void SetTranslate(Vector3 t) { worldTransform_->translation = t; }
+	void SetTransform(Vector3 s, Vector3 r, Vector3 t) {
 		worldTransform_->scale = s;
 		worldTransform_->scale = r;
 		worldTransform_->scale = t;
@@ -36,11 +36,11 @@ public: // -- アクセッサ -- //
 
 #pragma region Getter
 
-	const Mat44& GetViewMatrix() const { return viewMatrix_; }
-	const Mat44& GetProjectionMatrix() const { return projectionMatrix_; }
-	const Mat44& GetViewProjectionMatrix() const { return viewprojectionMatrix_; }
-	Vec3 GetRotate()const { return worldTransform_->rotation; }
-	Vec3 GetTranslate()const { return worldTransform_->GetWorldPosition(); }
+	const Matrix4x4& GetViewMatrix() const { return viewMatrix_; }
+	const Matrix4x4& GetProjectionMatrix() const { return projectionMatrix_; }
+	const Matrix4x4& GetViewProjectionMatrix() const { return viewprojectionMatrix_; }
+	Vector3 GetRotate()const { return worldTransform_->rotation; }
+	Vector3 GetTranslate()const { return worldTransform_->GetWorldPosition(); }
 
 #pragma endregion
 
@@ -56,11 +56,11 @@ protected: // -- protected メンバ変数 -- //
 
 
 	// ビュー行列
-	Mat44 viewMatrix_;
+	Matrix4x4 viewMatrix_;
 	// プロジェクション行列
-	Mat44 projectionMatrix_;
+	Matrix4x4 projectionMatrix_;
 	// ビュープロジェクション行列
-	Mat44 viewprojectionMatrix_;
+	Matrix4x4 viewprojectionMatrix_;
 
 	// Near(近平面への距離)
 	float nearClip_;

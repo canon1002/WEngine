@@ -44,9 +44,9 @@ void CollisionManager::CheckCollisionPair(Collider* colliderA, Collider* collide
 	}
 
 	// コライダーのワールド座標を取得
-	Vec3 posA = colliderA->GetWorldPos();
+	Vector3 posA = colliderA->GetWorldPos();
 	float radA = colliderA->GetRadius();
-	Vec3 posB = colliderB->GetWorldPos();
+	Vector3 posB = colliderB->GetWorldPos();
 	float radB = colliderB->GetRadius();
 
 	// 距離の判定

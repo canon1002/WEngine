@@ -1,7 +1,7 @@
 #pragma once
 
-struct Vec3;
-struct Mat44;
+struct Vector3;
+struct Matrix4x4;
 
 struct Quaternion
 {
@@ -36,11 +36,11 @@ Quaternion Slerp(const Quaternion& q0, const Quaternion& q1, float t);
 float QDot(const Quaternion& q0, const Quaternion& q1);
 
 // 任意回転軸を表すQuaternionの作成
-Quaternion MakeRotateAxisAngleQuaternion(const Vec3& axis, float angle);
+Quaternion MakeRotateAxisAngleQuaternion(const Vector3& axis, float angle);
 // ベクトルをQuaternionで回転させた結果のベクトルを求める
-Vec3 RotateVector(const Vec3& v, const Quaternion& q);
+Vector3 RotateVector(const Vector3& v, const Quaternion& q);
 // Quaternionから回転行列を求める
-Mat44 MakeRotateMatrix(const Quaternion& q);
+Matrix4x4 MakeRotateMatrix(const Quaternion& q);
 
 
 //void QuaternionScreenPrintf(int x, int y, Quaternion& vector, const char* label);

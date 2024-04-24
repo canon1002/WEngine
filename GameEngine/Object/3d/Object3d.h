@@ -27,9 +27,9 @@ public: // メンバ関数
 
 	void CreateTransformationRsource();
 	void SetModel(const std::string& filepath);
-	void SetScale(Vec3 scale) { worldTransform_->scale = scale; }
-	void SetRotate(Vec3 rotate) { worldTransform_->rotation = rotate; }
-	void SetTranslate(Vec3 translate) { worldTransform_->translation = translate; }
+	void SetScale(Vector3 scale) { worldTransform_->scale = scale; }
+	void SetRotate(Vector3 rotate) { worldTransform_->rotation = rotate; }
+	void SetTranslate(Vector3 translate) { worldTransform_->translation = translate; }
 	void SetWorldTransform(WorldTransform* w) { worldTransform_ = w; }
 	const WorldTransform* GetWorldTransform()const  { return worldTransform_; }
 
@@ -43,7 +43,7 @@ public: // メンバ変数
 	Model* model_ = nullptr;
 	ModelManager* modelManager_;
 
-	Mat44 cameraM, viewM, projectM, pespectiveM, wvpM;
+	Matrix4x4 cameraM, viewM, projectM, pespectiveM, wvpM;
 	
 	// Transformation用のResourceを作る
 	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource = nullptr;

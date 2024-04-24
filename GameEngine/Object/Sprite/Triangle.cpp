@@ -83,7 +83,7 @@ void Triangle::CreateVertexResource() {
 void Triangle::CreateTransformationRsource() {
 
 	// Transformation用のResourceを作る
-	wvpResource = dxCommon_->CreateBufferResource(dxCommon_->device_.Get(), sizeof(Mat44));
+	wvpResource = dxCommon_->CreateBufferResource(dxCommon_->device_.Get(), sizeof(Matrix4x4));
 	// データを書き込む
 	// 書き込むためのアドレスを取得
 	wvpResource->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));

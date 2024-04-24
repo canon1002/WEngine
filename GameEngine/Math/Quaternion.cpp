@@ -51,7 +51,7 @@ float Norm(Quaternion q) {
 }
 
 // 任意回転軸を表すQuaternionの作成
-Quaternion MakeRotateAxisAngleQuaternion(const Vec3& axis, float angle) {
+Quaternion MakeRotateAxisAngleQuaternion(const Vector3& axis, float angle) {
 	Quaternion result;
 	result.x = axis.x * sinf(angle / 2.0f);
 	result.y = axis.y * sinf(angle / 2.0f);
@@ -61,19 +61,19 @@ Quaternion MakeRotateAxisAngleQuaternion(const Vec3& axis, float angle) {
 }
 
 // ベクトルをQuaternionで回転させた結果のベクトルを求める
-Vec3 RotateVector(const Vec3& v, const Quaternion& q) {
+Vector3 RotateVector(const Vector3& v, const Quaternion& q) {
 	Quaternion r = { v.x,v.y,v.z,0 };
 	Quaternion rotate = Multiply(Multiply(q, r), Inverse(q));
-	Vec3 result = { rotate.x,rotate.y, rotate.z };
+	Vector3 result = { rotate.x,rotate.y, rotate.z };
 	return result;
 }
 
 // Quaternionから回転行列を求める
-Mat44 MakeRotateMatrix(const Quaternion& q) {
+Matrix4x4 MakeRotateMatrix(const Quaternion& q) {
 	float x = q.x, y = q.y, z = q.z, w = q.w;
 	float xx = x * x, yy = y * y, zz = z * z, ww = w * w;
 
-	Mat44 result{
+	Matrix4x4 result{
 		ww + xx - yy - zz,			2 * ((x * y) + (w * z)),	2 * ((x * z) - (w * y)),	0,
 		2 * ((x * y) - (w * z)),	ww - xx + yy - zz,			2 * ((y * z) + (w * x)),	0,
 		2 * ((x * z) + (w * y)),	2 * ((y * z) - (w * x)),	ww - xx - yy + zz,			0,

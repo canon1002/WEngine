@@ -26,7 +26,7 @@ public:
 	///	座標変更
 	/// </summary>
 	/// <param name="pos">座標</param>
-	void SetTransform(Vec3 pos) { 
+	void SetTransform(Vector3 pos) { 
 		worldTransform_.translation = pos;
 	}
 	
@@ -34,7 +34,7 @@ public:
 	/// 中心座標を移動させる
 	/// </summary>
 	/// <param name="t">移動量</param>
-	void Transform(Vec3 t) { 
+	void Transform(Vector3 t) { 
 		worldTransform_.translation.x += t.x;
 		worldTransform_.translation.y += t.y;
 		worldTransform_.translation.z += t.z;
@@ -44,7 +44,7 @@ public:
 	/// 回転させる
 	/// </summary>
 	/// <param name="r">回転量</param>
-	void Rotation(Vec3 r) {
+	void Rotation(Vector3 r) {
 		worldTransform_.rotation.x += r.x;
 		worldTransform_.rotation.y += r.y;
 		worldTransform_.rotation.z += r.z;
@@ -70,7 +70,7 @@ private:
 	DirectXCommon* dxCommon_ = nullptr;
 
 	WorldTransform worldTransform_;
-	Mat44 worldM, cameraM, viewM, projectM, pespectiveM,wvpM;
+	Matrix4x4 worldM, cameraM, viewM, projectM, pespectiveM,wvpM;
 	Vec4 translate_;
 
 	// VertexResourceを生成する(P.42)
@@ -81,7 +81,7 @@ private:
 	// Transformation用のResourceを作る
 	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource = nullptr;
 	// データを書き込む
-	Mat44* wvpData = nullptr;
+	Matrix4x4* wvpData = nullptr;
 	// 頂点リソースにデータを書き込む
 	VertexData* vertexData = nullptr;
 	// 頂点バッファビューを作成する
