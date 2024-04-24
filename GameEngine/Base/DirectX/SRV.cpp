@@ -19,7 +19,7 @@ void SRV::CreateShaderResourceView() {
 	// STV用ディスクリプタヒープの生成
 	// タンスの部分
 	srvDescriptorHeap = dxCommon_->CreateDescriptorHeap(dxCommon_->device_, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 128, true);
-	defaultTexId_ = LoadTexture("Resources/texture/circleWhite.png");
+	defaultTexId_ = LoadTexture("uvChecker.png");
 
 }
 

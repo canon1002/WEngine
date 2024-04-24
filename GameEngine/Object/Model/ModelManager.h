@@ -14,7 +14,7 @@ public: // -- public メンバ関数 -- //
 
 	void Finalize();
 	void Initialize(DirectXCommon* dxCommon, CameraCommon* camera);
-	void LoadModel(const std::string& filepath);
+	void LoadModel(const std::string& directoryPath,const std::string& filepath);
 	Model* FindModel(const std::string filepath);
 
 	static std::shared_ptr<Model> Create(const std::string& filepath, const std::string filename);

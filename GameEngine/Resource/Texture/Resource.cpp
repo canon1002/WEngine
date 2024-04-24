@@ -9,7 +9,8 @@ namespace Resource
 	DirectX::ScratchImage LoadTextrue(const std::string& filePath) {
 		// テクスチャファイルを読んでプログラムで使えるようにする
 		DirectX::ScratchImage image{};
-		std::wstring filePathW = WinAPI::ConvertString(filePath);
+		const std::string& fullPath = "Resources/objs/" + filePath;
+		std::wstring filePathW = WinAPI::ConvertString(fullPath);
 		HRESULT hr = DirectX::LoadFromWICFile(filePathW.c_str(), DirectX::WIC_FLAGS_FORCE_SRGB, nullptr, image);
 		assert(SUCCEEDED(hr));
 
@@ -147,16 +148,17 @@ namespace Resource
 		std::string line; // ファイルから読んだ一行を格納する
 
 		/// ファイルを開く
-		std::ifstream file(directoryPath + "/" + filename); // ファイルを開く
+		const std::string& forwardPath = "Resources/objs/";
+		const std::string& fullPath = forwardPath + directoryPath + "/" + filename;
+		std::ifstream file(fullPath); // ファイルを開く
 		assert(file.is_open());
 
 		// assimpを利用する
 		Assimp::Importer importer;
-		std::string filepath = directoryPath + "/" + filename;
 		// オプションを指定
 		// aiProcess_FlipWindingOrder -- 三角形の並び順を逆にする --
 		// aiProcess_FlipUVs -- UVをフリップする(texcoord.y=1.0f-texcoord.y の処理) --
-		const aiScene* scene = importer.ReadFile(filepath.c_str(),
+		const aiScene* scene = importer.ReadFile(fullPath.c_str(),
 			aiProcess_FlipWindingOrder | aiProcess_FlipUVs);
 		assert(scene->HasMeshes()); // Mesh無しは対応しない
 

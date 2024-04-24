@@ -8,8 +8,7 @@ void TitleScene::Finalize(){}
 void TitleScene::Init() {
 	//testObject_ = ObjectAdministrator::GetInstance()->CreateObject("Resources/objs", "emptyAxis.obj");
 	// モデルをセットする
-	ModelManager::GetInstance()->LoadModel("plane.gltf");
-	ModelManager::GetInstance()->LoadModel("ball.obj");
+	ModelManager::GetInstance()->LoadModel("plane", "plane.gltf");
 
 	// 3dオブジェクトの宣言
 	testObject_ = std::make_unique<Object3d>();

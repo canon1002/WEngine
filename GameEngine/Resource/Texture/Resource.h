@@ -95,7 +95,7 @@ namespace Resource
 	/// <summary>
 	///	Assimpで3Dモデルの読み込みを行う関数
 	/// </summary>
-	/// <param name="directoryPath">ディレクトリパス</param>
+	/// <param name="directoryPath">ディレクトリパス "Resources/objs/"を記載すること </param>
 	/// <param name="filename">読み込むモデルのファイル名</param>
 	/// <returns>読み込んだモデルデータを返す</returns>
 	ModelData LoadModelFile(const std::string& directoryPath, const std::string& filename);
