@@ -11,6 +11,17 @@
 #include "Externals/DirectXTex/d3dx12.h"
 #include "Externals/DirectXTex/DirectXTex.h"
 
+// assimp
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
+
+struct Node{
+	Mat44 localMatrix;
+	std::string name;
+	std::vector<Node> children;
+};
+
 struct VertexData {
 	Vec4 position;
 	Vec2 texcoord;
@@ -46,6 +57,7 @@ struct MaterialData {
 struct ModelData {
 	std::vector<VertexData> vertices;
 	MaterialData material;
+	Node rootNode;
 };
 
 /// <summary>
@@ -79,6 +91,21 @@ namespace Resource
 		DirectXCommon* dxCommon,
 		Microsoft::WRL::ComPtr < ID3D12Resource> texture,
 		const DirectX::ScratchImage& mipImages);
+
+	/// <summary>
+	///	Assimpで3Dモデルの読み込みを行う関数
+	/// </summary>
+	/// <param name="directoryPath">ディレクトリパス</param>
+	/// <param name="filename">読み込むモデルのファイル名</param>
+	/// <returns>読み込んだモデルデータを返す</returns>
+	ModelData LoadModelFile(const std::string& directoryPath, const std::string& filename);
+
+	/// <summary>
+	/// AssimpのNode(aiNode)を自作のNode構造体に変換する関数
+	/// </summary>
+	/// <param name="node">AssimpのNode(aiNode)</param>
+	/// <returns>Node</returns>
+	Node ReadNode(aiNode* node);
 
 	// .objの読み込み
 	ModelData LoadObjFile(const std::string& directoryPath, const std::string& filename);

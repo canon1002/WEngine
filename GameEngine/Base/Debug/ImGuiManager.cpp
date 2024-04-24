@@ -13,6 +13,7 @@ void ImGuiManager::Initialize(WinAPI* winApp, DirectXCommon* dxCommon){
 	ImGuiIO& io = ImGui::GetIO();
 	//io.Fonts->AddFontFromFileTTF("Resources/Font/M_PLUS_1_Code/MPLUS1Code-VariableFont_wght.ttf", 12.0f, nullptr, io.Fonts->GetGlyphRangesJapanese());
 	io.Fonts->AddFontFromFileTTF("Resources/Font/makinas4/Makinas-4-Flat.otf", 12.0f, nullptr, io.Fonts->GetGlyphRangesJapanese());
+	//io.Fonts->AddFontFromFileTTF("Resources/Font/makinas4/Makinas-4-Square.otf", 12.0f, nullptr, io.Fonts->GetGlyphRangesJapanese());
 	
 	ImGui::StyleColorsDark();
 	ImGui_ImplWin32_Init(winApp_->GetHWND());

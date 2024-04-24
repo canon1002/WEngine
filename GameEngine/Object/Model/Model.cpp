@@ -13,7 +13,7 @@ void Model::Initialize(DirectXCommon* dxCommon,CameraCommon* camera,const std::s
 	camera_ = camera;
 
 	// モデル読み込み
-	modelData = Resource::LoadObjFile(directrypath,filename);
+	modelData = Resource::LoadModelFile(directrypath,filename);
 
 	CreateVertexResource();
 	CreateMaterialResource();
@@ -27,7 +27,7 @@ void Model::Initialize(const std::string& directrypath, const std::string& filen
 	
 
 	// モデル読み込み
-	modelData = Resource::LoadObjFile(directrypath, filename);
+	modelData = Resource::LoadModelFile(directrypath, filename);
 
 	CreateVertexResource();
 	CreateMaterialResource();

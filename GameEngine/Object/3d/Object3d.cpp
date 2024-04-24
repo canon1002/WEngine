@@ -55,6 +55,10 @@ void Object3d::Update() {
 		return;
 	}
 
+	// モデルデータに存在するNodeのLocalMatrixを適用する
+	wvpData->WVP = Multiply(model_->modelData.rootNode.localMatrix,Multiply(worldTransform_->GetWorldMatrix(), wvpM));
+	wvpData->World = Multiply(model_->modelData.rootNode.localMatrix,worldTransform_->GetWorldMatrix());
+
 	model_->Update();
 
 }
