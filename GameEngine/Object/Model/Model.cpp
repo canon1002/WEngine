@@ -1,6 +1,7 @@
 #include "Model.h"
 #include "ModelCommon.h"
 #include "../camera/MainCamera.h"
+#include "GameEngine/Base/Debug/ImGuiManager.h"
 
 Model::~Model() {
 	vertexResource.Reset();
@@ -59,6 +60,30 @@ void Model::Draw()
 
 	// インデックスを使用してドローコール
 	dxCommon_->commandList->DrawInstanced(UINT(modelData.vertices.size()), 1, 0, 0);
+}
+
+void Model::DrawGUI(const std::string& label){
+#ifdef _DEBUG
+
+	/// デバック情報を描画
+	ImGui::BeginChild(label.c_str());
+	// マテリアル
+	if (ImGui::TreeNode("マテリアル")) {
+		ImGui::DragFloat4("Color", &materialData_->color.a);
+		ImGui::DragInt("EnableLighting", &materialData_->enableLighting,1.0f,0,1);
+		ImGui::DragFloat("Shininess", &materialData_->shininess);
+		ImGui::TreePop();// ノードを閉じる(この場合は "マテリアル" を閉じる)
+	}
+	if (ImGui::TreeNode("平行光源")) {
+		ImGui::DragFloat4("Color", &directionalLightDate->color.r);
+		ImGui::DragFloat3("Directon", &directionalLightDate->direction.x,0.1f,0.0f,1.0f);
+		ImGui::DragFloat("Intensity", &directionalLightDate->intensity, 0.1f, 0.0f, 1.0f);
+		ImGui::TreePop();
+	}
+	
+	ImGui::EndChild();
+
+#endif // _DEBUG
 }
 
 //

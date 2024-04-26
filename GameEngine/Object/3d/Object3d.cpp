@@ -35,8 +35,10 @@ void Object3d::Update() {
 	ImGui::DragFloat3("Scale", &worldTransform_->scale.x);
 	ImGui::DragFloat3("Rotate", &worldTransform_->rotation.x);
 	ImGui::DragFloat3("translate", &worldTransform_->translation.x);
-	ImGui::DragFloat("shininess", &model_->materialData_->shininess);
 	ImGui::ColorEdit4("Color",&model_->materialData_->color.r);
+	if (model_ != nullptr) {
+		model_->DrawGUI("Model");
+	}
 	ImGui::End();
 
 	MainCamera* camera = MainCamera::GetInstance();

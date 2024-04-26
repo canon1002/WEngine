@@ -18,6 +18,9 @@ public:
 	void Update();
 	void Draw();
 
+	/// デバック情報描画(主にImGui関連)
+	void DrawGUI(const std::string& label);
+
 	void CreateVertexResource();
 	void CreateMaterialResource();
 
