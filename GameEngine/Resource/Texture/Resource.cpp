@@ -11,12 +11,26 @@ namespace Resource
 		DirectX::ScratchImage image{};
 		const std::string& fullPath = "Resources/objs/" + filePath;
 		std::wstring filePathW = WinAPI::ConvertString(fullPath);
-		HRESULT hr = DirectX::LoadFromWICFile(filePathW.c_str(), DirectX::WIC_FLAGS_FORCE_SRGB, nullptr, image);
+		// .ddsで終わっていれば.ddsとみなす。別の方法も存在するらしい
+		HRESULT hr;
+		if (filePathW.ends_with(L".dds")) {
+			hr = DirectX::LoadFromDDSFile(filePathW.c_str(), DirectX::DDS_FLAGS_NONE, nullptr, image);
+		}
+		else {
+			hr = DirectX::LoadFromWICFile(filePathW.c_str(), DirectX::WIC_FLAGS_FORCE_SRGB, nullptr, image);
+		}
 		assert(SUCCEEDED(hr));
 
 		// ミニマップの作成
 		DirectX::ScratchImage mipImages{};
-		hr = DirectX::GenerateMipMaps(image.GetImages(), image.GetImageCount(), image.GetMetadata(), DirectX::TEX_FILTER_SRGB, 0, mipImages);
+		// 圧縮データかどうか確認する
+		if (DirectX::IsCompressed(image.GetMetadata().format)) {
+			// 圧縮データであればそのまま使うのでmoveする
+			mipImages = std::move(image);
+		}
+		else {
+			hr = DirectX::GenerateMipMaps(image.GetImages(), image.GetImageCount(), image.GetMetadata(), DirectX::TEX_FILTER_SRGB, 0, mipImages);
+		}
 		assert(SUCCEEDED(hr));
 
 		// ミニマップ付きのデータを渡す

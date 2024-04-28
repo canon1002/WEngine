@@ -163,6 +163,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="GameEngine\Object\Particle\ParticleManager.cpp" />
     <ClCompile Include="GameEngine\Object\ObjectAdministrator.cpp" />
     <ClCompile Include="GameEngine\Base\DirectX\RTV.cpp" />
+    <ClCompile Include="GameEngine\Object\Model\Skybox\Skybox.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameEngine\Base\DirectX\DSV.h" />
@@ -217,6 +218,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="GameEngine\Object\Particle\ParticleManager.h" />
     <ClInclude Include="GameEngine\Object\ObjectAdministrator.h" />
     <ClInclude Include="GameEngine\Base\DirectX\RTV.h" />
+    <ClInclude Include="GameEngine\Object\Model\Skybox\Skybox.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt" />

@@ -217,6 +217,7 @@
     <ClCompile Include="GameEngine\Object\ObjectAdministrator.cpp" />
     <ClCompile Include="GameEngine\Base\DirectX\RTV.cpp" />
     <ClCompile Include="GameEngine\Base\DirectX\DSV.cpp" />
+    <ClCompile Include="GameEngine\Object\Model\Skybox\Skybox.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameEngine\Base\WinApp\WinAPI.h">
@@ -361,6 +362,7 @@
     <ClInclude Include="GameEngine\Object\ObjectAdministrator.h" />
     <ClInclude Include="GameEngine\Base\DirectX\RTV.h" />
     <ClInclude Include="GameEngine\Base\DirectX\DSV.h" />
+    <ClInclude Include="GameEngine\Object\Model\Skybox\Skybox.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt">
