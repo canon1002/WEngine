@@ -99,6 +99,15 @@ struct Animation {
 	std::map<std::string, NodeAnimation> nodeAnimations;
 };
 
+namespace Animations {
+
+	// 任意の時刻の値を取得する関数(Vector3型)
+	Vector3 CalculateValue(const std::vector<KeyframeVector3>& keyframes, float time);
+	// 任意の時刻の値を取得する関数(Quaternion型)
+	Quaternion CalculateValue(const std::vector<KeyframeQuaternion>& keyframes, float time);
+
+}
+
 #pragma endregion
 
 namespace Resource // ここから関数の宣言と定義を行う

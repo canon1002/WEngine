@@ -303,6 +303,30 @@ Matrix4x4 MakeAffineMatrix(
 		1 };
 }
 
+Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Quaternion& rotate, const Vector3& translate){
+	
+	// Quaternionをもちいて回転行列を求める
+	Matrix4x4 rotationMatrix = MakeRotateMatrix(rotate);
+
+	return Matrix4x4{
+		scale.x * rotationMatrix.m[0][0],
+		scale.x * rotationMatrix.m[0][1],
+		scale.x * rotationMatrix.m[0][2],
+		0,
+		scale.y * rotationMatrix.m[1][0],
+		scale.y * rotationMatrix.m[1][1],
+		scale.y * rotationMatrix.m[1][2],
+		0,
+		scale.z * rotationMatrix.m[2][0],
+		scale.z * rotationMatrix.m[2][1],
+		scale.z * rotationMatrix.m[2][2],
+		0,
+		translate.x,
+		translate.y,
+		translate.z,
+		1 };
+}
+
 // 透視投影行列の作成
 Matrix4x4 MakePerspectiveMatrix(
 	float fovY, float aspectRatio, float nearClip, float farClip) {

@@ -110,7 +110,8 @@ void Skybox::CreateTransformationRsource() {
 	// 書き込むためのアドレスを取得
 	wvpResource->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
 	// 単位行列を書き込む
-	wvpData->WVP = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f }, { 0.0f,0.0f,0.0f });
+	wvpData->WVP = MakeAffineMatrix(Vector3{ 1.0f,1.0f,1.0f }, 
+		Vector3{ 0.0f,0.0f,0.0f }, Vector3{ 0.0f,0.0f,0.0f });
 	wvpData->World = MakeIdentity();
 }
 

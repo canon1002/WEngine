@@ -33,7 +33,8 @@ void Triangle::Update() {
 void Triangle::Draw() {
 	
 	// カメラのワールド行列
-	cameraM = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f }, { 0.0f,0.0f,-5.0f });
+	cameraM = MakeAffineMatrix(Vector3{ 1.0f,1.0f,1.0f }, 
+		Vector3{ 0.0f,0.0f,0.0f }, Vector3{ 0.0f,0.0f,-5.0f });
 	// カメラ行列のビュー行列(カメラのワールド行列の逆行列)
 	viewM = Inverse(cameraM);
 	// 正規化デバイス座標系(NDC)に変換(正射影行列をかける)

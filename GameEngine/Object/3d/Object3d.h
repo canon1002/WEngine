@@ -51,6 +51,10 @@ public: // メンバ変数
 	TransformationMatrix* wvpData = nullptr;
 	WorldTransform* worldTransform_;
 
+	// -- Animation 関連 -- //
+
+	// アニメーション再生中の時刻
+	float animationTime_ = 0.0f;
 
 };
 

@@ -3,18 +3,19 @@
 // 前方宣言
 struct Vector3;
 struct Vec4;
+struct Quaternion;
 
 // 
-struct Matrix4x4{
+struct Matrix4x4 {
 	float m[4][4];
 };
 
 /// <summary>
- /// 行列の和を返す関数
- /// </summary>
- /// <param name="matrix1">行列1</param>
- /// <param name="matrix2">行列2</param>
- /// <returns>"行列1"と"行列2"の積を返す</returns>
+/// 行列の和を返す関数
+/// </summary>
+/// <param name="matrix1">行列1</param>
+/// <param name="matrix2">行列2</param>
+/// <returns>"行列1"と"行列2"の積を返す</returns>
 Matrix4x4 Add(Matrix4x4 matrix1, Matrix4x4 matrix2);
 
 /// <summary>
@@ -104,24 +105,44 @@ Vec4 Transform(const Vec4& v, const Matrix4x4& m);
 /// <returns></returns>
 Vector3 TransformNomal(const Vector3& v, const Matrix4x4& m);
 
-/// <summary>
 /// アフィン行列の作成
-/// <summary>
 Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Vector3& rotate, const Vector3& translate);
+
+/// アフィン行列の作成
+Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Quaternion& q, const Vector3& translate);
 
 /// <summary>
 /// 透視投影行列の作成
-/// <summary>
+/// </summary>
+/// <param name="fovY"></param>
+/// <param name="aspectRatio"></param>
+/// <param name="nearClip"></param>
+/// <param name="farClip"></param>
+/// <returns></returns>
 Matrix4x4 MakePerspectiveMatrix(float fovY, float aspectRatio, float nearClip, float farClip);
 
 /// <summary>
 /// 正射影行列の作成
-/// <summary>
+/// </summary>
+/// <param name="left"></param>
+/// <param name="top"></param>
+/// <param name="right"></param>
+/// <param name="bottom"></param>
+/// <param name="nearClip"></param>
+/// <param name="farClip"></param>
+/// <returns></returns>
 Matrix4x4 MakeOrthographicMatrix(
-    float left, float top, float right, float bottom, float nearClip, float farClip);
+	float left, float top, float right, float bottom, float nearClip, float farClip);
 
 /// <summary>
 /// ビューポート変換行列の作成
-/// <summary>
+/// </summary>
+/// <param name="left"></param>
+/// <param name="top"></param>
+/// <param name="width"></param>
+/// <param name="height"></param>
+/// <param name="minDepth"></param>
+/// <param name="maxDepth"></param>
+/// <returns></returns>
 Matrix4x4 MakeViewportMatrix(
-    float left, float top, float width, float height, float minDepth, float maxDepth);
+	float left, float top, float width, float height, float minDepth, float maxDepth);

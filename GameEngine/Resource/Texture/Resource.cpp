@@ -242,7 +242,7 @@ namespace Resource
 	}
 
 	ModelData LoadObjFile(const std::string& directoryPath, const std::string& filename) {
-		
+
 		/// 変数の宣言
 		ModelData modelData;// 構築するモデルのデータ
 		std::vector<Vec4> positions;//位置
@@ -322,7 +322,7 @@ namespace Resource
 		}
 		return modelData;
 	}
-	
+
 	MaterialData LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename) {
 		// 中で必要となる変数の宣言
 		MaterialData materialData;
@@ -353,7 +353,7 @@ namespace Resource
 		return materialData;
 	}
 
-	Animation LoadAnmation(const std::string& directoryPath, const std::string& filePath){
+	Animation LoadAnmation(const std::string& directoryPath, const std::string& filePath) {
 		Animation animation;
 		Assimp::Importer impoter;
 		std::string fullPath = directoryPath + "/" + filePath;
@@ -368,7 +368,7 @@ namespace Resource
 		animation.duration = float(animationAssimp->mDuration / animationAssimp->mTicksPerSecond);
 
 		// -- ここから "NodeAnimation" を解析する -- //
-		
+
 		// assimpでは個々のNodeのAnimationをchannelとよんでいるのでchannelを回してNodeAnimationの情報を取ってくる
 		for (uint32_t channelIndex = 0; channelIndex < animationAssimp->mNumChannels; ++channelIndex) {
 			aiNodeAnim* nodeAnimationAssimp = animationAssimp->mChannels[channelIndex];
@@ -376,7 +376,7 @@ namespace Resource
 			NodeAnimation& nodeAnimation = animation.nodeAnimations[nodeAnimationAssimp->mNodeName.C_Str()];
 
 			// -- キーフレームごとの情報を取得する -- //
-			
+
 			// translation
 			for (uint32_t keyIndex = 0; keyIndex < nodeAnimationAssimp->mNumPositionKeys; ++keyIndex) {
 				aiVectorKey& keyAssimp = nodeAnimationAssimp->mPositionKeys[keyIndex];
@@ -387,8 +387,8 @@ namespace Resource
 				// 左手座標系 -> 右手座標系 (xを反転させる)
 				keyframe.value = { -keyAssimp.mValue.x,keyAssimp.mValue.y,keyAssimp.mValue.z };
 				nodeAnimation.translation.push_back(keyframe);
-			}	
-			
+			}
+
 			// rotation
 			for (uint32_t keyIndex = 0; keyIndex < nodeAnimationAssimp->mNumRotationKeys; ++keyIndex) {
 				aiQuatKey& keyAssimp = nodeAnimationAssimp->mRotationKeys[keyIndex];
@@ -417,5 +417,51 @@ namespace Resource
 		return animation;
 	}
 
+
+}
+
+namespace Animations {
+
+	Vector3 CalculateValue(const std::vector<KeyframeVector3>& keyframes, float time) {
+		// キーがないものは返す値がわからないのでだめ
+		assert(!keyframes.empty());
+		// キーが1つか、時刻がキーフレーム前なら最初の値とする
+		if (keyframes.size() == 1 || time <= keyframes[0].time) {
+			return keyframes[0].value;
+		}
+
+		for (size_t index = 0; index < keyframes.size() - 1; ++index) {
+			size_t nextIndex = index + 1;
+			// indexとnextIndexの2つの値のkeyframeを取得して範囲内に時刻があるかお判定
+			if (keyframes[index].time <= time && time <= keyframes[nextIndex].time) {
+				// 範囲内を補間する
+				float t = (time - keyframes[index].time) / (keyframes[nextIndex].time - keyframes[index].time);
+				return Lerp(keyframes[index].value, keyframes[nextIndex].value, t);
+			}
+		}
+		// ここまできた場合は一番後ろの時刻よりも後ろなので最後の値を返す
+		return (*keyframes.rbegin()).value;
+	}
+
+	Quaternion CalculateValue(const std::vector<KeyframeQuaternion>& keyframes, float time) {
+		// キーがないものは返す値がわからないのでだめ
+		assert(!keyframes.empty());
+		// キーが1つか、時刻がキーフレーム前なら最初の値とする
+		if (keyframes.size() == 1 || time <= keyframes[0].time) {
+			return keyframes[0].value;
+		}
+
+		for (size_t index = 0; index < keyframes.size() - 1; ++index) {
+			size_t nextIndex = index + 1;
+			// indexとnextIndexの2つの値のkeyframeを取得して範囲内に時刻があるかお判定
+			if (keyframes[index].time <= time && time <= keyframes[nextIndex].time) {
+				// 範囲内を補間する
+				float t = (time - keyframes[index].time) / (keyframes[nextIndex].time - keyframes[index].time);
+				return Slerp(keyframes[index].value, keyframes[nextIndex].value, t);
+			}
+		}
+		// ここまできた場合は一番後ろの時刻よりも後ろなので最後の値を返す
+		return (*keyframes.rbegin()).value;
+	}
 
 }

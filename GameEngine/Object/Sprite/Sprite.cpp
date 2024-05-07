@@ -35,7 +35,7 @@ void Sprite::Update() {
 	//worldTransform_.rotate.z += 0.05f;
 
 	// カメラのワールド行列
-	cameraM = MakeAffineMatrix({1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f});
+	cameraM = MakeAffineMatrix(Vector3(1.0f,1.0f,1.0f),Vector3(0.0f,0.0f,0.0f),Vector3(0.0f,0.0f,0.0f));
 	// カメラ行列のビュー行列(カメラのワールド行列の逆行列)
 	viewM = Inverse(cameraM);
 	// 正規化デバイス座標系(NDC)に変換(正射影行列をかける)
@@ -49,7 +49,7 @@ void Sprite::Update() {
 	/// マテリアル・UVTransform
 	Matrix4x4 uvTransformMatrix = MakeAffineMatrix(
 		uvTransform_.scale,
-		{ 0.0f,0.0f,uvTransform_.rotation.z },
+		Vector3{ 0.0f,0.0f,uvTransform_.rotation.z },
 		uvTransform_.translation
 	);
 	// 変換したデータを代入する

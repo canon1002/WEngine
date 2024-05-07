@@ -35,7 +35,6 @@ void Object3d::Update() {
 	ImGui::DragFloat3("Scale", &worldTransform_->scale.x);
 	ImGui::DragFloat3("Rotate", &worldTransform_->rotation.x);
 	ImGui::DragFloat3("translate", &worldTransform_->translation.x);
-	ImGui::ColorEdit4("Color",&model_->materialData_->color.r);
 	if (model_ != nullptr) {
 		model_->DrawGUI("Model");
 	}
@@ -63,6 +62,30 @@ void Object3d::Update() {
 
 	model_->Update();
 
+	// -- アニメーションが設定されている場合 -- // 
+
+	if (model_->animation_.nodeAnimations.size() == 0) {
+		// ノードアニメーションのサイズが0なら未設定として扱い、早期リターンする
+		return;
+	}
+
+	// 時刻を進める 右の数値(60.0fはフレームレートに応じて変動させるようにしたい)
+	animationTime_ += 1.0f / 60.0f;
+	// 最後まで行ったら最初からリピート再生する(しなくてもいいし、フラグで変更しても良さそう)
+	animationTime_ = std::fmod(animationTime_,model_->animation_.duration);
+	// rootNodeのアニメーションを取得
+	NodeAnimation& rootAnimation = model_->animation_.nodeAnimations[model_->modelData.rootNode.name];
+	// 指定時刻に応じた値を取得する
+	Vector3 translation = Animations::CalculateValue(rootAnimation.translation,animationTime_);
+	Quaternion rotation = Animations::CalculateValue(rootAnimation.rotation,animationTime_);
+	Vector3 scale = Animations::CalculateValue(rootAnimation.scale,animationTime_);
+	Matrix4x4 localMatrix = MakeAffineMatrix(scale, rotation, translation);
+
+	// モデルデータに存在するNodeのLocalMatrixを適用する
+	wvpData->WVP = Multiply(localMatrix, Multiply(worldTransform_->GetWorldMatrix(), wvpM));
+	wvpData->World = Multiply(localMatrix, worldTransform_->GetWorldMatrix());
+
+
 }
 
 void Object3d::Draw() {
@@ -88,7 +111,7 @@ void Object3d::CreateTransformationRsource() {
 	// 書き込むためのアドレスを取得
 	wvpResource->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
 	// 単位行列を書き込む
-	wvpData->WVP = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f }, { 0.0f,0.0f,0.0f });
+	wvpData->WVP = MakeAffineMatrix(Vector3(1.0f, 1.0f, 1.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f));
 	wvpData->World = MakeIdentity();
 }
 

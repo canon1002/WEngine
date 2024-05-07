@@ -24,7 +24,11 @@ public:
 	void CreateVertexResource();
 	void CreateMaterialResource();
 
+	// カメラ座標を設定
 	void SetCameraPosition(CameraCommon camera) { cameraData->worldPosition = camera.GetTranslate(); }
+
+	// アニメーションをセットする
+	void SetAnimation(const Animation& animation) { animation_ = animation; }
 
 public:
 
@@ -66,6 +70,12 @@ public:
 
 	// UVTransform用の変数
 	UVTransform uvTransform_;
+
+	// -- NodeAnimation 関連 -- //
+
+	// アニメーション
+	Animation animation_;
+
 
 };
 

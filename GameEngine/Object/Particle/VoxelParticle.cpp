@@ -92,7 +92,7 @@ void VoxelParticle::Update() {
 	/// マテリアル・UVTransform
 	Matrix4x4 uvTransformMatrix = MakeAffineMatrix(
 		uvTransform_.scale,
-		{ 0.0f,0.0f,uvTransform_.rotation.z },
+		Vector3{ 0.0f,0.0f,uvTransform_.rotation.z },
 		uvTransform_.translation
 	);
 	// 変換したデータを代入する
