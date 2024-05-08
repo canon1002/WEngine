@@ -98,6 +98,8 @@ public: // ** メンバ関数 ** //
 	/// </summary>
 	void DrawBegin();
 
+	void PreDrawForRenderTarget();
+
 	void DrawPariticleBegin();
 
 	/// <summary>

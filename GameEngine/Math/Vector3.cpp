@@ -191,7 +191,7 @@ Vector3 Slerp(const Vector3& p0, const Vector3& p1, const float t)
 
 	Vector3 subtractVec3 = Subtract(p1, p0);
 	Vector3 relativeVector = Normalize(
-		{ subtractVec3.x * newT,
+		Vector3{ subtractVec3.x * newT,
 		subtractVec3.y * newT,
 		subtractVec3.z * newT });
 

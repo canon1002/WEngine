@@ -94,6 +94,22 @@ int SRV::SetStructuredBuffer(int32_t kNumInstance, Microsoft::WRL::ComPtr<ID3D12
 
 }
 
+void SRV::CreateRenderTextureSRV(){
+	// 後々使う
+
+	// SRVの設定をおこなう
+	//D3D12_SHADER_RESOURCE_VIEW_DESC renderTextureSrvDesc{};
+	//renderTextureSrvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+	//renderTextureSrvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	//renderTextureSrvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+	//renderTextureSrvDesc.Texture2D.MipLevels = 1;
+
+	//// SRVの生成
+	//dxCommon_->device_->CreateShaderResourceView(renderTextureResource.Get(),
+	//	&renderTextureSrvDesc, DescriptorCPUHandle);
+
+}
+
 const DirectX::TexMetadata& SRV::GetMetaData(uint32_t textureId)
 {
 	TextureData& textureData = textureData_.at(textureId);

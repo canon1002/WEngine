@@ -463,6 +463,10 @@ void DirectXCommon::DrawBegin() {
 	commandList->RSSetScissorRects(1, &scissorRect);
 }
 
+void DirectXCommon::PreDrawForRenderTarget()
+{
+}
+
 void DirectXCommon::DrawPariticleBegin()
 {
 

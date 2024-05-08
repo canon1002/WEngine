@@ -49,7 +49,7 @@ private:
 
 	WorldTransform worldTransform_;
 	Matrix4x4 worldM, cameraM, viewM, projectM, wvpM;
-	Vec4 translate_;
+	Vector4 translate_;
 	// テクスチャハンドル
 	int32_t textureHandle_ = 0;
 

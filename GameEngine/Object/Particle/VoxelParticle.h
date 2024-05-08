@@ -47,7 +47,7 @@ public:
 	/// 中心座標を移動させる
 	/// </summary>
 	/// <param name="t">移動量</param>
-	void Transform(Vec4 t) {
+	void Transform(Vector4 t) {
 		worldTransform_.translation.x += t.x;
 		worldTransform_.translation.y += t.y;
 		worldTransform_.translation.z += t.z;

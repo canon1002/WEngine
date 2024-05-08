@@ -28,13 +28,13 @@ struct Node{
 
 // 頂点データ
 struct VertexData {
-	Vec4 position;
+	Vector4 position;
 	Vec2 texcoord;
 	Vector3 normal;
 };
 // 2D用 頂点データ
 struct VertexData2D {
-	Vec4 position;
+	Vector4 position;
 	Vec2 texcoord;
 };
 // 

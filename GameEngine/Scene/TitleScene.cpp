@@ -9,15 +9,17 @@ void TitleScene::Init() {
 	//testObject_ = ObjectAdministrator::GetInstance()->CreateObject("Resources/objs", "emptyAxis.obj");
 	// モデルをセットする
 	ModelManager::GetInstance()->LoadModel("plane", "plane.gltf");
+	ModelManager::GetInstance()->LoadModel("ball", "ball.obj");
 	ModelManager::GetInstance()->LoadModel("AnimatedCube", "AnimatedCube.gltf");
 	DirectXCommon::GetInstance()->srv_->LoadTexture("skybox/UI01.dds");
 
 	// 3dオブジェクトの宣言
 	testObject_ = std::make_unique<Object3d>();
 	testObject_->Init();
-	testObject_->SetModel("AnimatedCube.gltf");
-	testObject_->GetModel()->SetAnimation(
-		Resource::LoadAnmation("AnimatedCube", "AnimatedCube.gltf"));
+	testObject_->SetModel("ball.obj");
+	//testObject_->SetModel("AnimatedCube.gltf");
+	//testObject_->GetModel()->SetAnimation(
+	//	Resource::LoadAnmation("AnimatedCube", "AnimatedCube.gltf"));
 	testObject_->SetTranslate({ 0.0f,0.0f,10.0f });
 	
 	// skyboxの宣言

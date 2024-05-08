@@ -71,7 +71,7 @@ private:
 
 	WorldTransform worldTransform_;
 	Matrix4x4 worldM, cameraM, viewM, projectM, pespectiveM,wvpM;
-	Vec4 translate_;
+	Vector4 translate_;
 
 	// VertexResourceを生成する(P.42)
 	// 実際に頂点リソースを作る

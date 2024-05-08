@@ -2,7 +2,7 @@
 
 // 前方宣言
 struct Vector3;
-struct Vec4;
+struct Vector4;
 struct Quaternion;
 
 // 
@@ -95,7 +95,7 @@ Vector3 Transform(const Vector3& v, const Matrix4x4& m);
 /// <summary>
 /// 座標変換
 /// </summary>
-Vec4 Transform(const Vec4& v, const Matrix4x4& m);
+Vector4 Transform(const Vector4& v, const Matrix4x4& m);
 
 /// <summary>
 /// ベクトル変換

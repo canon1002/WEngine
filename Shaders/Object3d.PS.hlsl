@@ -73,6 +73,10 @@ PixelShaderOutput main(VertexShaderOutput input)
     {
         // Samplingしたtextureの色とmaterialの色を乗算して合成する
         output.color = gMaterial.color * textureColor;
+        //output.color = gMaterial.Sample(gSampler, input.texcoord);
+        float32_t value = dot(output.color.rgb, float32_t3(0.2125f, 0.7154f, 0.0721f));
+        output.color.rgb = float32_t3(value, value, value);
+
     }
     
     return output;

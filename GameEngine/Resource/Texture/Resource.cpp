@@ -156,7 +156,7 @@ namespace Resource
 	ModelData LoadModelFile(const std::string& directoryPath, const std::string& filename) {
 		/// 変数の宣言
 		ModelData modelData;// 構築するモデルのデータ
-		std::vector<Vec4> positions;//位置
+		std::vector<Vector4> positions;//位置
 		std::vector<Vector3> normals;//法線
 		std::vector<Vec2> texcoords;//テクスチャ座標
 		std::string line; // ファイルから読んだ一行を格納する
@@ -245,7 +245,7 @@ namespace Resource
 
 		/// 変数の宣言
 		ModelData modelData;// 構築するモデルのデータ
-		std::vector<Vec4> positions;//位置
+		std::vector<Vector4> positions;//位置
 		std::vector<Vector3> normals;//法線
 		std::vector<Vec2> texcoords;//テクスチャ座標
 		std::string line; // ファイルから読んだ一行を格納する
@@ -265,7 +265,7 @@ namespace Resource
 
 			// 位置
 			if (identifier == "v") {
-				Vec4 position;
+				Vector4 position;
 				s >> position.x >> position.y >> position.z;
 				position.w = 1.0f;
 				positions.push_back(position);
@@ -299,7 +299,7 @@ namespace Resource
 						elementIndices[element] = std::stoi(index);
 					}
 					// 要素へのインデックスから、実際の要素の値を取得しt、頂点を構築する
-					Vec4 position = positions[elementIndices[0] - 1];
+					Vector4 position = positions[elementIndices[0] - 1];
 					Vec2 texcoord = texcoords[elementIndices[1] - 1];
 					Vector3 normal = normals[elementIndices[2] - 1];
 					//VertexData vertex = { position,texcoord,normal };

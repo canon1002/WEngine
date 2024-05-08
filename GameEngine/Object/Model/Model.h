@@ -63,6 +63,8 @@ public:
 	Microsoft::WRL::ComPtr<ID3D12Resource> directionalLightResource = nullptr;
 	// 平行光源　
 	DirectionalLight* directionalLightDate = nullptr;
+	// 平行光線の適用をImGuiで操作する用のフラグ
+	bool isLighting_ = true;
 
 	// 鏡面反射用のリソースを作る
 	Microsoft::WRL::ComPtr<ID3D12Resource> CameraResource = nullptr;

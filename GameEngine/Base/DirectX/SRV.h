@@ -26,6 +26,8 @@ public: // -- public メンバ関数 -- //
 	int LoadTexture(const std::string filePath);
 	int SetStructuredBuffer(int32_t kNumInstance, Microsoft::WRL::ComPtr<ID3D12Resource> instancingResource);
 	
+	void CreateRenderTextureSRV();
+
 	// メタデータ取得
 	const DirectX::TexMetadata& GetMetaData(uint32_t textureId);
 
@@ -51,8 +53,13 @@ public: // -- public メンバ変数 -- //
 	// パーティクルの使用する番地を1000~にする
 	int32_t particleId_ = 1000;
 
+	// インスタンシング
 	D3D12_CPU_DESCRIPTOR_HANDLE instancingSrvHandleCPU;
 	D3D12_GPU_DESCRIPTOR_HANDLE instancingSrvHandleGPU;
+
+	// -- RenderTexture用 -- //
+
+	Microsoft::WRL::ComPtr<ID3D12Resource> renderTextureResource = nullptr;
 
 private: // -- private メンバ変数 -- // 
 
