@@ -17,7 +17,7 @@ void TitleScene::Init() {
 	testObject_->Init();
 	testObject_->SetModel("AnimatedCube.gltf");
 	testObject_->GetModel()->SetAnimation(
-		Resource::LoadAnmation("AnimatedCube", "AnimatedCube.gltf"));
+		Resource::LoadAnmation("Resources/objs/AnimatedCube", "AnimatedCube.gltf"));
 	testObject_->SetTranslate({ 0.0f,0.0f,10.0f });
 	
 	// skyboxの宣言
