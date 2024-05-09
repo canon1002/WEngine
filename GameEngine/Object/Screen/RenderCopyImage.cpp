@@ -1,17 +1,85 @@
-#include "SpriteAdministrator.h"
+#include "RenderCopyImage.h"
+#include "GameEngine/Object/Camera/MainCamera.h"
+#include "GameEngine/Base/Debug/ImGuiManager.h"
 
-void SpriteAdministrator::Finalize(){
-	graphicsPipelineState.Reset();
-	rootSignature.Reset();
-}
+RenderCopyImage::RenderCopyImage() {}
 
-void SpriteAdministrator::Initialize(DirectXCommon* dxComoon){
-	dxCommon_ = dxComoon;
-	CreateGraphicsPipeline();
-}
-
-void SpriteAdministrator::CreateRootSignature()
+RenderCopyImage::~RenderCopyImage()
 {
+	//delete wvpData;
+	//delete vertexData;
+	//delete materialData;
+}
+
+void RenderCopyImage::Initialize(DirectXCommon* dxCommon, CameraCommon* camera) {
+
+	dxCommon_ = dxCommon;
+	camera_ = camera;
+
+	// CopyImage用のPSO及びRootSignatureを生成する
+	CreateGraphicsPipeline();
+
+	CreateVertexResource();
+	CreateTransformationRsource();
+	CreateBufferView();
+
+	textureHandle_ = dxCommon_->srv_->CreateRenderTextureSRV();
+
+}
+
+void RenderCopyImage::Update() {
+
+	ImGui::Begin("CopyImage");
+	ImGui::SliderAngle("RotateX", &worldTransform_.rotation.x);
+	ImGui::SliderAngle("RotateY", &worldTransform_.rotation.y);
+	ImGui::SliderAngle("RotateZ", &worldTransform_.rotation.z);
+	ImGui::DragFloat3("Scale", &worldTransform_.scale.x);
+	ImGui::DragFloat3("Rotate", &worldTransform_.rotation.x);
+	ImGui::DragFloat3("Translation", &worldTransform_.translation.x);
+	ImGui::End();
+
+	// カメラのワールド行列
+	cameraM = MakeAffineMatrix(Vector3{ 1.0f,1.0f,1.0f },
+		Vector3{ 0.0f,0.0f,0.0f }, Vector3{ 0.0f,0.0f,-5.0f });
+	// カメラ行列のビュー行列(カメラのワールド行列の逆行列)
+	viewM = Inverse(cameraM);
+	// 正規化デバイス座標系(NDC)に変換(正射影行列をかける)
+	pespectiveM = MakePerspectiveMatrix(0.45f, (1280.0f / 720.0f), 0.1f, 100.0f);
+	// WVPにまとめる
+	wvpM = Multiply(viewM, pespectiveM);
+	// 三角形のワールド行列とWVP行列を掛け合わした行列を代入
+	*wvpData = Multiply(worldTransform_.GetWorldMatrix(), wvpM);
+
+}
+
+void RenderCopyImage::PreDraw(){
+	// RootSignatureを設定。PSOに設定しているが、別途設定が必要
+	dxCommon_->commandList->SetGraphicsRootSignature(rootSignature.Get());
+	dxCommon_->commandList->SetPipelineState(graphicsPipelineState.Get());
+}
+
+void RenderCopyImage::Draw() {
+
+
+	dxCommon_->commandList->IASetVertexBuffers(0, 1, &vertexBufferView);
+	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけばいい
+	dxCommon_->commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	/// CBV設定
+
+	// マテリアルのCBufferの場所を指定
+	dxCommon_->commandList->SetGraphicsRootConstantBufferView(0, materialResource->GetGPUVirtualAddress());
+	//wvp用のCBufferの場所を指定
+	dxCommon_->commandList->SetGraphicsRootConstantBufferView(1, wvpResource->GetGPUVirtualAddress());
+	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である
+	dxCommon_->commandList->SetGraphicsRootDescriptorTable(2, dxCommon_->srv_->textureData_.at(textureHandle_).textureSrvHandleGPU);
+
+	// インスタンス生成
+	dxCommon_->commandList->DrawInstanced(3, 1, 0, 0);
+
+}
+
+void RenderCopyImage::CreateRootSignature(){
 	// RootSignatureを生成する
 	D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature{};
 	descriptionRootSignature.Flags =
@@ -25,7 +93,7 @@ void SpriteAdministrator::CreateRootSignature()
 	descriptorRange[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;// offset自動計算
 
 	// RootParamenter作成
-	D3D12_ROOT_PARAMETER rootParameters[3] = {};
+	D3D12_ROOT_PARAMETER rootParameters[5] = {};
 	rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; // CBVを使う // b0のbと一致
 	rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
 	rootParameters[0].Descriptor.ShaderRegister = 0; // レジスタ番号とバインド // b0のと一致
@@ -39,6 +107,13 @@ void SpriteAdministrator::CreateRootSignature()
 	rootParameters[2].DescriptorTable.pDescriptorRanges = descriptorRange;
 	rootParameters[2].DescriptorTable.NumDescriptorRanges = _countof(descriptorRange);
 
+	rootParameters[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; // CBVを使う
+	rootParameters[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
+	rootParameters[3].Descriptor.ShaderRegister = 1;	// レジスタ番号1を使う
+
+	rootParameters[4].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; // CBVを使う
+	rootParameters[4].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
+	rootParameters[4].Descriptor.ShaderRegister = 2;	// レジスタ番号2を使う
 
 	descriptionRootSignature.pParameters = rootParameters; // ルートパラメータ配列へのポインタ
 	descriptionRootSignature.NumParameters = _countof(rootParameters); // 配列の長さ
@@ -61,10 +136,9 @@ void SpriteAdministrator::CreateRootSignature()
 	Microsoft::WRL::ComPtr<ID3DBlob> signatureBlob = nullptr;
 	Microsoft::WRL::ComPtr<ID3DBlob> errorBlob = nullptr;
 	HRESULT hr = D3D12SerializeRootSignature(&descriptionRootSignature,
-		D3D_ROOT_SIGNATURE_VERSION_1,
-		&signatureBlob,
-		&errorBlob
+		D3D_ROOT_SIGNATURE_VERSION_1, &signatureBlob, &errorBlob
 	);
+
 	if (FAILED(hr)) {
 		WinAPI::Log(reinterpret_cast<char*>(errorBlob->GetBufferPointer()));
 		assert(false);
@@ -74,11 +148,12 @@ void SpriteAdministrator::CreateRootSignature()
 	hr = dxCommon_->device_->CreateRootSignature(0, signatureBlob->GetBufferPointer(),
 		signatureBlob->GetBufferSize(), IID_PPV_ARGS(&rootSignature));
 	assert(SUCCEEDED(hr));
+
 }
 
-void SpriteAdministrator::CreateGraphicsPipeline()
-{
-	// ルートシグネチャを作成
+void RenderCopyImage::CreateGraphicsPipeline(){
+
+	// ルートシグネチャを生成する
 	CreateRootSignature();
 
 	// InputLayoutの設定を行う(P.32)
@@ -87,21 +162,19 @@ void SpriteAdministrator::CreateGraphicsPipeline()
 	inputElementDescs[0].SemanticIndex = 0;
 	inputElementDescs[0].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
 	inputElementDescs[0].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
-
 	inputElementDescs[1].SemanticName = "TEXCOORD";
 	inputElementDescs[1].SemanticIndex = 0;
 	inputElementDescs[1].Format = DXGI_FORMAT_R32G32_FLOAT;
 	inputElementDescs[1].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
-
-	inputElementDescs[2].SemanticName = "COLOR";
+	/*inputElementDescs[2].SemanticName = "NORMAL";
 	inputElementDescs[2].SemanticIndex = 0;
-	inputElementDescs[2].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-	inputElementDescs[2].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
-	
+	inputElementDescs[2].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+	inputElementDescs[2].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;*/
 
+	// 頂点には何もデータ入力をしないので、InputLayoutは利用しない
 	D3D12_INPUT_LAYOUT_DESC inputLayoutDesc{};
 	inputLayoutDesc.pInputElementDescs = inputElementDescs;
-	inputLayoutDesc.NumElements = _countof(inputElementDescs);
+	inputLayoutDesc.NumElements = 0;
 
 	// BlendStateの設定を行う(P.34)
 	D3D12_BLEND_DESC blendDesc{};
@@ -124,11 +197,11 @@ void SpriteAdministrator::CreateGraphicsPipeline()
 	rasterizerDesc.FillMode = D3D12_FILL_MODE_SOLID;
 
 	// Shaderをcompileする(P.37)
-	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob = WinAPI::CompileShader(L"Shaders/Sprite2d.VS.hlsl",
+	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob = WinAPI::CompileShader(L"Shaders/CopyImage.VS.hlsl",
 		L"vs_6_0", dxCommon_->dxcUtils, dxCommon_->dxcCompiler, dxCommon_->includeHandler);
 	assert(vertexShaderBlob != nullptr);
 
-	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob = WinAPI::CompileShader(L"Shaders/Sprite2d.PS.hlsl",
+	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob = WinAPI::CompileShader(L"Shaders/CopyImage.PS.hlsl",
 		L"ps_6_0", dxCommon_->dxcUtils, dxCommon_->dxcCompiler, dxCommon_->includeHandler);
 	assert(pixelShaderBlob != nullptr);
 
@@ -153,8 +226,10 @@ void SpriteAdministrator::CreateGraphicsPipeline()
 	graphicsPipelineStateDesc.SampleMask = D3D12_DEFAULT_SAMPLE_MASK;
 	//  DepthStencilの設定を行う
 	D3D12_DEPTH_STENCIL_DESC depthStencilDesc{};
-	// Depthの機能を有効化
-	depthStencilDesc.DepthEnable = true;
+	
+	// Depthの機能を無効化
+	// 全画面に対してなにか処理を施したいだけなので、比較も書き込みも必要ないのでDepth自体不要
+	depthStencilDesc.DepthEnable = false;
 	// 書き込みを行う
 	depthStencilDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
 	// 比較関数はLessEqual。つまり、近ければ描画される
@@ -171,9 +246,62 @@ void SpriteAdministrator::CreateGraphicsPipeline()
 
 }
 
-void SpriteAdministrator::PreDraw()
-{
-	// RootSignatureを設定。PSOに設定しているが、別途設定が必要
-	dxCommon_->commandList->SetGraphicsRootSignature(rootSignature.Get());
-	dxCommon_->commandList->SetPipelineState(graphicsPipelineState.Get());
+//
+void RenderCopyImage::CreateVertexResource() {
+
+	// VertexResourceを生成する(P.42)
+	// 実際に頂点リソースを作る
+	vertexResource = dxCommon_->CreateBufferResource(dxCommon_->device_.Get(), sizeof(VertexData) * 3);
+
+	// マテリアル用のResourceを作る
+	materialResource = dxCommon_->CreateBufferResource(dxCommon_->device_.Get(), sizeof(VertexData));
+	// マテリアルにデータを書き込む
+	materialData = nullptr;
+	// 書き込むためのアドレスを取得
+	materialResource->Map(0, nullptr, reinterpret_cast<void**>(&materialData));
+	// 色を書き込む
+	*materialData = Color(1.0f, 1.0f, 1.0f, 1.0f);
+
+}
+
+//
+void RenderCopyImage::CreateTransformationRsource() {
+
+	// Transformation用のResourceを作る
+	wvpResource = dxCommon_->CreateBufferResource(dxCommon_->device_.Get(), sizeof(Matrix4x4));
+	// データを書き込む
+	// 書き込むためのアドレスを取得
+	wvpResource->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
+	// 単位行列を書き込む
+	*wvpData = camera_->GetViewProjectionMatrix();
+
+}
+
+//
+void RenderCopyImage::CreateBufferView() {
+
+	// VertexBufferViewを作成する(P.43)
+	// 頂点バッファビューを作成する
+	vertexBufferView = {};
+	// リソースの先頭のアドレスから使う
+	vertexBufferView.BufferLocation = vertexResource->GetGPUVirtualAddress();
+	// 使用するリソースサイズは頂点3つ分のサイズ
+	vertexBufferView.SizeInBytes = sizeof(VertexData) * 3;
+	// 1頂点あたりのサイズ
+	vertexBufferView.StrideInBytes = sizeof(VertexData);
+
+	// Resourceにデータを書き込む
+
+	// 書き込むためのアドレスを取得
+	vertexResource->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
+	// 左下
+	vertexData[0].position = { -0.5f,-0.5f,0.0f,1.0f };
+	vertexData[0].texcoord = { 0.0f,1.0f };
+	// 上
+	vertexData[1].position = { 0.0f,0.5f,0.0f,1.0f };
+	vertexData[1].texcoord = { 0.5f,0.0f };
+	// 右下
+	vertexData[2].position = { 0.5f,-0.5f,0.0f,1.0f };
+	vertexData[2].texcoord = { 1.0f,1.0f };
+
 }

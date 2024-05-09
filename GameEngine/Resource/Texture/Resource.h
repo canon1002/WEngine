@@ -123,6 +123,12 @@ namespace Resource // ここから関数の宣言と定義を行う
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateDeapStencilTextureResource(
 		Microsoft::WRL::ComPtr<ID3D12Device> device, int32_t width, int32_t height);
 
+	// レンダーテクスチャの生成
+	Microsoft::WRL::ComPtr <ID3D12Resource> CreateRenderTextureResource(
+		Microsoft::WRL::ComPtr <ID3D12Device> device, int32_t width, int32_t height,
+		DXGI_FORMAT format, const Vector4& clearColor
+	);
+
 	// データを転送する
 	void UpdateTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages);
 

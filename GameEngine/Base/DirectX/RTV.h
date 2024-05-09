@@ -23,12 +23,6 @@ private: // -- private メンバ関数 -- //
 	/// </summary>
 	void CreateFinalRenderTargets();
 
-	// レンダーテクスチャの生成
-	Microsoft::WRL::ComPtr <ID3D12Resource> CreateRenderTextureResource(
-		Microsoft::WRL::ComPtr <ID3D12Device> device, uint32_t width, uint32_t height,
-		DXGI_FORMAT format, const Vector4& clearColor
-	);
-
 	// コピーコンストラクタと演算子オーバーロードの禁止
 	RTV(const RTV& obj) = delete;
 	RTV& operator=(const RTV& obj) = delete;
@@ -41,6 +35,10 @@ public: // -- public メンバ変数 -- //
 	D3D12_RENDER_TARGET_VIEW_DESC rtvDesc{};
 	// RTV用ディスクリプタヒープ
 	Microsoft::WRL::ComPtr <ID3D12DescriptorHeap> rtvDescriptorHeap = nullptr;
+	// RenderTextureで初期化する際の色
+	const float kRenderTargetColor[4] = { 1.0f,0.0f,0.0f,1.0f };
+
+	Microsoft::WRL::ComPtr <ID3D12Resource> renderTextureResource = nullptr;
 
 private: // -- private メンバ変数 -- //
 

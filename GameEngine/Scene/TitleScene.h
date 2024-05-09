@@ -7,6 +7,7 @@
 #include "GameEngine/Object/Sprite/Sprite.h"
 #include "GameEngine/Object/Model/Skybox/Skybox.h"
 
+
 class TitleScene :
     public IScene
 {
@@ -25,6 +26,7 @@ private:
 	//std::shared_ptr<Object3d> testObject_;
 	std::unique_ptr<Object3d> testObject_;
 	std::unique_ptr<Skybox> skybox_;
-
+	
+	 
 };
 

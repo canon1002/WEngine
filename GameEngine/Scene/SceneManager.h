@@ -19,6 +19,8 @@
 
 #include "GameEngine/Object/ObjectAdministrator.h"
 
+#include "GameEngine/Object/Screen/RenderCopyImage.h"
+
 class SceneManager
 {
 private:
@@ -60,6 +62,8 @@ public:
 
 	void Init(WinAPI* winApp, DirectXCommon* dxCommon);
 	int Run();//　この関数でゲームループを呼び出す
+
+	std::unique_ptr<RenderCopyImage> copyImage_;
 
 };
 

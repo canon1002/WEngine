@@ -26,6 +26,7 @@ void TitleScene::Init() {
 	skybox_ = std::make_unique<Skybox>();
 	skybox_->Init("skybox","UI01.dds");
 
+
 }
 
 void TitleScene::Update() {
@@ -35,9 +36,13 @@ void TitleScene::Update() {
 
 	testObject_->Update();
 	skybox_->Update();
+
+
+
 }
 
 void TitleScene::Draw(){
+
 
 	// Skyboxの描画前処理
 	skybox_->PreDraw();

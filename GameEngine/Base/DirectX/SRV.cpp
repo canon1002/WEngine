@@ -94,19 +94,34 @@ int SRV::SetStructuredBuffer(int32_t kNumInstance, Microsoft::WRL::ComPtr<ID3D12
 
 }
 
-void SRV::CreateRenderTextureSRV(){
-	// 後々使う
+int32_t SRV::CreateRenderTextureSRV(){
+
+	// 新たにデータを登録する
+	TextureData textureData;
+	++textureId_;
 
 	// SRVの設定をおこなう
-	//D3D12_SHADER_RESOURCE_VIEW_DESC renderTextureSrvDesc{};
-	//renderTextureSrvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
-	//renderTextureSrvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	//renderTextureSrvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-	//renderTextureSrvDesc.Texture2D.MipLevels = 1;
+	D3D12_SHADER_RESOURCE_VIEW_DESC renderTextureSrvDesc{};
+	renderTextureSrvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+	renderTextureSrvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	renderTextureSrvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+	renderTextureSrvDesc.Texture2D.MipLevels = 1;
 
-	//// SRVの生成
-	//dxCommon_->device_->CreateShaderResourceView(renderTextureResource.Get(),
-	//	&renderTextureSrvDesc, DescriptorCPUHandle);
+	// デスクリプタサイズを取得
+	const uint32_t descriptorSizeSRV = dxCommon_->device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	//const uint32_t descriptorSizeRTV = dx_->device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+	//const uint32_t descriptorSizeDSV = dx_->device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
+
+	textureData.textureSrvHandleCPU = dxCommon_->GetCPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, textureId_);
+	textureData.textureSrvHandleGPU = dxCommon_->GetGPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, textureId_);
+
+	textureData_.insert(std::make_pair(textureId_, textureData));
+
+	// SRVの生成
+	dxCommon_->device_->CreateShaderResourceView(textureData.textureResource.Get(),
+		&renderTextureSrvDesc, textureData.textureSrvHandleCPU);
+
+	return textureId_;
 
 }
 

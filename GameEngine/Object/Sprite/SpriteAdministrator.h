@@ -19,7 +19,7 @@ public: // メンバ関数
 	void CreateRootSignature();
 	void CreateGraphicsPipeline();
 	void Update();
-	void PostDraw();
+	void PreDraw();
 
 private: // メンバ変数
 

@@ -35,6 +35,9 @@ void SceneManager::Init(WinAPI* winApp, DirectXCommon* dxCommon){
 	// 初期シーン
 	currentSceneNo_ = STAGE;
 
+	//
+	copyImage_ = std::make_unique<RenderCopyImage>();
+	copyImage_->Initialize(DirectXCommon::GetInstance(), MainCamera::GetInstance());
 }
 
 // 処理
@@ -83,6 +86,7 @@ int SceneManager::Run() {
 
 		/// 更新処理
 		sceneArr_[currentSceneNo_]->Update();
+		copyImage_->Update();
 		#ifdef _DEBUG
 		// 開発用UIの表示
 		//ImGui::ShowDemoWindow();
@@ -95,16 +99,25 @@ int SceneManager::Run() {
 		/// 描画処理(推定) 
 		/// 
 
-		// 描画前処理
-		dxCommon_->DrawBegin();
+		// 描画前処理 -- RenderTexture --
+		dxCommon_->PreDrawForRenderTarget();
 
 		//modelManager_->PreDraw();
-
+		
 		/// 描画処理
 		sceneArr_[currentSceneNo_]->Draw();
 		
 		// 最終的にここだけで描画処理を呼び出したい
 		objectAdmin_->Draw();
+
+		// 描画後処理 -- RenderTexture --
+		dxCommon_->PostDrawForRenderTarget();
+
+		// 描画前処理
+		dxCommon_->DrawBegin();
+
+		copyImage_->PreDraw();
+		copyImage_->Draw();
 
 #ifdef _DEBUG
 		// ImGuiの描画

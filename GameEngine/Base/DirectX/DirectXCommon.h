@@ -99,6 +99,7 @@ public: // ** メンバ関数 ** //
 	void DrawBegin();
 
 	void PreDrawForRenderTarget();
+	void PostDrawForRenderTarget();
 
 	void DrawPariticleBegin();
 

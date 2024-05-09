@@ -218,6 +218,8 @@
     <ClCompile Include="GameEngine\Base\DirectX\RTV.cpp" />
     <ClCompile Include="GameEngine\Base\DirectX\DSV.cpp" />
     <ClCompile Include="GameEngine\Object\Model\Skybox\Skybox.cpp" />
+    <ClCompile Include="GameEngine\Object\Screen\RenderCopyImage.cpp" />
+    <ClCompile Include="GameEngine\Object\Screen\RenderTextureAdmin.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameEngine\Base\WinApp\WinAPI.h">
@@ -363,6 +365,8 @@
     <ClInclude Include="GameEngine\Base\DirectX\RTV.h" />
     <ClInclude Include="GameEngine\Base\DirectX\DSV.h" />
     <ClInclude Include="GameEngine\Object\Model\Skybox\Skybox.h" />
+    <ClInclude Include="GameEngine\Object\Screen\RenderCopyImage.h" />
+    <ClInclude Include="GameEngine\Object\Screen\RenderTextureAdmin.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt">
@@ -373,6 +377,7 @@
     <None Include="Shaders\Sprite2d.hlsli" />
     <None Include="Shaders\Particle.hlsli" />
     <None Include="Shaders\Object3d.hlsli" />
+    <None Include="Shaders\CopyImage.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\Sprite2d.PS.hlsl" />
@@ -381,5 +386,7 @@
     <FxCompile Include="Shaders\Object3d.VS.hlsl" />
     <FxCompile Include="Shaders\Particle.PS.hlsl" />
     <FxCompile Include="Shaders\Particle.VS.hlsl" />
+    <FxCompile Include="Shaders\CopyImage.PS.hlsl" />
+    <FxCompile Include="Shaders\CopyImage.VS.hlsl" />
   </ItemGroup>
 </Project>
