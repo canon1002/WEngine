@@ -73,7 +73,7 @@ int SceneManager::Run() {
 		prevSceneNo_ = currentSceneNo_;
 
 		// カメラの更新
-		mainCamera_->Update();
+		//mainCamera_->Update();
 		// 入力結果をImGuiで表示する
 		//inputManager_->DrawGUI();
 

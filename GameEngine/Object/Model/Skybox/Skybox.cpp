@@ -13,6 +13,7 @@ void Skybox::Init(const std::string& directrypath, const std::string& filename) 
 	dxCommon_ = DirectXCommon::GetInstance();
 	camera_ = MainCamera::GetInstance();
 	worldTransform_ = new WorldTransform();
+	worldTransform_->scale = { 512.0f,512.0f,512.0f };
 	textureHandle_ = dxCommon_->srv_->LoadTexture(directrypath + "/" + filename);
 	CreateTransformationRsource();
 	CreateVertexResource();
@@ -41,6 +42,7 @@ void Skybox::Draw()
 
 
 	dxCommon_->commandList->IASetVertexBuffers(0, 1, &vertexBufferView);
+	dxCommon_->commandList->IASetIndexBuffer(&indexBufferView);
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけばいい
 	dxCommon_->commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
@@ -56,7 +58,7 @@ void Skybox::Draw()
 	dxCommon_->commandList->SetGraphicsRootDescriptorTable(2, dxCommon_->srv_->textureData_.at(textureHandle_).textureSrvHandleGPU);
 
 	// インデックスを使用してドローコール
-	dxCommon_->commandList->DrawInstanced(24, 1, 0, 0);
+	dxCommon_->commandList->DrawIndexedInstanced(36, 1, 0, 0,0);
 }
 
 void Skybox::DrawGUI(const std::string& label) {
@@ -88,6 +90,14 @@ void Skybox::DrawGUI(const std::string& label) {
 		ImGui::DragFloat("Intensity", &directionalLightDate->intensity, 0.1f, 0.0f, 1.0f);
 		ImGui::TreePop();
 	}
+	if (ImGui::TreeNode("頂点データ")) {
+		for (int32_t index = 0; index < 24; ++index) {
+			std::string str = "頂点" + std::to_string(index);
+			ImGui::DragFloat3(str.c_str(), &vertexData[index].position.x);
+		}
+		ImGui::TreePop();
+	}
+
 	ImGui::EndChild();
 	ImGui::End();
 
@@ -120,12 +130,12 @@ void Skybox::CreateVertexResource() {
 
 	// 実際に頂点リソースを作る
 	vertexResource = dxCommon_->CreateBufferResource(
-		dxCommon_->device_.Get(), sizeof(VertexData) * 8);
+		dxCommon_->device_.Get(), sizeof(VertexData) * 24);
 
 	// リソースの先頭のアドレスから使う
 	vertexBufferView.BufferLocation = vertexResource->GetGPUVirtualAddress();
 	// 使用するリソースサイズは頂点分のサイズ
-	vertexBufferView.SizeInBytes = UINT(sizeof(VertexData) * 8);
+	vertexBufferView.SizeInBytes = UINT(sizeof(VertexData) * 24);
 	// 1頂点あたりのサイズ
 	vertexBufferView.StrideInBytes = sizeof(VertexData);
 
@@ -142,6 +152,7 @@ void Skybox::CreateVertexResource() {
 	vertexData[5].position = { -1.0f,1.0f,1.0f,1.0f };
 	vertexData[6].position = { -1.0f,-1.0f,-1.0f,1.0f };
 	vertexData[7].position = { -1.0f,-1.0f,1.0f,1.0f };
+
 	// 前面 描画インデックスは[8,9,10][10,9,11]
 	vertexData[8].position = { -1.0f,1.0f,1.0f,1.0f };
 	vertexData[9].position = { 1.0f,1.0f,1.0f,1.0f };
@@ -163,9 +174,9 @@ void Skybox::CreateVertexResource() {
 	vertexData[22].position = { -1.0f,-1.0f,1.0f,1.0f };
 	vertexData[23].position = { 1.0f,-1.0f,1.0f,1.0f };
 
-	indexResource = dxCommon_->CreateBufferResource(dxCommon_->device_.Get(), sizeof(uint32_t) * 6);
+	indexResource = dxCommon_->CreateBufferResource(dxCommon_->device_.Get(), sizeof(uint32_t) * 36);
 	indexBufferView.BufferLocation = indexResource->GetGPUVirtualAddress();
-	indexBufferView.SizeInBytes = sizeof(uint32_t) * 6;
+	indexBufferView.SizeInBytes = sizeof(uint32_t) * 36;
 	indexBufferView.Format = DXGI_FORMAT_R32_UINT;
 
 	// インデックスリソースにデータを書き込む
@@ -307,7 +318,7 @@ void Skybox::CreateGraphicsPipeline() {
 	CreateRootSignature();
 
 	// InputLayoutの設定を行う(P.32)
-	D3D12_INPUT_ELEMENT_DESC inputElementDescs[3] = {};
+	D3D12_INPUT_ELEMENT_DESC inputElementDescs[2] = {};
 	inputElementDescs[0].SemanticName = "POSITION";
 	inputElementDescs[0].SemanticIndex = 0;
 	inputElementDescs[0].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
@@ -316,10 +327,10 @@ void Skybox::CreateGraphicsPipeline() {
 	inputElementDescs[1].SemanticIndex = 0;
 	inputElementDescs[1].Format = DXGI_FORMAT_R32G32_FLOAT;
 	inputElementDescs[1].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
-	inputElementDescs[2].SemanticName = "NORMAL";
-	inputElementDescs[2].SemanticIndex = 0;
-	inputElementDescs[2].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-	inputElementDescs[2].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
+	//inputElementDescs[2].SemanticName = "NORMAL";
+	//inputElementDescs[2].SemanticIndex = 0;
+	//inputElementDescs[2].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+	//inputElementDescs[2].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
 
 	D3D12_INPUT_LAYOUT_DESC inputLayoutDesc{};
 	inputLayoutDesc.pInputElementDescs = inputElementDescs;

@@ -10,7 +10,7 @@ void TitleScene::Init() {
 	// モデルをセットする
 	ModelManager::GetInstance()->LoadModel("plane", "plane.gltf");
 	ModelManager::GetInstance()->LoadModel("AnimatedCube", "AnimatedCube.gltf");
-	DirectXCommon::GetInstance()->srv_->LoadTexture("skybox/UI01.dds");
+	DirectXCommon::GetInstance()->srv_->LoadTexture("skybox/rostock_laage_airport_4k.dds");
 
 	// 3dオブジェクトの宣言
 	testObject_ = std::make_unique<Object3d>();
@@ -22,7 +22,7 @@ void TitleScene::Init() {
 	
 	// skyboxの宣言
 	skybox_ = std::make_unique<Skybox>();
-	skybox_->Init("skybox","UI01.dds");
+	skybox_->Init("skybox","rostock_laage_airport_4k.dds");
 
 }
 
@@ -30,6 +30,8 @@ void TitleScene::Update() {
 #ifdef _DEBUG
 	skybox_->DrawGUI("Skybox");
 #endif // _DEBUG
+
+	MainCamera::GetInstance()->Update();
 
 	testObject_->Update();
 	skybox_->Update();
