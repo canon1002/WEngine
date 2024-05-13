@@ -224,14 +224,14 @@ namespace Resource
 
 	Node ReadNode(aiNode* node) {
 		Node result;
-		aiMatrix4x4 aiLocalMatrix = node->mTransformation;// nodeのlocalMatrixを取得
-		aiLocalMatrix.Transpose();// 列ベクトル -> 行ベクトル の変換を行う
-		// 行列の中身を写す(4x4を想定)
-		for (uint32_t y = 0; y < 4; ++y) {
-			for (uint32_t x = 0; x < 4; ++x) {
-				result.localMatrix.m[y][x] = aiLocalMatrix[y][x];
-			}
-		}
+		aiVector3D scale, translate;
+		aiQuaternion rotate;
+		node->mTransformation.Decompose(scale, rotate, translate);// assimpの行列からSRTを抽出する関数を利用
+		result.transform.scale_ = { scale.x,scale.y ,scale.z };// スケールはそのまま
+		result.transform.rotation_ = { rotate.x,-rotate.y ,-rotate.z,rotate.w };// x軸を反転、更に回転方向が逆なので軸を反転させる
+		result.transform.translation_ = { -translate.x,translate.y ,translate.z };// x軸を回転
+		result.localMatrix = MakeAffineMatrix(result.transform.scale_, result.transform.rotation_, result.transform.translation_);
+
 		result.name = node->mName.C_Str();// Node名を格納
 		result.children.resize(node->mNumChildren); // 子供の数だけ確保
 		for (uint32_t childIndex = 0; childIndex < node->mNumChildren; ++childIndex) {
