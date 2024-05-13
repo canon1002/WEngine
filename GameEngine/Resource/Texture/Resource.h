@@ -17,10 +17,13 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
+#include "GameEngine/Math/Math.h"
+
 /// <summary>
 /// 親子関係を持つNodeクラス
 /// </summary>
 struct Node{
+	QuaternionTransform transform;
 	Matrix4x4 localMatrix;
 	std::string name;
 	std::vector<Node> children;
