@@ -7,6 +7,7 @@
 // stl
 #include <vector>
 #include <map>
+#include <optional>
 
 // 外部ファイル参照
 #include "Externals/DirectXTex/d3dx12.h"
@@ -16,18 +17,6 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
-
-#include "GameEngine/Math/Math.h"
-
-/// <summary>
-/// 親子関係を持つNodeクラス
-/// </summary>
-struct Node{
-	QuaternionTransform transform;
-	Matrix4x4 localMatrix;
-	std::string name;
-	std::vector<Node> children;
-};
 
 // 頂点データ
 struct VertexData {
@@ -60,6 +49,17 @@ struct CameraForGPU
 struct MaterialData {
 	std::string textureFilePath;
 };
+
+/// <summary>
+/// 親子関係を持つNodeクラス
+/// </summary>
+struct Node {
+	QuaternionTransform transform;
+	Matrix4x4 localMatrix;
+	std::string name;
+	std::vector<Node> children;
+};
+
 // モデルデータ
 struct ModelData {
 	std::vector<VertexData> vertices;
@@ -78,6 +78,22 @@ struct UVTransform {
 };
 
 #pragma region アニメーション関連
+
+struct Joint {
+	QuaternionTransform transform;	// Transform情報
+	Matrix4x4 localMatrix;			// localatrix
+	Matrix4x4 skeletonSpaceMatrix;	// skeletonSpaceでの変換行列
+	std::string name;				// 名前
+	std::vector<int32_t> childlen;	// 子jointのIndexリスト。いなければ空
+	int32_t index;					// 自身のIndex
+	std::optional<int32_t> parent;	// 親JointのIndex。いなければnull
+};
+
+struct Skeleton {
+	int32_t root;							// RootJointのIndex
+	std::map<std::string, int32_t>jointMap;	// Joint名とindexとの辞書
+	std::vector<Joint> joints;				// 所属しているJoint
+};
 
 // templateを用いて<Vector3型>と<Quaternion型>のキーフレーム構造体を作成
 template <typename tValue>
@@ -108,6 +124,11 @@ namespace Animations {
 	Vector3 CalculateValue(const std::vector<KeyframeVector3>& keyframes, float time);
 	// 任意の時刻の値を取得する関数(Quaternion型)
 	Quaternion CalculateValue(const std::vector<KeyframeQuaternion>& keyframes, float time);
+	// Nodeの階層構造からSkeletonを作る
+	Skeleton CreateSkeleton(const Node& rootNode);
+	int32_t CreateJoint(const Node& node, const std::optional<int32_t>& parent, std::vector<Joint>& joints);
+	// スケルトンの更新処理を行う
+	void Update(Skeleton& skeleton);
 
 }
 
