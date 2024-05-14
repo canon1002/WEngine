@@ -102,14 +102,8 @@ int SceneManager::Run() {
 		// 描画前処理 -- RenderTexture --
 		dxCommon_->PreDrawForRenderTarget();
 
-		//modelManager_->PreDraw();
-		
 		/// 描画処理
 		sceneArr_[currentSceneNo_]->Draw();
-		
-		// 最終的にここだけで描画処理を呼び出したい
-		objectAdmin_->Draw();
-
 		// 描画後処理 -- RenderTexture --
 		dxCommon_->PostDrawForRenderTarget();
 

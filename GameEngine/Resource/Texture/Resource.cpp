@@ -137,7 +137,8 @@ namespace Resource
 
 		// Resourceの生成
 		Microsoft::WRL::ComPtr <ID3D12Resource> resource = nullptr;
-		HRESULT hr = device->CreateCommittedResource(
+		HRESULT hr = 
+			device->CreateCommittedResource(
 			&heapProperties,
 			D3D12_HEAP_FLAG_NONE,
 			&resourceDesc,

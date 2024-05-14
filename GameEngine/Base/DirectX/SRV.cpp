@@ -94,7 +94,7 @@ int SRV::SetStructuredBuffer(int32_t kNumInstance, Microsoft::WRL::ComPtr<ID3D12
 
 }
 
-int32_t SRV::CreateRenderTextureSRV(){
+int32_t SRV::CreateRenderTextureSRV(ID3D12Resource* pResource){
 
 	// 新たにデータを登録する
 	TextureData textureData;
@@ -118,7 +118,7 @@ int32_t SRV::CreateRenderTextureSRV(){
 	textureData_.insert(std::make_pair(textureId_, textureData));
 
 	// SRVの生成
-	dxCommon_->device_->CreateShaderResourceView(textureData.textureResource.Get(),
+	dxCommon_->device_->CreateShaderResourceView(pResource,
 		&renderTextureSrvDesc, textureData.textureSrvHandleCPU);
 
 	return textureId_;

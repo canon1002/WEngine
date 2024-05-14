@@ -26,7 +26,7 @@ public: // -- public メンバ関数 -- //
 	int LoadTexture(const std::string filePath);
 	int SetStructuredBuffer(int32_t kNumInstance, Microsoft::WRL::ComPtr<ID3D12Resource> instancingResource);
 	
-	int32_t CreateRenderTextureSRV();
+	int32_t CreateRenderTextureSRV(ID3D12Resource* pResource);
 
 	// メタデータ取得
 	const DirectX::TexMetadata& GetMetaData(uint32_t textureId);
