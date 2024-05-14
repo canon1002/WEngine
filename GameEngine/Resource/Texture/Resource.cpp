@@ -464,4 +464,50 @@ namespace Animations {
 		return (*keyframes.rbegin()).value;
 	}
 
+	Skeleton CreateSkeleton(const Node& rootNode) {
+		Skeleton skeleton;
+		skeleton.root = CreateJoint(rootNode, {}, skeleton.joints);
+
+		// 名前とindexのマッピングを行いアクセスしやすくする
+		for (const Joint& joint : skeleton.joints) {
+			skeleton.jointMap.emplace(joint.name, joint.index);
+		}
+		// 作成したら一度更新しておく
+		Update(skeleton);
+
+		return skeleton;
+	}
+
+	int32_t CreateJoint(const Node& node, const std::optional<int32_t>& parent, std::vector<Joint>& joints) {
+		Joint joint;
+		joint.name = node.name;
+		joint.localMatrix = node.localMatrix;
+		joint.skeletonSpaceMatrix = MakeIdentity();
+		joint.transform = node.transform;
+		joint.index = int32_t(joints.size());// 現在登録されてるindexに
+		joint.parent = parent;
+		joints.push_back(joint);// skeleton	のJoint列に追加
+		for (const Node& child : node.children) {
+			// 子jointを作成し、そのIndexを登録
+			int32_t childIndex = CreateJoint(child, joint.index, joints);
+			joints[joint.index].childlen.push_back(childIndex);
+		}
+		// 自身のindexを返す
+		return joint.index;
+	}
+
+	void Update(Skeleton& skeleton){
+		// すべてのJointを更新。親が若いので通常ループ処理可能になっている
+		for (Joint& joint : skeleton.joints) {
+			joint.localMatrix = MakeAffineMatrix(joint.transform.scale_, joint.transform.rotation_, joint.transform.translation_);
+			if (joint.parent) {// 親がいれば親の行列を掛ける
+				joint.skeletonSpaceMatrix = Multiply(joint.localMatrix, skeleton.joints[*joint.parent].skeletonSpaceMatrix);
+			}
+			else { // 親がいないのでlocalMatrixとSkeletonSpaceMatrixは一致する
+				joint.skeletonSpaceMatrix = joint.localMatrix;
+			}
+		}
+
+	}
+
 }
