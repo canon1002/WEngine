@@ -29,15 +29,6 @@ void RenderCopyImage::Initialize(DirectXCommon* dxCommon, CameraCommon* camera) 
 
 void RenderCopyImage::Update() {
 
-	ImGui::Begin("CopyImage");
-	ImGui::SliderAngle("RotateX", &worldTransform_.rotation.x);
-	ImGui::SliderAngle("RotateY", &worldTransform_.rotation.y);
-	ImGui::SliderAngle("RotateZ", &worldTransform_.rotation.z);
-	ImGui::DragFloat3("Scale", &worldTransform_.scale.x);
-	ImGui::DragFloat3("Rotate", &worldTransform_.rotation.x);
-	ImGui::DragFloat3("Translation", &worldTransform_.translation.x);
-	ImGui::End();
-
 	// カメラのワールド行列
 	cameraM = MakeAffineMatrix(Vector3{ 1.0f,1.0f,1.0f },
 		Vector3{ 0.0f,0.0f,0.0f }, Vector3{ 0.0f,0.0f,-5.0f });
