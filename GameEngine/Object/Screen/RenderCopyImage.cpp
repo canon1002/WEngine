@@ -169,9 +169,21 @@ void RenderCopyImage::CreateGraphicsPipeline(){
 		L"vs_6_0", dxCommon_->dxcUtils, dxCommon_->dxcCompiler, dxCommon_->includeHandler);
 	assert(vertexShaderBlob != nullptr);
 
-	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob = WinAPI::CompileShader(L"Shaders/Vignette.PS.hlsl",
+	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob = WinAPI::CompileShader(L"Shaders/BoxFilter9x9.PS.hlsl",
 		L"ps_6_0", dxCommon_->dxcUtils, dxCommon_->dxcCompiler, dxCommon_->includeHandler);
 	assert(pixelShaderBlob != nullptr);
+
+	// シェーダーリスト
+	/*
+	CopyImage	// 通常
+	Grayscale	// グレースケール
+	Vignette	// ビネット
+	BoxFilter	// 平滑化(ぼかし)
+	BoxFilter5x5
+	BoxFilter9x9
+	*/
+
+
 
 	// PSOを生成する(P.38)
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsPipelineStateDesc{};

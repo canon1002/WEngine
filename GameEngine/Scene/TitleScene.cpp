@@ -14,13 +14,19 @@ void TitleScene::Init() {
 	DirectXCommon::GetInstance()->srv_->LoadTexture("skybox/rostock_laage_airport_4k.dds");
 
 	// 3dオブジェクトの宣言
-	testObject_ = std::make_unique<Object3d>();
+	testObject_ = std::make_unique<Object3d>("AnimatedCube");
 	testObject_->Init();
 	testObject_->SetModel("AnimatedCube.gltf");
 	testObject_->GetModel()->SetAnimation(
 		Resource::LoadAnmation("Resources/objs/AnimatedCube", "AnimatedCube.gltf"));
 	testObject_->SetTranslate({ 0.0f,0.0f,10.0f });
 	
+	testObject02_ = std::make_unique<Object3d>("Test Plane");
+	testObject02_->Init();
+	testObject02_->SetModel("plane.gltf");
+	testObject02_->SetRotate({ 0.15f,0.4f,0.0f });
+	testObject02_->SetTranslate({ 2.0f,0.0f,7.5f });
+
 	// skyboxの宣言
 	skybox_ = std::make_unique<Skybox>();
 	skybox_->Init("skybox","rostock_laage_airport_4k.dds");
@@ -36,6 +42,7 @@ void TitleScene::Update() {
 	MainCamera::GetInstance()->Update();
 
 	testObject_->Update();
+	testObject02_->Update();
 	skybox_->Update();
 
 
@@ -47,11 +54,14 @@ void TitleScene::Draw(){
 
 	// Skyboxの描画前処理
 	skybox_->PreDraw();
-
 	skybox_->Draw();
+
+
 
 	// Object3D(3DModel)の描画前処理
 	ModelManager::GetInstance()->PreDraw();
 
 	testObject_->Draw();
+	testObject02_->Draw();
+
 }

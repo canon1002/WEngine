@@ -16,6 +16,7 @@ class Object3d
 public: // メンバ関数
 
 	Object3d();
+	Object3d(const std::string objname);
 	~Object3d();
 
 	///	初期化
@@ -42,9 +43,11 @@ public: // メンバ変数
 	Object3dCommon* object3dCommon_ = nullptr;
 	Model* model_ = nullptr;
 	ModelManager* modelManager_;
-
 	Matrix4x4 cameraM, viewM, projectM, pespectiveM, wvpM;
 	
+	// オブジェクトの名前
+	std::string objname_;
+
 	// Transformation用のResourceを作る
 	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource = nullptr;
 	// データを書き込む

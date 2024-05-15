@@ -16,7 +16,7 @@ PixelShaderOutput main(VertexShaderOutput input)
     // 周囲を0に、中心に近くなるほど明るくなるように計算で調整
     float32_t2 correct = input.texcoord * (1.0f - input.texcoord.yx);
     // correctだけで計算すると中心の最大値が0.0625と暗すぎるのでScale調整
-    float vignette = correct.x * correct.y * 16.0f;
+    float vignette = correct.x * correct.y * 7.0f;
     // 0.8乗してみる
     vignette = saturate(pow(vignette, 0.8f));
     // 係数として乗算

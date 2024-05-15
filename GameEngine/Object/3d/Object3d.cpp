@@ -7,7 +7,14 @@
 #include "GameEngine/Object/Model/ModelManager.h"
 #include "GameEngine/Base/Debug/ImGuiManager.h"
 
-Object3d::Object3d() {}
+Object3d::Object3d() {
+	objname_ = "Object3D";
+}
+
+Object3d::Object3d(const std::string objname){
+	// 名称が引数に入っていれば命名しておく
+	objname_ = objname;
+}
 
 Object3d::~Object3d() {
 	//delete wvpData;
@@ -28,7 +35,8 @@ void Object3d::Init() {
 
 void Object3d::Update() {
 
-	ImGui::Begin("Object3D");
+#ifdef _DEBUG
+	ImGui::Begin(objname_.c_str());
 	ImGui::SliderAngle("RotateX", &worldTransform_->rotation.x);
 	ImGui::SliderAngle("RotateY", &worldTransform_->rotation.y);
 	ImGui::SliderAngle("RotateZ", &worldTransform_->rotation.z);
@@ -39,6 +47,7 @@ void Object3d::Update() {
 		model_->DrawGUI("Model");
 	}
 	ImGui::End();
+#endif // _DEBUG
 
 	MainCamera* camera = MainCamera::GetInstance();
 	// カメラ行列のビュー行列(カメラのワールド行列の逆行列)
