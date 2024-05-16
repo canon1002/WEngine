@@ -31,6 +31,9 @@ public: // -- public メンバ関数 -- //
 	// メタデータ取得
 	const DirectX::TexMetadata& GetMetaData(uint32_t textureId);
 
+	// 空きIndexを取得する関数
+	int32_t GetEmptyIndex();
+
 private: // -- private メンバ関数 -- // 
 
 

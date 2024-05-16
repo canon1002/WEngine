@@ -206,7 +206,7 @@ namespace Resource
 		std::vector<Vec2> texcoords;//テクスチャ座標
 		std::string line; // ファイルから読んだ一行を格納する
 
-		/// ファイルを開く
+		// -- ファイルを開く -- //
 		const std::string& forwardPath = "Resources/objs/";
 		const std::string& fullPath = forwardPath + directoryPath + "/" + filename;
 		std::ifstream file(fullPath); // ファイルを開く
@@ -214,17 +214,18 @@ namespace Resource
 
 		// assimpを利用する
 		Assimp::Importer importer;
+
 		// オプションを指定
 		// aiProcess_FlipWindingOrder -- 三角形の並び順を逆にする --
 		// aiProcess_FlipUVs -- UVをフリップする(texcoord.y=1.0f-texcoord.y の処理) --
-		const aiScene* scene = importer.ReadFile(fullPath.c_str(),
-			aiProcess_FlipWindingOrder | aiProcess_FlipUVs);
+		const aiScene* scene = importer.ReadFile(fullPath.c_str(), aiProcess_FlipWindingOrder | aiProcess_FlipUVs);
 		assert(scene->HasMeshes()); // Mesh無しは対応しない
 
 		// SceneのRootNodeを読んでシーン全体の階層構造を作り上げる
 		modelData.rootNode = ReadNode(scene->mRootNode);
 
-		// Meshの解析
+		// -- Meshの解析 --// 
+
 		for (uint32_t meshIndex = 0; meshIndex < scene->mNumMeshes; ++meshIndex) {
 			aiMesh* mesh = scene->mMeshes[meshIndex];
 			assert(mesh->HasNormals()); // 法線がないMeshは今回非対応
@@ -253,9 +254,41 @@ namespace Resource
 				}
 
 			}
+
+			// -- SkinClusterを構築するデータを取得 -- //
+
+			for (uint32_t boneIndex = 0; boneIndex < mesh->mNumBones;++boneIndex) {
+				// MeshからBoneを取得
+				aiBone* bone = mesh->mBones[boneIndex];
+				// BoneからJointの名前を取得
+				std::string jointName = bone->mName.C_Str();
+				// モデルのSkinClusterDataからJointWeightDataを取得
+				JointWeightData& jointWeightData = modelData.skinClusterData[jointName];
+
+				// BindPose(バインドポーズ)行列を取得する
+				aiMatrix4x4 bindPoseMatrixAssimp = bone->mOffsetMatrix.Inverse();
+				aiVector3D scale, translation;
+				aiQuaternion rotation;
+				bindPoseMatrixAssimp.Decompose(scale, rotation, translation);
+				// asiimpの行列を基本の float4x4行列 に変換する
+				// この際座標系を修正しておく
+				Matrix4x4 bindPoseMatrix = MakeAffineMatrix({ scale.x,scale.y,scale.z },
+					{	rotation.x,-rotation.y,rotation.z,rotation.w },{ -translation.x,translation.y,translation.z }
+				);
+				// 逆行列を格納
+				jointWeightData.inverseBindPoseMatrix = Inverse(bindPoseMatrix);
+				
+				// Weight情報を取り出す
+				for (uint32_t weightIndex = 0; weightIndex < bone->mNumWeights; ++weightIndex) {
+					jointWeightData.vertexWeights.push_back({ bone->mWeights[weightIndex].mWeight,bone->mWeights[weightIndex].mVertexId });
+				}
+
+			}
 		}
 
-		// Materialの解析
+		// -- Materialの解析 -- //
+
+
 		for (uint32_t materialIndex = 0; materialIndex < scene->mNumMaterials; ++materialIndex) {
 			aiMaterial* material = scene->mMaterials[materialIndex];
 			if (material->GetTextureCount(aiTextureType_DIFFUSE) != 0) {
@@ -571,4 +604,33 @@ namespace Animations {
 		}
 	}
 
+}
+
+SkinCluster CreateSkinCluster(const Microsoft::WRL::ComPtr<ID3D12Device>& device, const Skeleton& skeleton,
+	const ModelData& modelData, const Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap, uint32_t descriptorSize){
+	SkinCluster skinCluster;
+	DirectXCommon* dxCommon_ = DirectXCommon::GetInstance();
+
+	// Palette用のResourceを確保
+	skinCluster.paletteResource = dxCommon_->CreateBufferResource(device.Get(), sizeof(WellForGPU)*skeleton.joints.size());
+	WellForGPU* mappedPalette = nullptr;
+	skinCluster.paletteResource->Map(0, nullptr, reinterpret_cast<void**>(&mappedPalette));
+	skinCluster.mappedInfluence = { mappedPalette,skeleton.joints.size() };
+	int32_t indexNum = dxCommon_->srv_->GetEmptyIndex();
+	skinCluster.paletteSrvHandle.first = dxCommon_->srv_->textureData_.at(indexNum).textureSrvHandleCPU;
+	skinCluster.paletteSrvHandle.second = dxCommon_->srv_->textureData_.at(indexNum).textureSrvHandleGPU;
+
+	// Palette用のsrvを作成
+	skinCluster.paletteSrvHandle;
+	// influence用のResourceを確保
+	skinCluster.influenceResource;
+	// influence用のVBV(頂点バッファビュー)を作成
+	skinCluster.influenceBufferView;
+	// InverseBindPoseMatricxの保存領域を作成
+	skinCluster.inverseBindPoseMatrices;
+	// ModelDataのSkinCluster情報を解析してinfluenceの中身を埋める
+	skinCluster.mappedInfluence;
+
+	// データを返す
+	return skinCluster;
 }

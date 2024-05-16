@@ -130,3 +130,21 @@ const DirectX::TexMetadata& SRV::GetMetaData(uint32_t textureId)
 	TextureData& textureData = textureData_.at(textureId);
 	return textureData.metadata;
 }
+
+int32_t SRV::GetEmptyIndex(){
+	// 新たにデータを登録する
+	TextureData textureData;
+	++textureId_;
+
+	// デスクリプタサイズを取得
+	const uint32_t descriptorSizeSRV = dxCommon_->device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+
+	// CPUとGPUを取得/確保しておく
+	textureData.textureSrvHandleCPU = dxCommon_->GetCPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, textureId_);
+	textureData.textureSrvHandleGPU = dxCommon_->GetGPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, textureId_);
+
+	// 一応mapに追加しておく
+	textureData_.insert(std::make_pair(textureId_, textureData));
+
+	return textureId_;
+}

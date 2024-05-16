@@ -8,6 +8,8 @@
 #include <vector>
 #include <map>
 #include <optional>
+#include <array>
+#include <span>
 
 // 外部ファイル参照
 #include "Externals/DirectXTex/d3dx12.h"
@@ -60,23 +62,35 @@ struct Node {
 	std::vector<Node> children;
 };
 
-// モデルデータ
-struct ModelData {
-	std::vector<VertexData> vertices;
-	std::vector<uint32_t> indices;
-	MaterialData material;
-	Node rootNode;
+struct VertexWeightData {
+	float weight;
+	uint32_t vertexIndex;
+};
+struct JointWeightData {
+	Matrix4x4 inverseBindPoseMatrix;
+	std::vector<VertexWeightData>vertexWeights;
 };
 
-/// <summary>
-/// UVTransform用の構造体
-/// <para> Vector3型の [スケール・回転・平行移動] を保持する </para>
-/// </summary>
-struct UVTransform {
-	Vector3 scale;
-	Vector3 rotation;
-	Vector3 translation;
+const uint32_t kNumMaxInfluence = 4;
+struct VertexInfluence {
+	std::array<float, kNumMaxInfluence> weights;
+	std::array<int32_t, kNumMaxInfluence> jointIndex;
 };
+
+struct WellForGPU {
+	Matrix4x4 SkeletonSpaceMatrix; // 位置用
+	Matrix4x4 SkeletonSpaceInverseTransposeMatrix; // 法線用
+};
+
+struct SkinCluster {
+	std::vector<Matrix4x4> inverseBindPoseMatrices;// バインドポーズの逆行列
+	Microsoft::WRL::ComPtr<ID3D12Resource> influenceResource;// 頂点に影響を与える(受ける)リソース
+	std::span<VertexInfluence> influenceBufferView;// 頂点に影響を与える(受ける)バッファビュー
+	Microsoft::WRL::ComPtr<ID3D12Resource> paletteResource;
+	std::span<WellForGPU> mappedInfluence;// Joint数分の行列を保有する
+	std::pair<D3D12_CPU_DESCRIPTOR_HANDLE, D3D12_GPU_DESCRIPTOR_HANDLE> paletteSrvHandle;
+};
+
 
 #pragma region アニメーション関連
 
@@ -135,6 +149,30 @@ namespace Animations {
 }
 
 #pragma endregion
+
+SkinCluster CreateSkinCluster(const Microsoft::WRL::ComPtr<ID3D12Device>& device, const Skeleton& skeleton,
+	const ModelData& modelData, const Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap, uint32_t descriptorSize
+);
+
+// モデルデータ
+struct ModelData {
+	std::map<std::string, JointWeightData>skinClusterData;
+	std::vector<VertexData> vertices;
+	std::vector<uint32_t> indices;
+	MaterialData material;
+	Node rootNode;
+};
+
+/// <summary>
+/// UVTransform用の構造体
+/// <para> Vector3型の [スケール・回転・平行移動] を保持する </para>
+/// </summary>
+struct UVTransform {
+	Vector3 scale;
+	Vector3 rotation;
+	Vector3 translation;
+};
+
 
 namespace Resource // ここから関数の宣言と定義を行う
 {	
