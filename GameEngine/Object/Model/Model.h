@@ -22,6 +22,7 @@ public:
 	void DrawGUI(const std::string& label);
 
 	void CreateVertexResource();
+	void CreateIndexResource();
 	void CreateMaterialResource();
 
 	// カメラ座標を設定
@@ -44,12 +45,18 @@ public:
 	int32_t textureHandle_;
 
 
-	// 実際に頂点リソースを作る
+	// 頂点リソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource = nullptr;
-	// 頂点バッファビューを作成する
+	// 頂点バッファビュー
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
-	// 頂点リソースにデータを書き込む
+	// 頂点データ
 	VertexData* vertexData = nullptr;
+	
+	// Indexリソース
+	Microsoft::WRL::ComPtr<ID3D12Resource> indexResource = nullptr;
+	// Indexバッファビュー
+	D3D12_INDEX_BUFFER_VIEW indexBufferView{};
+	
 
 	// マテリアル用のResourceを作る
 	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource = nullptr;

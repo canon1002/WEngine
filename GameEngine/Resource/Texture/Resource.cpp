@@ -224,30 +224,32 @@ namespace Resource
 		// SceneのRootNodeを読んでシーン全体の階層構造を作り上げる
 		modelData.rootNode = ReadNode(scene->mRootNode);
 
+		// Meshの解析
 		for (uint32_t meshIndex = 0; meshIndex < scene->mNumMeshes; ++meshIndex) {
 			aiMesh* mesh = scene->mMeshes[meshIndex];
 			assert(mesh->HasNormals()); // 法線がないMeshは今回非対応
 			assert(mesh->HasTextureCoords(0)); // TexcoordがないMeshは今回非対応
-
+			modelData.vertices.resize(mesh->mNumVertices);// 最初に頂点数分のメモリを確保しておく
 			// Meshの中身の解析
+			for (uint32_t vertexIndex = 0; vertexIndex < mesh->mNumVertices; ++vertexIndex) {
+				aiVector3D& position = mesh->mVertices[vertexIndex];
+				aiVector3D& normal = mesh->mNormals[vertexIndex];
+				aiVector3D& texcoord = mesh->mTextureCoords[0][vertexIndex];
+				// 右手系から左手系に変換を行う
+				modelData.vertices[vertexIndex].position = { -position.x,position.y,position.z,1.0f };
+				modelData.vertices[vertexIndex].normal = { -normal.x,normal.y,normal.z };
+				modelData.vertices[vertexIndex].texcoord = { texcoord.x,texcoord.y };
+			}
+
+			// Indexの解析
 			for (uint32_t faceIndex = 0; faceIndex < mesh->mNumFaces; ++faceIndex) {
 				aiFace& face = mesh->mFaces[faceIndex];
-				assert(face.mNumIndices == 3);//三角形のみサポート
+				assert(face.mNumIndices == 3);
 
 				// Faseの中身を解析
 				for (uint32_t element = 0; element < face.mNumIndices; ++element) {
 					uint32_t vertexIndex = face.mIndices[element];
-					aiVector3D& position = mesh->mVertices[vertexIndex];
-					aiVector3D& normal = mesh->mNormals[vertexIndex];
-					aiVector3D& texcoord = mesh->mTextureCoords[0][vertexIndex];
-					VertexData vertex;
-					vertex.position = { position.x,position.y,position.z,1.0f };
-					vertex.normal = { normal.x,normal.y,normal.z };
-					vertex.texcoord = { texcoord.x,texcoord.y };
-					// aiProcess_MakeLeftHandedはz*=-1で、右手->左手の変換するので手動で対応
-					vertex.position.x *= -1.0f;
-					vertex.normal.x *= -1.0f;
-					modelData.vertices.push_back(vertex);
+					modelData.indices.push_back(vertexIndex);
 				}
 
 			}
@@ -554,6 +556,19 @@ namespace Animations {
 			}
 		}
 
+	}
+
+	void ApplyAniation(Skeleton& skeleton, const Animation& animation, float animationTime) {
+		for (Joint& joint : skeleton.joints) {
+			// 対象のJointのAnimationがあれば、値の適用を行う。
+			// 下記のif文はC++17から可能になった初期化付きif文
+			if (auto it = animation.nodeAnimations.find(joint.name); it != animation.nodeAnimations.end()) {
+				const NodeAnimation& rootAnimation = (*it).second;
+				joint.transform.translation_ = CalculateValue(rootAnimation.translation, animationTime);
+				joint.transform.rotation_ = CalculateValue(rootAnimation.rotation, animationTime);
+				joint.transform.scale_ = CalculateValue(rootAnimation.scale, animationTime);
+			}
+		}
 	}
 
 }

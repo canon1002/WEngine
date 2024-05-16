@@ -7,18 +7,24 @@ void TitleScene::Finalize(){}
 //　継承した関数
 void TitleScene::Init() {
 	//testObject_ = ObjectAdministrator::GetInstance()->CreateObject("Resources/objs", "emptyAxis.obj");
-	// モデルをセットする
+	
+	// モデル 読み込み
 	ModelManager::GetInstance()->LoadModel("plane", "plane.gltf");
 	ModelManager::GetInstance()->LoadModel("ball", "ball.obj");
 	ModelManager::GetInstance()->LoadModel("AnimatedCube", "AnimatedCube.gltf");
+	ModelManager::GetInstance()->LoadModel("simpleSkin", "simpleSkin.gltf");
+	ModelManager::GetInstance()->LoadModel("human", "sneakWalk.gltf");
+	ModelManager::GetInstance()->LoadModel("human", "walk.gltf");
+
+	// SkyBox 読み込み
 	DirectXCommon::GetInstance()->srv_->LoadTexture("skybox/rostock_laage_airport_4k.dds");
 
 	// 3dオブジェクトの宣言
 	testObject_ = std::make_unique<Object3d>();
 	testObject_->Init();
-	testObject_->SetModel("AnimatedCube.gltf");
+	testObject_->SetModel("simpleSkin.gltf");
 	testObject_->GetModel()->SetAnimation(
-		Resource::LoadAnmation("Resources/objs/AnimatedCube", "AnimatedCube.gltf"));
+		Resource::LoadAnmation("Resources/objs/simpleSkin", "simpleSkin.gltf"));
 	testObject_->SetTranslate({ 0.0f,0.0f,10.0f });
 	
 	// skyboxの宣言

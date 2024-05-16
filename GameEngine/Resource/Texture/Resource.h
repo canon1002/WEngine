@@ -63,6 +63,7 @@ struct Node {
 // モデルデータ
 struct ModelData {
 	std::vector<VertexData> vertices;
+	std::vector<uint32_t> indices;
 	MaterialData material;
 	Node rootNode;
 };
@@ -129,7 +130,8 @@ namespace Animations {
 	int32_t CreateJoint(const Node& node, const std::optional<int32_t>& parent, std::vector<Joint>& joints);
 	// スケルトンの更新処理を行う
 	void Update(Skeleton& skeleton);
-
+	// Animationを適用する
+	void ApplyAniation(Skeleton& skeleton, const Animation& animation, float animationTime);
 }
 
 #pragma endregion

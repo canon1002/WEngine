@@ -16,7 +16,11 @@ void Model::Initialize(DirectXCommon* dxCommon,CameraCommon* camera,const std::s
 	// モデル読み込み
 	modelData = Resource::LoadModelFile(directrypath,filename);
 
+	// 頂点リソース 生成
 	CreateVertexResource();
+	// Indexリソース 生成
+	CreateIndexResource();
+	// マテリアルリソース 生成
 	CreateMaterialResource();
 
 }
@@ -42,24 +46,22 @@ void Model::Update()
 
 void Model::Draw()
 {
-
+	// 頂点をセット
 	dxCommon_->commandList->IASetVertexBuffers(0, 1, &vertexBufferView);
+	// IndexBufferViewをセット
+	dxCommon_->commandList->IASetIndexBuffer(&indexBufferView);
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけばいい
 	dxCommon_->commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	/// CBV設定
-
 	// マテリアルのCBufferの場所を指定
 	dxCommon_->commandList->SetGraphicsRootConstantBufferView(0, materialResource->GetGPUVirtualAddress());
-
 	dxCommon_->commandList->SetGraphicsRootConstantBufferView(3, directionalLightResource->GetGPUVirtualAddress());
 	dxCommon_->commandList->SetGraphicsRootConstantBufferView(4, CameraResource->GetGPUVirtualAddress());
 
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である
 	dxCommon_->commandList->SetGraphicsRootDescriptorTable(2, dxCommon_->srv_->textureData_.at(textureHandle_).textureSrvHandleGPU);
-
 	// インデックスを使用してドローコール
-	dxCommon_->commandList->DrawInstanced(UINT(modelData.vertices.size()), 1, 0, 0);
+	dxCommon_->commandList->DrawIndexedInstanced(UINT(modelData.indices.size()), 1, 0, 0, 0);
 }
 
 void Model::DrawGUI(const std::string& label){
@@ -107,6 +109,22 @@ void Model::CreateVertexResource() {
 	// 頂点リソースにデータを書き込む
 	vertexResource->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));// 書き込むためのアドレスを取得
 	std::memcpy(vertexData, modelData.vertices.data(), sizeof(VertexData) * modelData.vertices.size());
+
+}
+
+void Model::CreateIndexResource(){
+
+	// Indexは <uint32_t * Indexデータのサイズ> 分だけ確保する
+	indexResource = dxCommon_->CreateBufferResource(dxCommon_->device_.Get(), sizeof(uint32_t) * modelData.indices.size());
+	// GPUアドレスを取得
+	indexBufferView.BufferLocation = indexResource->GetGPUVirtualAddress();
+	// Byte数は <uint32_t * Indexデータのサイズ>分
+	indexBufferView.SizeInBytes = sizeof(uint32_t) * (uint32_t)modelData.indices.size();
+	indexBufferView.Format = DXGI_FORMAT_R32_UINT;
+	// Rsourceに対してIndexの内容をコピーする
+	uint32_t* mappedIndex = nullptr;
+	indexResource->Map(0, nullptr, reinterpret_cast<void**>(&mappedIndex));
+	std::memcpy(mappedIndex, modelData.indices.data(), sizeof(uint32_t) * modelData.indices.size());
 
 }
 

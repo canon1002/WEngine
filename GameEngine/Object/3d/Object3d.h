@@ -56,5 +56,7 @@ public: // メンバ変数
 	// アニメーション再生中の時刻
 	float animationTime_ = 0.0f;
 
+	// スケルトン 仮置き
+	Skeleton skeleton_;
 };
 

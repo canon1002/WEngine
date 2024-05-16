@@ -21,9 +21,7 @@ void Object3d::Init() {
 	dxCommon_ = DirectXCommon::GetInstance();
 	modelManager_ = ModelManager::GetInstance();
 	worldTransform_ = new WorldTransform();
-
 	CreateTransformationRsource();
-
 }
 
 void Object3d::Update() {
@@ -64,27 +62,37 @@ void Object3d::Update() {
 
 	// -- アニメーションが設定されている場合 -- // 
 
-	if (model_->animation_.nodeAnimations.size() == 0) {
-		// ノードアニメーションのサイズが0なら未設定として扱い、早期リターンする
-		return;
+	if (skeleton_.joints.size() > 0) {
+
+		Animations::ApplyAniation(skeleton_, model_->animation_, animationTime_);
+		// スケルトン更新
+		Animations::Update(skeleton_);
 	}
+	else {
 
-	// 時刻を進める 右の数値(60.0fはフレームレートに応じて変動させるようにしたい)
-	animationTime_ += 1.0f / 60.0f;
-	// 最後まで行ったら最初からリピート再生する(しなくてもいいし、フラグで変更しても良さそう)
-	animationTime_ = std::fmod(animationTime_,model_->animation_.duration);
-	// rootNodeのアニメーションを取得
-	NodeAnimation& rootAnimation = model_->animation_.nodeAnimations[model_->modelData.rootNode.name];
-	// 指定時刻に応じた値を取得する
-	Vector3 translation = Animations::CalculateValue(rootAnimation.translation,animationTime_);
-	Quaternion rotation = Animations::CalculateValue(rootAnimation.rotation,animationTime_);
-	Vector3 scale = Animations::CalculateValue(rootAnimation.scale,animationTime_);
-	Matrix4x4 localMatrix = MakeAffineMatrix(scale, rotation, translation);
+		if (model_->animation_.nodeAnimations.size() == 0) {
+			// ノードアニメーションのサイズが0なら未設定として扱い、早期リターンする
+			return;
+		}
 
-	// モデルデータに存在するNodeのLocalMatrixを適用する
-	wvpData->WVP = Multiply(localMatrix, Multiply(worldTransform_->GetWorldMatrix(), wvpM));
-	wvpData->World = Multiply(localMatrix, worldTransform_->GetWorldMatrix());
+		// 時刻を進める 右の数値(60.0fはフレームレートに応じて変動させるようにしたい)
+		animationTime_ += 1.0f / 60.0f;
+		// 最後まで行ったら最初からリピート再生する(しなくてもいいし、フラグで変更しても良さそう)
+		animationTime_ = std::fmod(animationTime_, model_->animation_.duration);
+		// rootNodeのアニメーションを取得
+		NodeAnimation& rootAnimation = model_->animation_.nodeAnimations[model_->modelData.rootNode.name];
 
+		// 指定時刻に応じた値を取得する
+		Vector3 translation = Animations::CalculateValue(rootAnimation.translation, animationTime_);
+		Quaternion rotation = Animations::CalculateValue(rootAnimation.rotation, animationTime_);
+		Vector3 scale = Animations::CalculateValue(rootAnimation.scale, animationTime_);
+		Matrix4x4 localMatrix = MakeAffineMatrix(scale, rotation, translation);
+
+		// モデルデータに存在するNodeのLocalMatrixを適用する
+		wvpData->WVP = Multiply(localMatrix, Multiply(worldTransform_->GetWorldMatrix(), wvpM));
+		wvpData->World = Multiply(localMatrix, worldTransform_->GetWorldMatrix());
+
+	}
 
 }
 
@@ -120,4 +128,8 @@ void Object3d::SetModel(const std::string& filepath)
 	// モデルを検索してセット
 	//modelManager_->LoadModel(filepath);
 	model_ = modelManager_->FindModel(filepath);
+
+	if (model_ != nullptr) {
+		skeleton_ = Animations::CreateSkeleton(model_->modelData.rootNode);
+	}
 }
