@@ -169,7 +169,7 @@ void RenderCopyImage::CreateGraphicsPipeline(){
 		L"vs_6_0", dxCommon_->dxcUtils, dxCommon_->dxcCompiler, dxCommon_->includeHandler);
 	assert(vertexShaderBlob != nullptr);
 
-	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob = WinAPI::CompileShader(L"Shaders/BoxFilter9x9.PS.hlsl",
+	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob = WinAPI::CompileShader(L"Shaders/GaussianFilter.PS.hlsl",
 		L"ps_6_0", dxCommon_->dxcUtils, dxCommon_->dxcCompiler, dxCommon_->includeHandler);
 	assert(pixelShaderBlob != nullptr);
 
@@ -181,6 +181,7 @@ void RenderCopyImage::CreateGraphicsPipeline(){
 	BoxFilter	// 平滑化(ぼかし)
 	BoxFilter5x5
 	BoxFilter9x9
+	GaussianFilter // ガウスぼかし
 	*/
 
 
