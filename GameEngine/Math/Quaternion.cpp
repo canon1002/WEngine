@@ -74,10 +74,10 @@ Matrix4x4 MakeRotateMatrix(const Quaternion& q) {
 	float xx = x * x, yy = y * y, zz = z * z, ww = w * w;
 
 	Matrix4x4 result{
-		ww + xx - yy - zz,			2 * ((x * y) + (w * z)),	2 * ((x * z) - (w * y)),	0,
-		2 * ((x * y) - (w * z)),	ww - xx + yy - zz,			2 * ((y * z) + (w * x)),	0,
-		2 * ((x * z) + (w * y)),	2 * ((y * z) - (w * x)),	ww - xx - yy + zz,			0,
-		0,							0,							0,							1
+		ww + xx - yy - zz,			2.0f * ((x * y) + (w * z)),	2 * ((x * z) - (w * y)),	0.0f,
+		2.0f * ((x * y) - (w * z)),	ww - xx + yy - zz,			2 * ((y * z) + (w * x)),	0.0f,
+		2.0f * ((x * z) + (w * y)),	2.0f * ((y * z) - (w * x)),	ww - xx - yy + zz,			0.0f,
+		0.0f,						0.0f,						0.0f,							1.0f
 	};
 
 	return result;

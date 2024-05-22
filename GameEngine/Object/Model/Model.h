@@ -85,6 +85,5 @@ public:
 	// アニメーション
 	Animation animation_;
 
-
 };
 

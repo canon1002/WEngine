@@ -58,5 +58,7 @@ public: // メンバ変数
 
 	// スケルトン 仮置き
 	Skeleton skeleton_;
+	// スキンクラスター 仮置き
+	SkinCluster skinCluster_;
 };
 

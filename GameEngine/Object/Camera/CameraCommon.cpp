@@ -11,6 +11,7 @@ void CameraCommon::Initialize(WinAPI* winApp){
 	farClip_ = 100.0f;
 	viewMatrix_ = Inverse(worldTransform_->GetWorldMatrix());
 	projectionMatrix_ = MakePerspectiveMatrix(verticalFOV_, aspectRatio_, nearClip_, farClip_);
+
 	viewprojectionMatrix_ = Multiply(viewMatrix_, projectionMatrix_);
 }
 

@@ -220,6 +220,7 @@
     <ClCompile Include="GameEngine\Object\Model\Skybox\Skybox.cpp" />
     <ClCompile Include="GameEngine\Object\Screen\RenderCopyImage.cpp" />
     <ClCompile Include="GameEngine\Object\Screen\RenderTextureAdmin.cpp" />
+    <ClCompile Include="GameEngine\Resource\ResourceCommon.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameEngine\Base\WinApp\WinAPI.h">
@@ -367,6 +368,7 @@
     <ClInclude Include="GameEngine\Object\Model\Skybox\Skybox.h" />
     <ClInclude Include="GameEngine\Object\Screen\RenderCopyImage.h" />
     <ClInclude Include="GameEngine\Object\Screen\RenderTextureAdmin.h" />
+    <ClInclude Include="GameEngine\Resource\ResourceCommon.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt">
@@ -388,5 +390,6 @@
     <FxCompile Include="Shaders\Particle.VS.hlsl" />
     <FxCompile Include="Shaders\CopyImage.PS.hlsl" />
     <FxCompile Include="Shaders\CopyImage.VS.hlsl" />
+    <FxCompile Include="Shaders\SkinningObject3d.VS.hlsl" />
   </ItemGroup>
 </Project>

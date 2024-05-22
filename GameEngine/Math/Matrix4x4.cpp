@@ -31,45 +31,33 @@ Matrix4x4 Subtract(Matrix4x4 m1, Matrix4x4 m2) {
 }
 
 /// 行列の積を返す関数
-Matrix4x4 Multiply(Matrix4x4 m1, Matrix4x4 m2) {
+Matrix4x4 Multiply(const Matrix4x4& m1, const Matrix4x4& m2) {
 
-	return Matrix4x4{
-		m1.m[0][0] * m2.m[0][0] + m1.m[0][1] * m2.m[1][0] + m1.m[0][2] * m2.m[2][0] +
-			m1.m[0][3] * m2.m[3][0],
-		m1.m[0][0] * m2.m[0][1] + m1.m[0][1] * m2.m[1][1] + m1.m[0][2] * m2.m[2][1] +
-			m1.m[0][3] * m2.m[3][1],
-		m1.m[0][0] * m2.m[0][2] + m1.m[0][1] * m2.m[1][2] + m1.m[0][2] * m2.m[2][2] +
-			m1.m[0][3] * m2.m[3][2],
-		m1.m[0][0] * m2.m[0][3] + m1.m[0][1] * m2.m[1][3] + m1.m[0][2] * m2.m[2][3] +
-			m1.m[0][3] * m2.m[3][3],
+	Matrix4x4 result = {};
 
-		m1.m[1][0] * m2.m[0][0] + m1.m[1][1] * m2.m[1][0] + m1.m[1][2] * m2.m[2][0] +
-			m1.m[1][3] * m2.m[3][0],
-		m1.m[1][0] * m2.m[0][1] + m1.m[1][1] * m2.m[1][1] + m1.m[1][2] * m2.m[2][1] +
-			m1.m[1][3] * m2.m[3][1],
-		m1.m[1][0] * m2.m[0][2] + m1.m[1][1] * m2.m[1][2] + m1.m[1][2] * m2.m[2][2] +
-			m1.m[1][3] * m2.m[3][2],
-		m1.m[1][0] * m2.m[0][3] + m1.m[1][1] * m2.m[1][3] + m1.m[1][2] * m2.m[2][3] +
-			m1.m[1][3] * m2.m[3][3],
+	result.m[0][0] = m1.m[0][0] * m2.m[0][0] + m1.m[0][1] * m2.m[1][0] + m1.m[0][2] * m2.m[2][0] + m1.m[0][3] * m2.m[3][0];
+	result.m[0][1] = m1.m[0][0] * m2.m[0][1] + m1.m[0][1] * m2.m[1][1] + m1.m[0][2] * m2.m[2][1] + m1.m[0][3] * m2.m[3][1];
+	result.m[0][2] = m1.m[0][0] * m2.m[0][2] + m1.m[0][1] * m2.m[1][2] + m1.m[0][2] * m2.m[2][2] + m1.m[0][3] * m2.m[3][2];
+	result.m[0][3] = m1.m[0][0] * m2.m[0][3] + m1.m[0][1] * m2.m[1][3] + m1.m[0][2] * m2.m[2][3] + m1.m[0][3] * m2.m[3][3];
 
-		m1.m[2][0] * m2.m[0][0] + m1.m[2][1] * m2.m[1][0] + m1.m[2][2] * m2.m[2][0] +
-			m1.m[2][3] * m2.m[3][0],
-		m1.m[2][0] * m2.m[0][1] + m1.m[2][1] * m2.m[1][1] + m1.m[2][2] * m2.m[2][1] +
-			m1.m[2][3] * m2.m[3][1],
-		m1.m[2][0] * m2.m[0][2] + m1.m[2][1] * m2.m[1][2] + m1.m[2][2] * m2.m[2][2] +
-			m1.m[2][3] * m2.m[3][2],
-		m1.m[2][0] * m2.m[0][3] + m1.m[2][1] * m2.m[1][3] + m1.m[2][2] * m2.m[2][3] +
-			m1.m[2][3] * m2.m[3][3],
+	result.m[1][0] = m1.m[1][0] * m2.m[0][0] + m1.m[1][1] * m2.m[1][0] + m1.m[1][2] * m2.m[2][0] + m1.m[1][3] * m2.m[3][0];
+	result.m[1][1] = m1.m[1][0] * m2.m[0][1] + m1.m[1][1] * m2.m[1][1] + m1.m[1][2] * m2.m[2][1] + m1.m[1][3] * m2.m[3][1];
+	result.m[1][2] = m1.m[1][0] * m2.m[0][2] + m1.m[1][1] * m2.m[1][2] + m1.m[1][2] * m2.m[2][2] + m1.m[1][3] * m2.m[3][2];
+	result.m[1][3] = m1.m[1][0] * m2.m[0][3] + m1.m[1][1] * m2.m[1][3] + m1.m[1][2] * m2.m[2][3] + m1.m[1][3] * m2.m[3][3];
 
-		m1.m[3][0] * m2.m[0][0] + m1.m[3][1] * m2.m[1][0] + m1.m[3][2] * m2.m[2][0] +
-			m1.m[3][3] * m2.m[3][0],
-		m1.m[3][0] * m2.m[0][1] + m1.m[3][1] * m2.m[1][1] + m1.m[3][2] * m2.m[2][1] +
-			m1.m[3][3] * m2.m[3][1],
-		m1.m[3][0] * m2.m[0][2] + m1.m[3][1] * m2.m[1][2] + m1.m[3][2] * m2.m[2][2] +
-			m1.m[3][3] * m2.m[3][2],
-		m1.m[3][0] * m2.m[0][3] + m1.m[3][1] * m2.m[1][3] + m1.m[3][2] * m2.m[2][3] +
-			m1.m[3][3] * m2.m[3][3],
-	};
+	result.m[2][0] = m1.m[2][0] * m2.m[0][0] + m1.m[2][1] * m2.m[1][0] + m1.m[2][2] * m2.m[2][0] + m1.m[2][3] * m2.m[3][0];
+	result.m[2][1] = m1.m[2][0] * m2.m[0][1] + m1.m[2][1] * m2.m[1][1] + m1.m[2][2] * m2.m[2][1] + m1.m[2][3] * m2.m[3][1];
+	result.m[2][2] = m1.m[2][0] * m2.m[0][2] + m1.m[2][1] * m2.m[1][2] + m1.m[2][2] * m2.m[2][2] + m1.m[2][3] * m2.m[3][2];
+	result.m[2][3] = m1.m[2][0] * m2.m[0][3] + m1.m[2][1] * m2.m[1][3] + m1.m[2][2] * m2.m[2][3] + m1.m[2][3] * m2.m[3][3];
+
+	result.m[3][0] = m1.m[3][0] * m2.m[0][0] + m1.m[3][1] * m2.m[1][0] + m1.m[3][2] * m2.m[2][0] + m1.m[3][3] * m2.m[3][0];
+	result.m[3][1] = m1.m[3][0] * m2.m[0][1] + m1.m[3][1] * m2.m[1][1] + m1.m[3][2] * m2.m[2][1] + m1.m[3][3] * m2.m[3][1];
+	result.m[3][2] = m1.m[3][0] * m2.m[0][2] + m1.m[3][1] * m2.m[1][2] + m1.m[3][2] * m2.m[2][2] + m1.m[3][3] * m2.m[3][2];
+	result.m[3][3] = m1.m[3][0] * m2.m[0][3] + m1.m[3][1] * m2.m[1][3] + m1.m[3][2] * m2.m[2][3] + m1.m[3][3] * m2.m[3][3];
+
+
+
+	return result;
 }
 
 /// 行列の積を返す関数
@@ -179,12 +167,15 @@ Matrix4x4 Transpose(Matrix4x4 m) {
 /// 単位行列の作成
 Matrix4x4 MakeIdentity() {
 
-	return Matrix4x4{
-		1.0f, 0.0f, 0.0f, 0.0f,
-		0.0f, 1.0f, 0.0f, 0.0f,
-		0.0f, 0.0f, 1.0f, 0.0f,
-		0.0f, 0.0f, 0.0f, 1.0f,
+	// 4x4の単位行列を返す
+	Matrix4x4 result = {
+	   1.0f, 0.0f, 0.0f, 0.0f,
+	   0.0f, 1.0f, 0.0f, 0.0f,
+	   0.0f, 0.0f, 1.0f, 0.0f,
+	   0.0f, 0.0f, 0.0f, 1.0f,
 	};
+
+	return result;
 }
 
 // 平行移動行列の作成
@@ -303,12 +294,12 @@ Matrix4x4 MakeAffineMatrix(
 		1 };
 }
 
-Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Quaternion& rotate, const Vector3& translate){
-	
-	// Quaternionをもちいて回転行列を求める
-	Matrix4x4 rotationMatrix = MakeRotateMatrix(rotate);
+Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Quaternion& rotate, const Vector3& translate) {
 
-	return Matrix4x4{
+	// Quaternionをもちいて回転行列を求める
+	Matrix4x4 rotationMatrix = MakeRotateMatrix(Normalize(rotate));
+	
+	Matrix4x4 result={
 		scale.x * rotationMatrix.m[0][0],
 		scale.x * rotationMatrix.m[0][1],
 		scale.x * rotationMatrix.m[0][2],
@@ -325,29 +316,24 @@ Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Quaternion& rotate, const
 		translate.y,
 		translate.z,
 		1 };
+
+
+	return result;
 }
 
 // 透視投影行列の作成
 Matrix4x4 MakePerspectiveMatrix(
 	float fovY, float aspectRatio, float nearClip, float farClip) {
-
+	float m11 = (1 / aspectRatio) * (1 / std::tan(fovY / 2));
+	float m22 = (1 / std::tan(fovY / 2));
+	float m33 = farClip / (farClip - nearClip);
+	float m44 = nearClip / (nearClip - farClip);
 	return Matrix4x4{
-		(1 / aspectRatio) * (1 / std::tan(fovY / 2)),
-		0,
-		0,
-		0,
-		0,
-		(1 / std::tan(fovY / 2)),
-		0,
-		0,
-		0,
-		0,
-		farClip / (farClip - nearClip),
-		1,
-		0,
-		0,
-		nearClip / (nearClip - farClip),
-		1 };
+		m11,    0,   0,  0,
+		  0, m22,    0,  0,
+		  0,    0, m33,  1,
+	 	  0,    0, m44,  0
+	};
 }
 
 // 正射影行列の作成
@@ -355,22 +341,18 @@ Matrix4x4 MakeOrthographicMatrix(
 	float left, float top, float right, float bottom, float nearClip, float farClip) {
 
 	return Matrix4x4{
-		2 / (right - left),
-		0,
-		0,
-		0,
-		0,
-		2 / (top - bottom),
-		0,
-		0,
-		0,
-		0,
-		1 / (farClip - nearClip),
-		0,
+		2 / (right - left),0,0,0,
+		
+		0,2 / (top - bottom),0,0,
+		
+		0,0,1 / (farClip - nearClip),0,
+
 		(left + right) / (left - right),
 		(top + bottom) / (bottom - top),
 		nearClip / (nearClip - farClip),
-		1 };
+		1 
+	};
+
 }
 
 // ビューポート変換行列の作成

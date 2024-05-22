@@ -24,8 +24,8 @@ void TitleScene::Init() {
 	testObject_->Init();
 	testObject_->SetModel("simpleSkin.gltf");
 	testObject_->GetModel()->SetAnimation(
-		Resource::LoadAnmation("Resources/objs/simpleSkin", "simpleSkin.gltf"));
-	testObject_->SetTranslate({ 0.0f,0.0f,10.0f });
+		Resource::LoadAnmation("simpleSkin", "simpleSkin.gltf"));
+	testObject_->SetTranslate({ 0.0f,0.0f,0.0f });
 	
 	// skyboxの宣言
 	skybox_ = std::make_unique<Skybox>();
@@ -58,6 +58,9 @@ void TitleScene::Draw(){
 
 	// Object3D(3DModel)の描画前処理
 	ModelManager::GetInstance()->PreDraw();
+
+	// Object3D(Skinning)の描画前処理
+	ModelManager::GetInstance()->PreDrawForSkinning();
 
 	testObject_->Draw();
 }
