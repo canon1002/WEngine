@@ -29,6 +29,67 @@ void RenderCopyImage::Initialize(DirectXCommon* dxCommon, CameraCommon* camera) 
 
 void RenderCopyImage::Update() {
 
+	// 書き込むためのアドレスを取得
+	//fullScreenResource->Map(0, nullptr, reinterpret_cast<void**>(&fullScreenData));
+
+#ifdef _DEBUG
+
+	ImGui::Begin("RenderTexture");
+
+	//画面全体のカラー変更
+	ImGui::Checkbox("ScreenColor Flag", &effectFlags.isEnableScreenColor);
+	fullScreenData->enableScreenColor = effectFlags.isEnableScreenColor;
+	if (effectFlags.isEnableScreenColor) {
+		// 色を変更
+		Color newColor = { fullScreenData->screenColor.x,fullScreenData->screenColor.y,
+			fullScreenData->screenColor.z,fullScreenData->screenColor.w};
+		ImGui::ColorEdit4("SctreenColor", &newColor.r);
+		fullScreenData->screenColor = Vector4(newColor.r,newColor.g,newColor.b,newColor.a);
+	}
+	// ビネット
+	ImGui::Checkbox("Viggetting Flag", &effectFlags.isEnableViggetting);
+	fullScreenData->enableVignetting = effectFlags.isEnableViggetting;
+	if (effectFlags.isEnableViggetting) {
+		ImGui::DragFloat("Multipliier", &fullScreenData->vigneMultipliier);
+		ImGui::DragFloat("Index", &fullScreenData->vigneIndex);
+	}
+
+	// ぼかし(BoxFilter/GuaseFilter)
+	ImGui::Checkbox("Smooting Flag", &effectFlags.isEnableSmooting);
+	fullScreenData->enableScreenColor = effectFlags.isEnableScreenColor;
+	if (effectFlags.isEnableSmooting) {
+
+		// GuaseFilter
+		ImGui::Checkbox("GaussianFilter Flag", &effectFlags.isEnableGaussianFilter);
+		fullScreenData->enableGaussianFilter = effectFlags.isEnableGaussianFilter;
+		if (effectFlags.isEnableGaussianFilter) {
+			// GuaseFilter実行時、BoxFilterは実行しないようにする
+			effectFlags.isEnableBoxFilter = false;
+			fullScreenData->enableBoxFilter = effectFlags.isEnableBoxFilter;
+
+			ImGui::DragInt("KernelSize", &fullScreenData->kernelSize,1,1);
+			ImGui::DragFloat("Sigma", &fullScreenData->GaussianSigma);
+
+		}
+
+		// BoxFilter
+		ImGui::Checkbox("BoxFilter Flag", &effectFlags.isEnableBoxFilter);
+		fullScreenData->enableBoxFilter = effectFlags.isEnableBoxFilter;
+		if (effectFlags.isEnableBoxFilter) {
+			// BoxFilter実行時、GuaseFilterは実行しないようにする
+			effectFlags.isEnableGaussianFilter = false;
+			fullScreenData->enableGaussianFilter = effectFlags.isEnableGaussianFilter;
+
+			ImGui::DragInt("kernelSize", &fullScreenData->kernelSize,1,1);
+		}
+
+
+	}
+	ImGui::End();
+
+#endif // _DEBUG
+
+
 	// カメラのワールド行列
 	cameraM = MakeAffineMatrix(Vector3{ 1.0f,1.0f,1.0f },
 		Vector3{ 0.0f,0.0f,0.0f }, Vector3{ 0.0f,0.0f,-5.0f });
@@ -59,7 +120,7 @@ void RenderCopyImage::Draw() {
 	/// CBV設定
 
 	// マテリアルのCBufferの場所を指定
-	dxCommon_->commandList->SetGraphicsRootConstantBufferView(0, materialResource->GetGPUVirtualAddress());
+	dxCommon_->commandList->SetGraphicsRootConstantBufferView(0, fullScreenResource->GetGPUVirtualAddress());
 	//wvp用のCBufferの場所を指定
 	dxCommon_->commandList->SetGraphicsRootConstantBufferView(1, wvpResource->GetGPUVirtualAddress());
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である
@@ -169,7 +230,7 @@ void RenderCopyImage::CreateGraphicsPipeline(){
 		L"vs_6_0", dxCommon_->dxcUtils, dxCommon_->dxcCompiler, dxCommon_->includeHandler);
 	assert(vertexShaderBlob != nullptr);
 
-	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob = WinAPI::CompileShader(L"Shaders/GaussianFilter.PS.hlsl",
+	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob = WinAPI::CompileShader(L"Shaders/CopyImage.PS.hlsl",
 		L"ps_6_0", dxCommon_->dxcUtils, dxCommon_->dxcCompiler, dxCommon_->includeHandler);
 	assert(pixelShaderBlob != nullptr);
 
@@ -230,15 +291,24 @@ void RenderCopyImage::CreateVertexResource() {
 	// 実際に頂点リソースを作る
 	vertexResource = dxCommon_->CreateBufferResource(dxCommon_->device_.Get(), sizeof(VertexData) * 3);
 
-	// マテリアル用のResourceを作る
-	materialResource = dxCommon_->CreateBufferResource(dxCommon_->device_.Get(), sizeof(VertexData));
-	// マテリアルにデータを書き込む
-	materialData = nullptr;
+	// PostEffect用のResourceを作る
+	fullScreenData = nullptr;
+	fullScreenResource = dxCommon_->CreateBufferResource(dxCommon_->device_.Get(), sizeof(FullScereenEffect));
 	// 書き込むためのアドレスを取得
-	materialResource->Map(0, nullptr, reinterpret_cast<void**>(&materialData));
-	// 色を書き込む
-	*materialData = Color(1.0f, 1.0f, 1.0f, 1.0f);
+	fullScreenResource->Map(0, nullptr, reinterpret_cast<void**>(&fullScreenData));
 
+	// PostEffect用構造体にデータを書き込む
+	fullScreenData->enableScreenColor = 0;
+	fullScreenData->enableGrayScele = 0;
+	fullScreenData->screenColor = { 1.0f,1.0f,1.0f,1.0f };
+	fullScreenData->enableVignetting = 0;
+	fullScreenData->vigneMultipliier = 0.8f;
+	fullScreenData->vigneIndex = 0.8f;
+	fullScreenData->enableSmooting = 0;
+	fullScreenData->enableBoxFilter = 0;
+	fullScreenData->enableGaussianFilter = 0;
+	fullScreenData->kernelSize = 11;
+	fullScreenData->GaussianSigma = 2.0f;
 }
 
 //

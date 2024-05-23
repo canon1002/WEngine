@@ -7,6 +7,29 @@
 // 前方宣言
 class CameraCommon;
 
+// レンダリング時にポストエフェクトで使う変数をまとめた構造体
+struct FullScereenEffect {
+	int32_t enableScreenColor;  // 画面全体の色を変更する
+	int32_t enableGrayScele;	// Graysceleの有無
+	int32_t padding[2];
+	Vector4 screenColor;     // 上記の際に使うVector4(RGB+A型)
+	int32_t enableVignetting;   // ビネット処理の有無(画面端を暗くする)
+	float vigneMultipliier; // ビネット処理の際に使用する乗数
+	float vigneIndex;       // ビネット処理の際に使用する指数
+	int32_t enableSmooting;     // Smooting(ぼかし)の有無 (ぼかしの種類は以下の変数で決める)
+	int32_t enableBoxFilter;    // ぼかしの際にBoxFillterを使用するのか
+	int32_t enableGaussianFilter;    // ぼかしをガウスぼかしにするのか
+	int32_t kernelSize;       // カーネルの大きさ
+	float GaussianSigma;    // GaussianFilterの際に使う標準偏差
+};
+
+struct EffectFlags {
+	bool isEnableScreenColor;
+	bool isEnableViggetting;
+	bool isEnableSmooting;
+	bool isEnableBoxFilter;
+	bool isEnableGaussianFilter;
+};
 
 class RenderCopyImage{
 
@@ -77,7 +100,7 @@ public:
 	}
 
 	const D3D12_VERTEX_BUFFER_VIEW& GetVBV() const { return vertexBufferView; }
-	auto* GetMaterial() { return  materialResource.Get(); }
+	auto* GetMaterial() { return  fullScreenResource.Get(); }
 	auto* GetWVP() { return wvpResource.Get(); }
 
 private:
@@ -99,7 +122,7 @@ private:
 	// 実際に頂点リソースを作る
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource = nullptr;
 	// マテリアル用のResourceを作る
-	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12Resource> fullScreenResource = nullptr;
 	// Transformation用のResourceを作る
 	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource = nullptr;
 	// データを書き込む
@@ -110,6 +133,10 @@ private:
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
 	// マテリアルデータ
 	Color* materialData = nullptr;
+	// PostEffectデータ
+	FullScereenEffect* fullScreenData = nullptr; 
+	// フラグ(これはHLSL関連に送らない)
+	EffectFlags effectFlags;
 	// テクスチャハンドル
 	int32_t textureHandle_;
 
