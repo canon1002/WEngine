@@ -274,7 +274,7 @@ namespace Resource
 				// asiimpの行列を基本の float4x4行列 に変換する
 				// この際座標系を修正しておく
 				Matrix4x4 bindPoseMatrix = MakeAffineMatrix({ scale.x,scale.y,scale.z },
-					{	rotation.x,-rotation.y,rotation.z,rotation.w },{ -translation.x,translation.y,translation.z }
+					{	rotation.x,-rotation.y,-rotation.z,rotation.w },{ -translation.x,translation.y,translation.z }
 				);
 				// 逆行列を格納
 				jointWeightData.inverseBindPoseMatrix = Inverse(bindPoseMatrix);
@@ -631,7 +631,7 @@ SkinCluster CreateSkinCluster(const Microsoft::WRL::ComPtr<ID3D12Device>& device
 
 	// -- Palette用のResourceを確保 -- //
 
-	skinCluster.paletteResource = dxCommon_->CreateBufferResource(device.Get(), sizeof(WellForGPU)*skeleton.joints.size());
+	skinCluster.paletteResource = dxCommon_->CreateBufferResource(device.Get(), sizeof(WellForGPU) * skeleton.joints.size());
 	WellForGPU* mappedPalette = nullptr;
 	skinCluster.paletteResource->Map(0, nullptr, reinterpret_cast<void**>(&mappedPalette));
 	skinCluster.mappedPallete = { mappedPalette,skeleton.joints.size() };// spanを使ってアクセスできるようにする

@@ -99,7 +99,7 @@ Matrix4x4 Inverse(Matrix4x4 m) {
 		 (m.m[0][2] * m.m[1][1] * m.m[2][3] * m.m[3][0]) +
 		 (m.m[0][1] * m.m[1][3] * m.m[2][2] * m.m[3][0])) };
 
-	return Matrix4x4{
+	Matrix4x4 result = {
 
 		(1 / im) * ((m.m[1][1] * m.m[2][2] * m.m[3][3]) + (m.m[1][2] * m.m[2][3] * m.m[3][1]) +
 					(m.m[1][3] * m.m[2][1] * m.m[3][2]) - (m.m[1][3] * m.m[2][2] * m.m[3][1]) -
@@ -154,14 +154,21 @@ Matrix4x4 Inverse(Matrix4x4 m) {
 					(m.m[0][1] * m.m[1][0] * m.m[2][2]) - (m.m[0][0] * m.m[1][2] * m.m[2][1])),
 
 	};
+
+	return result;
 }
 
 /// 転置行列の計算
 Matrix4x4 Transpose(Matrix4x4 m) {
 
-	return Matrix4x4{ m.m[0][0], m.m[1][0], m.m[2][0], m.m[3][0], m.m[0][1], m.m[1][1],
-					 m.m[2][1], m.m[3][1], m.m[0][2], m.m[1][2], m.m[2][2], m.m[3][2],
-					 m.m[0][3], m.m[1][3], m.m[2][3], m.m[3][3] };
+	Matrix4x4 result = {
+		m.m[0][0], m.m[1][0], m.m[2][0], m.m[3][0],
+		m.m[0][1], m.m[1][1], m.m[2][1], m.m[3][1],
+		m.m[0][2], m.m[1][2], m.m[2][2], m.m[3][2],
+		m.m[0][3], m.m[1][3], m.m[2][3], m.m[3][3]
+	};
+
+	return result;
 }
 
 /// 単位行列の作成
@@ -292,14 +299,15 @@ Matrix4x4 MakeAffineMatrix(
 		translate.y,
 		translate.z,
 		1 };
+
 }
 
 Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Quaternion& rotate, const Vector3& translate) {
 
 	// Quaternionをもちいて回転行列を求める
 	Matrix4x4 rotationMatrix = MakeRotateMatrix(Normalize(rotate));
-	
-	Matrix4x4 result={
+
+	Matrix4x4 result = {
 		scale.x * rotationMatrix.m[0][0],
 		scale.x * rotationMatrix.m[0][1],
 		scale.x * rotationMatrix.m[0][2],
@@ -332,7 +340,7 @@ Matrix4x4 MakePerspectiveMatrix(
 		m11,    0,   0,  0,
 		  0, m22,    0,  0,
 		  0,    0, m33,  1,
-	 	  0,    0, m44,  0
+		  0,    0, m44,  0
 	};
 }
 
@@ -342,15 +350,15 @@ Matrix4x4 MakeOrthographicMatrix(
 
 	return Matrix4x4{
 		2 / (right - left),0,0,0,
-		
+
 		0,2 / (top - bottom),0,0,
-		
+
 		0,0,1 / (farClip - nearClip),0,
 
 		(left + right) / (left - right),
 		(top + bottom) / (bottom - top),
 		nearClip / (nearClip - farClip),
-		1 
+		1
 	};
 
 }

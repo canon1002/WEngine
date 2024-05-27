@@ -22,10 +22,10 @@ void TitleScene::Init() {
 	// 3dオブジェクトの宣言
 	testObject_ = std::make_unique<Object3d>();
 	testObject_->Init();
-	testObject_->SetModel("simpleSkin.gltf");
+	testObject_->SetModel("walk.gltf");
 	testObject_->GetModel()->SetAnimation(
-		Resource::LoadAnmation("simpleSkin", "simpleSkin.gltf"));
-	testObject_->SetTranslate({ 0.0f,0.0f,0.0f });
+		Resource::LoadAnmation("human", "walk.gltf"));
+	testObject_->SetTranslate({ 0.0f,0.0f,5.0f });
 	
 	// skyboxの宣言
 	skybox_ = std::make_unique<Skybox>();

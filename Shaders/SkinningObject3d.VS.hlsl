@@ -33,10 +33,10 @@ Skinned Skinning(VertexShaderInput input){
     // -- SKinningの処理を行う -- //
     
     // 位置の変換
-    skinned.position = mul(input.position, gMatrixPalette[input.index.x].skeletonSpaceMatrix * input.weight.x);
-    skinned.position += mul(input.position, gMatrixPalette[input.index.y].skeletonSpaceMatrix * input.weight.y);
-    skinned.position += mul(input.position, gMatrixPalette[input.index.z].skeletonSpaceMatrix * input.weight.z);
-    skinned.position += mul(input.position, gMatrixPalette[input.index.w].skeletonSpaceMatrix * input.weight.w);
+    skinned.position = mul(input.position, gMatrixPalette[input.index.x].skeletonSpaceMatrix) * input.weight.x;
+    skinned.position += mul(input.position, gMatrixPalette[input.index.y].skeletonSpaceMatrix) * input.weight.y;
+    skinned.position += mul(input.position, gMatrixPalette[input.index.z].skeletonSpaceMatrix) * input.weight.z;
+    skinned.position += mul(input.position, gMatrixPalette[input.index.w].skeletonSpaceMatrix) * input.weight.w;
     skinned.position.w = 1.0f;// 確実に1を入れておく
     
     // 法線の変換
@@ -56,10 +56,10 @@ VertexShaderOutput main(VertexShaderInput input)
     Skinned skinned = Skinning(input);
     
     // Skinning結果を使って変換
-    output.position = mul(skinned.position, gTransfomationMatrix.WVP);
-    output.worldPosition = mul(skinned.position, gTransfomationMatrix.World).xyz;
+    output.position = mul(input.position, gTransfomationMatrix.WVP);
+    output.worldPosition = mul(input.position, gTransfomationMatrix.World).xyz;
     output.texcoord = input.texcoord;
-    output.normal = skinned.normal;
-    output.normal = normalize(mul(skinned.normal, (float32_t3x3) gTransfomationMatrix.WorldInverseTranspose));
+    output.normal = input.normal;
+    output.normal = normalize(mul(input.normal, (float32_t3x3) gTransfomationMatrix.WorldInverseTranspose));
     return output;
 }                                                                                                           

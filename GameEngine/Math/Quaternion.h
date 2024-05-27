@@ -24,6 +24,36 @@ struct Quaternion
 		q0.w = this->w * other.w;
 		return q0;
 	}
+
+	Quaternion operator*(const float s) {
+		Quaternion r;
+
+		r.x = s * this->x;
+		r.y = s * this->y;
+		r.z = s * this->z;
+		r.w = s * this->w;
+
+		return r;
+	}
+	Quaternion operator+(const Quaternion q) {
+		Quaternion r;
+
+		r.x = q.x * this->x;
+		r.y = q.y * this->y;
+		r.z = q.z * this->z;
+		r.w = q.w * this->w;
+
+		return r;
+	}
+
+	Quaternion operator-() {
+		Quaternion q0{};
+		q0.x = this->x * (-1);
+		q0.y = this->y * (-1);
+		q0.z = this->z * (-1);
+		q0.w = this->w * (-1);
+		return q0;
+	}
 };
 
 Quaternion Multiply(Quaternion q1, Quaternion q2);

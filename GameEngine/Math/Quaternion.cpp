@@ -99,26 +99,40 @@ Matrix4x4 MakeRotateMatrix(const Quaternion& q) {
 
 // 球面線形補間
 Quaternion Slerp(const Quaternion& q0, const Quaternion& q1, float t) {
-	float dot = QDot(q0, q1);
-	Quaternion q0_ = q0;
-	Quaternion q1_ = q1;
+
+	// 内積を取得 // 単位ベクトルをいれる
+	float dot = QDot(Normalize(q0), Normalize(q1));
+	// 関数内に正規化したQ0,Q1を生成
+	Quaternion q0_ = Normalize(q0);
+	Quaternion q1_ = Normalize(q1);
+	// 戻り値 宣言
+	Quaternion result;
+	//確認用変数
+	static Quaternion test;
+
+	// 
 	if (dot < 0) {
-		q0_ *= -1;
-		dot *= -1;
+		q0_ = { -q0.x, -q0.y, -q0.z, -q0.w };
+		dot = -dot;
 	}
-	
+
+	if (dot >= 1.0f - 0.0005f) {
+		result = (q0_ * (1.0f - t) + (q1_ * t));
+		test = result;
+		return  result;
+	}
 	// なす角を求める
 	float theta = std::acos(dot);
 
 	// thetaとsinを使って補間係数scaler0,scaler1を求める
 	float scaler0 = std::sin((1.0f - t) * theta) / std::sin(theta);
-	float scaler1 = std::sin((t) * theta) / std::sin(theta);
+	float scaler1 = std::sin(t * theta) / std::sin(theta);
+
+	result = (q0_*scaler0) + (q1_*scaler1);
+
 	
-	Quaternion result;
-	result.x = scaler0 * q0.x + scaler1 * q1.x;
-	result.y = scaler0 * q0.y + scaler1 * q1.y;
-	result.z = scaler0 * q0.z + scaler1 * q1.z;
-	result.w = scaler0 * q0.w + scaler1 * q1.w;
+
+	test = result;
 	
 	return result;
 
