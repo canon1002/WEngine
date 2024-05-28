@@ -335,7 +335,7 @@ Matrix4x4 MakePerspectiveMatrix(
 	float m11 = (1 / aspectRatio) * (1 / std::tan(fovY / 2));
 	float m22 = (1 / std::tan(fovY / 2));
 	float m33 = farClip / (farClip - nearClip);
-	float m44 = nearClip / (nearClip - farClip);
+	float m44 = (-nearClip*farClip) / (farClip - nearClip);
 	return Matrix4x4{
 		m11,    0,   0,  0,
 		  0, m22,    0,  0,

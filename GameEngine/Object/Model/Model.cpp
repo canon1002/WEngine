@@ -70,15 +70,14 @@ void Model::DrawGUI(const std::string& label){
 	ImGui::BeginChild(label.c_str());
 	// マテリアル
 	if (ImGui::TreeNode("マテリアル")) {
-		ImGui::DragFloat4("Color", &materialData_->color.a);
-		ImGui::DragInt("EnableLighting", &materialData_->enableLighting,1.0f,0,1);
-		ImGui::DragFloat("Shininess", &materialData_->shininess);
+		ImGui::DragFloat4("Color", &materialData_->color.r,0.01f,0.0f,1.0f);
 		ImGui::TreePop();// ノードを閉じる(この場合は "マテリアル" を閉じる)
 	}
 	if (ImGui::TreeNode("平行光源")) {
 		ImGui::Checkbox("Lighting Flag",&isLighting_);
 		// Lightingの設定を変更できるように
 		materialData_->enableLighting = isLighting_;
+		ImGui::DragFloat("Shininess", &materialData_->shininess, 0.05f, 0.0f, 1.0f);
 		ImGui::DragFloat4("Color", &directionalLightDate->color.r);
 		ImGui::DragFloat3("Directon", &directionalLightDate->direction.x,0.1f,0.0f,1.0f);
 		ImGui::DragFloat("Intensity", &directionalLightDate->intensity, 0.1f, 0.0f, 1.0f);

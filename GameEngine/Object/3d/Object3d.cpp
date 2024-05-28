@@ -30,9 +30,9 @@ void Object3d::Update() {
 	ImGui::SliderAngle("RotateX", &worldTransform_->rotation.x);
 	ImGui::SliderAngle("RotateY", &worldTransform_->rotation.y);
 	ImGui::SliderAngle("RotateZ", &worldTransform_->rotation.z);
-	ImGui::DragFloat3("Scale", &worldTransform_->scale.x);
-	ImGui::DragFloat3("Rotate", &worldTransform_->rotation.x);
-	ImGui::DragFloat3("translate", &worldTransform_->translation.x);
+	ImGui::DragFloat3("Scale", &worldTransform_->scale.x,0.05f,-10.0f,10.0f);
+	ImGui::DragFloat3("Rotate", &worldTransform_->rotation.x, 0.01f, -6.28f, 6.28f);
+	ImGui::DragFloat3("translate", &worldTransform_->translation.x,0.1f,-100.0f,100.0f);
 	if (ImGui::TreeNode("WVPData")) {
 		if (ImGui::TreeNode("WVP")) {
 			for (int i = 0; i < 4; ++i) {

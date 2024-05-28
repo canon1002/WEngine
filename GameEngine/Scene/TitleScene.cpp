@@ -63,4 +63,5 @@ void TitleScene::Draw(){
 	ModelManager::GetInstance()->PreDrawForSkinning();
 
 	testObject_->Draw();
+
 }

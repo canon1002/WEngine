@@ -708,8 +708,6 @@ SkinCluster CreateSkinCluster(const Microsoft::WRL::ComPtr<ID3D12Device>& device
 		}
 	}
 
-	skinCluster.mappedInfluence;
-
 	// データを返す
 	return skinCluster;
 }
