@@ -23,6 +23,9 @@ public:
 
 private:
 
+	// 入力を取得
+	InputManager* input_;
+
 	//std::shared_ptr<Object3d> testObject_;
 	std::unique_ptr<Object3d> testObject_;
 	std::unique_ptr<Object3d> AnimeObject_;

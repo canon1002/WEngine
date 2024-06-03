@@ -21,6 +21,9 @@ private:
 
 	void CheckCollisionPair(Collider* colliderA, Collider* colliderB);
 
+	bool IsCollision(const AABB& a, const AABB& b);
+	bool IsCollision(const OBB& a, const OBB& b);
+
 private:
 
 	// コライダーリスト

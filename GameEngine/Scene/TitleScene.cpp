@@ -7,6 +7,9 @@ void TitleScene::Finalize(){}
 
 //　継承した関数
 void TitleScene::Init() {
+	// 入力を取得する
+	input_ = InputManager::GetInstance();
+	
 	//testObject_ = ObjectAdministrator::GetInstance()->CreateObject("Resources/objs", "emptyAxis.obj");
 	
 	// モデル 読み込み
@@ -57,6 +60,41 @@ void TitleScene::Update() {
 
 	MainCamera::GetInstance()->Update();
 
+	// スティック入力の
+	const static int stickValue = 2000;
+	// いずれかの数値が、以上(以下)であれば移動処理を行う
+	if (input_->GetStick(Gamepad::Stick::LEFT_X) < -stickValue || // 左 
+		input_->GetStick(Gamepad::Stick::LEFT_X) > stickValue || // 右
+		input_->GetStick(Gamepad::Stick::LEFT_Y) < -stickValue || // 上
+		input_->GetStick(Gamepad::Stick::LEFT_Y) > stickValue	  // 下
+		) {
+
+		// Xの移動量とYの移動量を設定する
+		Vector3 direction = { 
+			(float)input_->GetStick(Gamepad::Stick::LEFT_X) ,
+			0.0f,
+			(float)input_->GetStick(Gamepad::Stick::LEFT_Y)
+		};
+		// 念のために正規化
+		direction = Normalize(direction);
+		
+		// 平行移動を行う
+		AnimeObject_->worldTransform_->translation += direction * 0.05f;
+
+		// ここから回転処理
+		const float PI = 3.14f;
+		float rotateY = std::atan2f(direction.x, direction.z);
+		rotateY = std::fmodf(rotateY, 2.0f * PI);
+		if (rotateY > PI) {
+			rotateY -= 2.0f * PI;
+		}
+		if (rotateY < -PI) {
+			rotateY += 2.0f * PI;
+		}
+		AnimeObject_->worldTransform_->rotation.y = rotateY;
+	}
+	
+
 	// SkinningModel 忍び歩き
 	testObject_->Update();
 	testObject_->DrawGUI();
@@ -89,6 +127,6 @@ void TitleScene::Draw(){
 	// Object3D(Skinning)の描画前処理
 	ModelManager::GetInstance()->PreDrawForSkinning();
 
-	testObject_->Draw();
+	//testObject_->Draw();
 	AnimeObject_->Draw();
 }

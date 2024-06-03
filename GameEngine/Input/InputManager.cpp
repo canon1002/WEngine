@@ -40,3 +40,40 @@ void InputManager::DrawGUI()
 	gamepad->DrawGUI();
 	keyboard->DrawGUI();
 }
+
+bool InputManager::GetPushKey(BYTE keyNumber){
+	return keyboard->GetPushKey(keyNumber);
+}
+
+bool InputManager::GetPressKey(BYTE keyNumber){
+	return keyboard->GetPressKey(keyNumber);
+}
+
+bool InputManager::GetTriggerKey(BYTE keyNumber){
+	return keyboard->GetTriggerKey(keyNumber);
+}
+
+bool InputManager::GetReleseKey(BYTE keyNumber){
+	keyNumber;
+	return false;
+}
+
+bool InputManager::GetPused(const Gamepad::Button& type){
+	return gamepad->Pushed(type);
+}
+
+bool InputManager::GetLongPush(const Gamepad::Button& type){
+	return gamepad->LongPush(type);
+}
+
+bool InputManager::GetReleased(const Gamepad::Button& type){
+	return gamepad->Released(type);
+}
+
+unsigned char InputManager::GetTriger(const Gamepad::Triger& type){
+	return gamepad->getTriger(type);
+}
+
+short InputManager::GetStick(const Gamepad::Stick& type){
+	return gamepad->getStick(type);
+}

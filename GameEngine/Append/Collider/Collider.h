@@ -4,6 +4,23 @@
 #include <list>
 
 /// <summary>
+/// AABB (軸平行境界ボックス)
+/// </summary>
+struct AABB {
+	Vector3 min;
+	Vector3 max;
+};
+
+/// <summary>
+/// OBB(有向境界ボックス)
+/// </summary>
+struct OBB {
+	Vector3 center; // 中心点
+	Vector3 orientations[3]; // 座標軸。正規化・直交必須
+	Vector3 size; // 座標方向の長さの半分。中心から面までの距離
+};
+
+/// <summary>
 ///	コライダー
 /// <summary>
 class Collider
@@ -18,8 +35,8 @@ public:
 	virtual Vector3 GetWorldPos() = 0;
 	
 	// 半径
-	void SetRadius(float radius) { m_radius = radius; }
-	float GetRadius() { return m_radius; }
+	inline void SetRadius(float radius) { m_radius = radius; }
+	inline float GetRadius()const  { return m_radius; }
 
 	// コライダー
 	virtual uint32_t GetCollisionAttribute() = 0;

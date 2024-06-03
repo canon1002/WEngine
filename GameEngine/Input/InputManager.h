@@ -33,6 +33,29 @@ public:
 	// ゲームパッド入力にアクセスする
 	Gamepad* GetGamepad() { return gamepad; }
 
+	// -- キーボード関連 -- //
+
+	// 押したら
+	bool GetPushKey(BYTE keyNumber);
+	// 押しっぱの場合
+	bool GetPressKey(BYTE keyNumber);
+	// 単押しの場合
+	bool GetTriggerKey(BYTE keyNumber);
+	// 離したとき
+	bool GetReleseKey(BYTE keyNumber);
+
+	// -- ゲームパッド関連 -- //
+
+	// 押した瞬間
+	bool GetPused(const Gamepad::Button& type);
+	// 長押し
+	bool GetLongPush(const Gamepad::Button& type);
+	// 離した瞬間
+	bool GetReleased(const Gamepad::Button& type);
+	// トリガーのボタンの状態を取得
+	unsigned char GetTriger(const Gamepad::Triger& type);
+	// スティックの倒した量を取得
+	short GetStick(const Gamepad::Stick& type);
 
 private:
 
