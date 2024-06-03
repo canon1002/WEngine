@@ -3,38 +3,40 @@
 #include "GameEngine/Base/DirectX/DirectXCommon.h"
 #include "GameEngine/Resource/Texture/Resource.h"
 #include "GameEngine/Append/Transform/WorldTransform.h"
-#include "GameEngine/Object/light/DirectionalLight.h"
-#include <random>
-#include "GameEngine/Object/Model/Model.h"
 
+// 前方宣言
 class CameraCommon;
 
-struct Particle {
-	Vector3 scale;
-	Vector3 rotation;
-	Vector3 translation;
-	Vector3 vel;
-	Color color;
-	float lifeTime;
-	float currentTime;
-};
+class Line{
 
-class VoxelParticle
-{
 public:
-	VoxelParticle();
-	~VoxelParticle();
+	Line();
+	~Line();
 
-	void Initialize(DirectXCommon* dxCommon,CameraCommon* camera);
+	void Initialize(DirectXCommon* dxCommon, CameraCommon* camera);
 	void Update();
+	void PreDraw();
 	void Draw();
 
+
+
+private:	// -- private メンバ関数 -- //
+
+	/// <summary>
+	/// 3Dモデル用のルートシグネチャを生成
+	/// </summary>
+	void CreateRootSignature();
+
+	/// <summary>
+	/// 3Dモデル用のグラフィックスパイプラインを生成
+	/// </summary>
+	void CreateGraphicsPipeline();
+
 	void CreateVertexResource();
-	void CreateIndexResource();
 	void CreateTransformationRsource();
 	void CreateBufferView();
 
-	Particle MakeNewParticle(std::mt19937& randomEngine);
+public:
 
 	/// <summary>
 	///	座標変更
@@ -48,7 +50,7 @@ public:
 	/// 中心座標を移動させる
 	/// </summary>
 	/// <param name="t">移動量</param>
-	void Transform(Vector4 t) {
+	void Transform(Vector3 t) {
 		worldTransform_.translation.x += t.x;
 		worldTransform_.translation.y += t.y;
 		worldTransform_.translation.z += t.z;
@@ -70,11 +72,7 @@ public:
 	/// <param name="color"></param>
 	void SetColor(Color color) {
 		// 指定した色に書き込む
-		*materialData_ = { Color(color.r, color.g, color.b, color.a) };
-	}
-
-	void SetTexture(int32_t textureId) {
-		textureHandle_ = textureId;
+		*materialData = Color(color.r, color.g, color.b, color.a);
 	}
 
 	const D3D12_VERTEX_BUFFER_VIEW& GetVBV() const { return vertexBufferView; }
@@ -87,10 +85,14 @@ private:
 	CameraCommon* camera_ = nullptr;
 	DirectXCommon* dxCommon_ = nullptr;
 
+	// グラフィックパイプライン
+	Microsoft::WRL::ComPtr <ID3D12PipelineState> graphicsPipelineState = nullptr;
+	// ルートシグネチャー
+	Microsoft::WRL::ComPtr <ID3D12RootSignature> rootSignature = nullptr;
+
 	WorldTransform worldTransform_;
-	Matrix4x4 cameraM, viewM, projectM, pespectiveM, wvpM;
-	// 半径
-	float rad = 1.0f;
+	Matrix4x4 worldM, cameraM, viewM, projectM, pespectiveM, wvpM;
+	Vector4 translate_;
 
 	// VertexResourceを生成する(P.42)
 	// 実際に頂点リソースを作る
@@ -99,41 +101,16 @@ private:
 	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource = nullptr;
 	// Transformation用のResourceを作る
 	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource = nullptr;
-	// Light用のリソースデータを作る
-	Microsoft::WRL::ComPtr<ID3D12Resource> directionalLightResource = nullptr;
-	// TransformationMatrixを10コ格納できるResourceを作成する
-	Microsoft::WRL::ComPtr<ID3D12Resource> instancingResource = nullptr;
 	// データを書き込む
-	ParticleForGPU* wvpData = nullptr;
-	ParticleForGPU* instancingData_ = nullptr;
+	Matrix4x4* wvpData = nullptr;
 	// 頂点リソースにデータを書き込む
 	VertexData* vertexData = nullptr;
 	// 頂点バッファビューを作成する
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
 	// マテリアルデータ
-	Material* materialData_ = nullptr;
-	// 平行光源　
-	DirectionalLight* directionalLightDate = nullptr;
-
-	// テクスチャ切り替え
-	bool useBall = true;
+	Color* materialData = nullptr;
 	// テクスチャハンドル
 	int32_t textureHandle_;
-	int32_t instancingHandle_;
-	// モデルデータ
-	ModelData modelData_;
-	// UVTransform用の変数
-	UVTransform uvTransform_;
-	// インスタンスの数
-	const int32_t kNumMaxInstance = 6;
-	int32_t instanceCount_;
-
-	// パーティクル
-	Particle particles[10];
-	
-	// 乱数生成機
-	std::random_device seedGenerator_;
-	std::mt19937 randomEngine_;
 
 };
 

@@ -46,7 +46,8 @@ void Model::Update()
 
 void Model::Draw()
 {
-	
+	// 配列を渡す(開始スロット番号、使用スロット数、VBV配列へのポインタ)
+	dxCommon_->commandList->IASetVertexBuffers(0, 1, &vertexBufferView);
 	// IndexBufferViewをセット
 	dxCommon_->commandList->IASetIndexBuffer(&indexBufferView);
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけばいい

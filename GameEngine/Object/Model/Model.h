@@ -5,6 +5,17 @@
 #include "GameEngine/Object/Light/DirectionalLight.h"
 #include "GameEngine/Object/Camera/CameraCommon.h"
 
+// アニメーション
+#include "GameEngine/Append/Animation/Skinning/Skinnig.h"
+
+// モデルデータ
+struct ModelData {
+	std::map<std::string, JointWeightData>skinClusterData;
+	std::vector<VertexData> vertices;
+	std::vector<uint32_t> indices;
+	MaterialData material;
+	Node rootNode;
+};
 
 class Model
 {
@@ -27,9 +38,6 @@ public:
 
 	// カメラ座標を設定
 	void SetCameraPosition(CameraCommon camera) { cameraData->worldPosition = camera.GetTranslate(); }
-
-	// アニメーションをセットする
-	void SetAnimation(const Animation& animation) { animation_ = animation; }
 
 public:
 
@@ -80,10 +88,10 @@ public:
 	// UVTransform用の変数
 	UVTransform uvTransform_;
 
-	// -- NodeAnimation 関連 -- //
+	// -- Animation 関連 -- //
 
-	// アニメーション
-	Animation animation_;
+	// スキニング アニメーション
+	Skinnig* skinning_ = nullptr;
 
 };
 

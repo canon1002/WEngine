@@ -4,6 +4,7 @@
 #include "GameEngine/Resource/Texture/Resource.h"
 #include "GameEngine/Object/Light/DirectionalLight.h"
 #include "GameEngine/Object/Camera/CameraCommon.h"
+#include "GameEngine/Append/Animation/Skinning/Skinnig.h"
 
 class Object3dCommon;
 class Model;
@@ -19,11 +20,12 @@ public: // メンバ関数
 	~Object3d();
 
 	///	初期化
-	void Init();
+	void Init(std::string name);
 	/// 更新
 	void Update();
 	/// 描画
 	void Draw();
+	void DrawGUI();
 
 	void CreateTransformationRsource();
 	void SetModel(const std::string& filepath);
@@ -36,6 +38,9 @@ public: // メンバ関数
 	Model* GetModel() { return model_; }
 
 public: // メンバ変数
+
+	// オブジェクトの名称
+	std::string objname_;
 
 	// 外部ポインタ
 	DirectXCommon* dxCommon_ = nullptr;
@@ -52,6 +57,9 @@ public: // メンバ変数
 	WorldTransform* worldTransform_;
 
 	// -- Animation 関連 -- //
+
+	// アニメーションデータを保有しているか
+	bool isHavingAnimation_ = false;
 
 	// アニメーション再生中の時刻
 	float animationTime_ = 0.0f;

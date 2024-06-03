@@ -56,10 +56,9 @@ VertexShaderOutput main(VertexShaderInput input)
     Skinned skinned = Skinning(input);
     
     // Skinning結果を使って変換
-    output.position = mul(input.position, gTransfomationMatrix.WVP);
-    output.worldPosition = mul(input.position, gTransfomationMatrix.World).xyz;
+    output.position = mul(skinned.position, gTransfomationMatrix.WVP);
+    output.worldPosition = mul(skinned.position, gTransfomationMatrix.World).xyz;
     output.texcoord = input.texcoord;
-    output.normal = input.normal;
-    output.normal = normalize(mul(input.normal, (float32_t3x3) gTransfomationMatrix.WorldInverseTranspose));
+    output.normal = normalize(mul(skinned.normal, (float32_t3x3) gTransfomationMatrix.WorldInverseTranspose));
     return output;
 }                                                                                                           

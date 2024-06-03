@@ -21,4 +21,18 @@ struct QuaternionTransform {
 	Vector3 scale_;			// 拡大率
 	Quaternion rotation_;	// 回転
 	Vector3 translation_;	// 平行移動
+
+	// 親となるワールド変換へのポインタ（読み取り専用）
+	QuaternionTransform* parent_ = nullptr;
+
+	Matrix4x4 GetAffinMatrix() const {
+		Matrix4x4 result = MakeAffineMatrix(scale_, rotation_, translation_);
+
+		// 親があれば親のワールド行列を掛ける
+		if (parent_ != nullptr) {
+			result = Multiply(result, parent_->GetAffinMatrix());
+		}
+		return result;
+	}
+
 };

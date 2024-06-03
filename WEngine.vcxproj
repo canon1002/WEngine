@@ -157,6 +157,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="GameEngine\Input\Gamepad.cpp" />
     <ClCompile Include="GameEngine\Input\InputManager.cpp" />
     <ClCompile Include="GameEngine\Input\Keyboard.cpp" />
+    <ClCompile Include="GameEngine\Object\Model\Line.cpp" />
+    <ClCompile Include="GameEngine\Append\Animation\Skinning\Joint.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="GameEngine\Object\3d\Object3dCommon.cpp" />
     <ClCompile Include="GameEngine\Object\3d\Object3d.cpp" />
@@ -167,6 +169,10 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="GameEngine\Object\Model\Skybox\Skybox.cpp" />
     <ClCompile Include="GameEngine\Object\Screen\RenderTextureAdmin.cpp" />
     <ClCompile Include="GameEngine\Resource\ResourceCommon.cpp" />
+    <ClCompile Include="GameEngine\Append\Animation\Skinning\Skeleton.cpp" />
+    <ClCompile Include="GameEngine\Append\Animation\Skinning\SkinCluster.cpp" />
+    <ClCompile Include="GameEngine\Append\Animation\Skinning\Skinnig.cpp" />
+    <ClCompile Include="GameEngine\Append\Animation\Node\NodeAnimation.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameEngine\Object\Screen\RenderCopyImage.h" />
@@ -225,6 +231,12 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="GameEngine\Object\Model\Skybox\Skybox.h" />
     <ClInclude Include="GameEngine\Object\Screen\RenderTextureAdmin.h" />
     <ClInclude Include="GameEngine\Resource\ResourceCommon.h" />
+    <ClInclude Include="GameEngine\Object\Model\Line.h" />
+    <ClInclude Include="GameEngine\Append\Animation\Skinning\Skeleton.h" />
+    <ClInclude Include="GameEngine\Append\Animation\Skinning\SkinCluster.h" />
+    <ClInclude Include="GameEngine\Append\Animation\Skinning\Skinnig.h" />
+    <ClInclude Include="GameEngine\Append\Animation\Node\NodeAnimation.h" />
+    <ClInclude Include="GameEngine\Append\Animation\Skinning\Joint.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt" />
