@@ -25,6 +25,7 @@ private:
 
 	//std::shared_ptr<Object3d> testObject_;
 	std::unique_ptr<Object3d> testObject_;
+	std::unique_ptr<Object3d> AnimeObject_;
 	std::unique_ptr<Object3d> testObject02_;
 	std::unique_ptr<Skybox> skybox_;
 };

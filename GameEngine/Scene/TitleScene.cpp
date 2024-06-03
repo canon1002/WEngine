@@ -30,6 +30,14 @@ void TitleScene::Init() {
 		testObject_->GetModel()->modelData);
 	testObject_->SetTranslate({ 0.0f,0.0f,5.0f });
 	
+	AnimeObject_ = std::make_unique<Object3d>();
+	AnimeObject_->Init("AnimeObj");
+	AnimeObject_->SetModel("walk.gltf");
+	AnimeObject_->GetModel()->skinning_ = new Skinnig();
+	AnimeObject_->GetModel()->skinning_->Init("human", "walk.gltf",
+		AnimeObject_->GetModel()->modelData);
+	AnimeObject_->SetTranslate({ 1.0f,1.0f,7.0f });
+	
 	testObject02_ = std::make_unique<Object3d>("Test Plane");
 	testObject02_->Init("Test Plane");
 	testObject02_->SetModel("plane.gltf");
@@ -49,10 +57,19 @@ void TitleScene::Update() {
 
 	MainCamera::GetInstance()->Update();
 
+	// SkinningModel 忍び歩き
 	testObject_->Update();
-	testObject02_->Update();
 	testObject_->DrawGUI();
+
+	// SkinningModel 歩き
+	AnimeObject_->Update();
+	AnimeObject_->DrawGUI();
 	
+	// 平面
+	testObject02_->Update();
+	testObject02_->DrawGUI();
+
+	// スカイボックス
 	skybox_->Update();
 
 }
@@ -73,4 +90,5 @@ void TitleScene::Draw(){
 	ModelManager::GetInstance()->PreDrawForSkinning();
 
 	testObject_->Draw();
+	AnimeObject_->Draw();
 }
