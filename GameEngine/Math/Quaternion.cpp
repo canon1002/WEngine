@@ -11,13 +11,28 @@ Quaternion Multiply(Quaternion q1, Quaternion q2) {
 	};
 }
 
+float Length(Quaternion q) {
+	return sqrtf(powf(q.w, 2) + powf(q.x, 2) + powf(q.y, 2) + powf(q.z, 2));
+}
+
 Quaternion Inverse(Quaternion q) {
-	return{
-		Conjugate(q).x / (Norm(q) * Norm(q)),
-		Conjugate(q).y / (Norm(q) * Norm(q)),
-		Conjugate(q).z / (Norm(q) * Norm(q)),
-		Conjugate(q).w / (Norm(q) * Norm(q)),
-	};
+	Quaternion result{};
+	// 正規化するベクトルの長さを求める
+	float length = Length(q);
+	length = std::powf(length, 2);
+	// 共役クォータニオンを求める
+	Quaternion conjugate = Conjugate(q);
+
+	// 計算処理
+	if (length != 0.0f) {
+		result.x = conjugate.x / length;
+		result.y = conjugate.y / length;
+		result.z = conjugate.z / length;
+		result.w = conjugate.w / length;
+	}
+
+	// 結果を返す
+	return result;
 }
 
 Quaternion IdentityQuaternion() {
@@ -45,14 +60,12 @@ Quaternion Conjugate(Quaternion q) {
 }
 
 float Norm(Quaternion q) {
-	return{
-		std::sqrt(q.x * q.x + q.y * q.y + q.z * q.z + q.w * q.w)
-	};
+	return std::sqrt(q.x * q.x + q.y * q.y + q.z * q.z + q.w * q.w);
 }
 
 // 任意回転軸を表すQuaternionの作成
 Quaternion MakeRotateAxisAngleQuaternion(const Vector3& axis, float angle) {
-	Quaternion result;
+	Quaternion result{};
 	result.x = axis.x * sinf(angle / 2.0f);
 	result.y = axis.y * sinf(angle / 2.0f);
 	result.z = axis.z * sinf(angle / 2.0f);
@@ -70,15 +83,25 @@ Vector3 RotateVector(const Vector3& v, const Quaternion& q) {
 
 // Quaternionから回転行列を求める
 Matrix4x4 MakeRotateMatrix(const Quaternion& q) {
-	float x = q.x, y = q.y, z = q.z, w = q.w;
-	float xx = x * x, yy = y * y, zz = z * z, ww = w * w;
+	// 返却用の変数 // 単位行列を生成
+	Matrix4x4 result = MakeIdentity();
 
-	Matrix4x4 result{
-		ww + xx - yy - zz,			2 * ((x * y) + (w * z)),	2 * ((x * z) - (w * y)),	0,
-		2 * ((x * y) - (w * z)),	ww - xx + yy - zz,			2 * ((y * z) + (w * x)),	0,
-		2 * ((x * z) + (w * y)),	2 * ((y * z) - (w * x)),	ww - xx - yy + zz,			0,
-		0,							0,							0,							1
-	};
+	// 計算処理を行う
+	// 下記に記載のない要素は単位行列の数値のままとなっている
+	result.m[0][0] = powf(q.w, 2) + powf(q.x, 2) - powf(q.y, 2) - powf(q.z, 2);
+	result.m[0][1] = 2.0f * ((q.x * q.y) + (q.w * q.z));
+	result.m[0][2] = 2.0f * ((q.x * q.z) - (q.w * q.y));
+	
+	
+	result.m[1][0] = 2.0f * ((q.x * q.y) - (q.w * q.z));
+	result.m[1][1] = powf(q.w, 2) - powf(q.x, 2) + powf(q.y, 2) - powf(q.z, 2);
+	result.m[1][2] = 2.0f * (q.y * q.z + q.w * q.x);
+	
+	
+	result.m[2][0] = 2.0f * (q.x * q.z + q.w * q.y);
+	result.m[2][1] = 2.0f * (q.y * q.z - q.w * q.x);
+	result.m[2][2] = powf(q.w, 2) - powf(q.x, 2) - powf(q.y, 2) + powf(q.z, 2);
+
 
 	return result;
 }
@@ -99,31 +122,44 @@ Matrix4x4 MakeRotateMatrix(const Quaternion& q) {
 
 // 球面線形補間
 Quaternion Slerp(const Quaternion& q0, const Quaternion& q1, float t) {
-	float dot = QDot(q0, q1);
-	Quaternion q0_ = q0;
-	Quaternion q1_ = q1;
+
+	// 関数内に正規化したQ0,Q1を生成
+	Quaternion q0_ = (q0);
+	Quaternion q1_ = (q1);
+	// 内積を取得 // 単位ベクトルをいれる
+	float dot = QDot(q0,q1);
+	// 戻り値 宣言
+	Quaternion result;
+
 	if (dot < 0) {
-		q0_ *= -1;
-		dot *= -1;
+		// 逆の回転を利用
+		q0_ = Inverse(q0_);
+		dot = -dot;
 	}
-	
+
 	// なす角を求める
 	float theta = std::acos(dot);
+	// sin角を求める
+	float sinTheta = 1.0f / std::sinf(theta);
 
 	// thetaとsinを使って補間係数scaler0,scaler1を求める
-	float scaler0 = std::sin((1.0f - t) * theta) / std::sin(theta);
-	float scaler1 = std::sin((t) * theta) / std::sin(theta);
-	
-	Quaternion result;
-	result.x = scaler0 * q0.x + scaler1 * q1.x;
-	result.y = scaler0 * q0.y + scaler1 * q1.y;
-	result.z = scaler0 * q0.z + scaler1 * q1.z;
-	result.w = scaler0 * q0.w + scaler1 * q1.w;
+	// 
+	// 0.0により近いか
+	if (dot <= -1.0f || 1.0f <= dot || sinTheta == 0.0f) {
+		result = q0_ * (1.0f - t) + (q1_ * t);
+	}
+	// 近いほうで補完する
+	else if (dot < 0.0f) {
+		result = (q0_ * (std::sin(theta * (1.0f - t)) * sinTheta)) + (Inverse(q1) * (std::sin(theta * t) * sinTheta));
+	}
+	else {
+		result = (q0_ * (std::sin(theta * (1.0f - t)) * sinTheta)) + (q1_ * (std::sin(theta * t) * sinTheta));
+	}
 	
 	return result;
 
 }
 
 float QDot(const Quaternion& q0, const Quaternion& q1) {
-	return float{ q0.x * q1.x + q0.y * q1.y + q0.z * q1.z + q0.w * q1.w };
+	return q0.x * q1.x + q0.y * q1.y + q0.z * q1.z + q0.w * q1.w;
 }

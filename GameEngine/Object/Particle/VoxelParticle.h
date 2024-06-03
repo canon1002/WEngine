@@ -5,6 +5,7 @@
 #include "GameEngine/Append/Transform/WorldTransform.h"
 #include "GameEngine/Object/light/DirectionalLight.h"
 #include <random>
+#include "GameEngine/Object/Model/Model.h"
 
 class CameraCommon;
 

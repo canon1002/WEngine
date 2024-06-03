@@ -6,7 +6,7 @@ ObjectAdministrator* ObjectAdministrator::instance = nullptr;
 std::shared_ptr<Object3d> ObjectAdministrator::CreateObject(const std::string& directrypath, const std::string& filename){
 	// オブジェクトをSheard_ptrで生成する
 	std::shared_ptr<Object3d> newObject = std::make_shared<Object3d>();
-	newObject->Init();
+	newObject->Init("Object3D");
 
 	// モデル登録チェック
 	newObject->SetModel(filename);

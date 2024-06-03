@@ -8,6 +8,8 @@
 #include <vector>
 #include <map>
 #include <optional>
+#include <array>
+#include <span>
 
 // 外部ファイル参照
 #include "Externals/DirectXTex/d3dx12.h"
@@ -24,6 +26,7 @@ struct VertexData {
 	Vec2 texcoord;
 	Vector3 normal;
 };
+
 // 2D用 頂点データ
 struct VertexData2D {
 	Vector4 position;
@@ -33,6 +36,7 @@ struct VertexData2D {
 struct TransformationMatrix {
 	Matrix4x4 WVP;
 	Matrix4x4 World;
+	Matrix4x4 InverseTransposeWorld;
 };
 // パーティクル用
 struct ParticleForGPU {
@@ -50,22 +54,10 @@ struct MaterialData {
 	std::string textureFilePath;
 };
 
-/// <summary>
-/// 親子関係を持つNodeクラス
-/// </summary>
-struct Node {
-	QuaternionTransform transform;
-	Matrix4x4 localMatrix;
-	std::string name;
-	std::vector<Node> children;
-};
 
-// モデルデータ
-struct ModelData {
-	std::vector<VertexData> vertices;
-	MaterialData material;
-	Node rootNode;
-};
+struct Animation;
+struct ModelData;
+struct JointWeightData;
 
 /// <summary>
 /// UVTransform用の構造体
@@ -77,62 +69,6 @@ struct UVTransform {
 	Vector3 translation;
 };
 
-#pragma region アニメーション関連
-
-struct Joint {
-	QuaternionTransform transform;	// Transform情報
-	Matrix4x4 localMatrix;			// localatrix
-	Matrix4x4 skeletonSpaceMatrix;	// skeletonSpaceでの変換行列
-	std::string name;				// 名前
-	std::vector<int32_t> childlen;	// 子jointのIndexリスト。いなければ空
-	int32_t index;					// 自身のIndex
-	std::optional<int32_t> parent;	// 親JointのIndex。いなければnull
-};
-
-struct Skeleton {
-	int32_t root;							// RootJointのIndex
-	std::map<std::string, int32_t>jointMap;	// Joint名とindexとの辞書
-	std::vector<Joint> joints;				// 所属しているJoint
-};
-
-// templateを用いて<Vector3型>と<Quaternion型>のキーフレーム構造体を作成
-template <typename tValue>
-struct Keyframe {
-	float time;		// 値キーフレームの時刻(単位は秒)
-	tValue value;	// キーフレームの値
-};
-using KeyframeVector3 = Keyframe<Vector3>;
-using KeyframeQuaternion = Keyframe<Quaternion>;
-
-struct NodeAnimation {
-	std::vector<KeyframeVector3> translation;
-	std::vector<KeyframeQuaternion> rotation;
-	std::vector<KeyframeVector3> scale;
-};
-
-
-// アニメーション構造体
-struct Animation {
-	float duration; // アニメーション全体の尺 (単位は秒)
-	// NodeAnimationの集合 Node名でひけるようにしておく
-	std::map<std::string, NodeAnimation> nodeAnimations;
-};
-
-namespace Animations {
-
-	// 任意の時刻の値を取得する関数(Vector3型)
-	Vector3 CalculateValue(const std::vector<KeyframeVector3>& keyframes, float time);
-	// 任意の時刻の値を取得する関数(Quaternion型)
-	Quaternion CalculateValue(const std::vector<KeyframeQuaternion>& keyframes, float time);
-	// Nodeの階層構造からSkeletonを作る
-	Skeleton CreateSkeleton(const Node& rootNode);
-	int32_t CreateJoint(const Node& node, const std::optional<int32_t>& parent, std::vector<Joint>& joints);
-	// スケルトンの更新処理を行う
-	void Update(Skeleton& skeleton);
-
-}
-
-#pragma endregion
 
 namespace Resource // ここから関数の宣言と定義を行う
 {	
@@ -170,12 +106,7 @@ namespace Resource // ここから関数の宣言と定義を行う
 	/// <returns>読み込んだモデルデータを返す</returns>
 	ModelData LoadModelFile(const std::string& directoryPath, const std::string& filename);
 
-	/// <summary>
-	/// AssimpのNode(aiNode)を自作のNode構造体に変換する関数
-	/// </summary>
-	/// <param name="node">AssimpのNode(aiNode)</param>
-	/// <returns>Node</returns>
-	Node ReadNode(aiNode* node);
+
 
 	// .objの読み込み
 	ModelData LoadObjFile(const std::string& directoryPath, const std::string& filename);

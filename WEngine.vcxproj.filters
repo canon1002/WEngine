@@ -220,6 +220,13 @@
     <ClCompile Include="GameEngine\Object\Model\Skybox\Skybox.cpp" />
     <ClCompile Include="GameEngine\Object\Screen\RenderCopyImage.cpp" />
     <ClCompile Include="GameEngine\Object\Screen\RenderTextureAdmin.cpp" />
+    <ClCompile Include="GameEngine\Resource\ResourceCommon.cpp" />
+    <ClCompile Include="GameEngine\Object\Model\Line.cpp" />
+    <ClCompile Include="GameEngine\Append\Animation\Skinning\Skeleton.cpp" />
+    <ClCompile Include="GameEngine\Append\Animation\Skinning\SkinCluster.cpp" />
+    <ClCompile Include="GameEngine\Append\Animation\Skinning\Skinnig.cpp" />
+    <ClCompile Include="GameEngine\Append\Animation\Node\NodeAnimation.cpp" />
+    <ClCompile Include="GameEngine\Append\Animation\Skinning\Joint.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameEngine\Base\WinApp\WinAPI.h">
@@ -367,6 +374,13 @@
     <ClInclude Include="GameEngine\Object\Model\Skybox\Skybox.h" />
     <ClInclude Include="GameEngine\Object\Screen\RenderCopyImage.h" />
     <ClInclude Include="GameEngine\Object\Screen\RenderTextureAdmin.h" />
+    <ClInclude Include="GameEngine\Resource\ResourceCommon.h" />
+    <ClInclude Include="GameEngine\Object\Model\Line.h" />
+    <ClInclude Include="GameEngine\Append\Animation\Skinning\Skeleton.h" />
+    <ClInclude Include="GameEngine\Append\Animation\Skinning\SkinCluster.h" />
+    <ClInclude Include="GameEngine\Append\Animation\Skinning\Skinnig.h" />
+    <ClInclude Include="GameEngine\Append\Animation\Node\NodeAnimation.h" />
+    <ClInclude Include="GameEngine\Append\Animation\Skinning\Joint.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt">
@@ -388,5 +402,6 @@
     <FxCompile Include="Shaders\Particle.VS.hlsl" />
     <FxCompile Include="Shaders\CopyImage.PS.hlsl" />
     <FxCompile Include="Shaders\CopyImage.VS.hlsl" />
+    <FxCompile Include="Shaders\SkinningObject3d.VS.hlsl" />
   </ItemGroup>
 </Project>

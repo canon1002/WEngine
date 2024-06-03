@@ -32,7 +32,7 @@ Matrix4x4 Subtract(Matrix4x4 matrix1, Matrix4x4 matrix2);
 /// <param name="matrix1">行列1</param>
 /// <param name="matrix2">行列2</param>
 /// <returns>"行列1"と"行列2"の積を返す</returns>
-Matrix4x4 Multiply(Matrix4x4 matrix1, Matrix4x4 matrix2);
+Matrix4x4 Multiply(const Matrix4x4& m1, const Matrix4x4& m2);
 
 /// <summary>
 /// 行列とベクトルの積を返す関数

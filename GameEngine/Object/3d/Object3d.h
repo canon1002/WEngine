@@ -4,6 +4,7 @@
 #include "GameEngine/Resource/Texture/Resource.h"
 #include "GameEngine/Object/Light/DirectionalLight.h"
 #include "GameEngine/Object/Camera/CameraCommon.h"
+#include "GameEngine/Append/Animation/Skinning/Skinnig.h"
 
 class Object3dCommon;
 class Model;
@@ -20,11 +21,12 @@ public: // メンバ関数
 	~Object3d();
 
 	///	初期化
-	void Init();
+	void Init(std::string name);
 	/// 更新
 	void Update();
 	/// 描画
 	void Draw();
+	void DrawGUI();
 
 	void CreateTransformationRsource();
 	void SetModel(const std::string& filepath);
@@ -38,15 +40,15 @@ public: // メンバ関数
 
 public: // メンバ変数
 
+	// オブジェクトの名称
+	std::string objname_;
+
 	// 外部ポインタ
 	DirectXCommon* dxCommon_ = nullptr;
 	Object3dCommon* object3dCommon_ = nullptr;
 	Model* model_ = nullptr;
 	ModelManager* modelManager_;
 	Matrix4x4 cameraM, viewM, projectM, pespectiveM, wvpM;
-	
-	// オブジェクトの名前
-	std::string objname_;
 
 	// Transformation用のResourceを作る
 	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource = nullptr;
@@ -56,8 +58,15 @@ public: // メンバ変数
 
 	// -- Animation 関連 -- //
 
+	// アニメーションデータを保有しているか
+	bool isHavingAnimation_ = false;
+
 	// アニメーション再生中の時刻
 	float animationTime_ = 0.0f;
 
+	// スケルトン 仮置き
+	Skeleton skeleton_;
+	// スキンクラスター 仮置き
+	SkinCluster skinCluster_;
 };
 

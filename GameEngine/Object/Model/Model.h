@@ -5,6 +5,17 @@
 #include "GameEngine/Object/Light/DirectionalLight.h"
 #include "GameEngine/Object/Camera/CameraCommon.h"
 
+// アニメーション
+#include "GameEngine/Append/Animation/Skinning/Skinnig.h"
+
+// モデルデータ
+struct ModelData {
+	std::map<std::string, JointWeightData>skinClusterData;
+	std::vector<VertexData> vertices;
+	std::vector<uint32_t> indices;
+	MaterialData material;
+	Node rootNode;
+};
 
 class Model
 {
@@ -22,13 +33,11 @@ public:
 	void DrawGUI(const std::string& label);
 
 	void CreateVertexResource();
+	void CreateIndexResource();
 	void CreateMaterialResource();
 
 	// カメラ座標を設定
 	void SetCameraPosition(CameraCommon camera) { cameraData->worldPosition = camera.GetTranslate(); }
-
-	// アニメーションをセットする
-	void SetAnimation(const Animation& animation) { animation_ = animation; }
 
 public:
 
@@ -44,12 +53,18 @@ public:
 	int32_t textureHandle_;
 
 
-	// 実際に頂点リソースを作る
+	// 頂点リソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource = nullptr;
-	// 頂点バッファビューを作成する
+	// 頂点バッファビュー
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
-	// 頂点リソースにデータを書き込む
+	// 頂点データ
 	VertexData* vertexData = nullptr;
+	
+	// Indexリソース
+	Microsoft::WRL::ComPtr<ID3D12Resource> indexResource = nullptr;
+	// Indexバッファビュー
+	D3D12_INDEX_BUFFER_VIEW indexBufferView{};
+	
 
 	// マテリアル用のResourceを作る
 	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource = nullptr;
@@ -73,11 +88,10 @@ public:
 	// UVTransform用の変数
 	UVTransform uvTransform_;
 
-	// -- NodeAnimation 関連 -- //
+	// -- Animation 関連 -- //
 
-	// アニメーション
-	Animation animation_;
-
+	// スキニング アニメーション
+	Skinnig* skinning_ = nullptr;
 
 };
 

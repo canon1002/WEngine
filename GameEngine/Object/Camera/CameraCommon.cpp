@@ -7,10 +7,11 @@ void CameraCommon::Initialize(WinAPI* winApp){
 	worldTransform_ = new WorldTransform();
 	verticalFOV_ = 0.45f;
 	aspectRatio_ = (float(winApp->kClientWidth) / float(winApp->kClientHeight));
-	nearClip_ = 0.1f;
-	farClip_ = 100.0f;
+	nearClip_ = 0.01f;
+	farClip_ = 1000.0f;
 	viewMatrix_ = Inverse(worldTransform_->GetWorldMatrix());
 	projectionMatrix_ = MakePerspectiveMatrix(verticalFOV_, aspectRatio_, nearClip_, farClip_);
+
 	viewprojectionMatrix_ = Multiply(viewMatrix_, projectionMatrix_);
 }
 

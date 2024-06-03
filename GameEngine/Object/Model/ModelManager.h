@@ -23,6 +23,11 @@ public: // -- public メンバ関数 -- //
 	///  描画前処理
 	/// </summary>
 	void PreDraw();
+
+	/// <summary>
+	/// Skinning用描画前処理
+	/// </summary>
+	void PreDrawForSkinning();
 	
 	/// <summary>
 	///  描画処理
@@ -42,6 +47,16 @@ private: // -- private メンバ関数 -- //
 	/// </summary>
 	void CreateGraphicsPipeline();
 
+	/// <summary>
+	/// Skinning用のルートシグネチャを生成
+	/// </summary>
+	void CreateRootSignatureForSkinning();
+
+	/// <summary>
+	/// Skinning用のグラフィックスパイプラインを生成
+	/// </summary>
+	void CreateGraphicsPipelineForSkinning();
+
 	// コピーコンストラクタと演算子オーバーロードの禁止
 	ModelManager(const ModelManager& obj) = delete;
 	ModelManager& operator=(const ModelManager& obj) = delete;
@@ -60,8 +75,10 @@ private: // -- private メンバ変数 -- //
 
 	// グラフィックパイプライン
 	Microsoft::WRL::ComPtr <ID3D12PipelineState> graphicsPipelineState = nullptr;
+	Microsoft::WRL::ComPtr <ID3D12PipelineState> graphicsPipelineStateForSkinning = nullptr;
 	// ルートシグネチャー
 	Microsoft::WRL::ComPtr <ID3D12RootSignature> rootSignature = nullptr;
+	Microsoft::WRL::ComPtr <ID3D12RootSignature> rootSignatureForSkinning = nullptr;
 
 	// インスタンス
 	static ModelManager* instance;
