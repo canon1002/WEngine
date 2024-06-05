@@ -12,10 +12,9 @@ Line::~Line()
 	//delete materialData;
 }
 
-void Line::Initialize(DirectXCommon* dxCommon, CameraCommon* camera) {
+void Line::Init() {
 
-	dxCommon_ = dxCommon;
-	camera_ = camera;
+	dxCommon_ = DirectXCommon::GetInstance();
 
 	// CopyImage用のPSO及びRootSignatureを生成する
 	CreateGraphicsPipeline();
@@ -25,23 +24,28 @@ void Line::Initialize(DirectXCommon* dxCommon, CameraCommon* camera) {
 	CreateBufferView();
 
 	textureHandle_ = dxCommon_->srv_->LoadTexture("white2x2.png");
-	textureHandle_ = dxCommon_->srv_->CreateRenderTextureSRV(dxCommon_->rtv_->renderTextureResource.Get());
+	//textureHandle_ = dxCommon_->srv_->CreateRenderTextureSRV(dxCommon_->rtv_->renderTextureResource.Get());
 }
 
 
 void Line::Update() {
 
-	// カメラのワールド行列
-	cameraM = MakeAffineMatrix(Vector3{ 1.0f,1.0f,1.0f },
-		Vector3{ 0.0f,0.0f,0.0f }, Vector3{ 0.0f,0.0f,-5.0f });
+	MainCamera* camera = MainCamera::GetInstance();
 	// カメラ行列のビュー行列(カメラのワールド行列の逆行列)
-	viewM = Inverse(cameraM);
-	// 正規化デバイス座標系(NDC)に変換(正射影行列をかける)
-	pespectiveM = MakePerspectiveMatrix(0.45f, (1280.0f / 720.0f), 0.1f, 100.0f);
+	viewM = camera->GetViewMatrix();
 	// WVPにまとめる
-	wvpM = Multiply(viewM, pespectiveM);
+	wvpM = camera->GetViewProjectionMatrix();
 	// 三角形のワールド行列とWVP行列を掛け合わした行列を代入
 	*wvpData = Multiply(worldTransform_.GetWorldMatrix(), wvpM);
+	
+#ifdef _DEBUG
+	ImGui::Begin("Line");
+	ImGui::DragFloat3("Start", &vertexData[0].position.x, 0.01f, -100.0f, 100.0f);
+	ImGui::DragFloat3("end", &vertexData[1].position.x, 0.01f, -100.0f, 100.0f);
+	vertexData[2] = vertexData[1];
+	ImGui::End();
+#endif // _DEBUG
+
 
 }
 
@@ -239,7 +243,7 @@ void Line::CreateTransformationRsource() {
 	// 書き込むためのアドレスを取得
 	wvpResource->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
 	// 単位行列を書き込む
-	*wvpData = camera_->GetViewProjectionMatrix();
+	*wvpData = MainCamera::GetInstance()->GetViewProjectionMatrix();
 
 }
 

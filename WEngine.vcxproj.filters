@@ -227,6 +227,7 @@
     <ClCompile Include="GameEngine\Append\Animation\Skinning\Skinnig.cpp" />
     <ClCompile Include="GameEngine\Append\Animation\Node\NodeAnimation.cpp" />
     <ClCompile Include="GameEngine\Append\Animation\Skinning\Joint.cpp" />
+    <ClCompile Include="GameEngine\Object\Grid3D.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameEngine\Base\WinApp\WinAPI.h">
@@ -381,6 +382,7 @@
     <ClInclude Include="GameEngine\Append\Animation\Skinning\Skinnig.h" />
     <ClInclude Include="GameEngine\Append\Animation\Node\NodeAnimation.h" />
     <ClInclude Include="GameEngine\Append\Animation\Skinning\Joint.h" />
+    <ClInclude Include="GameEngine\Object\Grid3D.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt">

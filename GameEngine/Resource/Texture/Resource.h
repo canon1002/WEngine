@@ -38,6 +38,11 @@ struct TransformationMatrix {
 	Matrix4x4 World;
 	Matrix4x4 InverseTransposeWorld;
 };
+
+struct TransformationMatrixForGrid3D {
+	Matrix4x4 WVP;
+	Matrix4x4 World;
+};
 // パーティクル用
 struct ParticleForGPU {
 	Matrix4x4 WVP;

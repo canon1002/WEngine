@@ -159,6 +159,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="GameEngine\Input\Keyboard.cpp" />
     <ClCompile Include="GameEngine\Object\Model\Line.cpp" />
     <ClCompile Include="GameEngine\Append\Animation\Skinning\Joint.cpp" />
+    <ClCompile Include="GameEngine\Object\Grid3D.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="GameEngine\Object\3d\Object3dCommon.cpp" />
     <ClCompile Include="GameEngine\Object\3d\Object3d.cpp" />
@@ -237,6 +238,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="GameEngine\Append\Animation\Skinning\Skinnig.h" />
     <ClInclude Include="GameEngine\Append\Animation\Node\NodeAnimation.h" />
     <ClInclude Include="GameEngine\Append\Animation\Skinning\Joint.h" />
+    <ClInclude Include="GameEngine\Object\Grid3D.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt" />

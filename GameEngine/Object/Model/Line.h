@@ -13,7 +13,7 @@ public:
 	Line();
 	~Line();
 
-	void Initialize(DirectXCommon* dxCommon, CameraCommon* camera);
+	void Init();
 	void Update();
 	void PreDraw();
 	void Draw();

@@ -6,7 +6,8 @@
 #include "GameEngine/Object/Camera/MainCamera.h"
 #include "GameEngine/Object/Sprite/Sprite.h"
 #include "GameEngine/Object/Model/Skybox/Skybox.h"
-
+#include "GameEngine/Object/Model/Line.h"
+#include "GameEngine/Object/Grid3D.h"
 
 class TitleScene :
     public IScene
@@ -31,5 +32,6 @@ private:
 	std::unique_ptr<Object3d> AnimeObject_;
 	std::unique_ptr<Object3d> testObject02_;
 	std::unique_ptr<Skybox> skybox_;
+	std::unique_ptr<Grid3D> grid_;
 };
 
