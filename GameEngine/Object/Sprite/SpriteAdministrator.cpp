@@ -6,7 +6,7 @@ void SpriteAdministrator::Finalize(){
 }
 
 void SpriteAdministrator::Initialize(DirectXCommon* dxComoon){
-	dxCommon_ = dxComoon;
+	mDxCommon = dxComoon;
 	CreateGraphicsPipeline();
 }
 
@@ -71,7 +71,7 @@ void SpriteAdministrator::CreateRootSignature()
 	}
 
 	// バイナリを元に
-	hr = dxCommon_->device_->CreateRootSignature(0, signatureBlob->GetBufferPointer(),
+	hr = mDxCommon->device_->CreateRootSignature(0, signatureBlob->GetBufferPointer(),
 		signatureBlob->GetBufferSize(), IID_PPV_ARGS(&rootSignature));
 	assert(SUCCEEDED(hr));
 }
@@ -125,11 +125,11 @@ void SpriteAdministrator::CreateGraphicsPipeline()
 
 	// Shaderをcompileする(P.37)
 	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob = WinAPI::CompileShader(L"Shaders/Sprite2d.VS.hlsl",
-		L"vs_6_0", dxCommon_->dxcUtils, dxCommon_->dxcCompiler, dxCommon_->includeHandler);
+		L"vs_6_0", mDxCommon->dxcUtils, mDxCommon->dxcCompiler, mDxCommon->includeHandler);
 	assert(vertexShaderBlob != nullptr);
 
 	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob = WinAPI::CompileShader(L"Shaders/Sprite2d.PS.hlsl",
-		L"ps_6_0", dxCommon_->dxcUtils, dxCommon_->dxcCompiler, dxCommon_->includeHandler);
+		L"ps_6_0", mDxCommon->dxcUtils, mDxCommon->dxcCompiler, mDxCommon->includeHandler);
 	assert(pixelShaderBlob != nullptr);
 
 	// PSOを生成する(P.38)
@@ -164,7 +164,7 @@ void SpriteAdministrator::CreateGraphicsPipeline()
 	graphicsPipelineStateDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
 
 	// 実際に生成
-	HRESULT hr = dxCommon_->device_->CreateGraphicsPipelineState(&graphicsPipelineStateDesc,
+	HRESULT hr = mDxCommon->device_->CreateGraphicsPipelineState(&graphicsPipelineStateDesc,
 		IID_PPV_ARGS(&graphicsPipelineState));
 	assert(SUCCEEDED(hr));
 
@@ -174,6 +174,6 @@ void SpriteAdministrator::CreateGraphicsPipeline()
 void SpriteAdministrator::PreDraw()
 {
 	// RootSignatureを設定。PSOに設定しているが、別途設定が必要
-	dxCommon_->commandList->SetGraphicsRootSignature(rootSignature.Get());
-	dxCommon_->commandList->SetPipelineState(graphicsPipelineState.Get());
+	mDxCommon->commandList->SetGraphicsRootSignature(rootSignature.Get());
+	mDxCommon->commandList->SetPipelineState(graphicsPipelineState.Get());
 }

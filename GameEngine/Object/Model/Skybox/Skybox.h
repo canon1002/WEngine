@@ -45,7 +45,7 @@ public: // -- public メンバ変数 -- //
 	// ModelCommonのポインタ
 	//ModelCommon* modelCommon_ = nullptr;
 	// DirectXのポインタ
-	DirectXCommon* dxCommon_ = nullptr;
+	DirectXCommon* mDxCommon = nullptr;
 	CameraCommon* camera_ = nullptr;
 
 	// -- Object3Dの要素 -- //

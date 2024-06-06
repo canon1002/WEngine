@@ -40,6 +40,6 @@ public: // -- public メンバ変数 -- //
 private: // -- private メンバ変数 -- //
 
 	// ポインタ
-	DirectXCommon* dxCommon_;
+	DirectXCommon* mDxCommon;
 
 };

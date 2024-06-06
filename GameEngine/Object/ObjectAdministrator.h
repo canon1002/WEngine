@@ -44,7 +44,7 @@ public: // -- public メンバ変数 -- //
 private: // -- private メンバ変数 -- //
 
 	// DXCommonのポインタ
-	DirectXCommon* dxCommon_ = nullptr;
+	DirectXCommon* mDxCommon = nullptr;
 	
 	static ObjectAdministrator* instance;
 	

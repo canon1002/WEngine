@@ -14,7 +14,7 @@ Line::~Line()
 
 void Line::Init() {
 
-	dxCommon_ = DirectXCommon::GetInstance();
+	mDxCommon = DirectXCommon::GetInstance();
 
 	// CopyImage用のPSO及びRootSignatureを生成する
 	CreateGraphicsPipeline();
@@ -23,7 +23,7 @@ void Line::Init() {
 	CreateTransformationRsource();
 	CreateBufferView();
 
-	textureHandle_ = dxCommon_->srv_->LoadTexture("white2x2.png");
+	textureHandle_ = mDxCommon->srv_->LoadTexture("white2x2.png");
 	//textureHandle_ = dxCommon_->srv_->CreateRenderTextureSRV(dxCommon_->rtv_->renderTextureResource.Get());
 }
 
@@ -51,28 +51,28 @@ void Line::Update() {
 
 void Line::PreDraw() {
 	// RootSignatureを設定。PSOに設定しているが、別途設定が必要
-	dxCommon_->commandList->SetGraphicsRootSignature(rootSignature.Get());
-	dxCommon_->commandList->SetPipelineState(graphicsPipelineState.Get());
+	mDxCommon->commandList->SetGraphicsRootSignature(rootSignature.Get());
+	mDxCommon->commandList->SetPipelineState(graphicsPipelineState.Get());
 }
 
 void Line::Draw() {
 
 
-	dxCommon_->commandList->IASetVertexBuffers(0, 1, &vertexBufferView);
+	mDxCommon->commandList->IASetVertexBuffers(0, 1, &vertexBufferView);
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけばいい
-	dxCommon_->commandList->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_LINELIST);
+	mDxCommon->commandList->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_LINELIST);
 
 	/// CBV設定
 
 	// マテリアルのCBufferの場所を指定
-	dxCommon_->commandList->SetGraphicsRootConstantBufferView(0, materialResource->GetGPUVirtualAddress());
+	mDxCommon->commandList->SetGraphicsRootConstantBufferView(0, materialResource->GetGPUVirtualAddress());
 	//wvp用のCBufferの場所を指定
-	dxCommon_->commandList->SetGraphicsRootConstantBufferView(1, wvpResource->GetGPUVirtualAddress());
+	mDxCommon->commandList->SetGraphicsRootConstantBufferView(1, wvpResource->GetGPUVirtualAddress());
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である
-	dxCommon_->commandList->SetGraphicsRootDescriptorTable(2, dxCommon_->srv_->textureData_.at(textureHandle_).textureSrvHandleGPU);
+	mDxCommon->commandList->SetGraphicsRootDescriptorTable(2, mDxCommon->srv_->textureData_.at(textureHandle_).textureSrvHandleGPU);
 
 	// インスタンス生成
-	dxCommon_->commandList->DrawInstanced(3, 1, 0, 0);
+	mDxCommon->commandList->DrawInstanced(3, 1, 0, 0);
 
 }
 
@@ -134,7 +134,7 @@ void Line::CreateRootSignature() {
 	}
 
 	// バイナリを元に
-	hr = dxCommon_->device_->CreateRootSignature(0, signatureBlob->GetBufferPointer(),
+	hr = mDxCommon->device_->CreateRootSignature(0, signatureBlob->GetBufferPointer(),
 		signatureBlob->GetBufferSize(), IID_PPV_ARGS(&rootSignature));
 	assert(SUCCEEDED(hr));
 
@@ -172,11 +172,11 @@ void Line::CreateGraphicsPipeline() {
 
 	// Shaderをcompileする(P.37)
 	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob = WinAPI::CompileShader(L"Shaders/CopyImage.VS.hlsl",
-		L"vs_6_0", dxCommon_->dxcUtils, dxCommon_->dxcCompiler, dxCommon_->includeHandler);
+		L"vs_6_0", mDxCommon->dxcUtils, mDxCommon->dxcCompiler, mDxCommon->includeHandler);
 	assert(vertexShaderBlob != nullptr);
 
 	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob = WinAPI::CompileShader(L"Shaders/CopyImage.PS.hlsl",
-		L"ps_6_0", dxCommon_->dxcUtils, dxCommon_->dxcCompiler, dxCommon_->includeHandler);
+		L"ps_6_0", mDxCommon->dxcUtils, mDxCommon->dxcCompiler, mDxCommon->includeHandler);
 	assert(pixelShaderBlob != nullptr);
 
 	// PSOを生成する(P.38)
@@ -209,7 +209,7 @@ void Line::CreateGraphicsPipeline() {
 	graphicsPipelineStateDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
 
 	// 実際に生成
-	HRESULT hr = dxCommon_->device_->CreateGraphicsPipelineState(&graphicsPipelineStateDesc,
+	HRESULT hr = mDxCommon->device_->CreateGraphicsPipelineState(&graphicsPipelineStateDesc,
 		IID_PPV_ARGS(&graphicsPipelineState));
 	assert(SUCCEEDED(hr));
 
@@ -221,10 +221,10 @@ void Line::CreateVertexResource() {
 
 	// VertexResourceを生成する(P.42)
 	// 実際に頂点リソースを作る
-	vertexResource = dxCommon_->CreateBufferResource(dxCommon_->device_.Get(), sizeof(VertexData) * 3);
+	vertexResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(VertexData) * 3);
 
 	// マテリアル用のResourceを作る
-	materialResource = dxCommon_->CreateBufferResource(dxCommon_->device_.Get(), sizeof(VertexData));
+	materialResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(VertexData));
 	// マテリアルにデータを書き込む
 	materialData = nullptr;
 	// 書き込むためのアドレスを取得
@@ -238,7 +238,7 @@ void Line::CreateVertexResource() {
 void Line::CreateTransformationRsource() {
 
 	// Transformation用のResourceを作る
-	wvpResource = dxCommon_->CreateBufferResource(dxCommon_->device_.Get(), sizeof(Matrix4x4));
+	wvpResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(Matrix4x4));
 	// データを書き込む
 	// 書き込むためのアドレスを取得
 	wvpResource->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));

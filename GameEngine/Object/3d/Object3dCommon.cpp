@@ -3,7 +3,7 @@
 
 void Object3dCommon::Init(DirectXCommon* dxCommon)
 {
-	dxCommon_ = dxCommon;
+	mDxCommon = dxCommon;
 
 }
 

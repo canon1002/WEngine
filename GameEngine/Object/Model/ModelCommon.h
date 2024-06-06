@@ -32,7 +32,7 @@ public:
 
 private: // メンバ変数
 
-	DirectXCommon* dxCommon_;
+	DirectXCommon* mDxCommon;
 
 
 	static ModelCommon* instance;

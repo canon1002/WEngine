@@ -182,12 +182,12 @@ namespace Resource
 	Microsoft::WRL::ComPtr<ID3D12Resource>UpdateTextureData(
 		DirectXCommon* dxCommon, Microsoft::WRL::ComPtr <ID3D12Resource> texture, const DirectX::ScratchImage& mipImages)
 	{
-		DirectXCommon* dxCommon_ = dxCommon;
+		DirectXCommon* mDxCommon = dxCommon;
 		std::vector<D3D12_SUBRESOURCE_DATA> subresources;
-		DirectX::PrepareUpload(dxCommon_->device_.Get(), mipImages.GetImages(), mipImages.GetImageCount(), mipImages.GetMetadata(), subresources);
+		DirectX::PrepareUpload(mDxCommon->device_.Get(), mipImages.GetImages(), mipImages.GetImageCount(), mipImages.GetMetadata(), subresources);
 		uint64_t intermediateSize = GetRequiredIntermediateSize(texture.Get(), 0, UINT(subresources.size()));
-		Microsoft::WRL::ComPtr <ID3D12Resource> intermediateResource = dxCommon_->CreateBufferResource(dxCommon_->device_.Get(), intermediateSize);
-		UpdateSubresources(dxCommon_->commandList.Get(), texture.Get(), intermediateResource.Get(), 0, 0, UINT(subresources.size()), subresources.data());
+		Microsoft::WRL::ComPtr <ID3D12Resource> intermediateResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), intermediateSize);
+		UpdateSubresources(mDxCommon->commandList.Get(), texture.Get(), intermediateResource.Get(), 0, 0, UINT(subresources.size()), subresources.data());
 		// Textureの転送後は利用できるよう、D3D12_RESOURCE_STATE_COPYからD3D12_RESOURCE_STATE_GENERIC_READへResourceStateを変更する
 		D3D12_RESOURCE_BARRIER barrier{};
 		barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
@@ -196,7 +196,7 @@ namespace Resource
 		barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
 		barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;		// 遷移前(現在)のResourceState
 		barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_GENERIC_READ;	// 遷移後のResourceState
-		dxCommon_->commandList->ResourceBarrier(1, &barrier);		// TransitionBarrierを張る
+		mDxCommon->commandList->ResourceBarrier(1, &barrier);		// TransitionBarrierを張る
 		return intermediateResource;
 	}
 

@@ -66,7 +66,7 @@ public:
 	std::vector<uint32_t> mGridIndices;
 
 	// 外部ポインタ
-	DirectXCommon* dxCommon_ = nullptr;
+	DirectXCommon* mDxCommon = nullptr;
 	Matrix4x4 viewM, wvpM;
 
 	// Transformation用のResourceを作る

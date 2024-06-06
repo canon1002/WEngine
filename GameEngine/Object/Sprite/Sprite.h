@@ -24,7 +24,7 @@ public:
 	auto* GetMaterial() { return  materialResourceSprite.Get(); }
 	auto* GetWVP() { return wvpResource.Get(); }
 	void SetTexture(std::string filepath){
-		textureHandle_ = dxCommon_->srv_->LoadTexture(filepath); 
+		textureHandle_ = mDxCommon->srv_->LoadTexture(filepath); 
 		AdjustTextureSize();
 	}
 	void SetColor(Color color) { materialData->color = color; }
@@ -45,7 +45,7 @@ private:
 
 	// 外部ポインタ
 	CameraCommon* camera_ = nullptr;
-	DirectXCommon* dxCommon_ = nullptr;
+	DirectXCommon* mDxCommon = nullptr;
 
 	WorldTransform worldTransform_;
 	Matrix4x4 worldM, cameraM, viewM, projectM, wvpM;

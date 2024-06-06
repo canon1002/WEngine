@@ -22,22 +22,34 @@ public: // -- 公開 メンバ関数 -- //
 	// Animationを適用する
 	void ApplyAniation();
 
-	SkinCluster GetSkinCluster() { return skinCluster_;}
-	Skeleton GetSkeleton() { return skeleton_;}
+	// スキンクラスターの取得
+	SkinCluster GetSkinCluster() { return mSkinCluster;}
+
+	// スケルトンの取得
+	Skeleton GetSkeleton() { return mSkeleton;}
+
+	// 一時停止する
+	void Pause() { mIsPauseAnimation = true; }
+
+	// アニメーションを再生する(一時停止やアニメーション停止も解除する)
+	void Play() { mIsPauseAnimation = false; }
 
 private: // -- 非公開 メンバ変数 -- //
 
 	// 外部ポインタ
-	DirectXCommon* dxCommon_;
+	DirectXCommon* mDxCommon;
 
 	// スキンクラスター
-	SkinCluster skinCluster_;
+	SkinCluster mSkinCluster;
 	// スケルトン
-	Skeleton skeleton_;
+	Skeleton mSkeleton;
 
 	// アニメーション実行時間
-	float animationTime_ = 0.0f;
+	float mAnimationTime = 0.0f;
 	// アニメーション
-	Animation animation_;
+	Animation mAnimation;
+
+	// アニメーション 一時停止
+	bool mIsPauseAnimation;
 
 };

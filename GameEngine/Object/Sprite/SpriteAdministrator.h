@@ -24,7 +24,7 @@ public: // メンバ関数
 private: // メンバ変数
 
 	// DirectXCommonの外部ポインタ
-	DirectXCommon* dxCommon_ = nullptr;
+	DirectXCommon* mDxCommon = nullptr;
 	// グラフィックパイプライン
 	Microsoft::WRL::ComPtr <ID3D12PipelineState> graphicsPipelineState = nullptr;
 	// ルートシグネチャー

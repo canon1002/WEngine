@@ -7,42 +7,44 @@
 
 void Skinnig::Init(const std::string& directorypath, const std::string& filepath, ModelData modelData)
 {
-	dxCommon_ = DirectXCommon::GetInstance();
+	mDxCommon = DirectXCommon::GetInstance();
 
 	// アニメーションに必要な情報をセット
-	animation_ = Resource::LoadAnmation(directorypath, filepath);
+	mAnimation = Resource::LoadAnmation(directorypath, filepath);
 	
 	// スケルトン生成
-	skeleton_ = Skeleton::Create(modelData.rootNode);
+	mSkeleton = Skeleton::Create(modelData.rootNode);
 	
 	// スキンクラスター生成
-	skinCluster_ = SkinCluster::Create(dxCommon_->device_, skeleton_, modelData);
+	mSkinCluster = SkinCluster::Create(mDxCommon->device_, mSkeleton, modelData);
 
 }
 
 void Skinnig::Update()
 {
 	// 時刻を進める 右の数値(60.0fはフレームレートに応じて変動させるようにしたい)
-	animationTime_ += 1.0f / 60.0f;
+	if (mIsPauseAnimation == false) {
+		mAnimationTime += 1.0f / 60.0f;
+	}
 	// 最後まで行ったら最初からリピート再生する(しなくてもいいし、フラグで変更しても良さそう)
-	animationTime_ = std::fmod(animationTime_, animation_.duration);
+	mAnimationTime = std::fmod(mAnimationTime, mAnimation.duration);
 	// アニメーションの更新を行い、骨ごとのLocal情報を更新する
 	ApplyAniation();
 	// スケルトン更新
-	skeleton_.Update();
+	mSkeleton.Update();
 	// スキンクラスター 更新
-	skinCluster_.Update(skeleton_);
+	mSkinCluster.Update(mSkeleton);
 }
 
 void Skinnig::ApplyAniation() {
-	for (Joint& joint : skeleton_.joints) {
+	for (Joint& joint : mSkeleton.joints) {
 		// 対象のJointのAnimationがあれば、値の適用を行う。
 		// 下記のif文はC++17から可能になった初期化付きif文
-		if (auto it = animation_.nodeAnimations.find(joint.name); it != animation_.nodeAnimations.end()) {
+		if (auto it = mAnimation.nodeAnimations.find(joint.name); it != mAnimation.nodeAnimations.end()) {
 			const NodeAnimation& rootAnimation = (*it).second;
-			joint.transform.translation_ = CalculateValue(rootAnimation.translation, animationTime_);
-			joint.transform.rotation_ = CalculateValue(rootAnimation.rotation, animationTime_);
-			joint.transform.scale_ = CalculateValue(rootAnimation.scale, animationTime_);
+			joint.transform.translation_ = CalculateValue(rootAnimation.translation, mAnimationTime);
+			joint.transform.rotation_ = CalculateValue(rootAnimation.rotation, mAnimationTime);
+			joint.transform.scale_ = CalculateValue(rootAnimation.scale, mAnimationTime);
 		}
 	}
 }
