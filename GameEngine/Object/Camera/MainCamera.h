@@ -4,6 +4,7 @@
 #include "GameEngine/Resource/Texture/Resource.h"
 #include "GameEngine/Append/Transform/WorldTransform.h"
 #include "GameEngine/Object/Camera/CameraCommon.h"
+#include "GameEngine/Input/InputManager.h"
 
 class MainCamera:
 	public CameraCommon
@@ -27,6 +28,9 @@ public: // -- public メンバ関数 -- //
 	void Update()override;
 
 
+	// フォローカメラ機能 -- フォロー対象設定 -- 
+	inline void SetTarget(const WorldTransform* target) { mTarget = target; }
+
 private: // -- private メンバ関数 -- //
 
 	// コピーコンストラクタと演算子オーバーロードの禁止
@@ -35,7 +39,14 @@ private: // -- private メンバ関数 -- //
 	
 private: // -- private メンバ変数 -- //
 
+	// インスタンス
 	static MainCamera* instance;
+	
+	// 入力マネージャ
+	InputManager* mInput;
+
+	// フォロー対象の座標
+	const WorldTransform* mTarget;
 
 };
 

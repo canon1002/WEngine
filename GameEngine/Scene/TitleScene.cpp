@@ -8,7 +8,7 @@ void TitleScene::Finalize(){}
 //　継承した関数
 void TitleScene::Init() {
 	// 入力を取得する
-	input_ = InputManager::GetInstance();
+	mInput = InputManager::GetInstance();
 	
 	//testObject_ = ObjectAdministrator::GetInstance()->CreateObject("Resources/objs", "emptyAxis.obj");
 	
@@ -29,7 +29,7 @@ void TitleScene::Init() {
 	testObject_->Init("TestObj");
 	testObject_->SetModel("sneakWalk.gltf");
 	testObject_->GetModel()->skinning_ = new Skinnig();
-	testObject_->GetModel()->skinning_->Init("human", "sneakWalk.gltf",
+	testObject_->GetModel()->skinning_->Init("human", "walk.gltf",
 		testObject_->GetModel()->modelData);
 	testObject_->SetTranslate({ 0.0f,0.0f,5.0f });
 	
@@ -53,6 +53,8 @@ void TitleScene::Init() {
 
 	// グリッド生成  // 左の引数はグリッドのセル数、右の引数はセルの大きさを入れる
 	grid_ = std::make_unique<Grid3D>(5,1.0f);
+
+	MainCamera::GetInstance()->SetTarget(AnimeObject_->GetWorldTransform());
 }
 
 void TitleScene::Update() {
@@ -62,26 +64,50 @@ void TitleScene::Update() {
 
 	MainCamera::GetInstance()->Update();
 
-	// スティック入力の
-	const static int stickValue = 2000;
+	// RBボタンを押してたら歩く
+	if (mInput->GetPused(Gamepad::Button::RIGHT_SHOULDER)) {
+		AnimeObject_->GetModel()->skinning_->Init("human", "walk.gltf",
+			AnimeObject_->GetModel()->modelData);
+	}
+
+	// RBを離したらスニーク
+	if (mInput->GetReleased(Gamepad::Button::RIGHT_SHOULDER)) {
+		AnimeObject_->GetModel()->skinning_->Init("human", "sneakWalk.gltf",
+			AnimeObject_->GetModel()->modelData);
+	}
+
+	// スティック入力の量
+	const static int stickValue = 6000;
 	// いずれかの数値が、以上(以下)であれば移動処理を行う
-	if (input_->GetStick(Gamepad::Stick::LEFT_X) < -stickValue || // 左 
-		input_->GetStick(Gamepad::Stick::LEFT_X) > stickValue || // 右
-		input_->GetStick(Gamepad::Stick::LEFT_Y) < -stickValue || // 上
-		input_->GetStick(Gamepad::Stick::LEFT_Y) > stickValue	  // 下
+	if (mInput->GetStick(Gamepad::Stick::LEFT_X) < -stickValue || // 左 
+		mInput->GetStick(Gamepad::Stick::LEFT_X) > stickValue || // 右
+		mInput->GetStick(Gamepad::Stick::LEFT_Y) < -stickValue || // 上
+		mInput->GetStick(Gamepad::Stick::LEFT_Y) > stickValue	  // 下
 		) {
 
 		// Xの移動量とYの移動量を設定する
 		Vector3 direction = { 
-			(float)input_->GetStick(Gamepad::Stick::LEFT_X) ,
+			(float)mInput->GetStick(Gamepad::Stick::LEFT_X) ,
 			0.0f,
-			(float)input_->GetStick(Gamepad::Stick::LEFT_Y)
+			(float)mInput->GetStick(Gamepad::Stick::LEFT_Y)
 		};
 		// 念のために正規化
 		direction = Normalize(direction);
 		
+		// 移動速度を設定
+		float moveSpeed = 0.05f;
+		// RB入力時、移動速度を上げる
+		if (mInput->GetLongPush(Gamepad::Button::RIGHT_SHOULDER)) {
+			moveSpeed *= 2.0f;
+		}
+
+		// カメラの回転量を反映
+		direction = TransformNomal(direction, MainCamera::GetInstance()->worldTransform_->GetWorldMatrix());
+		// y座標は移動しない
+		direction.y = 0.0f;
+
 		// 平行移動を行う
-		AnimeObject_->worldTransform_->translation += direction * 0.05f;
+		AnimeObject_->worldTransform_->translation += direction * moveSpeed;
 
 		// ここから回転処理
 		const float PI = 3.14f;
@@ -124,8 +150,8 @@ void TitleScene::Draw(){
 	skybox_->PreDraw();
 	skybox_->Draw();
 
-	grid_->PreDraw();
-	grid_->Draw();
+	//grid_->PreDraw();
+	//grid_->Draw();
 
 	// Object3D(3DModel)の描画前処理
 	ModelManager::GetInstance()->PreDraw();

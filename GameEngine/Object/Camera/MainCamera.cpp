@@ -3,7 +3,6 @@
 #include "GameEngine/Base/DirectX/DirectXCommon.h"
 #include "GameEngine/Base/Debug/ImGuiManager.h"
 
-
 MainCamera* MainCamera::instance = nullptr;
 
 
@@ -16,6 +15,8 @@ MainCamera* MainCamera::GetInstance(){
 
 void MainCamera::Initialize(WinAPI* winApp){
 	winApp_ = winApp;
+	// 入力を取得する
+	mInput = InputManager::GetInstance();
 	worldTransform_ = new WorldTransform();
 	verticalFOV_ = 0.45f;
 	aspectRatio_ = (float(winApp->kClientWidth) / float(winApp->kClientHeight));
@@ -36,6 +37,43 @@ void MainCamera::Update()
 	ImGui::DragFloat("NearClip", &nearClip_, 0.01f, 0.0f, 100.0f);
 	ImGui::DragFloat("FarClip", &farClip_, 0.1f, 1.0f, 1000.0f);
 	ImGui::End();
+
+	// フォロー対象がいれば追従を行う
+	if (mTarget) {
+		// 追従対象からカメラまでの距離
+		Vector3 offset = { 0.0f,0.0f,-15.0f };
+		// オフセットをカメラの回転に合わせて回転させる
+		offset = TransformNomal(offset, worldTransform_->GetWorldMatrix());
+		// オフセット分ずらす
+		worldTransform_->translation = mTarget->translation + offset;
+		
+		// スティック入力の量
+		const static int stickValue = 6000;
+
+		// 入力量に応じた回転を行う
+		if (mInput->GetStick(Gamepad::Stick::RIGHT_X) < -stickValue || // 左 
+			mInput->GetStick(Gamepad::Stick::RIGHT_X) > stickValue || // 右
+			mInput->GetStick(Gamepad::Stick::RIGHT_Y) < -stickValue || // 上
+			mInput->GetStick(Gamepad::Stick::RIGHT_Y) > stickValue	  // 下
+			) {
+
+			// Xの移動量とYの移動量を設定する
+			Vector3 direction = {
+				(float)mInput->GetStick(Gamepad::Stick::RIGHT_Y),
+				(float)mInput->GetStick(Gamepad::Stick::RIGHT_X),
+				0.0f,
+			};
+			// 念のために正規化
+			direction = Normalize(direction);
+			// スティック上に倒すと下をみるようにする
+			direction.x *= (-1.0f);
+
+			// 回転の速度 // メンバ変数にしても良さそう
+			float rotateSpeed = 0.01f;
+			worldTransform_->rotation += direction * rotateSpeed;
+		}
+
+	}
 
 	// ビュー行列の更新
 	viewMatrix_ = Inverse(worldTransform_->GetWorldMatrix());

@@ -67,7 +67,7 @@ void RenderCopyImage::Update() {
 			effectFlags.isEnableBoxFilter = false;
 			fullScreenData->enableBoxFilter = effectFlags.isEnableBoxFilter;
 
-			ImGui::DragInt("KernelSize", &fullScreenData->kernelSize,1,1);
+			ImGui::DragInt("KernelSize", &fullScreenData->kernelSize,1,1,21);
 			ImGui::DragFloat("Sigma", &fullScreenData->GaussianSigma);
 
 		}
@@ -80,7 +80,7 @@ void RenderCopyImage::Update() {
 			effectFlags.isEnableGaussianFilter = false;
 			fullScreenData->enableGaussianFilter = effectFlags.isEnableGaussianFilter;
 
-			ImGui::DragInt("kernelSize", &fullScreenData->kernelSize,1,1);
+			ImGui::DragInt("kernelSize", &fullScreenData->kernelSize,1,1,21);
 		}
 
 
