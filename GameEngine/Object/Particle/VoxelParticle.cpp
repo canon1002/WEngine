@@ -10,7 +10,7 @@ VoxelParticle::~VoxelParticle()
 
 void VoxelParticle::Initialize(DirectXCommon* dxCommon,CameraCommon* camera) {
 
-	dxCommon_ = dxCommon;
+	mDxCommon = dxCommon;
 	camera_=camera;
 	worldTransform_.scale = { 1.0f,1.0f,1.0f };
 	worldTransform_.rotation = { 0.0f,0.0f,0.0f };
@@ -22,7 +22,7 @@ void VoxelParticle::Initialize(DirectXCommon* dxCommon,CameraCommon* camera) {
 	CreateIndexResource();
 	CreateTransformationRsource();
 	CreateBufferView();
-	instancingHandle_ = dxCommon_->srv_->SetStructuredBuffer(kNumMaxInstance, instancingResource);
+	instancingHandle_ = mDxCommon->srv_->SetStructuredBuffer(kNumMaxInstance, instancingResource);
 
 	wvpResource->SetName(L"Voxel");
 	materialResource->SetName(L"Voxel");
@@ -102,23 +102,23 @@ void VoxelParticle::Update() {
 
 void VoxelParticle::Draw() {
 
-	dxCommon_->commandList->IASetVertexBuffers(0, 1, &vertexBufferView);
+	mDxCommon->commandList->IASetVertexBuffers(0, 1, &vertexBufferView);
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけばいい
-	dxCommon_->commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	mDxCommon->commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	/// CBV設定
 
 	// マテリアルのCBufferの場所を指定
-	dxCommon_->commandList->SetGraphicsRootConstantBufferView(0, materialResource->GetGPUVirtualAddress());
+	mDxCommon->commandList->SetGraphicsRootConstantBufferView(0, materialResource->GetGPUVirtualAddress());
 
 	//wvp用のCBufferの場所を指定
-	dxCommon_->commandList->SetGraphicsRootDescriptorTable(1, dxCommon_->srv_->instancingSrvHandleGPU);
+	mDxCommon->commandList->SetGraphicsRootDescriptorTable(1, mDxCommon->srv_->instancingSrvHandleGPU);
 
 	// テクスチャ
-	dxCommon_->commandList->SetGraphicsRootDescriptorTable(2, dxCommon_->srv_->textureData_.at(dxCommon_->srv_->defaultTexId_).textureSrvHandleGPU);
+	mDxCommon->commandList->SetGraphicsRootDescriptorTable(2, mDxCommon->srv_->textureData_.at(mDxCommon->srv_->defaultTexId_).textureSrvHandleGPU);
 
 	// インデックスを使用してドローコール
-	dxCommon_->commandList->DrawInstanced(6, instanceCount_, 0, 0);
+	mDxCommon->commandList->DrawInstanced(6, instanceCount_, 0, 0);
 
 }
 
@@ -138,8 +138,8 @@ void VoxelParticle::CreateVertexResource() {
 	modelData_.vertices.push_back(VertexData{ .position = { 1.0f, -1.0f,0.0f,1.0f},.texcoord = {1.0f,1.0f},.normal = {0.0f,0.0f,1.0f} });
 
 
-	instancingResource = dxCommon_->CreateBufferResource(
-		dxCommon_->device_.Get(), sizeof(ParticleForGPU) * kNumMaxInstance);
+	instancingResource = mDxCommon->CreateBufferResource(
+		mDxCommon->device_.Get(), sizeof(ParticleForGPU) * kNumMaxInstance);
 	// 書き込むためのアドレスを取得
 	instancingResource->Map(0, nullptr, reinterpret_cast<void**>(&instancingData_));
 	// 単位行列を書き込む
@@ -153,10 +153,10 @@ void VoxelParticle::CreateVertexResource() {
 
 	// VertexResourceを生成する(P.42)
 	// 実際に頂点リソースを作る
-	vertexResource = dxCommon_->CreateBufferResource(dxCommon_->device_.Get(), sizeof(VertexData) * modelData_.vertices.size());
+	vertexResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(VertexData) * modelData_.vertices.size());
 
 	// マテリアル用のResourceを作る
-	materialResource = dxCommon_->CreateBufferResource(dxCommon_->device_.Get(), sizeof(Material));
+	materialResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(Material));
 	// マテリアルにデータを書き込む
 	materialData_ = nullptr;
 	// 書き込むためのアドレスを取得
@@ -169,7 +169,7 @@ void VoxelParticle::CreateVertexResource() {
 	uvTransform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 
 	// Light
-	directionalLightResource = dxCommon_->CreateBufferResource(dxCommon_->device_.Get(), sizeof(DirectionalLight));
+	directionalLightResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(DirectionalLight));
 	// データを書き込む
 	directionalLightResource->Map(0, nullptr, reinterpret_cast<void**>(&directionalLightDate));
 	directionalLightDate->color = { 1.0f, 1.0f, 1.0f, 1.0f };
@@ -185,7 +185,7 @@ void VoxelParticle::CreateTransformationRsource() {
 	}
 
 	// Transformation用のResourceを作る
-	wvpResource = dxCommon_->CreateBufferResource(dxCommon_->device_.Get(), sizeof(ParticleForGPU));
+	wvpResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(ParticleForGPU));
 	// データを書き込む
 	// 書き込むためのアドレスを取得
 	wvpResource->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));

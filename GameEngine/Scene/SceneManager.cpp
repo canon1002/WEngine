@@ -9,7 +9,7 @@ SceneManager::~SceneManager() {}
 void SceneManager::Init(WinAPI* winApp, DirectXCommon* dxCommon){
 	// ポインタを取得
 	winApp_ = winApp;
-	dxCommon_ = dxCommon;
+	mDxCommon = dxCommon;
 
 #ifdef _DEBUG
 	// ImGuiManager
@@ -45,7 +45,7 @@ int SceneManager::Run() {
 	
 
 #ifdef _DEBUG
-	imGuiManager_->Initialize(winApp_, dxCommon_);
+	imGuiManager_->Initialize(winApp_, mDxCommon);
 #endif // _DEBUG
 
 
@@ -54,7 +54,7 @@ int SceneManager::Run() {
 	mainCamera_->Initialize(winApp_);
 	//mainCamera_->worldTransform_->translation = { 0.0f,0.0f,-6.0f };
 	
-	objectAdmin_->Init(dxCommon_);
+	objectAdmin_->Init(mDxCommon);
 
 
 	// Windowsのメッセージ処理があればゲームループを抜ける
@@ -100,15 +100,15 @@ int SceneManager::Run() {
 		/// 
 
 		// 描画前処理 -- RenderTexture --
-		dxCommon_->PreDrawForRenderTarget();
+		mDxCommon->PreDrawForRenderTarget();
 
 		/// 描画処理
 		sceneArr_[currentSceneNo_]->Draw();
 		// 描画後処理 -- RenderTexture --
-		dxCommon_->PostDrawForRenderTarget();
+		mDxCommon->PostDrawForRenderTarget();
 
 		// 描画前処理
-		dxCommon_->DrawBegin();
+		mDxCommon->DrawBegin();
 
 		copyImage_->PreDraw();
 		copyImage_->Draw();
@@ -119,7 +119,7 @@ int SceneManager::Run() {
 #endif // _DEBUG
 
 		// 描画後処理
-		dxCommon_->DrawEnd();
+		mDxCommon->DrawEnd();
 
 		// ESCキーが押されたらループを抜ける
 		if (inputManager_->GetKey()->GetTriggerKey(DIK_ESCAPE)) {

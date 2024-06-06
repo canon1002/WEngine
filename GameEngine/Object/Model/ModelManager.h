@@ -67,7 +67,7 @@ private: // -- private メンバ変数 -- //
 	static std::map<std::string, std::shared_ptr<Model>> sModels_;
 
 	// ポインタ
-	DirectXCommon* dxCommon_ = nullptr;
+	DirectXCommon* mDxCommon = nullptr;
 	CameraCommon* camera_ = nullptr;
 
 	// モデルデータ

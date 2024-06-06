@@ -38,7 +38,7 @@ private:
 	// WindowsAPI
 	WinAPI* winApp_;
 	// DirectX
-	DirectXCommon* dxCommon_;
+	DirectXCommon* mDxCommon;
 
 #ifdef _DEBUG
 	// ImGuiManager

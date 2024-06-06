@@ -44,7 +44,7 @@ public: // メンバ変数
 	std::string objname_;
 
 	// 外部ポインタ
-	DirectXCommon* dxCommon_ = nullptr;
+	DirectXCommon* mDxCommon = nullptr;
 	Object3dCommon* object3dCommon_ = nullptr;
 	Model* model_ = nullptr;
 	ModelManager* modelManager_;

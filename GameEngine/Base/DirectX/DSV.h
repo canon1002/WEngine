@@ -29,17 +29,17 @@ private: // -- private メンバ関数 -- //
 public: // -- public メンバ変数 -- //
 
 	// DSV用デスクリプタヒープ
-	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> dsvDescriptorHeap_ = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> mDsvDescriptorHeap = nullptr;
 	// DSVの設定
-	D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc{};
+	D3D12_DEPTH_STENCIL_VIEW_DESC mDsvDesc{};
 	//　ディープステンシル用のリソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> depthStencilTextureResource_ = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12Resource> mDepthStencilTextureResource = nullptr;
 	//　ディスクリプタ
-	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle;
+	D3D12_CPU_DESCRIPTOR_HANDLE mDsvHandle;
 
 private: // -- private メンバ変数 -- //
 
 	// ポインタ
-	DirectXCommon* dxCommon_;
+	DirectXCommon* mDxCommon;
 
 };

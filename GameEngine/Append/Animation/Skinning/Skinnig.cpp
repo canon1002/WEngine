@@ -7,7 +7,7 @@
 
 void Skinnig::Init(const std::string& directorypath, const std::string& filepath, ModelData modelData)
 {
-	dxCommon_ = DirectXCommon::GetInstance();
+	mDxCommon = DirectXCommon::GetInstance();
 
 	// アニメーションに必要な情報をセット
 	animation_ = Resource::LoadAnmation(directorypath, filepath);
@@ -16,7 +16,7 @@ void Skinnig::Init(const std::string& directorypath, const std::string& filepath
 	skeleton_ = Skeleton::Create(modelData.rootNode);
 	
 	// スキンクラスター生成
-	skinCluster_ = SkinCluster::Create(dxCommon_->device_, skeleton_, modelData);
+	skinCluster_ = SkinCluster::Create(mDxCommon->device_, skeleton_, modelData);
 
 }
 

@@ -35,7 +35,7 @@ public:
 
 private:
 	WinAPI* winApp_ = nullptr;
-	DirectXCommon* dxCommon_ = nullptr;
+	DirectXCommon* mDxCommon = nullptr;
 
 };
 #endif // _DEBUG

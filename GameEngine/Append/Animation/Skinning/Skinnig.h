@@ -28,7 +28,7 @@ public: // -- 公開 メンバ関数 -- //
 private: // -- 非公開 メンバ変数 -- //
 
 	// 外部ポインタ
-	DirectXCommon* dxCommon_;
+	DirectXCommon* mDxCommon;
 
 	// スキンクラスター
 	SkinCluster skinCluster_;

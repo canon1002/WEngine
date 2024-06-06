@@ -28,7 +28,7 @@ void Object3d::Init(std::string name) {
 	// オブジェクトの名称を設定
 	objname_ = name;
 
-	dxCommon_ = DirectXCommon::GetInstance();
+	mDxCommon = DirectXCommon::GetInstance();
 	modelManager_ = ModelManager::GetInstance();
 	worldTransform_ = new WorldTransform();
 	worldTransform_->Init();
@@ -77,7 +77,7 @@ void Object3d::Draw() {
 	}
 
 	//wvp用のCBufferの場所を指定
-	dxCommon_->commandList->SetGraphicsRootConstantBufferView(1, wvpResource->GetGPUVirtualAddress());
+	mDxCommon->commandList->SetGraphicsRootConstantBufferView(1, wvpResource->GetGPUVirtualAddress());
 	// 頂点をセット
 
 	D3D12_VERTEX_BUFFER_VIEW vbvs[2]{};
@@ -87,13 +87,13 @@ void Object3d::Draw() {
 		vbvs[1] = model_->skinning_->GetSkinCluster().influenceBufferView_; // influenceのVBV
 
 		// 配列を渡す(開始スロット番号、使用スロット数、VBV配列へのポインタ)
-		dxCommon_->commandList->IASetVertexBuffers(0, 2, vbvs);
-		dxCommon_->commandList->SetGraphicsRootDescriptorTable(5,
+		mDxCommon->commandList->IASetVertexBuffers(0, 2, vbvs);
+		mDxCommon->commandList->SetGraphicsRootDescriptorTable(5,
 			model_->skinning_->GetSkinCluster().paletteSrvHandle_.second);
 	}
 	else {
 		// 配列を渡す(開始スロット番号、使用スロット数、VBV配列へのポインタ)
-		dxCommon_->commandList->IASetVertexBuffers(0, 1, &vbvs[0]);
+		mDxCommon->commandList->IASetVertexBuffers(0, 1, &vbvs[0]);
 	}
 
 	model_->Draw();
@@ -146,7 +146,7 @@ void Object3d::DrawGUI()
 void Object3d::CreateTransformationRsource() {
 
 	// Transformation用のResourceを作る
-	wvpResource = dxCommon_->CreateBufferResource(dxCommon_->device_.Get(), sizeof(TransformationMatrix));
+	wvpResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(TransformationMatrix));
 	// データを書き込む
 	// 書き込むためのアドレスを取得
 	wvpResource->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));

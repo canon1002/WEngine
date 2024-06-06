@@ -10,11 +10,11 @@ Skybox::~Skybox() {
 
 void Skybox::Init(const std::string& directrypath, const std::string& filename) {
 
-	dxCommon_ = DirectXCommon::GetInstance();
+	mDxCommon = DirectXCommon::GetInstance();
 	camera_ = MainCamera::GetInstance();
 	worldTransform_ = new WorldTransform();
 	worldTransform_->scale = { 512.0f,512.0f,512.0f };
-	textureHandle_ = dxCommon_->srv_->LoadTexture(directrypath + "/" + filename);
+	textureHandle_ = mDxCommon->srv_->LoadTexture(directrypath + "/" + filename);
 	CreateTransformationRsource();
 	CreateVertexResource();
 	CreateMaterialResource();
@@ -38,27 +38,27 @@ void Skybox::Update(){
 void Skybox::Draw()
 {
 	//wvp用のCBufferの場所を指定
-	dxCommon_->commandList->SetGraphicsRootConstantBufferView(1, wvpResource->GetGPUVirtualAddress());
+	mDxCommon->commandList->SetGraphicsRootConstantBufferView(1, wvpResource->GetGPUVirtualAddress());
 
 
-	dxCommon_->commandList->IASetVertexBuffers(0, 1, &vertexBufferView);
-	dxCommon_->commandList->IASetIndexBuffer(&indexBufferView);
+	mDxCommon->commandList->IASetVertexBuffers(0, 1, &vertexBufferView);
+	mDxCommon->commandList->IASetIndexBuffer(&indexBufferView);
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけばいい
-	dxCommon_->commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	mDxCommon->commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	/// CBV設定
 
 	// マテリアルのCBufferの場所を指定
-	dxCommon_->commandList->SetGraphicsRootConstantBufferView(0, materialResource->GetGPUVirtualAddress());
+	mDxCommon->commandList->SetGraphicsRootConstantBufferView(0, materialResource->GetGPUVirtualAddress());
 
-	dxCommon_->commandList->SetGraphicsRootConstantBufferView(3, directionalLightResource->GetGPUVirtualAddress());
-	dxCommon_->commandList->SetGraphicsRootConstantBufferView(4, CameraResource->GetGPUVirtualAddress());
+	mDxCommon->commandList->SetGraphicsRootConstantBufferView(3, directionalLightResource->GetGPUVirtualAddress());
+	mDxCommon->commandList->SetGraphicsRootConstantBufferView(4, CameraResource->GetGPUVirtualAddress());
 
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である
-	dxCommon_->commandList->SetGraphicsRootDescriptorTable(2, dxCommon_->srv_->textureData_.at(textureHandle_).textureSrvHandleGPU);
+	mDxCommon->commandList->SetGraphicsRootDescriptorTable(2, mDxCommon->srv_->textureData_.at(textureHandle_).textureSrvHandleGPU);
 
 	// インデックスを使用してドローコール
-	dxCommon_->commandList->DrawIndexedInstanced(36, 1, 0, 0,0);
+	mDxCommon->commandList->DrawIndexedInstanced(36, 1, 0, 0,0);
 }
 
 void Skybox::DrawGUI(const std::string& label) {
@@ -107,15 +107,15 @@ void Skybox::DrawGUI(const std::string& label) {
 void Skybox::PreDraw() {
 
 	// RootSignatureを設定。PSOに設定しているが、別途設定が必要
-	dxCommon_->commandList->SetGraphicsRootSignature(rootSignature.Get());
-	dxCommon_->commandList->SetPipelineState(graphicsPipelineState.Get());
+	mDxCommon->commandList->SetGraphicsRootSignature(rootSignature.Get());
+	mDxCommon->commandList->SetPipelineState(graphicsPipelineState.Get());
 
 }
 
 void Skybox::CreateTransformationRsource() {
 
 	// Transformation用のResourceを作る
-	wvpResource = dxCommon_->CreateBufferResource(dxCommon_->device_.Get(), sizeof(TransformationMatrix));
+	wvpResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(TransformationMatrix));
 	// データを書き込む
 	// 書き込むためのアドレスを取得
 	wvpResource->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
@@ -129,8 +129,8 @@ void Skybox::CreateVertexResource() {
 
 
 	// 実際に頂点リソースを作る
-	vertexResource = dxCommon_->CreateBufferResource(
-		dxCommon_->device_.Get(), sizeof(VertexData) * 24);
+	vertexResource = mDxCommon->CreateBufferResource(
+		mDxCommon->device_.Get(), sizeof(VertexData) * 24);
 
 	// リソースの先頭のアドレスから使う
 	vertexBufferView.BufferLocation = vertexResource->GetGPUVirtualAddress();
@@ -174,7 +174,7 @@ void Skybox::CreateVertexResource() {
 	vertexData[22].position = { -1.0f,-1.0f,1.0f,1.0f };
 	vertexData[23].position = { 1.0f,-1.0f,1.0f,1.0f };
 
-	indexResource = dxCommon_->CreateBufferResource(dxCommon_->device_.Get(), sizeof(uint32_t) * 36);
+	indexResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(uint32_t) * 36);
 	indexBufferView.BufferLocation = indexResource->GetGPUVirtualAddress();
 	indexBufferView.SizeInBytes = sizeof(uint32_t) * 36;
 	indexBufferView.Format = DXGI_FORMAT_R32_UINT;
@@ -205,8 +205,8 @@ void Skybox::CreateVertexResource() {
 void Skybox::CreateMaterialResource()
 {
 	// マテリアル用のResourceを作る
-	materialResource = dxCommon_->
-		CreateBufferResource(dxCommon_->
+	materialResource = mDxCommon->
+		CreateBufferResource(mDxCommon->
 			device_.Get(), sizeof(Material));
 
 	// マテリアルにデータを書き込む
@@ -222,7 +222,7 @@ void Skybox::CreateMaterialResource()
 	materialData_->shininess = 100.0f;
 
 	// Light
-	directionalLightResource = dxCommon_->CreateBufferResource(dxCommon_->device_.Get(), sizeof(DirectionalLight));
+	directionalLightResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(DirectionalLight));
 	// データを書き込む
 	directionalLightResource->Map(0, nullptr, reinterpret_cast<void**>(&directionalLightDate));
 	directionalLightDate->color = { 1.0f, 1.0f, 1.0f, 1.0f };
@@ -230,10 +230,10 @@ void Skybox::CreateMaterialResource()
 	directionalLightDate->intensity = 1.0f;
 
 	// カメラデータ
-	CameraResource = dxCommon_->CreateBufferResource(dxCommon_->device_.Get(), sizeof(CameraForGPU));
+	CameraResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(CameraForGPU));
 	// データを書き込む
 	CameraResource->Map(0, nullptr, reinterpret_cast<void**>(&cameraData));
-	camera_->Initialize(dxCommon_->win_);
+	camera_->Initialize(mDxCommon->win_);
 	cameraData->worldPosition = camera_->GetTranslate();
 
 }
@@ -305,7 +305,7 @@ void Skybox::CreateRootSignature() {
 	}
 
 	// バイナリを元に
-	hr = dxCommon_->device_->CreateRootSignature(0, signatureBlob->GetBufferPointer(),
+	hr = mDxCommon->device_->CreateRootSignature(0, signatureBlob->GetBufferPointer(),
 		signatureBlob->GetBufferSize(), IID_PPV_ARGS(&rootSignature));
 	assert(SUCCEEDED(hr));
 
@@ -358,11 +358,11 @@ void Skybox::CreateGraphicsPipeline() {
 
 	// Shaderをcompileする(P.37)
 	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob = WinAPI::CompileShader(L"Shaders/Skybox.VS.hlsl",
-		L"vs_6_0", dxCommon_->dxcUtils, dxCommon_->dxcCompiler, dxCommon_->includeHandler);
+		L"vs_6_0", mDxCommon->dxcUtils, mDxCommon->dxcCompiler, mDxCommon->includeHandler);
 	assert(vertexShaderBlob != nullptr);
 
 	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob = WinAPI::CompileShader(L"Shaders/Skybox.PS.hlsl",
-		L"ps_6_0", dxCommon_->dxcUtils, dxCommon_->dxcCompiler, dxCommon_->includeHandler);
+		L"ps_6_0", mDxCommon->dxcUtils, mDxCommon->dxcCompiler, mDxCommon->includeHandler);
 	assert(pixelShaderBlob != nullptr);
 
 	// PSOを生成する(P.38)
@@ -399,7 +399,7 @@ void Skybox::CreateGraphicsPipeline() {
 	graphicsPipelineStateDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
 
 	// 実際に生成
-	HRESULT hr = dxCommon_->device_->CreateGraphicsPipelineState(&graphicsPipelineStateDesc,
+	HRESULT hr = mDxCommon->device_->CreateGraphicsPipelineState(&graphicsPipelineStateDesc,
 		IID_PPV_ARGS(&graphicsPipelineState));
 	assert(SUCCEEDED(hr));
 

@@ -68,7 +68,7 @@ private:
 
 	// 外部ポインタ
 	CameraCommon* camera_ = nullptr;
-	DirectXCommon* dxCommon_ = nullptr;
+	DirectXCommon* mDxCommon = nullptr;
 
 	WorldTransform worldTransform_;
 	Matrix4x4 cameraM, viewM, projectM, pespectiveM, wvpM;

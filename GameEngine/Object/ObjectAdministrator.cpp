@@ -24,15 +24,15 @@ ObjectAdministrator* ObjectAdministrator::GetInstance(){
 }
 
 void ObjectAdministrator::Init(DirectXCommon* dxCommon){
-	dxCommon_ = dxCommon;
+	mDxCommon = dxCommon;
 
 	// モデル管理者クラス
 	modelAdmin_ = ModelManager::GetInstance();
-	modelAdmin_->Initialize(dxCommon_, MainCamera::GetInstance());
+	modelAdmin_->Initialize(mDxCommon, MainCamera::GetInstance());
 
 	// スプライト管理者クラス
 	spriteAdmin_ = std::make_unique<SpriteAdministrator>();
-	spriteAdmin_->Initialize(dxCommon_);
+	spriteAdmin_->Initialize(mDxCommon);
 
 
 }
@@ -69,19 +69,19 @@ void ObjectAdministrator::Draw(){
 		}
 
 		//wvp用のCBufferの場所を指定
-		dxCommon_->commandList->SetGraphicsRootConstantBufferView(1, object->wvpResource->GetGPUVirtualAddress());
+		mDxCommon->commandList->SetGraphicsRootConstantBufferView(1, object->wvpResource->GetGPUVirtualAddress());
 		// VBV
-		dxCommon_->commandList->IASetVertexBuffers(0, 1, &object->GetModel()->vertexBufferView);
+		mDxCommon->commandList->IASetVertexBuffers(0, 1, &object->GetModel()->vertexBufferView);
 		// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけばいい
-		dxCommon_->commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		mDxCommon->commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		// マテリアルのCBufferの場所を指定
-		dxCommon_->commandList->SetGraphicsRootConstantBufferView(0, object->GetModel()->materialResource->GetGPUVirtualAddress());
-		dxCommon_->commandList->SetGraphicsRootConstantBufferView(3, object->GetModel()->directionalLightResource->GetGPUVirtualAddress());
-		dxCommon_->commandList->SetGraphicsRootConstantBufferView(4, object->GetModel()->CameraResource->GetGPUVirtualAddress());
+		mDxCommon->commandList->SetGraphicsRootConstantBufferView(0, object->GetModel()->materialResource->GetGPUVirtualAddress());
+		mDxCommon->commandList->SetGraphicsRootConstantBufferView(3, object->GetModel()->directionalLightResource->GetGPUVirtualAddress());
+		mDxCommon->commandList->SetGraphicsRootConstantBufferView(4, object->GetModel()->CameraResource->GetGPUVirtualAddress());
 		// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である
-		dxCommon_->commandList->SetGraphicsRootDescriptorTable(2, dxCommon_->srv_->textureData_.at(object->GetModel()->textureHandle_).textureSrvHandleGPU);
+		mDxCommon->commandList->SetGraphicsRootDescriptorTable(2, mDxCommon->srv_->textureData_.at(object->GetModel()->textureHandle_).textureSrvHandleGPU);
 		// ドローコール
-		dxCommon_->commandList->DrawInstanced(UINT(object->GetModel()->modelData.vertices.size()), 1, 0, 0);
+		mDxCommon->commandList->DrawInstanced(UINT(object->GetModel()->modelData.vertices.size()), 1, 0, 0);
 
 	}
 

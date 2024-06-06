@@ -3,7 +3,7 @@
 
 void Sprite::Initialize(DirectXCommon* dxCommon, CameraCommon* camera) {
 
-	dxCommon_ = dxCommon;
+	mDxCommon = dxCommon;
 	camera_ = camera;
 	CreateVertexResource();
 	CreateIndexResource();
@@ -85,23 +85,23 @@ void Sprite::Update() {
 
 void Sprite::Draw() {
 
-	dxCommon_->commandList->IASetVertexBuffers(0, 1, &vertexBufferView);
-	dxCommon_->commandList->IASetIndexBuffer(&indexBufferView);
+	mDxCommon->commandList->IASetVertexBuffers(0, 1, &vertexBufferView);
+	mDxCommon->commandList->IASetIndexBuffer(&indexBufferView);
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけばいい
-	dxCommon_->commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	mDxCommon->commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	/// CBV設定
 
 	// マテリアルのCBufferの場所を指定
-	dxCommon_->commandList->SetGraphicsRootConstantBufferView(0, materialResourceSprite->GetGPUVirtualAddress());
+	mDxCommon->commandList->SetGraphicsRootConstantBufferView(0, materialResourceSprite->GetGPUVirtualAddress());
 	//wvp用のCBufferの場所を指定
-	dxCommon_->commandList->SetGraphicsRootConstantBufferView(1, wvpResource->GetGPUVirtualAddress());
+	mDxCommon->commandList->SetGraphicsRootConstantBufferView(1, wvpResource->GetGPUVirtualAddress());
 	
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である
-	dxCommon_->commandList->SetGraphicsRootDescriptorTable(2, dxCommon_->srv_->textureData_.at(textureHandle_).textureSrvHandleGPU);
+	mDxCommon->commandList->SetGraphicsRootDescriptorTable(2, mDxCommon->srv_->textureData_.at(textureHandle_).textureSrvHandleGPU);
 
 	// インデックスを使用してドローコール
-	dxCommon_->commandList->DrawIndexedInstanced(6, 1, 0, 0, 0);
+	mDxCommon->commandList->DrawIndexedInstanced(6, 1, 0, 0, 0);
 
 }
 
@@ -115,15 +115,15 @@ void Sprite::CreateVertexResource() {
 
 	// VertexResourceを生成する(P.42)
 	// 実際に頂点リソースを作る
-	vertexResource = dxCommon_->CreateBufferResource(dxCommon_->device_.Get(), sizeof(VertexData2D) * 6);
+	vertexResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(VertexData2D) * 6);
 
 	// マテリアル用のResourceを作る
-	materialResourceSprite = dxCommon_->CreateBufferResource(dxCommon_->device_.Get(), sizeof(Material2D));
+	materialResourceSprite = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(Material2D));
 	// マテリアルにデータを書き込む
 	materialData = nullptr;
 	// テクスチャの情報を転送
 	if (textureHandle_ == 0) {
-		textureHandle_ = dxCommon_->srv_->defaultTexId_;
+		textureHandle_ = mDxCommon->srv_->defaultTexId_;
 	}
 	// 書き込むためのアドレスを取得
 	materialResourceSprite->Map(0, nullptr, reinterpret_cast<void**>(&materialData));
@@ -139,7 +139,7 @@ void Sprite::CreateVertexResource() {
 void Sprite::CreateTransformationRsource() {
 
 	// Transformation用のResourceを作る
-	wvpResource = dxCommon_->CreateBufferResource(dxCommon_->device_.Get(), sizeof(TransformationMatrix));
+	wvpResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(TransformationMatrix));
 	// データを書き込む
 	// 書き込むためのアドレスを取得
 	wvpResource->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
@@ -177,7 +177,7 @@ void Sprite::CreateBufferView() {
 	vertexData[3].position = { 360.0f,360.0f,0.0f,1.0f };
 	vertexData[3].texcoord = { 1.0f,1.0f };
 
-	indexResource = dxCommon_->CreateBufferResource(dxCommon_->device_.Get(), sizeof(uint32_t) * 6);
+	indexResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(uint32_t) * 6);
 	indexBufferView.BufferLocation = indexResource->GetGPUVirtualAddress();
 	indexBufferView.SizeInBytes = sizeof(uint32_t) * 6;
 	indexBufferView.Format = DXGI_FORMAT_R32_UINT;
@@ -192,7 +192,7 @@ void Sprite::CreateBufferView() {
 void Sprite::AdjustTextureSize()
 {
 	// テクスチャメタデータ取得
-	const DirectX::TexMetadata& metadata = dxCommon_->srv_->GetMetaData(textureHandle_);
+	const DirectX::TexMetadata& metadata = mDxCommon->srv_->GetMetaData(textureHandle_);
 	textureFullSize_.x = static_cast<float>(metadata.width);
 	textureFullSize_.y = static_cast<float>(metadata.height);
 
