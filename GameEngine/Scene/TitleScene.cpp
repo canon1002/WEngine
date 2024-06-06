@@ -124,8 +124,8 @@ void TitleScene::Draw(){
 	skybox_->PreDraw();
 	skybox_->Draw();
 
-	grid_->PreDraw();
-	grid_->Draw();
+	//grid_->PreDraw();
+	//grid_->Draw();
 
 	// Object3D(3DModel)の描画前処理
 	ModelManager::GetInstance()->PreDraw();

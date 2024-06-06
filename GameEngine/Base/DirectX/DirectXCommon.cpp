@@ -23,12 +23,12 @@ void DirectXCommon::Initialize(WinAPI* win) {
 
 	// デバッグレイヤーでエラーと警告を受け取る
 	#ifdef _DEBUG
-	//if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController)))) {
-	//	// デバッグレイヤーを有効化する
-	//	debugController->EnableDebugLayer();
-	//	// さらにGPU側でもチェックを行うようにする
-	//	debugController->SetEnableGPUBasedValidation(TRUE);
-	//}	
+	if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&mDebugController)))) {
+		// デバッグレイヤーを有効化する
+		mDebugController->EnableDebugLayer();
+		// さらにGPU側でもチェックを行うようにする
+		mDebugController->SetEnableGPUBasedValidation(TRUE);
+	}	
 	#endif // _DEBUG
 
 	// 外部のやつ

@@ -192,4 +192,12 @@ private:
 	// インスタンス
 	static DirectXCommon* instance;
 
+#ifdef _DEBUG
+
+	
+	ID3D12Debug1* mDebugController;
+
+#endif // _DEBUG
+
+
 };

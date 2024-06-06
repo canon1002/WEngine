@@ -25,12 +25,17 @@ void RenderCopyImage::Initialize(DirectXCommon* dxCommon, CameraCommon* camera) 
 
 	textureHandle_ = dxCommon_->srv_->LoadTexture("uvChecker.png");
 	textureHandle_ = dxCommon_->srv_->CreateRenderTextureSRV(dxCommon_->rtv_->renderTextureResource.Get());
+
+	mDepthStencilHandle = dxCommon_->srv_->CreateDepthSRV(mDepthStencilResource.Get());
 }
 
 void RenderCopyImage::Update() {
 
 	// 書き込むためのアドレスを取得
 	//fullScreenResource->Map(0, nullptr, reinterpret_cast<void**>(&fullScreenData));
+
+	// 逆行列を取得しておく
+	fullScreenData->projectionInverse = Inverse(MainCamera::GetInstance()->GetProjectionMatrix());
 
 #ifdef _DEBUG
 
@@ -85,6 +90,27 @@ void RenderCopyImage::Update() {
 
 
 	}
+
+	// Outline 輝度検出
+	ImGui::Checkbox("LuminanceOutline Flag", &effectFlags.isEnebleLuminanceOutline);
+	fullScreenData->enableLuminanceOutline = effectFlags.isEnebleLuminanceOutline;
+	if (effectFlags.isEnebleLuminanceOutline) {
+		ImGui::DragFloat("Multipliier", &fullScreenData->outlineMultipliier);
+	}
+
+	// Outline 深度検出
+	ImGui::Checkbox("DepthOutline Flag", &effectFlags.isEnableDepthOutline);
+	fullScreenData->enableDepthOutline = effectFlags.isEnableDepthOutline;
+	if (effectFlags.isEnableDepthOutline) {
+		if (ImGui::TreeNode("Projection Inverse")) {
+			for (int i = 0; i < 4; ++i) {
+				// Floatの4x4行列内の数値を表示
+				ImGui::DragFloat4(("Row " + std::to_string(i)).c_str(), fullScreenData->projectionInverse.m[i]);
+			}
+			ImGui::TreePop();
+		}
+	}
+
 	ImGui::End();
 
 #endif // _DEBUG
@@ -125,6 +151,8 @@ void RenderCopyImage::Draw() {
 	dxCommon_->commandList->SetGraphicsRootConstantBufferView(1, wvpResource->GetGPUVirtualAddress());
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である
 	dxCommon_->commandList->SetGraphicsRootDescriptorTable(2, dxCommon_->srv_->textureData_.at(textureHandle_).textureSrvHandleGPU);
+	// Depth Textureを設定 // 
+	dxCommon_->commandList->SetGraphicsRootDescriptorTable(3, dxCommon_->srv_->textureData_.at(mDepthStencilHandle).textureSrvHandleGPU);
 
 	// インスタンス生成
 	dxCommon_->commandList->DrawInstanced(3, 1, 0, 0);
@@ -132,11 +160,7 @@ void RenderCopyImage::Draw() {
 }
 
 void RenderCopyImage::CreateRootSignature(){
-	// RootSignatureを生成する
-	D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature{};
-	descriptionRootSignature.Flags =
-		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
-
+	
 	// 複数枚のSRVを扱えるように一括で設定をする
 	D3D12_DESCRIPTOR_RANGE descriptorRange[1] = {};
 	descriptorRange[0].BaseShaderRegister = 0;
@@ -144,8 +168,14 @@ void RenderCopyImage::CreateRootSignature(){
 	descriptorRange[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
 	descriptorRange[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;// offset自動計算
 
+	D3D12_DESCRIPTOR_RANGE descriptorRangeDepth[1] = {};
+	descriptorRangeDepth[0].BaseShaderRegister = 1;
+	descriptorRangeDepth[0].NumDescriptors = 1;
+	descriptorRangeDepth[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+	descriptorRangeDepth[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;// offset自動計算
+
 	// RootParamenter作成
-	D3D12_ROOT_PARAMETER rootParameters[3] = {};
+	D3D12_ROOT_PARAMETER rootParameters[4] = {};
 	rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; // CBVを使う // b0のbと一致
 	rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
 	rootParameters[0].Descriptor.ShaderRegister = 0; // レジスタ番号とバインド // b0のと一致
@@ -159,11 +189,20 @@ void RenderCopyImage::CreateRootSignature(){
 	rootParameters[2].DescriptorTable.pDescriptorRanges = descriptorRange;
 	rootParameters[2].DescriptorTable.NumDescriptorRanges = _countof(descriptorRange);
 
+	// DepthStencilResource用
+	rootParameters[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE; // DescriptorTable
+	rootParameters[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
+	rootParameters[3].DescriptorTable.pDescriptorRanges = descriptorRangeDepth;
+	rootParameters[3].DescriptorTable.NumDescriptorRanges = _countof(descriptorRangeDepth);// 
+
+	// RootSignatureを生成する
+	D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature{};
+	descriptionRootSignature.Flags = D3D12_ROOT_SIGNATURE_FLAG_NONE;
 	descriptionRootSignature.pParameters = rootParameters; // ルートパラメータ配列へのポインタ
 	descriptionRootSignature.NumParameters = _countof(rootParameters); // 配列の長さ
 
 	// Samplerの設定
-	D3D12_STATIC_SAMPLER_DESC staticSamplers[1] = {};
+	D3D12_STATIC_SAMPLER_DESC staticSamplers[2] = {};
 	staticSamplers[0].Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;// バイナリフィルタ
 	staticSamplers[0].AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;//0~1の範囲外をリピート
 	staticSamplers[0].AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
@@ -172,9 +211,19 @@ void RenderCopyImage::CreateRootSignature(){
 	staticSamplers[0].MaxLOD = D3D12_FLOAT32_MAX;	// ありったけのMipMapを使う
 	staticSamplers[0].ShaderRegister = 0;// レジスタ番号0を使う
 	staticSamplers[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;// PixelShaderで使う
+
+	// PointFillter用
+	staticSamplers[1].Filter = D3D12_FILTER_MIN_MAG_MIP_POINT;// バイナリフィルタ
+	staticSamplers[1].AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;//0~1の範囲外をリピート
+	staticSamplers[1].AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+	staticSamplers[1].AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+	staticSamplers[1].ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER;// 比較しない
+	staticSamplers[1].MaxLOD = D3D12_FLOAT32_MAX;	// ありったけのMipMapを使う
+	staticSamplers[1].ShaderRegister = 1;// レジスタ番号0を使う
+	staticSamplers[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;// PixelShaderで使う
+
 	descriptionRootSignature.pStaticSamplers = staticSamplers;
 	descriptionRootSignature.NumStaticSamplers = _countof(staticSamplers);
-
 
 	// シリアライズしてバイナリにする
 	Microsoft::WRL::ComPtr<ID3DBlob> signatureBlob = nullptr;
@@ -234,18 +283,6 @@ void RenderCopyImage::CreateGraphicsPipeline(){
 		L"ps_6_0", dxCommon_->dxcUtils, dxCommon_->dxcCompiler, dxCommon_->includeHandler);
 	assert(pixelShaderBlob != nullptr);
 
-	// シェーダーリスト
-	/*
-	CopyImage	// 通常
-	Grayscale	// グレースケール
-	Vignette	// ビネット
-	BoxFilter	// 平滑化(ぼかし)
-	BoxFilter5x5
-	BoxFilter9x9
-	GaussianFilter // ガウスぼかし
-	*/
-
-
 
 	// PSOを生成する(P.38)
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsPipelineStateDesc{};
@@ -261,8 +298,7 @@ void RenderCopyImage::CreateGraphicsPipeline(){
 	graphicsPipelineStateDesc.NumRenderTargets = 1;
 	graphicsPipelineStateDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
 	// 利用するトポロジ(形状)のタイプ 三角
-	graphicsPipelineStateDesc.PrimitiveTopologyType =
-		D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+	graphicsPipelineStateDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
 	// どのように色を打ち込むかの設定(気にしなくていい)
 	graphicsPipelineStateDesc.SampleDesc.Count = 1;
 	graphicsPipelineStateDesc.SampleMask = D3D12_DEFAULT_SAMPLE_MASK;
@@ -275,6 +311,8 @@ void RenderCopyImage::CreateGraphicsPipeline(){
 	//  DepthStencilの設定
 	graphicsPipelineStateDesc.DepthStencilState = depthStencilDesc;
 	graphicsPipelineStateDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	// Frag
+	graphicsPipelineStateDesc.Flags = D3D12_PIPELINE_STATE_FLAG_NONE;
 
 	// 実際に生成
 	HRESULT hr = dxCommon_->device_->CreateGraphicsPipelineState(&graphicsPipelineStateDesc,
@@ -309,6 +347,10 @@ void RenderCopyImage::CreateVertexResource() {
 	fullScreenData->enableGaussianFilter = 0;
 	fullScreenData->kernelSize = 11;
 	fullScreenData->GaussianSigma = 2.0f;
+	fullScreenData->enableLuminanceOutline = 1;
+	fullScreenData->outlineMultipliier = 6.0f;
+	fullScreenData->enableDepthOutline = 1;
+	fullScreenData->projectionInverse = Inverse(MainCamera::GetInstance()->GetProjectionMatrix());
 }
 
 //

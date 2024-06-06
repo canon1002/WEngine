@@ -34,6 +34,9 @@ public: // -- public メンバ関数 -- //
 	// 空きIndexを取得する関数
 	int32_t GetEmptyIndex();
 
+	// Depth用のSRVを生成する
+	int32_t CreateDepthSRV(Microsoft::WRL::ComPtr<ID3D12Resource> depthStencilResource);
+
 private: // -- private メンバ関数 -- // 
 
 

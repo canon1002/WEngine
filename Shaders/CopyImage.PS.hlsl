@@ -11,6 +11,7 @@ struct FullScereenEffect
 {
     int32_t enableScreenColor;  // Graysceleやセピア調など、画面全体の色を変更する
     int32_t enableGrayScele;    // Graysceleの有無
+    
     float32_t4 screenColor;     // 上記の際に使うfloat[4](RGB+A型)
     int32_t enableVignetting;   // ビネット処理の有無(画面端を暗くする)
     float32_t vigneMultipliier; // ビネット処理の際に使用する乗数
@@ -20,19 +21,44 @@ struct FullScereenEffect
     int32_t enableGaussianFilter;    // ぼかしをガウスぼかしにするのか
     int32_t kernelSize; // カーネルの大きさ
     float32_t GaussianSigma;    // GaussianFilterの際に使う標準偏差
-    
+    int32_t enableLuminanceOutline; // 輝度で検出したアウトラインの有無
+    float32_t outlineMultipliier;   // アウトライン生成時の差を大きくするための数値  
+    int32_t enableDepthOutline; // 深度(Depth)で検出したアウトラインの有無
+    float32_t4x4 projectionInverse; // NDCをViewに変換するために使う逆行列    
 };
-
 ConstantBuffer<FullScereenEffect> gEffects: register(b0);
+
+// Depth読み込み用
+Texture2D<float32_t> gDepthTexture : register(t1);
+// PointSampling用
+SamplerState gSamplerPoint : register(s1);
 
 // hlslではπが定義されていないので、自分で定義しておく
 static const float32_t PI = 3.14159265f;
 
-float gauss(float x, float y, float sigma)
+// アウトライン用に縦横それぞれの畳み込み用の配列を作成しておく
+static const float32_t kPrewittHorizontalKernel[3][3] = {
+    { -1.0f / 6.0f, 0.0f, 1.0f / 6.0f },
+    { -1.0f / 6.0f, 0.0f, 1.0f / 6.0f },
+    { -1.0f / 6.0f, 0.0f, 1.0f / 6.0f },
+};
+static const float32_t kPrewittVerticalKernel[3][3] = {
+    { -1.0f / 6.0f, -1.0f / 6.0f, -1.0f / 6.0f },
+    { 0.0f,0.0f,0.0f },
+    { 1.0f / 6.0f, 1.0f / 6.0f, 1.0f / 6.0f },
+};
+
+// ガウス
+float32_t gauss(float x, float y, float sigma)
 {
     float exponent = -(x * x + y * y) * rcp(2.0f * sigma * sigma);
     float denominator = 2.0f * PI * sigma * sigma;
     return exp(exponent) * rcp(denominator);
+}
+
+// RGBを輝度に変換する
+float32_t Luminance(float32_t3 v){
+    return dot(v, float32_t3(0.2125f, 0.7154f, 0.0721f));
 }
 
 PixelShaderOutput main(VertexShaderOutput input)
@@ -117,6 +143,8 @@ PixelShaderOutput main(VertexShaderOutput input)
         gTexture.GetDimensions(width, height);
         float32_t2 uvStepSize = float32_t2(rcp(width), rcp(height));
     
+        float32_t weight = 0.0f;
+        
         float32_t kernelValue = rcp(gEffects.kernelSize * gEffects.kernelSize);
         
         // ループを回す
@@ -144,6 +172,85 @@ PixelShaderOutput main(VertexShaderOutput input)
         vignette = saturate(pow(vignette, gEffects.vigneIndex));
         // 係数として乗算
         output.color.rgb *= vignette;
+    }
+    // 輝度で検出したアウトラインの有無
+    if (gEffects.enableLuminanceOutline)
+    {
+        // uvStepSizeの算出
+        uint32_t width, height;
+        gTexture.GetDimensions(width, height);
+        float32_t2 uvStepSize = float32_t2(rcp(width), rcp(height));
+        
+        // 縦横それぞれの畳み込みの結果を格納する
+        float32_t2 difference = float32_t2(0.0f, 0.0f);
+
+        // 重み
+        float32_t weight = 0.0f;
+        
+        // 色を輝度に変換して、畳み込みを行っていく。微分Filter用のKernelになっているので、
+        // やること自体は今までの畳み込みと同じ
+        
+        // ループを回す
+        for (int32_t x = 0; x < 3; ++x)
+        {
+            for (int32_t y = 0; y < 3; ++y)
+            {
+                // 現在のtexcoordを算出
+                float32_t2 resultTexcoord = input.texcoord + float32_t2(x - (3 * rcp(2.0f)), y - (3 * rcp(2.0f))) * uvStepSize;
+                float32_t3 fetchColor = gTexture.Sample(gSampler, resultTexcoord).rgb;
+                float32_t luminance = Luminance(fetchColor);
+                difference.x += luminance * kPrewittHorizontalKernel[x][y];
+                difference.y += luminance * kPrewittVerticalKernel[x][y];
+
+                
+            }
+        }
+        
+        // 変化の長さをウェイトとして合成 // CBufferで持ってきた数値を掛けて差を大きくする
+        weight = saturate(length(difference) * gEffects.outlineMultipliier);
+        output.color.rgb = (1.0f - weight) * gTexture.Sample(gSampler, input.texcoord).rgb;
+        output.color.a = 1.0f;
+    }
+     // 深度(Depth)で検出したアウトラインの有無
+    if (gEffects.enableDepthOutline)
+    {
+        // uvStepSizeの算出
+        uint32_t width, height;
+        gTexture.GetDimensions(width, height);
+        float32_t2 uvStepSize = float32_t2(rcp(width), rcp(height));
+        
+        // 縦横それぞれの畳み込みの結果を格納する
+        float32_t2 difference = float32_t2(0.0f, 0.0f);
+
+        // 重み
+        float32_t weight = 0.0f;
+        
+        // 色を輝度に変換して、畳み込みを行っていく。微分Filter用のKernelになっているので、
+        // やること自体は今までの畳み込みと同じ
+        
+        // ループを回す
+        for (int32_t x = 0; x < 3; ++x)
+        {
+            for (int32_t y = 0; y < 3; ++y)
+            {
+                // texcoordを算出
+                float32_t2 resultTexcoord = input.texcoord + float32_t2(x - (3 * rcp(2.0f)), y - (3 * rcp(2.0f))) * uvStepSize;
+              
+                float32_t ndcDepth = gDepthTexture.Sample(gSamplerPoint, resultTexcoord);
+                // NDC -> View P^{-1}においてxとyはzwに影響を与えないため、わざわざ行列を渡さんでもいい
+                // gMaterial.projectionInverseはCBufferを使って渡す
+                float32_t4 viewSpace = mul(float32_t4(0.0f, 0.0f, ndcDepth, 1.0f), gEffects.projectionInverse);
+                float32_t viewZ = viewSpace.z * rcp(viewSpace.w);// 同次座標系からデカルト座標系に変換
+                difference.x += viewZ * kPrewittHorizontalKernel[x][y];
+                difference.y += viewZ * kPrewittVerticalKernel[x][y];
+                
+            }
+        }
+        
+        // 変化の長さをウェイトとして合成 
+        weight = saturate(length(difference));
+        output.color.rgb = (1.0f - weight) * gTexture.Sample(gSampler, input.texcoord).rgb;
+        output.color.a = 1.0f;
     }
         return output;
 }

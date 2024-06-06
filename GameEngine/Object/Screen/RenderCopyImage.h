@@ -12,15 +12,25 @@ struct FullScereenEffect {
 	int32_t enableScreenColor;  // 画面全体の色を変更する
 	int32_t enableGrayScele;	// Graysceleの有無
 	int32_t padding[2];
+
 	Vector4 screenColor;     // 上記の際に使うVector4(RGB+A型)
+
 	int32_t enableVignetting;   // ビネット処理の有無(画面端を暗くする)
 	float vigneMultipliier; // ビネット処理の際に使用する乗数
 	float vigneIndex;       // ビネット処理の際に使用する指数
 	int32_t enableSmooting;     // Smooting(ぼかし)の有無 (ぼかしの種類は以下の変数で決める)
+	
 	int32_t enableBoxFilter;    // ぼかしの際にBoxFillterを使用するのか
 	int32_t enableGaussianFilter;    // ぼかしをガウスぼかしにするのか
 	int32_t kernelSize;       // カーネルの大きさ
 	float GaussianSigma;    // GaussianFilterの際に使う標準偏差
+
+	int32_t enableLuminanceOutline; // 輝度で検出したアウトラインの有無
+	float outlineMultipliier;   // アウトライン生成時の差を大きくするための数値  
+	int32_t enableDepthOutline; // 深度(Depth)で検出したアウトラインの有無
+	int32_t padding02[1];
+
+	Matrix4x4 projectionInverse; // NDCをViewに変換するために使う逆行列    
 };
 
 struct EffectFlags {
@@ -29,6 +39,8 @@ struct EffectFlags {
 	bool isEnableSmooting;
 	bool isEnableBoxFilter;
 	bool isEnableGaussianFilter;
+	bool isEnebleLuminanceOutline;
+	bool isEnableDepthOutline;
 };
 
 class RenderCopyImage{
@@ -139,6 +151,8 @@ private:
 	EffectFlags effectFlags;
 	// テクスチャハンドル
 	int32_t textureHandle_;
-
+	// depStencilResourceの登録番号とリソース
+	Microsoft::WRL::ComPtr<ID3D12Resource> mDepthStencilResource;
+	int32_t mDepthStencilHandle;
 };
 

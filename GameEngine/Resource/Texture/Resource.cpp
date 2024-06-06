@@ -146,8 +146,8 @@ namespace Resource
 				&heapProperties,
 				D3D12_HEAP_FLAG_NONE,
 				&resourceDesc,
-				//D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
-				D3D12_RESOURCE_STATE_RENDER_TARGET,
+				D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+				//D3D12_RESOURCE_STATE_RENDER_TARGET,
 				&clearValue,
 				IID_PPV_ARGS(&resource));
 		assert(SUCCEEDED(hr));
