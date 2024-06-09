@@ -90,8 +90,12 @@ namespace Resource
 		resourceDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
 
 		// 利用するヒープの設定
-		D3D12_HEAP_PROPERTIES heapProperties{};
-		heapProperties.Type = D3D12_HEAP_TYPE_DEFAULT;// VRAM上につくる
+		D3D12_HEAP_PROPERTIES heapProps = {};
+		heapProps.Type = D3D12_HEAP_TYPE_DEFAULT;
+		heapProps.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
+		heapProps.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN;
+		heapProps.CreationNodeMask = 1;
+		heapProps.VisibleNodeMask = 1;
 
 		// 深度値のクリア設定
 		D3D12_CLEAR_VALUE depthClearValue{};
@@ -101,7 +105,7 @@ namespace Resource
 		// リソースを生成する
 		Microsoft::WRL::ComPtr <ID3D12Resource> resource = nullptr;
 		HRESULT hr = device->CreateCommittedResource(
-			&heapProperties,
+			&heapProps,
 			D3D12_HEAP_FLAG_NONE,
 			&resourceDesc,
 			D3D12_RESOURCE_STATE_DEPTH_WRITE,

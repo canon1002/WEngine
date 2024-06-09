@@ -96,7 +96,7 @@ void DirectXCommon::Initialize(WinAPI* win) {
 }
 
 void DirectXCommon::Finalize() {
-	CloseHandle(fenceEvent);
+	CloseHandle(mFenceEvent);
 }
 
 /// DXGIデバイス初期化
@@ -413,12 +413,12 @@ void DirectXCommon::InitializeViewPort() {
 void DirectXCommon::CreateFence() {
 
 	// 初期値0でFenceを作る
-	fenceValue = 0;
-	HRESULT hr = device_->CreateFence(fenceValue, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence));
+	mFenceValue = 0;
+	HRESULT hr = device_->CreateFence(mFenceValue, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&mFence));
 	assert(SUCCEEDED(hr));
 	// FenceのSignalを待つためのイベントを作成する
-	fenceEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
-	assert(fenceEvent != nullptr);
+	mFenceEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
+	assert(mFenceEvent != nullptr);
 
 }
 
@@ -552,20 +552,20 @@ void DirectXCommon::DrawEnd() {
 	swapChain->Present(1, 0);
 
 	// コマンドの実行完了を待つ
-	commandQueue->Signal(fence.Get(), ++fenceValue);
+	commandQueue->Signal(mFence.Get(), ++mFenceValue);
 
 	// FPS固定
 	UpdateFixFPS();
 
 	// Fenceの値が指定したsignal値にたどりついているか確認する
 	// GetCompletedValueの初期値はFence作成時に渡した初期値
-	if (fence->GetCompletedValue() != fenceValue)
+	if (mFence->GetCompletedValue() != mFenceValue)
 	{
 		HANDLE event = CreateEvent(nullptr, false, false, nullptr);
 		// 指定したSignalにたどり着いていないので、たどり着くまで待つようにイベントを設定する
-		fence->SetEventOnCompletion(fenceValue, fenceEvent);
+		mFence->SetEventOnCompletion(mFenceValue, mFenceEvent);
 		// イベントを待つ
-		WaitForSingleObject(fenceEvent, INFINITE);
+		WaitForSingleObject(mFenceEvent, INFINITE);
 		CloseHandle(event);
 	}
 
@@ -627,7 +627,7 @@ Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> DirectXCommon::CreateDescriptorHeap
 // FPS固定初期化
 void DirectXCommon::InitFixFPS() {
 	// 現在時間を記録
-	reference_ = std::chrono::steady_clock::now();
+	mReference = std::chrono::steady_clock::now();
 }
 
 // FPS固定更新
@@ -641,18 +641,18 @@ void DirectXCommon::UpdateFixFPS() {
 	std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
 	// 前回記録からの経過時間を取得
 	std::chrono::microseconds elapsed =
-		std::chrono::duration_cast<std::chrono::microseconds>(now - reference_);
+		std::chrono::duration_cast<std::chrono::microseconds>(now - mReference);
 
 	// 1/60秒 (よりわずかに短い時間) 立っていない場合
 	if (elapsed < kMinCheckTime) {
 		// 1/60	秒経過するまで微小なスリープを繰り返す
-		while (std::chrono::steady_clock::now() - reference_ < kMinTime)
+		while (std::chrono::steady_clock::now() - mReference < kMinTime)
 		{
 			// 1マイクロ秒スリープ
 			std::this_thread::sleep_for(std::chrono::microseconds(1));
 		}
 	}
 	// 現在時間を記録
-	reference_ = std::chrono::steady_clock::now();
+	mReference = std::chrono::steady_clock::now();
 
 }

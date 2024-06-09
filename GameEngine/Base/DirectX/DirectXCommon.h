@@ -180,12 +180,12 @@ public: // ** メンバ変数 ** //
 	Microsoft::WRL::ComPtr < IDxcIncludeHandler> includeHandler = nullptr;
 
 	// フェンス
-	Microsoft::WRL::ComPtr < ID3D12Fence> fence = nullptr;
-	uint64_t fenceValue = 0;
-	HANDLE fenceEvent;
+	Microsoft::WRL::ComPtr < ID3D12Fence> mFence = nullptr;
+	uint64_t mFenceValue = 0;
+	HANDLE mFenceEvent;
 
 	// 記録時間(FPS固定用)
-	std::chrono::steady_clock::time_point reference_;
+	std::chrono::steady_clock::time_point mReference;
 
 private:
 

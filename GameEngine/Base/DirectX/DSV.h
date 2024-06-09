@@ -22,6 +22,11 @@ private: // -- private メンバ関数 -- //
 	/// </summary>
 	void CreateDepthStencilView();
 
+	/// <summary>
+	/// 深度バッファ生成
+	/// </summary>
+	void CreateDepthBuffer();
+
 	// コピーコンストラクタと演算子オーバーロードの禁止
 	DSV(const DSV& obj) = delete;
 	DSV& operator=(const DSV& obj) = delete;
@@ -36,6 +41,9 @@ public: // -- public メンバ変数 -- //
 	Microsoft::WRL::ComPtr<ID3D12Resource> mDepthStencilTextureResource = nullptr;
 	//　ディスクリプタ
 	D3D12_CPU_DESCRIPTOR_HANDLE mDsvHandle;
+
+	// 深度バッファ
+	Microsoft::WRL::ComPtr<ID3D12Resource> mDepthBuffer;
 
 private: // -- private メンバ変数 -- //
 
