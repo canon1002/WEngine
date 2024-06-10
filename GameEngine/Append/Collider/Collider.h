@@ -35,27 +35,26 @@ public:
 	virtual Vector3 GetWorldPos() = 0;
 	
 	// 半径
-	inline void SetRadius(float radius) { m_radius = radius; }
-	inline float GetRadius()const  { return m_radius; }
+	inline void SetRadius(float radius) { mRadius = radius; }
+	inline float GetRadius()const  { return mRadius; }
 
 	// コライダー
-	virtual uint32_t GetCollisionAttribute() = 0;
+	inline uint32_t GetCollisionAttribute() { return mCollisionAttribute; }
 	// 
-	virtual void SetCollisionAttribute(uint32_t collisionAttribute) = 0;
+	inline void SetCollisionAttribute(uint32_t collisionAttribute) { mCollisionAttribute = collisionAttribute; }
 	// 
-	virtual uint32_t GetCollisionMask() = 0;
+	inline uint32_t GetCollisionMask() { return mCollisionMask; }
 	// 
-	virtual void SetCollisionMask(uint32_t collisionMask) = 0;
+	inline void SetCollisionMask(uint32_t collisionMask) { mCollisionMask = collisionMask; }
 
-private:
+protected:
 
-	//
-	uint32_t collisionAttribute_ = 0xffffffff;
-	// 
-	uint32_t collisionMask_ = 0xffffffff;
-	
-	// 
-	float m_radius = 1.0f;
+	// 衝突属性 自分
+	uint32_t mCollisionAttribute = 0xffffffff;
+	// 衝突属性 相手
+	uint32_t mCollisionMask = 0xffffffff;
+	// 半径
+	float mRadius = 1.0f;
 
 
 };

@@ -228,6 +228,8 @@
     <ClCompile Include="GameEngine\Append\Animation\Node\NodeAnimation.cpp" />
     <ClCompile Include="GameEngine\Append\Animation\Skinning\Joint.cpp" />
     <ClCompile Include="GameEngine\Object\Grid3D.cpp" />
+    <ClCompile Include="GameEngine\Append\Collider\ObjCollider.cpp" />
+    <ClCompile Include="GameEngine\GameBase\Player\Player.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameEngine\Base\WinApp\WinAPI.h">
@@ -383,6 +385,8 @@
     <ClInclude Include="GameEngine\Append\Animation\Node\NodeAnimation.h" />
     <ClInclude Include="GameEngine\Append\Animation\Skinning\Joint.h" />
     <ClInclude Include="GameEngine\Object\Grid3D.h" />
+    <ClInclude Include="GameEngine\Append\Collider\ObjCollider.h" />
+    <ClInclude Include="GameEngine\GameBase\Player\Player.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt">

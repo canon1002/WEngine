@@ -52,7 +52,7 @@ int SceneManager::Run() {
 	inputManager_->Initialize(winApp_);
 	audio_->Initialize();
 	mainCamera_->Initialize(winApp_);
-	//mainCamera_->worldTransform_->translation = { 0.0f,0.0f,-6.0f };
+	//mainCamera_->mWorldTransform->translation = { 0.0f,0.0f,-6.0f };
 	
 	objectAdmin_->Init(mDxCommon);
 

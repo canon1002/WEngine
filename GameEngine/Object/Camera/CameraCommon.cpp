@@ -4,12 +4,12 @@
 
 void CameraCommon::Initialize(WinAPI* winApp){
 	winApp_ = winApp;
-	worldTransform_ = new WorldTransform();
+	mWorldTransform = new WorldTransform();
 	verticalFOV_ = 0.45f;
 	aspectRatio_ = (float(winApp->kClientWidth) / float(winApp->kClientHeight));
 	nearClip_ = 0.01f;
 	farClip_ = 1000.0f;
-	viewMatrix_ = Inverse(worldTransform_->GetWorldMatrix());
+	viewMatrix_ = Inverse(mWorldTransform->GetWorldMatrix());
 	projectionMatrix_ = MakePerspectiveMatrix(verticalFOV_, aspectRatio_, nearClip_, farClip_);
 
 	viewprojectionMatrix_ = Multiply(viewMatrix_, projectionMatrix_);
@@ -18,7 +18,7 @@ void CameraCommon::Initialize(WinAPI* winApp){
 void CameraCommon::Update()
 {
 	// ビュー行列の更新
-	viewMatrix_ = Inverse(worldTransform_->GetWorldMatrix());
+	viewMatrix_ = Inverse(mWorldTransform->GetWorldMatrix());
 	// プロジェクション行列の更新
 	projectionMatrix_ = MakePerspectiveMatrix(verticalFOV_, aspectRatio_, nearClip_, farClip_);
 	// 上記２つをビュープロジェクション行列に合成

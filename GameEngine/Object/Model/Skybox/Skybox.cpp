@@ -12,8 +12,8 @@ void Skybox::Init(const std::string& directrypath, const std::string& filename) 
 
 	mDxCommon = DirectXCommon::GetInstance();
 	camera_ = MainCamera::GetInstance();
-	worldTransform_ = new WorldTransform();
-	worldTransform_->scale = { 512.0f,512.0f,512.0f };
+	mWorldTransform = new WorldTransform();
+	mWorldTransform->scale = { 512.0f,512.0f,512.0f };
 	textureHandle_ = mDxCommon->srv_->LoadTexture(directrypath + "/" + filename);
 	CreateTransformationRsource();
 	CreateVertexResource();
@@ -31,14 +31,14 @@ void Skybox::Update(){
 	// WVPにまとめる
 	wvpM = camera->GetViewProjectionMatrix();
 	// 矩形のワールド行列とWVP行列を掛け合わした行列を代入
-	wvpData->WVP = Multiply(worldTransform_->GetWorldMatrix(), wvpM);
-	wvpData->World = worldTransform_->GetWorldMatrix();
+	mWvpData->WVP = Multiply(mWorldTransform->GetWorldMatrix(), wvpM);
+	mWvpData->World = mWorldTransform->GetWorldMatrix();
 }
 
 void Skybox::Draw()
 {
 	//wvp用のCBufferの場所を指定
-	mDxCommon->commandList->SetGraphicsRootConstantBufferView(1, wvpResource->GetGPUVirtualAddress());
+	mDxCommon->commandList->SetGraphicsRootConstantBufferView(1, mWvpResource->GetGPUVirtualAddress());
 
 
 	mDxCommon->commandList->IASetVertexBuffers(0, 1, &vertexBufferView);
@@ -68,12 +68,12 @@ void Skybox::DrawGUI(const std::string& label) {
 	
 	ImGui::Begin(label.c_str());
 	if (ImGui::TreeNode("ワールドトランスフォーム")) {
-		ImGui::SliderAngle("RotateX", &worldTransform_->rotation.x);
-		ImGui::SliderAngle("RotateY", &worldTransform_->rotation.y);
-		ImGui::SliderAngle("RotateZ", &worldTransform_->rotation.z);
-		ImGui::DragFloat3("Scale", &worldTransform_->scale.x);
-		ImGui::DragFloat3("Rotate", &worldTransform_->rotation.x);
-		ImGui::DragFloat3("translate", &worldTransform_->translation.x);
+		ImGui::SliderAngle("RotateX", &mWorldTransform->rotation.x);
+		ImGui::SliderAngle("RotateY", &mWorldTransform->rotation.y);
+		ImGui::SliderAngle("RotateZ", &mWorldTransform->rotation.z);
+		ImGui::DragFloat3("Scale", &mWorldTransform->scale.x);
+		ImGui::DragFloat3("Rotate", &mWorldTransform->rotation.x);
+		ImGui::DragFloat3("translate", &mWorldTransform->translation.x);
 		ImGui::TreePop();// ノードを閉じる(この場合は "ワールドトランスフォーム" を閉じる)
 	}
 	ImGui::BeginChild(label.c_str());
@@ -115,14 +115,14 @@ void Skybox::PreDraw() {
 void Skybox::CreateTransformationRsource() {
 
 	// Transformation用のResourceを作る
-	wvpResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(TransformationMatrix));
+	mWvpResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(TransformationMatrix));
 	// データを書き込む
 	// 書き込むためのアドレスを取得
-	wvpResource->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
+	mWvpResource->Map(0, nullptr, reinterpret_cast<void**>(&mWvpData));
 	// 単位行列を書き込む
-	wvpData->WVP = MakeAffineMatrix(Vector3{ 1.0f,1.0f,1.0f }, 
+	mWvpData->WVP = MakeAffineMatrix(Vector3{ 1.0f,1.0f,1.0f }, 
 		Vector3{ 0.0f,0.0f,0.0f }, Vector3{ 0.0f,0.0f,0.0f });
-	wvpData->World = MakeIdentity();
+	mWvpData->World = MakeIdentity();
 }
 
 void Skybox::CreateVertexResource() {

@@ -8,33 +8,31 @@
 #include "GameEngine/Base/Debug/ImGuiManager.h"
 
 Object3d::Object3d() {
-	objname_ = "Object3D";
+	mObjname = "Object3D";
 }
 
 Object3d::Object3d(const std::string objname){
 	// 名称が引数に入っていれば命名しておく
-	objname_ = objname;
+	mObjname = objname;
 }
 
 Object3d::~Object3d() {
-	//delete wvpData;
+	//delete mWvpData;
 	//delete model_;
-	delete worldTransform_;
+	delete mWorldTransform;
 }
 
 
 void Object3d::Init(std::string name) {
 
 	// オブジェクトの名称を設定
-	objname_ = name;
+	mObjname = name;
 
 	mDxCommon = DirectXCommon::GetInstance();
-	modelManager_ = ModelManager::GetInstance();
-	worldTransform_ = new WorldTransform();
-	worldTransform_->Init();
+	mModelManager = ModelManager::GetInstance();
+	mWorldTransform = new WorldTransform();
+	mWorldTransform->Init();
 	CreateTransformationRsource();
-	// アニメーションデータを保有しているか
-	isHavingAnimation_ = false;
 }
 
 void Object3d::Update() {
@@ -45,26 +43,26 @@ void Object3d::Update() {
 	// WVPにまとめる
 	wvpM = camera->GetViewProjectionMatrix();
 	// 矩形のワールド行列とWVP行列を掛け合わした行列を代入
-	wvpData->WVP = Multiply(worldTransform_->GetWorldMatrix(), wvpM);
-	wvpData->World = worldTransform_->GetWorldMatrix();
-	wvpData->InverseTransposeWorld = Inverse(Transpose(worldTransform_->GetWorldMatrix()));
+	mWvpData->WVP = Multiply(mWorldTransform->GetWorldMatrix(), wvpM);
+	mWvpData->World = mWorldTransform->GetWorldMatrix();
+	mWvpData->InverseTransposeWorld = Inverse(Transpose(mWorldTransform->GetWorldMatrix()));
 
 	// 早期リターン
-	if (model_ == nullptr) {
+	if (mModel == nullptr) {
 		return;
 	}
 
 	// モデルデータに存在するNodeのLocalMatrixを適用する
-	/*wvpData->WVP = Multiply(model_->modelData.rootNode.localMatrix, Multiply(worldTransform_->GetWorldMatrix(), wvpM));
-	wvpData->World = Multiply(model_->modelData.rootNode.localMatrix, worldTransform_->GetWorldMatrix());
-	wvpData->InverseTransposeWorld = Transpose(Inverse(wvpData->World));*/
+	/*mWvpData->WVP = Multiply(model_->modelData.rootNode.localMatrix, Multiply(mWorldTransform->GetWorldMatrix(), wvpM));
+	mWvpData->World = Multiply(model_->modelData.rootNode.localMatrix, mWorldTransform->GetWorldMatrix());
+	mWvpData->InverseTransposeWorld = Transpose(Inverse(mWvpData->World));*/
 
-	model_->Update();
+	mModel->Update();
 
 	// -- アニメーションが設定されている場合 -- // 
 
-	if (model_->skinning_ != nullptr) {
-		model_->skinning_->Update();
+	if (mModel->skinning_ != nullptr) {
+		mModel->skinning_->Update();
 	}
 
 }
@@ -72,70 +70,70 @@ void Object3d::Update() {
 void Object3d::Draw() {
 
 	// 早期リターン
-	if (model_ == nullptr) {
+	if (mModel == nullptr) {
 		return;
 	}
 
 	//wvp用のCBufferの場所を指定
-	mDxCommon->commandList->SetGraphicsRootConstantBufferView(1, wvpResource->GetGPUVirtualAddress());
+	mDxCommon->commandList->SetGraphicsRootConstantBufferView(1, mWvpResource->GetGPUVirtualAddress());
 	// 頂点をセット
 
 	D3D12_VERTEX_BUFFER_VIEW vbvs[2]{};
-	vbvs[0] = model_->vertexBufferView;// VertexDataのVBV
-	if (model_->skinning_ != nullptr) {
+	vbvs[0] = mModel->vertexBufferView;// VertexDataのVBV
+	if (mModel->skinning_ != nullptr) {
 
-		vbvs[1] = model_->skinning_->GetSkinCluster().influenceBufferView_; // influenceのVBV
+		vbvs[1] = mModel->skinning_->GetSkinCluster().influenceBufferView_; // influenceのVBV
 
 		// 配列を渡す(開始スロット番号、使用スロット数、VBV配列へのポインタ)
 		mDxCommon->commandList->IASetVertexBuffers(0, 2, vbvs);
 		mDxCommon->commandList->SetGraphicsRootDescriptorTable(5,
-			model_->skinning_->GetSkinCluster().paletteSrvHandle_.second);
+			mModel->skinning_->GetSkinCluster().paletteSrvHandle_.second);
 	}
 	else {
 		// 配列を渡す(開始スロット番号、使用スロット数、VBV配列へのポインタ)
 		mDxCommon->commandList->IASetVertexBuffers(0, 1, &vbvs[0]);
 	}
 
-	model_->Draw();
+	mModel->Draw();
 
 }
 
 void Object3d::DrawGUI()
 {
 #ifdef _DEBUG
-	ImGui::Begin(objname_.c_str());
-	ImGui::SliderAngle("RotateX", &worldTransform_->rotation.x);
-	ImGui::SliderAngle("RotateY", &worldTransform_->rotation.y);
-	ImGui::SliderAngle("RotateZ", &worldTransform_->rotation.z);
-	ImGui::DragFloat3("Scale", &worldTransform_->scale.x, 0.05f, -10.0f, 10.0f);
-	ImGui::DragFloat3("Rotate", &worldTransform_->rotation.x, 0.01f, -6.28f, 6.28f);
-	ImGui::DragFloat3("translate", &worldTransform_->translation.x, 0.1f, -100.0f, 100.0f);
+	ImGui::Begin(mObjname.c_str());
+	ImGui::SliderAngle("RotateX", &mWorldTransform->rotation.x);
+	ImGui::SliderAngle("RotateY", &mWorldTransform->rotation.y);
+	ImGui::SliderAngle("RotateZ", &mWorldTransform->rotation.z);
+	ImGui::DragFloat3("Scale", &mWorldTransform->scale.x, 0.05f, -10.0f, 10.0f);
+	ImGui::DragFloat3("Rotate", &mWorldTransform->rotation.x, 0.01f, -6.28f, 6.28f);
+	ImGui::DragFloat3("translate", &mWorldTransform->translation.x, 0.1f, -100.0f, 100.0f);
 	if (ImGui::TreeNode("WVPData")) {
 		if (ImGui::TreeNode("WVP")) {
 			for (int i = 0; i < 4; ++i) {
 				// Floatの4x4行列内の数値を表示
-				ImGui::DragFloat4(("Row " + std::to_string(i)).c_str(), wvpData->WVP.m[i]);
+				ImGui::DragFloat4(("Row " + std::to_string(i)).c_str(), mWvpData->WVP.m[i]);
 			}
 			ImGui::TreePop();
 		}
 		if (ImGui::TreeNode("World")) {
 			for (int i = 0; i < 4; ++i) {
 				// Floatの4x4行列内の数値を表示
-				ImGui::DragFloat4(("Row " + std::to_string(i)).c_str(), wvpData->World.m[i]);
+				ImGui::DragFloat4(("Row " + std::to_string(i)).c_str(), mWvpData->World.m[i]);
 			}
 			ImGui::TreePop();
 		}
 		if (ImGui::TreeNode("InverseTransWorld")) {
 			for (int i = 0; i < 4; ++i) {
 				// Floatの4x4行列内の数値を表示
-				ImGui::DragFloat4(("Row " + std::to_string(i)).c_str(), wvpData->InverseTransposeWorld.m[i]);
+				ImGui::DragFloat4(("Row " + std::to_string(i)).c_str(), mWvpData->InverseTransposeWorld.m[i]);
 			}
 			ImGui::TreePop();
 		}
 		ImGui::TreePop();
 	}
-	if (model_ != nullptr) {
-		model_->DrawGUI("Model");
+	if (mModel != nullptr) {
+		mModel->DrawGUI("Model");
 	}
 	ImGui::End();
 
@@ -146,14 +144,14 @@ void Object3d::DrawGUI()
 void Object3d::CreateTransformationRsource() {
 
 	// Transformation用のResourceを作る
-	wvpResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(TransformationMatrix));
+	mWvpResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(TransformationMatrix));
 	// データを書き込む
 	// 書き込むためのアドレスを取得
-	wvpResource->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
+	mWvpResource->Map(0, nullptr, reinterpret_cast<void**>(&mWvpData));
 	// 単位行列を書き込む
-	wvpData->WVP = MakeAffineMatrix(Vector3(1.0f, 1.0f, 1.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f));
-	wvpData->World = MakeIdentity();
-	wvpData->InverseTransposeWorld = Inverse(MakeIdentity());
+	mWvpData->WVP = MakeAffineMatrix(Vector3(1.0f, 1.0f, 1.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f));
+	mWvpData->World = MakeIdentity();
+	mWvpData->InverseTransposeWorld = Inverse(MakeIdentity());
 
 }
 
@@ -161,6 +159,6 @@ void Object3d::SetModel(const std::string& filepath)
 {
 	// モデルを検索してセット
 	//modelManager_->LoadModel(filepath);
-	model_ = modelManager_->FindModel(filepath);
+	mModel = mModelManager->FindModel(filepath);
 
 }

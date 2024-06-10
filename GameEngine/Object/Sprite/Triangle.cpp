@@ -5,7 +5,7 @@ Triangle::Triangle() {}
 
 Triangle::~Triangle()
 {
-	delete wvpData;
+	delete mWvpData;
 	delete vertexData;
 	delete materialData;
 }
@@ -20,7 +20,7 @@ void Triangle::Initialize(DirectXCommon* dxCommon,CameraCommon* camera) {
 	CreateTransformationRsource();
 	CreateBufferView();
 
-	wvpResource->SetName(L"Tri");
+	mWvpResource->SetName(L"Tri");
 	materialResource->SetName(L"Tri");
 	vertexResource->SetName(L"Tri");
 	
@@ -42,7 +42,7 @@ void Triangle::Draw() {
 	// WVPにまとめる
 	wvpM = Multiply(viewM,pespectiveM);
 	// 三角形のワールド行列とWVP行列を掛け合わした行列を代入
-	*wvpData = Multiply(worldTransform_.GetWorldMatrix(), wvpM);
+	*mWvpData = Multiply(mWorldTransform.GetWorldMatrix(), wvpM);
 
 	mDxCommon->commandList->IASetVertexBuffers(0, 1, &vertexBufferView);
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけばいい
@@ -53,7 +53,7 @@ void Triangle::Draw() {
 	// マテリアルのCBufferの場所を指定
 	mDxCommon->commandList->SetGraphicsRootConstantBufferView(0, materialResource->GetGPUVirtualAddress());
 	//wvp用のCBufferの場所を指定
-	mDxCommon->commandList->SetGraphicsRootConstantBufferView(1, wvpResource->GetGPUVirtualAddress());
+	mDxCommon->commandList->SetGraphicsRootConstantBufferView(1, mWvpResource->GetGPUVirtualAddress());
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である
 	mDxCommon->commandList->SetGraphicsRootDescriptorTable(2, mDxCommon->srv_->textureData_.at(1).textureSrvHandleGPU);
 
@@ -84,12 +84,12 @@ void Triangle::CreateVertexResource() {
 void Triangle::CreateTransformationRsource() {
 
 	// Transformation用のResourceを作る
-	wvpResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(Matrix4x4));
+	mWvpResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(Matrix4x4));
 	// データを書き込む
 	// 書き込むためのアドレスを取得
-	wvpResource->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
+	mWvpResource->Map(0, nullptr, reinterpret_cast<void**>(&mWvpData));
 	// 単位行列を書き込む
-	*wvpData = camera_->GetViewProjectionMatrix();
+	*mWvpData = camera_->GetViewProjectionMatrix();
 
 }
 

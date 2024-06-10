@@ -70,10 +70,10 @@ public:
 	Matrix4x4 viewM, wvpM;
 
 	// Transformation用のResourceを作る
-	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12Resource> mWvpResource = nullptr;
 	// データを書き込む
-	TransformationMatrixForGrid3D* wvpData = nullptr;
-	WorldTransform* worldTransform_;
+	TransformationMatrixForGrid3D* mWvpData = nullptr;
+	WorldTransform* mWorldTransform;
 
 	// 頂点リソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource = nullptr;

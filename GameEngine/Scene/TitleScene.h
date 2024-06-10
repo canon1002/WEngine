@@ -9,6 +9,8 @@
 #include "GameEngine/Object/Model/Line.h"
 #include "GameEngine/Object/Grid3D.h"
 
+#include "GameEngine/GameBase/Player/Player.h"
+
 class TitleScene :
     public IScene
 {
@@ -29,9 +31,11 @@ private:
 
 	//std::shared_ptr<Object3d> testObject_;
 	std::unique_ptr<Object3d> testObject_;
-	std::unique_ptr<Object3d> AnimeObject_;
 	std::unique_ptr<Object3d> testObject02_;
 	std::unique_ptr<Skybox> skybox_;
 	std::unique_ptr<Grid3D> grid_;
+
+	std::unique_ptr<Player> mPlayer;
+	
 };
 

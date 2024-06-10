@@ -17,23 +17,23 @@ void MainCamera::Initialize(WinAPI* winApp){
 	winApp_ = winApp;
 	// 入力を取得する
 	mInput = InputManager::GetInstance();
-	worldTransform_ = new WorldTransform();
+	mWorldTransform = new WorldTransform();
 	verticalFOV_ = 0.45f;
 	aspectRatio_ = (float(winApp->kClientWidth) / float(winApp->kClientHeight));
 	nearClip_ = 0.01f;
 	farClip_ = 1000.0f;
-	viewMatrix_ = Inverse(worldTransform_->GetWorldMatrix());
+	viewMatrix_ = Inverse(mWorldTransform->GetWorldMatrix());
 	projectionMatrix_ = MakePerspectiveMatrix(verticalFOV_, aspectRatio_, nearClip_, farClip_);
 	viewprojectionMatrix_ = Multiply(viewMatrix_, projectionMatrix_);
 }
 void MainCamera::Update()
 {
 	ImGui::Begin("MainCamera");
-	ImGui::SliderAngle("RotateX", &worldTransform_->rotation.x);
-	ImGui::SliderAngle("RotateY", &worldTransform_->rotation.y);
-	ImGui::SliderAngle("RotateZ", &worldTransform_->rotation.z);
-	ImGui::DragFloat3("Rotate", &worldTransform_->rotation.x, 0.1f, -1000.0f, 1000.0f);
-	ImGui::DragFloat3("Transform", &worldTransform_->translation.x, 0.1f, -1000.0f, 1000.0f);
+	ImGui::SliderAngle("RotateX", &mWorldTransform->rotation.x);
+	ImGui::SliderAngle("RotateY", &mWorldTransform->rotation.y);
+	ImGui::SliderAngle("RotateZ", &mWorldTransform->rotation.z);
+	ImGui::DragFloat3("Rotate", &mWorldTransform->rotation.x, 0.1f, -1000.0f, 1000.0f);
+	ImGui::DragFloat3("Transform", &mWorldTransform->translation.x, 0.1f, -1000.0f, 1000.0f);
 	ImGui::DragFloat("NearClip", &nearClip_, 0.01f, 0.0f, 100.0f);
 	ImGui::DragFloat("FarClip", &farClip_, 0.1f, 1.0f, 1000.0f);
 	ImGui::End();
@@ -43,9 +43,9 @@ void MainCamera::Update()
 		// 追従対象からカメラまでの距離
 		Vector3 offset = { 0.0f,0.0f,-15.0f };
 		// オフセットをカメラの回転に合わせて回転させる
-		offset = TransformNomal(offset, worldTransform_->GetWorldMatrix());
+		offset = TransformNomal(offset, mWorldTransform->GetWorldMatrix());
 		// オフセット分ずらす
-		worldTransform_->translation = mTarget->translation + offset;
+		mWorldTransform->translation = mTarget->translation + offset;
 		
 		// スティック入力の量
 		const static int stickValue = 6000;
@@ -70,13 +70,13 @@ void MainCamera::Update()
 
 			// 回転の速度 // メンバ変数にしても良さそう
 			float rotateSpeed = 0.01f;
-			worldTransform_->rotation += direction * rotateSpeed;
+			mWorldTransform->rotation += direction * rotateSpeed;
 		}
 
 	}
 
 	// ビュー行列の更新
-	viewMatrix_ = Inverse(worldTransform_->GetWorldMatrix());
+	viewMatrix_ = Inverse(mWorldTransform->GetWorldMatrix());
 	// プロジェクション行列の更新
 	projectionMatrix_ = MakePerspectiveMatrix(verticalFOV_, aspectRatio_, nearClip_, farClip_);
 	// 上記２つをビュープロジェクション行列に合成

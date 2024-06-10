@@ -22,7 +22,7 @@ public:
 
 	const D3D12_VERTEX_BUFFER_VIEW& GetVBV() const { return vertexBufferView; }
 	auto* GetMaterial() { return  materialResourceSprite.Get(); }
-	auto* GetWVP() { return wvpResource.Get(); }
+	auto* GetWVP() { return mWvpResource.Get(); }
 	void SetTexture(std::string filepath){
 		textureHandle_ = mDxCommon->srv_->LoadTexture(filepath); 
 		AdjustTextureSize();
@@ -31,8 +31,8 @@ public:
 	void SetTextureSize(Vec2 size) { textureSize_ = size; }
 	void SetSpriteSize(Vec2 size) { spriteSize = size; }
 	void SetPos(Vec2 pos) {
-		worldTransform_.translation.x = pos.x;
-		worldTransform_.translation.y = pos.y;
+		mWorldTransform.translation.x = pos.x;
+		mWorldTransform.translation.y = pos.y;
 	}
 	void SetAnchorPoint(Vec2 point) { anchorPoint = point; }
 
@@ -47,7 +47,7 @@ private:
 	CameraCommon* camera_ = nullptr;
 	DirectXCommon* mDxCommon = nullptr;
 
-	WorldTransform worldTransform_;
+	WorldTransform mWorldTransform;
 	Matrix4x4 worldM, cameraM, viewM, projectM, wvpM;
 	Vector4 translate_;
 	// テクスチャハンドル
@@ -59,11 +59,11 @@ private:
 	// マテリアル用のResourceを作る
 	Microsoft::WRL::ComPtr<ID3D12Resource> materialResourceSprite = nullptr;
 	// Transformation用のResourceを作る
-	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12Resource> mWvpResource = nullptr;
 	// Index用リソースデータの生成
 	Microsoft::WRL::ComPtr<ID3D12Resource> indexResource = nullptr;
 	// データを書き込む
-	TransformationMatrix* wvpData = nullptr;
+	TransformationMatrix* mWvpData = nullptr;
 	// 頂点リソースにデータを書き込む
 	VertexData2D* vertexData = nullptr;
 	// 頂点バッファビューを作成する

@@ -6,7 +6,7 @@ Sphere::Sphere() {}
 
 Sphere::~Sphere()
 {
-	delete wvpData;
+	delete mWvpData;
 	delete vertexData;
 	delete materialData;
 	delete directionalLightDate;
@@ -27,9 +27,9 @@ void Sphere::Update() {
 
 
 	ImGui::Begin("Sphere");
-	ImGui::DragFloat3("scale", &worldTransform_.scale.x, 0.01f, 0.0f, 5.0f);
-	ImGui::DragFloat3("rotate", &worldTransform_.rotation.x, 0.01f, -2.0f, 2.0f);
-	ImGui::DragFloat3("tranlate", &worldTransform_.translation.x, 0.01f, -2.0f, 2.0f);
+	ImGui::DragFloat3("scale", &mWorldTransform.scale.x, 0.01f, 0.0f, 5.0f);
+	ImGui::DragFloat3("rotate", &mWorldTransform.rotation.x, 0.01f, -2.0f, 2.0f);
+	ImGui::DragFloat3("tranlate", &mWorldTransform.translation.x, 0.01f, -2.0f, 2.0f);
 	ImGui::Checkbox("useBallTex", &useBall);
 	ImGui::End();
 
@@ -47,8 +47,8 @@ void Sphere::Update() {
 	// WVPにまとめる
 	wvpM = Multiply(viewM, pespectiveM);
 	// 三角形のワールド行列とWVP行列を掛け合わした行列を代入
-	wvpData->WVP = Multiply(worldTransform_.GetWorldMatrix(), wvpM);
-	wvpData->World = worldTransform_.GetWorldMatrix();
+	mWvpData->WVP = Multiply(mWorldTransform.GetWorldMatrix(), wvpM);
+	mWvpData->World = mWorldTransform.GetWorldMatrix();
 }
 
 void Sphere::Draw() const {
@@ -62,7 +62,7 @@ void Sphere::Draw() const {
 	// マテリアルのCBufferの場所を指定
 	mDxCommon->commandList->SetGraphicsRootConstantBufferView(0, materialResource->GetGPUVirtualAddress());
 	//wvp用のCBufferの場所を指定
-	mDxCommon->commandList->SetGraphicsRootConstantBufferView(1, wvpResource->GetGPUVirtualAddress());
+	mDxCommon->commandList->SetGraphicsRootConstantBufferView(1, mWvpResource->GetGPUVirtualAddress());
 	mDxCommon->commandList->SetGraphicsRootConstantBufferView(3, directionalLightResource->GetGPUVirtualAddress());
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である
 	mDxCommon->commandList->SetGraphicsRootDescriptorTable(2, mDxCommon->srv_->textureData_.at(1).textureSrvHandleGPU);
@@ -104,13 +104,13 @@ void Sphere::CreateVertexResource() {
 void Sphere::CreateTransformationRsource() {
 
 	// Transformation用のResourceを作る
-	wvpResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(TransformationMatrix));
+	mWvpResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(TransformationMatrix));
 	// データを書き込む
 	// 書き込むためのアドレスを取得
-	wvpResource->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
+	mWvpResource->Map(0, nullptr, reinterpret_cast<void**>(&mWvpData));
 	// 単位行列を書き込む
-	wvpData->WVP = camera_->GetViewProjectionMatrix();
-	wvpData->World = MakeIdentity();
+	mWvpData->WVP = camera_->GetViewProjectionMatrix();
+	mWvpData->World = MakeIdentity();
 
 }
 

@@ -41,7 +41,7 @@ public:
 	/// </summary>
 	/// <param name="pos">座標</param>
 	void SetTransform(Vector3 pos) {
-		worldTransform_.translation = pos;
+		mWorldTransform.translation = pos;
 	}
 
 	/// <summary>
@@ -49,9 +49,9 @@ public:
 	/// </summary>
 	/// <param name="t">移動量</param>
 	void Transform(Vector4 t) {
-		worldTransform_.translation.x += t.x;
-		worldTransform_.translation.y += t.y;
-		worldTransform_.translation.z += t.z;
+		mWorldTransform.translation.x += t.x;
+		mWorldTransform.translation.y += t.y;
+		mWorldTransform.translation.z += t.z;
 	}
 
 	/// <summary>
@@ -59,9 +59,9 @@ public:
 	/// </summary>
 	/// <param name="r">回転量</param>
 	void Rotation(Vector3 r) {
-		worldTransform_.rotation.x += r.x;
-		worldTransform_.rotation.y += r.y;
-		worldTransform_.rotation.z += r.z;
+		mWorldTransform.rotation.x += r.x;
+		mWorldTransform.rotation.y += r.y;
+		mWorldTransform.rotation.z += r.z;
 	}
 
 	/// <summary>
@@ -79,7 +79,7 @@ public:
 
 	const D3D12_VERTEX_BUFFER_VIEW& GetVBV() const { return vertexBufferView; }
 	auto* GetMaterial() { return  materialResource.Get(); }
-	auto* GetWVP() { return wvpResource.Get(); }
+	auto* GetWVP() { return mWvpResource.Get(); }
 
 private:
 
@@ -87,7 +87,7 @@ private:
 	CameraCommon* camera_ = nullptr;
 	DirectXCommon* mDxCommon = nullptr;
 
-	WorldTransform worldTransform_;
+	WorldTransform mWorldTransform;
 	Matrix4x4 cameraM, viewM, projectM, pespectiveM, wvpM;
 	// 半径
 	float rad = 1.0f;
@@ -98,13 +98,13 @@ private:
 	// マテリアル用のResourceを作る
 	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource = nullptr;
 	// Transformation用のResourceを作る
-	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12Resource> mWvpResource = nullptr;
 	// Light用のリソースデータを作る
 	Microsoft::WRL::ComPtr<ID3D12Resource> directionalLightResource = nullptr;
 	// TransformationMatrixを10コ格納できるResourceを作成する
 	Microsoft::WRL::ComPtr<ID3D12Resource> instancingResource = nullptr;
 	// データを書き込む
-	ParticleForGPU* wvpData = nullptr;
+	ParticleForGPU* mWvpData = nullptr;
 	ParticleForGPU* instancingData_ = nullptr;
 	// 頂点リソースにデータを書き込む
 	VertexData* vertexData = nullptr;

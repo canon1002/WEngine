@@ -6,7 +6,7 @@ RenderCopyImage::RenderCopyImage() {}
 
 RenderCopyImage::~RenderCopyImage()
 {
-	//delete wvpData;
+	//delete mWvpData;
 	//delete vertexData;
 	//delete materialData;
 }
@@ -100,7 +100,7 @@ void RenderCopyImage::Update() {
 	// WVPにまとめる
 	wvpM = Multiply(viewM, pespectiveM);
 	// 三角形のワールド行列とWVP行列を掛け合わした行列を代入
-	*wvpData = Multiply(worldTransform_.GetWorldMatrix(), wvpM);
+	*mWvpData = Multiply(mWorldTransform.GetWorldMatrix(), wvpM);
 
 }
 
@@ -122,7 +122,7 @@ void RenderCopyImage::Draw() {
 	// マテリアルのCBufferの場所を指定
 	mDxCommon->commandList->SetGraphicsRootConstantBufferView(0, fullScreenResource->GetGPUVirtualAddress());
 	//wvp用のCBufferの場所を指定
-	mDxCommon->commandList->SetGraphicsRootConstantBufferView(1, wvpResource->GetGPUVirtualAddress());
+	mDxCommon->commandList->SetGraphicsRootConstantBufferView(1, mWvpResource->GetGPUVirtualAddress());
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である
 	mDxCommon->commandList->SetGraphicsRootDescriptorTable(2, mDxCommon->srv_->textureData_.at(textureHandle_).textureSrvHandleGPU);
 
@@ -315,12 +315,12 @@ void RenderCopyImage::CreateVertexResource() {
 void RenderCopyImage::CreateTransformationRsource() {
 
 	// Transformation用のResourceを作る
-	wvpResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(Matrix4x4));
+	mWvpResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(Matrix4x4));
 	// データを書き込む
 	// 書き込むためのアドレスを取得
-	wvpResource->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
+	mWvpResource->Map(0, nullptr, reinterpret_cast<void**>(&mWvpData));
 	// 単位行列を書き込む
-	*wvpData = camera_->GetViewProjectionMatrix();
+	*mWvpData = camera_->GetViewProjectionMatrix();
 
 }
 

@@ -14,8 +14,8 @@ void Grid3D::Init(){
 
 	mDxCommon = DirectXCommon::GetInstance();
 	
-	worldTransform_ = new WorldTransform();
-	worldTransform_->Init();
+	mWorldTransform = new WorldTransform();
+	mWorldTransform->Init();
 	CreateTransformationRsource();
 	CreateGraphicsPipeline();
 	CreateIndexResource();
@@ -26,24 +26,24 @@ void Grid3D::Update()
 #ifdef _DEBUG
 
 	ImGui::Begin("Grid3D");
-	ImGui::SliderAngle("RotateX", &worldTransform_->rotation.x);
-	ImGui::SliderAngle("RotateY", &worldTransform_->rotation.y);
-	ImGui::SliderAngle("RotateZ", &worldTransform_->rotation.z);
-	ImGui::DragFloat3("Scale", &worldTransform_->scale.x, 0.05f, -10.0f, 10.0f);
-	ImGui::DragFloat3("Rotate", &worldTransform_->rotation.x, 0.01f, -6.28f, 6.28f);
-	ImGui::DragFloat3("translate", &worldTransform_->translation.x, 0.1f, -100.0f, 100.0f);
+	ImGui::SliderAngle("RotateX", &mWorldTransform->rotation.x);
+	ImGui::SliderAngle("RotateY", &mWorldTransform->rotation.y);
+	ImGui::SliderAngle("RotateZ", &mWorldTransform->rotation.z);
+	ImGui::DragFloat3("Scale", &mWorldTransform->scale.x, 0.05f, -10.0f, 10.0f);
+	ImGui::DragFloat3("Rotate", &mWorldTransform->rotation.x, 0.01f, -6.28f, 6.28f);
+	ImGui::DragFloat3("translate", &mWorldTransform->translation.x, 0.1f, -100.0f, 100.0f);
 	if (ImGui::TreeNode("WVPData")) {
 		if (ImGui::TreeNode("WVP")) {
 			for (int i = 0; i < 4; ++i) {
 				// Floatの4x4行列内の数値を表示
-				ImGui::DragFloat4(("Row " + std::to_string(i)).c_str(), wvpData->WVP.m[i]);
+				ImGui::DragFloat4(("Row " + std::to_string(i)).c_str(), mWvpData->WVP.m[i]);
 			}
 			ImGui::TreePop();
 		}
 		if (ImGui::TreeNode("World")) {
 			for (int i = 0; i < 4; ++i) {
 				// Floatの4x4行列内の数値を表示
-				ImGui::DragFloat4(("Row " + std::to_string(i)).c_str(), wvpData->World.m[i]);
+				ImGui::DragFloat4(("Row " + std::to_string(i)).c_str(), mWvpData->World.m[i]);
 			}
 			ImGui::TreePop();
 		}
@@ -60,8 +60,8 @@ void Grid3D::Update()
 	// WVPにまとめる
 	wvpM = camera->GetViewProjectionMatrix();
 	// 矩形のワールド行列とWVP行列を掛け合わした行列を代入
-	wvpData->WVP = Multiply(worldTransform_->GetWorldMatrix(), wvpM);
-	wvpData->World = worldTransform_->GetWorldMatrix();
+	mWvpData->WVP = Multiply(mWorldTransform->GetWorldMatrix(), wvpM);
+	mWvpData->World = mWorldTransform->GetWorldMatrix();
 	
 }
 
@@ -76,7 +76,7 @@ void Grid3D::PreDraw() {
 void Grid3D::Draw()
 {
 	//wvp用のCBufferの場所を指定
-	mDxCommon->commandList->SetGraphicsRootConstantBufferView(0, wvpResource->GetGPUVirtualAddress());
+	mDxCommon->commandList->SetGraphicsRootConstantBufferView(0, mWvpResource->GetGPUVirtualAddress());
 	
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけばいい
 	mDxCommon->commandList->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_LINELIST);
@@ -92,13 +92,13 @@ void Grid3D::Draw()
 void Grid3D::CreateTransformationRsource(){
 
 	// Transformation用のResourceを作る
-	wvpResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(TransformationMatrixForGrid3D));
+	mWvpResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(TransformationMatrixForGrid3D));
 	// データを書き込む
 	// 書き込むためのアドレスを取得
-	wvpResource->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
+	mWvpResource->Map(0, nullptr, reinterpret_cast<void**>(&mWvpData));
 	// 単位行列を書き込む
-	wvpData->WVP = MakeAffineMatrix(Vector3(1.0f, 1.0f, 1.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f));
-	wvpData->World = MakeIdentity();
+	mWvpData->WVP = MakeAffineMatrix(Vector3(1.0f, 1.0f, 1.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f));
+	mWvpData->World = MakeIdentity();
 
 }
 

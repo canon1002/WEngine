@@ -7,7 +7,7 @@ Line::Line() {}
 
 Line::~Line()
 {
-	//delete wvpData;
+	//delete mWvpData;
 	//delete vertexData;
 	//delete materialData;
 }
@@ -36,7 +36,7 @@ void Line::Update() {
 	// WVPにまとめる
 	wvpM = camera->GetViewProjectionMatrix();
 	// 三角形のワールド行列とWVP行列を掛け合わした行列を代入
-	*wvpData = Multiply(worldTransform_.GetWorldMatrix(), wvpM);
+	*mWvpData = Multiply(mWorldTransform.GetWorldMatrix(), wvpM);
 	
 #ifdef _DEBUG
 	ImGui::Begin("Line");
@@ -67,7 +67,7 @@ void Line::Draw() {
 	// マテリアルのCBufferの場所を指定
 	mDxCommon->commandList->SetGraphicsRootConstantBufferView(0, materialResource->GetGPUVirtualAddress());
 	//wvp用のCBufferの場所を指定
-	mDxCommon->commandList->SetGraphicsRootConstantBufferView(1, wvpResource->GetGPUVirtualAddress());
+	mDxCommon->commandList->SetGraphicsRootConstantBufferView(1, mWvpResource->GetGPUVirtualAddress());
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である
 	mDxCommon->commandList->SetGraphicsRootDescriptorTable(2, mDxCommon->srv_->textureData_.at(textureHandle_).textureSrvHandleGPU);
 
@@ -238,12 +238,12 @@ void Line::CreateVertexResource() {
 void Line::CreateTransformationRsource() {
 
 	// Transformation用のResourceを作る
-	wvpResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(Matrix4x4));
+	mWvpResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(Matrix4x4));
 	// データを書き込む
 	// 書き込むためのアドレスを取得
-	wvpResource->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
+	mWvpResource->Map(0, nullptr, reinterpret_cast<void**>(&mWvpData));
 	// 単位行列を書き込む
-	*wvpData = MainCamera::GetInstance()->GetViewProjectionMatrix();
+	*mWvpData = MainCamera::GetInstance()->GetViewProjectionMatrix();
 
 }
 

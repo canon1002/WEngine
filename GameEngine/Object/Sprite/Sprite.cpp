@@ -20,9 +20,9 @@ void Sprite::Update() {
 #ifdef _DEBUG
 
 	/*ImGui::Begin("Sprite");
-	ImGui::DragFloat3("Scale", &worldTransform_.scale.x, 0.1f, 0.1f, 2.0f);
-	ImGui::DragFloat3("Rotate", &worldTransform_.rotate.x);
-	ImGui::DragFloat3("Tranlate", &worldTransform_.translate.x);
+	ImGui::DragFloat3("Scale", &mWorldTransform.scale.x, 0.1f, 0.1f, 2.0f);
+	ImGui::DragFloat3("Rotate", &mWorldTransform.rotate.x);
+	ImGui::DragFloat3("Tranlate", &mWorldTransform.translate.x);
 	ImGui::Spacing();
 	ImGui::DragFloat2("UVScale", &uvTransform_.scale.x, 0.01f, -10.0f, 10.0f);
 	ImGui::DragFloat2("UVTranlate", &uvTransform_.translate.x, 0.01f, -10.0f, 10.0f);
@@ -32,7 +32,7 @@ void Sprite::Update() {
 
 #endif // _DEBUG
 
-	//worldTransform_.rotate.z += 0.05f;
+	//mWorldTransform.rotate.z += 0.05f;
 
 	// カメラのワールド行列
 	cameraM = MakeAffineMatrix(Vector3(1.0f,1.0f,1.0f),Vector3(0.0f,0.0f,0.0f),Vector3(0.0f,0.0f,0.0f));
@@ -43,8 +43,8 @@ void Sprite::Update() {
 	// WVPにまとめる
 	wvpM = Multiply(viewM, projectM);
 	// 矩形のワールド行列とWVP行列を掛け合わした行列を代入
-	wvpData->WVP = Multiply(worldTransform_.GetWorldMatrix(), wvpM);
-	wvpData->World = worldTransform_.GetWorldMatrix();
+	mWvpData->WVP = Multiply(mWorldTransform.GetWorldMatrix(), wvpM);
+	mWvpData->World = mWorldTransform.GetWorldMatrix();
 
 	/// マテリアル・UVTransform
 	Matrix4x4 uvTransformMatrix = MakeAffineMatrix(
@@ -95,7 +95,7 @@ void Sprite::Draw() {
 	// マテリアルのCBufferの場所を指定
 	mDxCommon->commandList->SetGraphicsRootConstantBufferView(0, materialResourceSprite->GetGPUVirtualAddress());
 	//wvp用のCBufferの場所を指定
-	mDxCommon->commandList->SetGraphicsRootConstantBufferView(1, wvpResource->GetGPUVirtualAddress());
+	mDxCommon->commandList->SetGraphicsRootConstantBufferView(1, mWvpResource->GetGPUVirtualAddress());
 	
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である
 	mDxCommon->commandList->SetGraphicsRootDescriptorTable(2, mDxCommon->srv_->textureData_.at(textureHandle_).textureSrvHandleGPU);
@@ -139,13 +139,13 @@ void Sprite::CreateVertexResource() {
 void Sprite::CreateTransformationRsource() {
 
 	// Transformation用のResourceを作る
-	wvpResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(TransformationMatrix));
+	mWvpResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(TransformationMatrix));
 	// データを書き込む
 	// 書き込むためのアドレスを取得
-	wvpResource->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
+	mWvpResource->Map(0, nullptr, reinterpret_cast<void**>(&mWvpData));
 	// 単位行列を書き込む
-	wvpData->WVP = camera_->GetViewProjectionMatrix();
-	wvpData->World = MakeIdentity();
+	mWvpData->WVP = camera_->GetViewProjectionMatrix();
+	mWvpData->World = MakeIdentity();
 }
 
 //

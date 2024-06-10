@@ -52,10 +52,10 @@ public: // -- public メンバ変数 -- //
 
 	Matrix4x4 cameraM, viewM, projectM, pespectiveM, wvpM;
 	// Transformation用のResourceを作る
-	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12Resource> mWvpResource = nullptr;
 	// データを書き込む
-	TransformationMatrix* wvpData = nullptr;
-	WorldTransform* worldTransform_;
+	TransformationMatrix* mWvpData = nullptr;
+	WorldTransform* mWorldTransform;
 
 
 	// -- Model 部分 -- //

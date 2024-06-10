@@ -19,7 +19,7 @@ private:
 	CameraCommon* camera_ = nullptr;
 	DirectXCommon* mDxCommon = nullptr;
 
-	//WorldTransform* worldTransform_ = nullptr;
+	//WorldTransform* mWorldTransform = nullptr;
 	//WorldTransform* cameraWorldTransform_ = nullptr;
 	//Matrix4x4 cameraM, viewM, projectM, pespectiveM, wvpM;
 	//// 半径
@@ -31,11 +31,11 @@ private:
 	//// マテリアル用のResourceを作る
 	//Microsoft::WRL::ComPtr<ID3D12Resource> materialResource = nullptr;
 	//// Transformation用のResourceを作る
-	//Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource = nullptr;
+	//Microsoft::WRL::ComPtr<ID3D12Resource> mWvpResource = nullptr;
 	//// Light用のリソースデータを作る
 	//Microsoft::WRL::ComPtr<ID3D12Resource> directionalLightResource = nullptr;
 	//// データを書き込む
-	//TransformationMatrix* wvpData = nullptr;
+	//TransformationMatrix* mWvpData = nullptr;
 	//// 頂点リソースにデータを書き込む
 	//VertexData* vertexData = nullptr;
 	//// 頂点バッファビューを作成する

@@ -12,9 +12,9 @@ void VoxelParticle::Initialize(DirectXCommon* dxCommon,CameraCommon* camera) {
 
 	mDxCommon = dxCommon;
 	camera_=camera;
-	worldTransform_.scale = { 1.0f,1.0f,1.0f };
-	worldTransform_.rotation = { 0.0f,0.0f,0.0f };
-	worldTransform_.translation = { 0.0f,0.0f,0.0f };
+	mWorldTransform.scale = { 1.0f,1.0f,1.0f };
+	mWorldTransform.rotation = { 0.0f,0.0f,0.0f };
+	mWorldTransform.translation = { 0.0f,0.0f,0.0f };
 	
 	instanceCount_ = kNumMaxInstance;
 
@@ -24,7 +24,7 @@ void VoxelParticle::Initialize(DirectXCommon* dxCommon,CameraCommon* camera) {
 	CreateBufferView();
 	instancingHandle_ = mDxCommon->srv_->SetStructuredBuffer(kNumMaxInstance, instancingResource);
 
-	wvpResource->SetName(L"Voxel");
+	mWvpResource->SetName(L"Voxel");
 	materialResource->SetName(L"Voxel");
 	vertexResource->SetName(L"Voxel");
 	directionalLightResource->SetName(L"Voxel");
@@ -41,13 +41,13 @@ void VoxelParticle::Update() {
 	}
 
 	/*ImGui::Begin("Pirticle");
-	float treeScale = worldTransform_.scale.x;
+	float treeScale = mWorldTransform.scale.x;
 	ImGui::DragFloat("ObjScale", &treeScale, 0.05f);
-	worldTransform_.scale = { treeScale ,treeScale ,treeScale };
-	ImGui::SliderAngle("ObjRotateX", &worldTransform_.rotate.x);
-	ImGui::SliderAngle("ObjRotateY", &worldTransform_.rotate.y);
-	ImGui::SliderAngle("ObjRotateZ", &worldTransform_.rotate.z);
-	ImGui::DragFloat3("ObjTranlate", &worldTransform_.translate.x);
+	mWorldTransform.scale = { treeScale ,treeScale ,treeScale };
+	ImGui::SliderAngle("ObjRotateX", &mWorldTransform.rotate.x);
+	ImGui::SliderAngle("ObjRotateY", &mWorldTransform.rotate.y);
+	ImGui::SliderAngle("ObjRotateZ", &mWorldTransform.rotate.z);
+	ImGui::DragFloat3("ObjTranlate", &mWorldTransform.translate.x);
 	ImGui::Spacing();
 	ImGui::DragFloat2("UVScale", &uvTransform_.scale.x, 0.01f, -10.0f, 10.0f);
 	ImGui::DragFloat2("UVTranlate", &uvTransform_.translate.x, 0.01f, -10.0f, 10.0f);
@@ -62,8 +62,8 @@ void VoxelParticle::Update() {
 	// WVPにまとめる
 	wvpM = camera_->GetViewProjectionMatrix();
 	// 矩形のワールド行列とWVP行列を掛け合わした行列を代入
-	wvpData->WVP = Multiply(worldTransform_.GetWorldMatrix(), wvpM);
-	wvpData->World = worldTransform_.GetWorldMatrix();
+	mWvpData->WVP = Multiply(mWorldTransform.GetWorldMatrix(), wvpM);
+	mWvpData->World = mWorldTransform.GetWorldMatrix();
 
 	for (int32_t index = 0; index < kNumMaxInstance; ++index) {
 		if (particles[index].lifeTime <= particles[index].currentTime) {
@@ -78,12 +78,12 @@ void VoxelParticle::Update() {
 		float alpha = 1.0f - (particles[index].currentTime / particles[index].lifeTime);
 		
 		//　ワールド行列
-		worldTransform_.scale = particles[index].scale;
-		worldTransform_.rotation = particles[index].rotation;
-		worldTransform_.translation = particles[index].translation;
+		mWorldTransform.scale = particles[index].scale;
+		mWorldTransform.rotation = particles[index].rotation;
+		mWorldTransform.translation = particles[index].translation;
 
-		instancingData_[index].WVP = Multiply(worldTransform_.GetWorldMatrix(), wvpM);
-		instancingData_[index].World = worldTransform_.GetWorldMatrix();
+		instancingData_[index].WVP = Multiply(mWorldTransform.GetWorldMatrix(), wvpM);
+		instancingData_[index].World = mWorldTransform.GetWorldMatrix();
 		instancingData_[index].color = particles[index].color;
 		instancingData_[index].color.a = alpha;
 
@@ -185,14 +185,14 @@ void VoxelParticle::CreateTransformationRsource() {
 	}
 
 	// Transformation用のResourceを作る
-	wvpResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(ParticleForGPU));
+	mWvpResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(ParticleForGPU));
 	// データを書き込む
 	// 書き込むためのアドレスを取得
-	wvpResource->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
+	mWvpResource->Map(0, nullptr, reinterpret_cast<void**>(&mWvpData));
 	// 単位行列を書き込む
-	wvpData->WVP = camera_->GetViewProjectionMatrix();
-	wvpData->World = MakeIdentity();
-	wvpData->color = Color(1.0f, 1.0f, 1.0f, 1.0f);
+	mWvpData->WVP = camera_->GetViewProjectionMatrix();
+	mWvpData->World = MakeIdentity();
+	mWvpData->color = Color(1.0f, 1.0f, 1.0f, 1.0f);
 
 }
 

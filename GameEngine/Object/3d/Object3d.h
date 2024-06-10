@@ -5,6 +5,7 @@
 #include "GameEngine/Object/Light/DirectionalLight.h"
 #include "GameEngine/Object/Camera/CameraCommon.h"
 #include "GameEngine/Append/Animation/Skinning/Skinnig.h"
+#include "GameEngine/Append/Collider/ObjCollider.h"
 
 class Object3dCommon;
 class Model;
@@ -30,43 +31,34 @@ public: // メンバ関数
 
 	void CreateTransformationRsource();
 	void SetModel(const std::string& filepath);
-	void SetScale(Vector3 scale) { worldTransform_->scale = scale; }
-	void SetRotate(Vector3 rotate) { worldTransform_->rotation = rotate; }
-	void SetTranslate(Vector3 translate) { worldTransform_->translation = translate; }
-	void SetWorldTransform(WorldTransform* w) { worldTransform_ = w; }
-	const WorldTransform* GetWorldTransform()const  { return worldTransform_; }
+	void SetScale(Vector3 scale) { mWorldTransform->scale = scale; }
+	void SetRotate(Vector3 rotate) { mWorldTransform->rotation = rotate; }
+	void SetTranslate(Vector3 translate) { mWorldTransform->translation = translate; }
+	void SetWorldTransform(WorldTransform* w) { mWorldTransform = w; }
+	const WorldTransform* GetWorldTransform()const  { return mWorldTransform; }
 
-	Model* GetModel() { return model_; }
+	Model* GetModel() { return mModel; }
 
 public: // メンバ変数
 
 	// オブジェクトの名称
-	std::string objname_;
+	std::string mObjname;
 
 	// 外部ポインタ
 	DirectXCommon* mDxCommon = nullptr;
-	Object3dCommon* object3dCommon_ = nullptr;
-	Model* model_ = nullptr;
-	ModelManager* modelManager_;
+	Object3dCommon* mObject3dCommon = nullptr;
+	Model* mModel = nullptr;
+	ModelManager* mModelManager;
 	Matrix4x4 cameraM, viewM, projectM, pespectiveM, wvpM;
 
 	// Transformation用のResourceを作る
-	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12Resource> mWvpResource = nullptr;
 	// データを書き込む
-	TransformationMatrix* wvpData = nullptr;
-	WorldTransform* worldTransform_;
+	TransformationMatrix* mWvpData = nullptr;
+	WorldTransform* mWorldTransform;
 
-	// -- Animation 関連 -- //
+	// コライダー
+	ObjCollider* mCollider;
 
-	// アニメーションデータを保有しているか
-	bool isHavingAnimation_ = false;
-
-	// アニメーション再生中の時刻
-	float animationTime_ = 0.0f;
-
-	// スケルトン 仮置き
-	Skeleton skeleton_;
-	// スキンクラスター 仮置き
-	SkinCluster skinCluster_;
 };
 
