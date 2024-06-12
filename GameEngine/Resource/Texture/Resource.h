@@ -56,12 +56,13 @@ struct CameraForGPU
 };
 // マテリアルデータ
 struct MaterialData {
-	std::string textureFilePath;
+	std::string textureFilePath; 
 };
 
 
 struct Animation;
 struct ModelData;
+struct MultiModelData;
 struct JointWeightData;
 
 /// <summary>
@@ -110,6 +111,7 @@ namespace Resource // ここから関数の宣言と定義を行う
 	/// <param name="filename">読み込むモデルのファイル名</param>
 	/// <returns>読み込んだモデルデータを返す</returns>
 	ModelData LoadModelFile(const std::string& directoryPath, const std::string& filename);
+	MultiModelData LoadMultiModelFile(const std::string& directoryPath, const std::string& filename);
 
 
 

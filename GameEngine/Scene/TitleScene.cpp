@@ -20,6 +20,8 @@ void TitleScene::Init() {
 	ModelManager::GetInstance()->LoadModel("simpleSkin", "simpleSkin.gltf");
 	ModelManager::GetInstance()->LoadModel("human", "sneakWalk.gltf");
 	ModelManager::GetInstance()->LoadModel("human", "walk.gltf");
+	ModelManager::GetInstance()->LoadModel("Bow", "BowBody.gltf");
+	ModelManager::GetInstance()->LoadModel("Bow", "Bow.obj");
 
 	// SkyBox 読み込み
 	DirectXCommon::GetInstance()->srv_->LoadTexture("skybox/rostock_laage_airport_4k.dds");
@@ -37,9 +39,9 @@ void TitleScene::Init() {
 	
 	testObject02_ = std::make_unique<Object3d>("Test Plane");
 	testObject02_->Init("Test Plane");
-	testObject02_->SetModel("plane.gltf");
-	testObject02_->SetScale({ 5.0f,5.0f,1.0f });
-	testObject02_->SetRotate({ 4.75f,0.0f,0.0f });
+	testObject02_->SetModel("Bow.obj");
+	testObject02_->SetScale({ 1.0f,1.0f,1.0f });
+	testObject02_->SetRotate({ 0.0f,0.0f,0.0f });
 	testObject02_->SetTranslate({ 2.0f,0.0f,7.5f });
 
 	// skyboxの宣言

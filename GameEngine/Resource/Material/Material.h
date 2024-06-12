@@ -10,6 +10,14 @@ struct Material {
 	float shininess;
 };
 
+struct MultiMaterial {
+	Material materialItem;
+	std::string filepath;
+	Microsoft::WRL::ComPtr<ID3D12PipelineState> pipelineState;
+	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap;
+	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource;
+};
+
 struct Material2D {
 	Color color;
 	Matrix4x4 uvTransform;

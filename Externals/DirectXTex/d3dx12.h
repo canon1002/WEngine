@@ -2857,7 +2857,7 @@ struct D3DX12_MESH_SHADER_PIPELINE_STATE_DESC
 #if defined(NTDDI_WIN10_CU) || defined(USING_D3D12_AGILITY_SDK)
 // Use CD3DX12_PIPELINE_STATE_STREAM4 for D3D12_RASTERIZER_DESC1 when CheckFeatureSupport returns true for Options16::DynamicDepthBiasSupported is true
 // Use CD3DX12_PIPELINE_STATE_STREAM3 for D3D12_DEPTH_STENCIL_DESC2 when CheckFeatureSupport returns true for Options14::IndependentFrontAndBackStencilSupported is true
-// Use CD3DX12_PIPELINE_STATE_STREAM2 for OS Build 19041+ (where there is a new mesh shader pipeline).
+// Use CD3DX12_PIPELINE_STATE_STREAM2 for OS Build 19041+ (where there is a new meshes shader pipeline).
 // Use CD3DX12_PIPELINE_STATE_STREAM1 for OS Build 16299+ (where there is a new view instancing subobject).
 // Use CD3DX12_PIPELINE_STATE_STREAM for OS Build 15063+ support.
 struct CD3DX12_PIPELINE_STATE_STREAM4
@@ -2979,7 +2979,7 @@ struct CD3DX12_PIPELINE_STATE_STREAM4
 
 
 // Use CD3DX12_PIPELINE_STATE_STREAM3 for D3D12_DEPTH_STENCIL_DESC2 when CheckFeatureSupport returns true for Options14::IndependentFrontAndBackStencilSupported is true
-// Use CD3DX12_PIPELINE_STATE_STREAM2 for OS Build 19041+ (where there is a new mesh shader pipeline).
+// Use CD3DX12_PIPELINE_STATE_STREAM2 for OS Build 19041+ (where there is a new meshes shader pipeline).
 // Use CD3DX12_PIPELINE_STATE_STREAM1 for OS Build 16299+ (where there is a new view instancing subobject).
 // Use CD3DX12_PIPELINE_STATE_STREAM for OS Build 15063+ support.
 struct CD3DX12_PIPELINE_STATE_STREAM3
@@ -3100,7 +3100,7 @@ struct CD3DX12_PIPELINE_STATE_STREAM3
 };
 #endif // NTDDI_WIN10_CU || USING_D3D12_AGILITY_SDK
 
-// CD3DX12_PIPELINE_STATE_STREAM2 Works on OS Build 19041+ (where there is a new mesh shader pipeline).
+// CD3DX12_PIPELINE_STATE_STREAM2 Works on OS Build 19041+ (where there is a new meshes shader pipeline).
 // Use CD3DX12_PIPELINE_STATE_STREAM1 for OS Build 16299+ (where there is a new view instancing subobject).
 // Use CD3DX12_PIPELINE_STATE_STREAM for OS Build 15063+ support.
 struct CD3DX12_PIPELINE_STATE_STREAM2

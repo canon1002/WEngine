@@ -8,23 +8,32 @@
 // アニメーション
 #include "GameEngine/Append/Animation/Skinning/Skinnig.h"
 
-
-// モデルデータ
-struct ModelData {
-	std::map<std::string, JointWeightData>skinClusterData;
+// メッシュ
+struct Mesh {
 	std::vector<VertexData> vertices;
 	std::vector<uint32_t> indices;
-	MaterialData material;
-	Node rootNode;
+	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource;
+	Microsoft::WRL::ComPtr<ID3D12Resource> indexResource;
+	D3D12_VERTEX_BUFFER_VIEW vertexBufferView;
+	D3D12_INDEX_BUFFER_VIEW indexBufferView;
+	UINT materialIndex;
+	std::map<std::string, JointWeightData>skinClusterData;
 };
 
-class Model
+// モデルデータ(マルチメッシュ対応版)
+struct MultiModelData {
+	
+	Node rootNode;
+	std::vector<Mesh> meshes;
+	std::vector<MultiMaterial> materials;
+	
+};
+
+class MultiModel
 {
 public:
 
-	
-
-	~Model();
+	~MultiModel();
 	void Initialize(DirectXCommon* dxCommon,CameraCommon* camera, const std::string& directrypath, const std::string& filename);
 	void Initialize(const std::string& directrypath, const std::string& filename);
 	void Update();
@@ -49,31 +58,10 @@ public:
 	CameraCommon* camera_ = nullptr;
 
 	// モデルデータ
-	ModelData modelData;
-	// テクスチャハンドル
-	int32_t textureHandle_;
+	MultiModelData modelData;
 
-
-	// 頂点リソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource = nullptr;
-	// 頂点バッファビュー
-	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
-	// 頂点データ
-	VertexData* vertexData = nullptr;
 	
-	// Indexリソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> indexResource = nullptr;
-	// Indexバッファビュー
-	D3D12_INDEX_BUFFER_VIEW indexBufferView{};
-	
-
-	// マテリアル用のResourceを作る
-	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource = nullptr;
-
 public:
-
-	// マテリアルデータ
-	Material* materialData_ = nullptr;
 
 	// Light用のリソースデータを作る
 	Microsoft::WRL::ComPtr<ID3D12Resource> directionalLightResource = nullptr;

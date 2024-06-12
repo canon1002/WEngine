@@ -153,7 +153,8 @@ void VoxelParticle::CreateVertexResource() {
 
 	// VertexResourceを生成する(P.42)
 	// 実際に頂点リソースを作る
-	vertexResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(VertexData) * modelData_.vertices.size());
+	vertexResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(VertexData) *
+		modelData_.vertices.size());
 
 	// マテリアル用のResourceを作る
 	materialResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(Material));
@@ -211,7 +212,8 @@ void VoxelParticle::CreateBufferView() {
 	// 頂点リソースにデータを書き込む
 	vertexResource->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));// 書き込むためのアドレスを取得
 
-	std::memcpy(vertexData, modelData_.vertices.data(), sizeof(VertexData) * modelData_.vertices.size());
+	std::memcpy(vertexData, modelData_.vertices.data(),
+		sizeof(VertexData) * modelData_.vertices.size());
 }
 
 Particle VoxelParticle::MakeNewParticle(std::mt19937& randomEngine) {

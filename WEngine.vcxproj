@@ -117,6 +117,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="GameEngine\Object\Model\MultiModel.cpp" />
     <ClCompile Include="GameEngine\Object\Screen\RenderCopyImage.cpp" />
     <ClCompile Include="GameEngine\Base\DirectX\DSV.cpp" />
     <ClCompile Include="GameEngine\Base\Engine.cpp" />
@@ -178,6 +179,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="GameEngine\GameBase\Player\Player.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="GameEngine\Object\Model\MultiModel.h" />
     <ClInclude Include="GameEngine\Object\Screen\RenderCopyImage.h" />
     <ClInclude Include="GameEngine\Base\DirectX\DSV.h" />
     <ClInclude Include="GameEngine\Base\Engine.h" />
