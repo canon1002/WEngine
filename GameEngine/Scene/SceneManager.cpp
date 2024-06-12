@@ -108,7 +108,7 @@ int SceneManager::Run() {
 		mDxCommon->PostDrawForRenderTarget();
 
 		// 描画前処理
-		mDxCommon->DrawBegin();
+		mDxCommon->PreDraw();
 
 		copyImage_->PreDraw();
 		copyImage_->Draw();
@@ -119,7 +119,7 @@ int SceneManager::Run() {
 #endif // _DEBUG
 
 		// 描画後処理
-		mDxCommon->DrawEnd();
+		mDxCommon->PostDraw();
 
 		// ESCキーが押されたらループを抜ける
 		if (inputManager_->GetKey()->GetTriggerKey(DIK_ESCAPE)) {

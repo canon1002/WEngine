@@ -96,7 +96,7 @@ public: // ** メンバ関数 ** //
 	/// <summary>
 	/// 
 	/// </summary>
-	void DrawBegin();
+	void PreDraw();
 
 	void PreDrawForRenderTarget();
 	void PostDrawForRenderTarget();
@@ -106,7 +106,7 @@ public: // ** メンバ関数 ** //
 	/// <summary>
 	/// 
 	/// </summary>
-	void DrawEnd();
+	void PostDraw();
 
 
 

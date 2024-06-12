@@ -65,11 +65,11 @@ public: // -- public メンバ変数 -- //
 	int32_t textureHandle_;
 
 	// 実際に頂点リソースを作る
-	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12Resource> mVertexResource = nullptr;
 	// 頂点バッファビューを作成する
-	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
+	D3D12_VERTEX_BUFFER_VIEW mVertexBufferView{};
 	// 頂点リソースにデータを書き込む
-	VertexData* vertexData = nullptr;
+	VertexData* mVertexData = nullptr;
 
 	// Index用リソースデータ
 	Microsoft::WRL::ComPtr<ID3D12Resource> indexResource = nullptr;

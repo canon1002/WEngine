@@ -423,7 +423,7 @@ void DirectXCommon::CreateFence() {
 }
 
 /// 描画前処理
-void DirectXCommon::DrawBegin() {
+void DirectXCommon::PreDraw() {
 
 	// これから書き込むバックバッファのインデックスを取得
 	UINT backBufferIndex = swapChain->GetCurrentBackBufferIndex();
@@ -531,7 +531,7 @@ void DirectXCommon::DrawPariticleBegin()
 }
 
 /// 描画後処理
-void DirectXCommon::DrawEnd() {
+void DirectXCommon::PostDraw() {
 
 	// 画面に描く処理は全て終わり、画面に映すので状態を遷移
 	// 今回はRenderTargetからPresentにする

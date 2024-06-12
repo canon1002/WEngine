@@ -81,7 +81,7 @@ void Grid3D::Draw()
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけばいい
 	mDxCommon->commandList->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_LINELIST);
 	// 配列を渡す(開始スロット番号、使用スロット数、VBV配列へのポインタ)
-	mDxCommon->commandList->IASetVertexBuffers(0, 1, &vertexBufferView);
+	mDxCommon->commandList->IASetVertexBuffers(0, 1, &mVertexBufferView);
 	// IndexBufferViewをセット
 	mDxCommon->commandList->IASetIndexBuffer(&indexBufferView);
 	// インデックスを使用してドローコール
@@ -147,19 +147,19 @@ void Grid3D::CreateIndexResource(){
     }
 
     // 実際に頂点リソースを作る
-    vertexResource = mDxCommon->CreateBufferResource(
+    mVertexResource = mDxCommon->CreateBufferResource(
         mDxCommon->device_.Get(), sizeof(VertexDataForGrid) * mGridVertices.size());
 
     // リソースの先頭のアドレスから使う
-    vertexBufferView.BufferLocation = vertexResource->GetGPUVirtualAddress();
+    mVertexBufferView.BufferLocation = mVertexResource->GetGPUVirtualAddress();
     // 使用するリソースサイズは頂点分のサイズ
-    vertexBufferView.SizeInBytes = UINT(sizeof(VertexDataForGrid) * mGridVertices.size());
+    mVertexBufferView.SizeInBytes = UINT(sizeof(VertexDataForGrid) * mGridVertices.size());
     // 1頂点あたりのサイズ
-    vertexBufferView.StrideInBytes = sizeof(VertexDataForGrid);
+    mVertexBufferView.StrideInBytes = sizeof(VertexDataForGrid);
 
     // 頂点リソースにデータを書き込む
-    vertexResource->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));// 書き込むためのアドレスを取得
-    std::memcpy(vertexData, mGridVertices.data(), sizeof(VertexDataForGrid) * mGridVertices.size());
+    mVertexResource->Map(0, nullptr, reinterpret_cast<void**>(&mVertexData));// 書き込むためのアドレスを取得
+    std::memcpy(mVertexData, mGridVertices.data(), sizeof(VertexDataForGrid) * mGridVertices.size());
 
 
     // Indexは <uint32_t * Indexデータのサイズ> 分だけ確保する

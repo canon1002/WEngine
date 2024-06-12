@@ -6,7 +6,7 @@ Triangle::Triangle() {}
 Triangle::~Triangle()
 {
 	delete wvpData;
-	delete vertexData;
+	delete mVertexData;
 	delete materialData;
 }
 
@@ -22,7 +22,7 @@ void Triangle::Initialize(DirectXCommon* dxCommon,CameraCommon* camera) {
 
 	wvpResource->SetName(L"Tri");
 	materialResource->SetName(L"Tri");
-	vertexResource->SetName(L"Tri");
+	mVertexResource->SetName(L"Tri");
 	
 }
 
@@ -44,7 +44,7 @@ void Triangle::Draw() {
 	// 三角形のワールド行列とWVP行列を掛け合わした行列を代入
 	*wvpData = Multiply(worldTransform_.GetWorldMatrix(), wvpM);
 
-	mDxCommon->commandList->IASetVertexBuffers(0, 1, &vertexBufferView);
+	mDxCommon->commandList->IASetVertexBuffers(0, 1, &mVertexBufferView);
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけばいい
 	mDxCommon->commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
@@ -67,7 +67,7 @@ void Triangle::CreateVertexResource() {
 
 	// VertexResourceを生成する(P.42)
 	// 実際に頂点リソースを作る
-	vertexResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(VertexData) * 3);
+	mVertexResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(VertexData) * 3);
 
 	// マテリアル用のResourceを作る
 	materialResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(VertexData));
@@ -98,27 +98,27 @@ void Triangle::CreateBufferView() {
 
 	// VertexBufferViewを作成する(P.43)
 	// 頂点バッファビューを作成する
-	vertexBufferView = {};
+	mVertexBufferView = {};
 	// リソースの先頭のアドレスから使う
-	vertexBufferView.BufferLocation = vertexResource->GetGPUVirtualAddress();
+	mVertexBufferView.BufferLocation = mVertexResource->GetGPUVirtualAddress();
 	// 使用するリソースサイズは頂点3つ分のサイズ
-	vertexBufferView.SizeInBytes = sizeof(VertexData) * 3;
+	mVertexBufferView.SizeInBytes = sizeof(VertexData) * 3;
 	// 1頂点あたりのサイズ
-	vertexBufferView.StrideInBytes = sizeof(VertexData);
+	mVertexBufferView.StrideInBytes = sizeof(VertexData);
 
 	// Resourceにデータを書き込む
 
 	// 書き込むためのアドレスを取得
-	vertexResource->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
+	mVertexResource->Map(0, nullptr, reinterpret_cast<void**>(&mVertexData));
 	// 左下
-	vertexData[0].position = { -0.5f,-0.5f,0.0f,1.0f };
-	vertexData[0].texcoord = { 0.0f,1.0f };
+	mVertexData[0].position = { -0.5f,-0.5f,0.0f,1.0f };
+	mVertexData[0].texcoord = { 0.0f,1.0f };
 	// 上
-	vertexData[1].position = { 0.0f,0.5f,0.0f,1.0f };
-	vertexData[1].texcoord = { 0.5f,0.0f };
+	mVertexData[1].position = { 0.0f,0.5f,0.0f,1.0f };
+	mVertexData[1].texcoord = { 0.5f,0.0f };
 	// 右下
-	vertexData[2].position = { 0.5f,-0.5f,0.0f,1.0f };
-	vertexData[2].texcoord = { 1.0f,1.0f };
+	mVertexData[2].position = { 0.5f,-0.5f,0.0f,1.0f };
+	mVertexData[2].texcoord = { 1.0f,1.0f };
 
 }
 

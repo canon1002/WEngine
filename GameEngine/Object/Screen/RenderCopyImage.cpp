@@ -7,7 +7,7 @@ RenderCopyImage::RenderCopyImage() {}
 RenderCopyImage::~RenderCopyImage()
 {
 	//delete wvpData;
-	//delete vertexData;
+	//delete mVertexData;
 	//delete materialData;
 }
 
@@ -26,7 +26,7 @@ void RenderCopyImage::Initialize(DirectXCommon* dxCommon, CameraCommon* camera) 
 	textureHandle_ = mDxCommon->srv_->LoadTexture("uvChecker.png");
 	textureHandle_ = mDxCommon->srv_->CreateRenderTextureSRV(mDxCommon->rtv_->renderTextureResource.Get());
 
-	mDepthStencilHandle = mDxCommon->srv_->CreateDepthSRV(mDxCommon->dsv_->mDepthBuffer.Get());
+	mDepthStencilHandle = mDxCommon->srv_->CreateDepthSRV(mDxCommon->dsv_->mDepthStencilTextureResource.Get());
 }
 
 void RenderCopyImage::Update() {
@@ -139,7 +139,7 @@ void RenderCopyImage::PreDraw(){
 void RenderCopyImage::Draw() {
 
 	
-	mDxCommon->commandList->IASetVertexBuffers(0, 1, &vertexBufferView);
+	mDxCommon->commandList->IASetVertexBuffers(0, 1, &mVertexBufferView);
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけばいい
 	mDxCommon->commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
@@ -213,7 +213,7 @@ void RenderCopyImage::CreateRootSignature(){
 	staticSamplers[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;// PixelShaderで使う
 
 	// PointFillter用
-	staticSamplers[1].Filter = D3D12_FILTER_MIN_MAG_MIP_POINT;// バイナリフィルタ
+	staticSamplers[1].Filter = D3D12_FILTER_MIN_MAG_MIP_POINT;// ポイントフィルタ
 	staticSamplers[1].AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;//0~1の範囲外をリピート
 	staticSamplers[1].AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
 	staticSamplers[1].AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
@@ -327,7 +327,7 @@ void RenderCopyImage::CreateVertexResource() {
 
 	// VertexResourceを生成する(P.42)
 	// 実際に頂点リソースを作る
-	vertexResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(VertexData) * 3);
+	mVertexResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(VertexData) * 3);
 
 	// PostEffect用のResourceを作る
 	fullScreenData = nullptr;
@@ -371,26 +371,26 @@ void RenderCopyImage::CreateBufferView() {
 
 	// VertexBufferViewを作成する(P.43)
 	// 頂点バッファビューを作成する
-	vertexBufferView = {};
+	mVertexBufferView = {};
 	// リソースの先頭のアドレスから使う
-	vertexBufferView.BufferLocation = vertexResource->GetGPUVirtualAddress();
+	mVertexBufferView.BufferLocation = mVertexResource->GetGPUVirtualAddress();
 	// 使用するリソースサイズは頂点3つ分のサイズ
-	vertexBufferView.SizeInBytes = sizeof(VertexData) * 3;
+	mVertexBufferView.SizeInBytes = sizeof(VertexData) * 3;
 	// 1頂点あたりのサイズ
-	vertexBufferView.StrideInBytes = sizeof(VertexData);
+	mVertexBufferView.StrideInBytes = sizeof(VertexData);
 
 	// Resourceにデータを書き込む
 
 	// 書き込むためのアドレスを取得
-	vertexResource->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
+	mVertexResource->Map(0, nullptr, reinterpret_cast<void**>(&mVertexData));
 	// 左下
-	vertexData[0].position = { -0.5f,-0.5f,0.0f,1.0f };
-	vertexData[0].texcoord = { 0.0f,1.0f };
+	mVertexData[0].position = { -0.5f,-0.5f,0.0f,1.0f };
+	mVertexData[0].texcoord = { 0.0f,1.0f };
 	// 上
-	vertexData[1].position = { 0.0f,0.5f,0.0f,1.0f };
-	vertexData[1].texcoord = { 0.5f,0.0f };
+	mVertexData[1].position = { 0.0f,0.5f,0.0f,1.0f };
+	mVertexData[1].texcoord = { 0.5f,0.0f };
 	// 右下
-	vertexData[2].position = { 0.5f,-0.5f,0.0f,1.0f };
-	vertexData[2].texcoord = { 1.0f,1.0f };
+	mVertexData[2].position = { 0.5f,-0.5f,0.0f,1.0f };
+	mVertexData[2].texcoord = { 1.0f,1.0f };
 
 }

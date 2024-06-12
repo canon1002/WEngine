@@ -61,10 +61,10 @@ void Sprite::Update() {
 	float top = (0.0f - anchorPoint.y) * spriteSize.y;
 	float bottom = (1.0f - anchorPoint.y) * spriteSize.y;
 
-	vertexData[0].position = { left,top,0.0f,1.0f };
-	vertexData[1].position = { right,top,0.0f,1.0f };
-	vertexData[2].position = { left,bottom,0.0f,1.0f };
-	vertexData[3].position = { right,bottom,0.0f,1.0f };
+	mVertexData[0].position = { left,top,0.0f,1.0f };
+	mVertexData[1].position = { right,top,0.0f,1.0f };
+	mVertexData[2].position = { left,bottom,0.0f,1.0f };
+	mVertexData[3].position = { right,bottom,0.0f,1.0f };
 
 	
 
@@ -76,16 +76,16 @@ void Sprite::Update() {
 	float tex_bottom = (textureLeftTop_.y + textureSize_.y) / textureFullSize_.y;
 
 	// 頂点リソースにデータを書き込む
-	vertexData[0].texcoord = { tex_left,tex_top };
-	vertexData[1].texcoord = { tex_right,tex_top };
-	vertexData[2].texcoord = { tex_left,tex_bottom };
-	vertexData[3].texcoord = { tex_right,tex_bottom };
+	mVertexData[0].texcoord = { tex_left,tex_top };
+	mVertexData[1].texcoord = { tex_right,tex_top };
+	mVertexData[2].texcoord = { tex_left,tex_bottom };
+	mVertexData[3].texcoord = { tex_right,tex_bottom };
 
 }
 
 void Sprite::Draw() {
 
-	mDxCommon->commandList->IASetVertexBuffers(0, 1, &vertexBufferView);
+	mDxCommon->commandList->IASetVertexBuffers(0, 1, &mVertexBufferView);
 	mDxCommon->commandList->IASetIndexBuffer(&indexBufferView);
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけばいい
 	mDxCommon->commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -115,7 +115,7 @@ void Sprite::CreateVertexResource() {
 
 	// VertexResourceを生成する(P.42)
 	// 実際に頂点リソースを作る
-	vertexResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(VertexData2D) * 6);
+	mVertexResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(VertexData2D) * 6);
 
 	// マテリアル用のResourceを作る
 	materialResourceSprite = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(Material2D));
@@ -152,30 +152,30 @@ void Sprite::CreateTransformationRsource() {
 void Sprite::CreateBufferView() {
 
 	// リソースの先頭のアドレスから使う
-	vertexBufferView.BufferLocation = vertexResource->GetGPUVirtualAddress();
+	mVertexBufferView.BufferLocation = mVertexResource->GetGPUVirtualAddress();
 	// 使用するリソースサイズは頂点6つ分のサイズ
-	vertexBufferView.SizeInBytes = sizeof(VertexData2D) * 4;
+	mVertexBufferView.SizeInBytes = sizeof(VertexData2D) * 4;
 	// 1頂点あたりのサイズ
-	vertexBufferView.StrideInBytes = sizeof(VertexData2D);
+	mVertexBufferView.StrideInBytes = sizeof(VertexData2D);
 
 	// Resourceにデータを書き込む
 
 	// 書き込むためのアドレスを取得
-	vertexResource->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
+	mVertexResource->Map(0, nullptr, reinterpret_cast<void**>(&mVertexData));
 	
 	/// 1枚目
 	//　左上
-	vertexData[0].position = { 0.0f,0.0f,0.0f,1.0f };
-	vertexData[0].texcoord = { 0.0f,0.0f };
+	mVertexData[0].position = { 0.0f,0.0f,0.0f,1.0f };
+	mVertexData[0].texcoord = { 0.0f,0.0f };
 	//　右上
-	vertexData[1].position = { 360.0f,0.0f,0.0f,1.0f };
-	vertexData[1].texcoord = { 1.0f,0.0f };
+	mVertexData[1].position = { 360.0f,0.0f,0.0f,1.0f };
+	mVertexData[1].texcoord = { 1.0f,0.0f };
 	// 左下
-	vertexData[2].position = { 0.0f,360.0f,0.0f,1.0f };
-	vertexData[2].texcoord = { 0.0f,1.0f };
+	mVertexData[2].position = { 0.0f,360.0f,0.0f,1.0f };
+	mVertexData[2].texcoord = { 0.0f,1.0f };
 	// 右下
-	vertexData[3].position = { 360.0f,360.0f,0.0f,1.0f };
-	vertexData[3].texcoord = { 1.0f,1.0f };
+	mVertexData[3].position = { 360.0f,360.0f,0.0f,1.0f };
+	mVertexData[3].texcoord = { 1.0f,1.0f };
 
 	indexResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(uint32_t) * 6);
 	indexBufferView.BufferLocation = indexResource->GetGPUVirtualAddress();

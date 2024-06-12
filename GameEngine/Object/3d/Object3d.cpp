@@ -81,7 +81,7 @@ void Object3d::Draw() {
 	// 頂点をセット
 
 	D3D12_VERTEX_BUFFER_VIEW vbvs[2]{};
-	vbvs[0] = model_->vertexBufferView;// VertexDataのVBV
+	vbvs[0] = model_->mVertexBufferView;// VertexDataのVBV
 	if (model_->skinning_ != nullptr) {
 
 		vbvs[1] = model_->skinning_->GetSkinCluster().influenceBufferView_; // influenceのVBV
