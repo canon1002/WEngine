@@ -1,12 +1,12 @@
-#include "GrayScale.h"
+#include "LuminanceOutline.h"
 #include "GameEngine/Object/Camera/MainCamera.h"
 #include "GameEngine/Base/Debug/ImGuiManager.h"
 
-Grayscale::~Grayscale() {
-	delete mEnableEffect;
+LuminanceOutline::~LuminanceOutline() {
+	delete mItems;
 }
 
-void Grayscale::Init(){
+void LuminanceOutline::Init(){
 
 	mDxCommon = DirectXCommon::GetInstance();
 	mCamera = MainCamera::GetInstance();
@@ -22,33 +22,31 @@ void Grayscale::Init(){
 	textureHandle_ = mDxCommon->srv_->CreateRenderTextureSRV(mDxCommon->rtv_->renderTextureResource.Get());
 }
 
-void Grayscale::Update(){
+void LuminanceOutline::Update(){
 }
 
-void Grayscale::DrawGUI()
+void LuminanceOutline::DrawGUI()
 {
 #ifdef _DEBUG
-	if (ImGui::TreeNode("GrayScale")) {
-		static bool enable = mEnableEffect;
+	if (ImGui::TreeNode("LuminanceOutline")) {
+		static bool enable = mItems->enable;
 		ImGui::Checkbox("Enable", &enable);
-		if (enable == true) {
-			*mEnableEffect = 1;
-		}
-		else {
-			*mEnableEffect = 0;
-		}
+		if (enable == true) { mItems->enable = 1; }
+		else { mItems->enable = 0; }
+
+		ImGui::DragFloat("Multipliier", &mItems->multipliier, 0.01f, -256.0f, 256.0f);
 		ImGui::TreePop();
 	}
 #endif // _DEBUG
 }
 
-void Grayscale::PreDraw(){
+void LuminanceOutline::PreDraw(){
 	// RootSignatureを設定。PSOに設定しているが、別途設定が必要
 	mDxCommon->commandList->SetGraphicsRootSignature(mRootSignature.Get());
 	mDxCommon->commandList->SetPipelineState(mGraphicsPipelineState.Get());
 }
 
-void Grayscale::Draw(){
+void LuminanceOutline::Draw(){
 
 	// 頂点バッファビューをセット
 	mDxCommon->commandList->IASetVertexBuffers(0, 1, &mVertexBufferView);
@@ -62,23 +60,25 @@ void Grayscale::Draw(){
 	mDxCommon->commandList->DrawInstanced(3, 1, 0, 0);
 }
 
-void Grayscale::PostDraw(){
+void LuminanceOutline::PostDraw(){
 
 }
 
 
-void Grayscale::CreateEffectResource() {
+void LuminanceOutline::CreateEffectResource() {
 
 	// リソース生成
-	mEffectResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(int32_t));
+	mEffectResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(LuminanceOutline));
 	// 書き込むためのアドレスを取得
-	mEffectResource->Map(0, nullptr, reinterpret_cast<void**>(&mEnableEffect));
-	// エフェクトを有効にしておく
-	*mEnableEffect = 1;
+	mEffectResource->Map(0, nullptr, reinterpret_cast<void**>(&mItems));
+	// エフェクトを有効/無効
+	mItems->enable = 0;
+	// 倍率
+	mItems->multipliier = 6.0f;
 }
 
 
-void Grayscale::CreateGraphicsPipeline(){
+void LuminanceOutline::CreateGraphicsPipeline(){
 	// ルートシグネチャを生成する
 	CreateRootSignature();
 
@@ -112,7 +112,7 @@ void Grayscale::CreateGraphicsPipeline(){
 		L"vs_6_0", mDxCommon->dxcUtils, mDxCommon->dxcCompiler, mDxCommon->includeHandler);
 	assert(vertexShaderBlob != nullptr);
 
-	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob = WinAPI::CompileShader(L"Shaders/PostEffect/Grayscale.PS.hlsl",
+	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob = WinAPI::CompileShader(L"Shaders/PostEffect/LuminanceOutline.PS.hlsl",
 		L"ps_6_0", mDxCommon->dxcUtils, mDxCommon->dxcCompiler, mDxCommon->includeHandler);
 	assert(pixelShaderBlob != nullptr);
 
@@ -153,7 +153,7 @@ void Grayscale::CreateGraphicsPipeline(){
 	assert(SUCCEEDED(hr));
 }
 
-void Grayscale::CreateRootSignature(){
+void LuminanceOutline::CreateRootSignature(){
 	// 複数枚のSRVを扱えるように一括で設定をする
 	D3D12_DESCRIPTOR_RANGE descriptorRange[1] = {};
 	descriptorRange[0].BaseShaderRegister = 0;

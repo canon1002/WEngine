@@ -15,13 +15,15 @@ public:// -- 公開 メンバ関数 -- //
 	~IPostEffect();
 	virtual void Init() = 0;
 	virtual void Update() = 0;
+	virtual void DrawGUI() = 0;
 	virtual void PreDraw() = 0;
 	virtual void Draw() = 0;
 	virtual void PostDraw() = 0;
 	virtual void CreateGraphicsPipeline() = 0;
 	virtual void CreateRootSignature() = 0;
 	
-	// -- 共通部分 -- //
+
+protected: // -- 限定公開 メンバ関数 -- // // -- 以下 派生クラスの共通部分 -- //
 
 	// 頂点リソース生成
 	void CreateVertexResource();
@@ -33,6 +35,8 @@ protected: // -- 限定公開 メンバ変数 -- //
 	CameraCommon* mCamera = nullptr;
 	DirectXCommon* mDxCommon = nullptr;
 
+	// テクスチャハンドル //
+	int32_t textureHandle_;
 
 	// グラフィックパイプライン
 	Microsoft::WRL::ComPtr <ID3D12PipelineState> mGraphicsPipelineState;

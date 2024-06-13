@@ -1,17 +1,21 @@
 #pragma once
 #include "IPostEffect.h"
 
-
+// 調整項目
+struct LuminanceOutlineItems {
+	int32_t enable; // アウトラインの有無
+	float multipliier;   // アウトライン生成時の差を大きくするための数値  
+};
 
 /// <summary>
-/// グレースケール 
+/// 輝度検出アウトライン 
 /// </summary>
-class Grayscale : public IPostEffect {
+class LuminanceOutline : public IPostEffect {
 
 public:// -- 公開 メンバ関数 -- //
 
-	Grayscale() = default;
-	~Grayscale();
+	LuminanceOutline() = default;
+	~LuminanceOutline();
 	void Init()override;
 	void Update()override;
 	void DrawGUI()override;
@@ -32,7 +36,7 @@ protected: // -- 限定公開 メンバ変数 -- //
 
 	// ポストエフェクト用のリソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> mEffectResource;
-	// ポストエフェクトの有無を設定(シェーダーに渡すのでint型)
-	int32_t* mEnableEffect;
+	// 調整項目
+	LuminanceOutlineItems* mItems;
 };
 

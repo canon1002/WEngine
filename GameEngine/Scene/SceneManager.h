@@ -20,6 +20,7 @@
 #include "GameEngine/Object/ObjectAdministrator.h"
 
 #include "GameEngine/Object/Screen/RenderCopyImage.h"
+#include "GameEngine/Effect/PostEffect/PostEffectManager.h"
 
 class SceneManager
 {
@@ -64,6 +65,8 @@ public:
 	int Run();//　この関数でゲームループを呼び出す
 
 	std::unique_ptr<RenderCopyImage> copyImage_;
+	//	ポストエフェクト 管理者クラス
+	std::unique_ptr<PostEffectManager> mPostEffectManager;
 
 };
 

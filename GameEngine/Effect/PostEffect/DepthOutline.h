@@ -6,12 +6,12 @@
 /// <summary>
 /// グレースケール 
 /// </summary>
-class Grayscale : public IPostEffect {
+class DepthOutline : public IPostEffect {
 
 public:// -- 公開 メンバ関数 -- //
 
-	Grayscale() = default;
-	~Grayscale();
+	DepthOutline() = default;
+	~DepthOutline();
 	void Init()override;
 	void Update()override;
 	void DrawGUI()override;
@@ -32,7 +32,7 @@ protected: // -- 限定公開 メンバ変数 -- //
 
 	// ポストエフェクト用のリソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> mEffectResource;
-	// ポストエフェクトの有無を設定(シェーダーに渡すのでint型)
+	// 調整項目
 	int32_t* mEnableEffect;
 };
 

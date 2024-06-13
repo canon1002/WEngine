@@ -1,12 +1,12 @@
-#include "GrayScale.h"
+#include "GaussianFilter.h"
 #include "GameEngine/Object/Camera/MainCamera.h"
 #include "GameEngine/Base/Debug/ImGuiManager.h"
 
-Grayscale::~Grayscale() {
-	delete mEnableEffect;
+GaussianFilter::~GaussianFilter() {
+	delete mItems;
 }
 
-void Grayscale::Init(){
+void GaussianFilter::Init(){
 
 	mDxCommon = DirectXCommon::GetInstance();
 	mCamera = MainCamera::GetInstance();
@@ -22,33 +22,34 @@ void Grayscale::Init(){
 	textureHandle_ = mDxCommon->srv_->CreateRenderTextureSRV(mDxCommon->rtv_->renderTextureResource.Get());
 }
 
-void Grayscale::Update(){
+void GaussianFilter::Update(){
 }
 
-void Grayscale::DrawGUI()
+void GaussianFilter::DrawGUI()
 {
 #ifdef _DEBUG
-	if (ImGui::TreeNode("GrayScale")) {
-		static bool enable = mEnableEffect;
+	if (ImGui::TreeNode("GaussianFilter")) {
+		static bool enable = mItems->enable;
 		ImGui::Checkbox("Enable", &enable);
-		if (enable == true) {
-			*mEnableEffect = 1;
-		}
-		else {
-			*mEnableEffect = 0;
-		}
+		if (enable == true) { mItems->enable = 1; }
+		else { mItems->enable = 0; }
+		// カーネルサイズの変更
+		ImGui::DragInt("KernelSize", &mItems->kernelSize, 1.0f, 0, 9);
+		// 標準偏差の変更
+		ImGui::DragFloat("Sigma", &mItems->sigma, 0.01f, -256.0f, 256.0f);
+
 		ImGui::TreePop();
 	}
 #endif // _DEBUG
 }
 
-void Grayscale::PreDraw(){
+void GaussianFilter::PreDraw(){
 	// RootSignatureを設定。PSOに設定しているが、別途設定が必要
 	mDxCommon->commandList->SetGraphicsRootSignature(mRootSignature.Get());
 	mDxCommon->commandList->SetPipelineState(mGraphicsPipelineState.Get());
 }
 
-void Grayscale::Draw(){
+void GaussianFilter::Draw(){
 
 	// 頂点バッファビューをセット
 	mDxCommon->commandList->IASetVertexBuffers(0, 1, &mVertexBufferView);
@@ -62,23 +63,28 @@ void Grayscale::Draw(){
 	mDxCommon->commandList->DrawInstanced(3, 1, 0, 0);
 }
 
-void Grayscale::PostDraw(){
+void GaussianFilter::PostDraw(){
 
 }
 
 
-void Grayscale::CreateEffectResource() {
+void GaussianFilter::CreateEffectResource() {
 
 	// リソース生成
-	mEffectResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(int32_t));
+	mEffectResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(GaussianFilterItems));
 	// 書き込むためのアドレスを取得
-	mEffectResource->Map(0, nullptr, reinterpret_cast<void**>(&mEnableEffect));
-	// エフェクトを有効にしておく
-	*mEnableEffect = 1;
+	mEffectResource->Map(0, nullptr, reinterpret_cast<void**>(&mItems));
+	// エフェクトを有効/無効
+	mItems->enable = 0;
+	// カーネルサイズの初期値は3に指定
+	mItems->kernelSize = 3;
+	// 標準偏差の設定
+	mItems->sigma = 2.0f;
+
 }
 
 
-void Grayscale::CreateGraphicsPipeline(){
+void GaussianFilter::CreateGraphicsPipeline(){
 	// ルートシグネチャを生成する
 	CreateRootSignature();
 
@@ -112,7 +118,7 @@ void Grayscale::CreateGraphicsPipeline(){
 		L"vs_6_0", mDxCommon->dxcUtils, mDxCommon->dxcCompiler, mDxCommon->includeHandler);
 	assert(vertexShaderBlob != nullptr);
 
-	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob = WinAPI::CompileShader(L"Shaders/PostEffect/Grayscale.PS.hlsl",
+	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob = WinAPI::CompileShader(L"Shaders/PostEffect/GaussianFilter.PS.hlsl",
 		L"ps_6_0", mDxCommon->dxcUtils, mDxCommon->dxcCompiler, mDxCommon->includeHandler);
 	assert(pixelShaderBlob != nullptr);
 
@@ -153,7 +159,7 @@ void Grayscale::CreateGraphicsPipeline(){
 	assert(SUCCEEDED(hr));
 }
 
-void Grayscale::CreateRootSignature(){
+void GaussianFilter::CreateRootSignature(){
 	// 複数枚のSRVを扱えるように一括で設定をする
 	D3D12_DESCRIPTOR_RANGE descriptorRange[1] = {};
 	descriptorRange[0].BaseShaderRegister = 0;

@@ -230,6 +230,12 @@
     <ClCompile Include="GameEngine\Object\Grid3D.cpp" />
     <ClCompile Include="GameEngine\Effect\PostEffect\IPostEffect.cpp" />
     <ClCompile Include="GameEngine\Effect\PostEffect\GrayScale.cpp" />
+    <ClCompile Include="GameEngine\Effect\PostEffect\PostEffectManager.cpp" />
+    <ClCompile Include="GameEngine\Effect\PostEffect\BoxFilter.cpp" />
+    <ClCompile Include="GameEngine\Effect\PostEffect\DepthOutline.cpp" />
+    <ClCompile Include="GameEngine\Effect\PostEffect\GaussianFilter.cpp" />
+    <ClCompile Include="GameEngine\Effect\PostEffect\LuminanceOutline.cpp" />
+    <ClCompile Include="GameEngine\Effect\PostEffect\Vignette.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameEngine\Base\WinApp\WinAPI.h">
@@ -387,6 +393,12 @@
     <ClInclude Include="GameEngine\Object\Grid3D.h" />
     <ClInclude Include="GameEngine\Effect\PostEffect\IPostEffect.h" />
     <ClInclude Include="GameEngine\Effect\PostEffect\GrayScale.h" />
+    <ClInclude Include="GameEngine\Effect\PostEffect\PostEffectManager.h" />
+    <ClInclude Include="GameEngine\Effect\PostEffect\GaussianFilter.h" />
+    <ClInclude Include="GameEngine\Effect\PostEffect\BoxFilter.h" />
+    <ClInclude Include="GameEngine\Effect\PostEffect\DepthOutline.h" />
+    <ClInclude Include="GameEngine\Effect\PostEffect\LuminanceOutline.h" />
+    <ClInclude Include="GameEngine\Effect\PostEffect\Vignette.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt">
@@ -397,7 +409,6 @@
     <None Include="Shaders\Sprite2d.hlsli" />
     <None Include="Shaders\Particle.hlsli" />
     <None Include="Shaders\Object3d.hlsli" />
-    <None Include="Shaders\CopyImage.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\Sprite2d.PS.hlsl" />
@@ -406,8 +417,6 @@
     <FxCompile Include="Shaders\Object3d.VS.hlsl" />
     <FxCompile Include="Shaders\Particle.PS.hlsl" />
     <FxCompile Include="Shaders\Particle.VS.hlsl" />
-    <FxCompile Include="Shaders\CopyImage.PS.hlsl" />
-    <FxCompile Include="Shaders\CopyImage.VS.hlsl" />
     <FxCompile Include="Shaders\SkinningObject3d.VS.hlsl" />
   </ItemGroup>
 </Project>

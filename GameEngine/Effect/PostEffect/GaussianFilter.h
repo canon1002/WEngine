@@ -1,17 +1,23 @@
 #pragma once
 #include "IPostEffect.h"
 
+/// 調整項目 
+struct GaussianFilterItems {
+	int32_t enable; // Fillterの有無
+	int32_t kernelSize; // カーネルの大きさ
+	float sigma;    // 標準偏差
+};
 
 
 /// <summary>
-/// グレースケール 
+/// ガウスぼかし 
 /// </summary>
-class Grayscale : public IPostEffect {
+class GaussianFilter : public IPostEffect {
 
 public:// -- 公開 メンバ関数 -- //
 
-	Grayscale() = default;
-	~Grayscale();
+	GaussianFilter() = default;
+	~GaussianFilter();
 	void Init()override;
 	void Update()override;
 	void DrawGUI()override;
@@ -32,7 +38,7 @@ protected: // -- 限定公開 メンバ変数 -- //
 
 	// ポストエフェクト用のリソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> mEffectResource;
-	// ポストエフェクトの有無を設定(シェーダーに渡すのでint型)
-	int32_t* mEnableEffect;
+	// 調整項目
+	GaussianFilterItems* mItems;
 };
 
