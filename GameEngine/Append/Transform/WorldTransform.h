@@ -31,13 +31,13 @@ public: // -- public メンバ関数 -- //
 	/// <summary>
 	/// 親となるWorldTrandsfromを登録する
 	/// </summary>
-	void SetParent(WorldTransform* parent);
+	void SetParent(const Matrix4x4& parent);
 
 public: // -- public メンバ変数 -- //
 
 	// 拡大
 	Vector3 scale;
-	// 縮小
+	// 回転
 	Vector3 rotation;
 	// 平行移動
 	Vector3 translation;
@@ -45,7 +45,7 @@ public: // -- public メンバ変数 -- //
 private: // -- private メンバ変数 -- //
 
 	// 親となるワールド変換へのポインタ（読み取り専用）
-	WorldTransform* parent_ = nullptr;
+	const Matrix4x4* parent_ = nullptr;
 
 };
 

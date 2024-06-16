@@ -25,6 +25,13 @@ struct QuaternionTransform {
 	// 親となるワールド変換へのポインタ（読み取り専用）
 	QuaternionTransform* parent_ = nullptr;
 
+	void Init() {
+		scale_ = { 1.0f,1.0f,1.0f };
+		rotation_ = { 0.0f,0.0f,0.0f };
+		translation_ = { 0.0f,0.0f,0.0f };
+		parent_ = nullptr;
+	}
+
 	Matrix4x4 GetAffinMatrix() const {
 		Matrix4x4 result = MakeAffineMatrix(scale_, rotation_, translation_);
 
@@ -35,4 +42,14 @@ struct QuaternionTransform {
 		return result;
 	}
 
+	Vector3 GetWorldPosition() {
+		// ワールド行列を生成
+		Matrix4x4 worldMatrix = GetAffinMatrix();
+		return Vector3(worldMatrix.m[3][0], worldMatrix.m[3][1], worldMatrix.m[3][2]);
+	}
+
+	void SetParent(QuaternionTransform* parent) {
+		// 親のポインタをセット
+		parent_ = parent;
+	}
 };

@@ -122,7 +122,7 @@ void Player::Update(){
 
 	// オブジェクト更新
 	mObject->Update();
-
+	mObject->mModel->skinning_->GetSkeleton().joints;
 }
 
 void Player::Draw(){

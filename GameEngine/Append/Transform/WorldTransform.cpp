@@ -23,9 +23,7 @@ WorldTransform::WorldTransform(Vector3 t, Vector3 r, Vector3 s){
 }
 
 WorldTransform::~WorldTransform(){
-	if (parent_ != nullptr) {
-		delete parent_;
-	}
+
 }
 
 void WorldTransform::Init() {
@@ -40,7 +38,7 @@ Matrix4x4 WorldTransform::GetWorldMatrix() const{
 
 	// 親があれば親のワールド行列を掛ける
 	if (parent_ != nullptr) {
-		result = Multiply(result, parent_->GetWorldMatrix());
+		result = Multiply(result, *parent_);
 	}
 	return result;
 }
@@ -51,7 +49,8 @@ Vector3 WorldTransform::GetWorldPosition(){
 	return Vector3(worldMatrix.m[3][0], worldMatrix.m[3][1], worldMatrix.m[3][2]);
 }
 
-void WorldTransform::SetParent(WorldTransform* parent){
+void WorldTransform::SetParent(const Matrix4x4& parent){
 	// 親のポインタをセット
-	parent_ = parent;
+	parent_ = &parent;
 }
+

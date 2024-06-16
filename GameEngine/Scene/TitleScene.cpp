@@ -53,7 +53,6 @@ void TitleScene::Init() {
 
 	mPlayer = std::make_unique<Player>();
 	mPlayer->Init();
-	
 }
 
 void TitleScene::Update() {
@@ -70,15 +69,18 @@ void TitleScene::Update() {
 	testObject_->Update();
 	testObject_->DrawGUI();
 
-	// 平面
-	testObject02_->Update();
-	testObject02_->DrawGUI();
-
 	// スカイボックス
 	skybox_->Update();
 
 	mPlayer->Update();
 	mPlayer->DrawGUI();
+
+	// obj
+	testObject02_->mWorldTransform->SetParent(mPlayer->GetModel()->skinning_->GetSkeleton().joints.at(35).transform.GetAffinMatrix());
+	testObject02_->Update();
+	testObject02_->DrawGUI();
+
+
 }
 
 void TitleScene::Draw(){

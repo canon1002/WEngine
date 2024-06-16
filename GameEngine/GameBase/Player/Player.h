@@ -25,6 +25,8 @@ public: // -- 公開 メンバ関数 -- //
 	// デバッグUI表示
 	void DrawGUI();
 
+	Model* GetModel() { return mObject->mModel; }
+
 private: // -- 非公開 メンバ変数 -- //
 
 	// 入力を取得
