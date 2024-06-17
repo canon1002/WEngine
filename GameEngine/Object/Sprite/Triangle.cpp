@@ -6,8 +6,6 @@ Triangle::Triangle() {}
 Triangle::~Triangle()
 {
 	delete mWvpData;
-	delete vertexData;
-	delete wvpData;
 	delete mVertexData;
 	delete materialData;
 }

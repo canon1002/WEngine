@@ -27,8 +27,6 @@ void RenderCopyImage::Initialize(DirectXCommon* dxCommon, CameraCommon* camera) 
 
 	mTextureHandle = mDxCommon->srv_->LoadTexture("uvChecker.png");
 	mTextureHandle = mDxCommon->srv_->CreateRenderTextureSRV(mDxCommon->rtv_->renderTextureResource.Get());
-	textureHandle_ = mDxCommon->srv_->LoadTexture("uvChecker.png");
-	textureHandle_ = mDxCommon->srv_->CreateRenderTextureSRV(mDxCommon->rtv_->renderTextureResource.Get());
 
 	mDepthStencilHandle = mDxCommon->srv_->CreateDepthSRV(mDxCommon->dsv_->mDepthStencilTextureResource.Get());
 }
@@ -153,10 +151,9 @@ void RenderCopyImage::Draw() {
 	mDxCommon->commandList->SetGraphicsRootConstantBufferView(0, fullScreenResource->GetGPUVirtualAddress());
 	//wvp用のCBufferの場所を指定
 	mDxCommon->commandList->SetGraphicsRootConstantBufferView(1, mWvpResource->GetGPUVirtualAddress());
-	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である
+	// テクスチャをセット
 	mDxCommon->commandList->SetGraphicsRootDescriptorTable(2, mDxCommon->srv_->textureData_.at(mTextureHandle).textureSrvHandleGPU);
-	mDxCommon->commandList->SetGraphicsRootDescriptorTable(2, mDxCommon->srv_->textureData_.at(textureHandle_).textureSrvHandleGPU);
-	// Depth Textureを設定 // 
+	// DepthTextureを設定
 	mDxCommon->commandList->SetGraphicsRootDescriptorTable(3, mDxCommon->srv_->textureData_.at(mDepthStencilHandle).textureSrvHandleGPU);
 
 	// インスタンス生成
@@ -280,11 +277,11 @@ void RenderCopyImage::CreateGraphicsPipeline(){
 	rasterizerDesc.FillMode = D3D12_FILL_MODE_SOLID;
 
 	// Shaderをcompileする(P.37)
-	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob = WinAPI::CompileShader(L"Shaders/CopyImage.VS.hlsl",
+	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob = WinAPI::CompileShader(L"Shaders/PostEffect/CopyImage.VS.hlsl",
 		L"vs_6_0", mDxCommon->dxcUtils, mDxCommon->dxcCompiler, mDxCommon->includeHandler);
 	assert(vertexShaderBlob != nullptr);
 
-	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob = WinAPI::CompileShader(L"Shaders/CopyImage.PS.hlsl",
+	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob = WinAPI::CompileShader(L"Shaders/PostEffect/CopyImage.PS.hlsl",
 		L"ps_6_0", mDxCommon->dxcUtils, mDxCommon->dxcCompiler, mDxCommon->includeHandler);
 	assert(pixelShaderBlob != nullptr);
 

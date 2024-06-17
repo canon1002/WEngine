@@ -231,6 +231,14 @@
     <ClCompile Include="GameEngine\Append\Collider\ObjCollider.cpp" />
     <ClCompile Include="GameEngine\GameBase\Player\Player.cpp" />
     <ClCompile Include="GameEngine\Object\Model\MultiModel.cpp" />
+    <ClCompile Include="GameEngine\Effect\PostEffect\BoxFilter.cpp" />
+    <ClCompile Include="GameEngine\Effect\PostEffect\DepthOutline.cpp" />
+    <ClCompile Include="GameEngine\Effect\PostEffect\GaussianFilter.cpp" />
+    <ClCompile Include="GameEngine\Effect\PostEffect\GrayScale.cpp" />
+    <ClCompile Include="GameEngine\Effect\PostEffect\IPostEffect.cpp" />
+    <ClCompile Include="GameEngine\Effect\PostEffect\LuminanceOutline.cpp" />
+    <ClCompile Include="GameEngine\Effect\PostEffect\PostEffectManager.cpp" />
+    <ClCompile Include="GameEngine\Effect\PostEffect\Vignette.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameEngine\Base\WinApp\WinAPI.h">
@@ -389,6 +397,14 @@
     <ClInclude Include="GameEngine\Append\Collider\ObjCollider.h" />
     <ClInclude Include="GameEngine\GameBase\Player\Player.h" />
     <ClInclude Include="GameEngine\Object\Model\MultiModel.h" />
+    <ClInclude Include="GameEngine\Effect\PostEffect\Vignette.h" />
+    <ClInclude Include="GameEngine\Effect\PostEffect\BoxFilter.h" />
+    <ClInclude Include="GameEngine\Effect\PostEffect\DepthOutline.h" />
+    <ClInclude Include="GameEngine\Effect\PostEffect\GaussianFilter.h" />
+    <ClInclude Include="GameEngine\Effect\PostEffect\GrayScale.h" />
+    <ClInclude Include="GameEngine\Effect\PostEffect\IPostEffect.h" />
+    <ClInclude Include="GameEngine\Effect\PostEffect\LuminanceOutline.h" />
+    <ClInclude Include="GameEngine\Effect\PostEffect\PostEffectManager.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt">

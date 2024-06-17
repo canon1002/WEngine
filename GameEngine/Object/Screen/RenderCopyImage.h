@@ -150,7 +150,7 @@ private:
 	// フラグ(これはHLSL関連に送らない)
 	EffectFlags effectFlags;
 	// テクスチャハンドル
-	int32_t textureHandle_;
+	int32_t mTextureHandle;
 	// depStencilResourceの登録番号とリソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> mDepthStencilResource;
 	int32_t mDepthStencilHandle;

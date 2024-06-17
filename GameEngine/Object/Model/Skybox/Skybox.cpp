@@ -130,7 +130,7 @@ void Skybox::CreateVertexResource() {
 
 
 	// 実際に頂点リソースを作る
-	vertexResource = mDxCommon->CreateBufferResource(
+	mVertexResource = mDxCommon->CreateBufferResource(
 		mDxCommon->device_.Get(), sizeof(VertexData) * 24);
 
 	// リソースの先頭のアドレスから使う

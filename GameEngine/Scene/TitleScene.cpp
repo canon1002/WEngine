@@ -47,6 +47,9 @@ void TitleScene::Init() {
 	skybox_ = std::make_unique<Skybox>();
 	skybox_->Init("skybox","rostock_laage_airport_4k.dds");
 
+	mPlayer = std::make_unique<Player>();
+	mPlayer->Init();
+
 	// オブジェクトにCubeMapのテクスチャ番号を渡す
 	testObject_->GetModel()->SetCubeTexture(skybox_->mTextureHandle);
 	testObject02_->GetModel()->SetCubeTexture(skybox_->mTextureHandle);
@@ -55,8 +58,7 @@ void TitleScene::Init() {
 	// グリッド生成  // 左の引数はグリッドのセル数、右の引数はセルの大きさを入れる
 	grid_ = std::make_unique<Grid3D>(5,1.0f);
 
-	mPlayer = std::make_unique<Player>();
-	mPlayer->Init();
+	
 }
 
 void TitleScene::Update() {

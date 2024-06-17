@@ -117,6 +117,14 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="GameEngine\Effect\PostEffect\BoxFilter.cpp" />
+    <ClCompile Include="GameEngine\Effect\PostEffect\DepthOutline.cpp" />
+    <ClCompile Include="GameEngine\Effect\PostEffect\GaussianFilter.cpp" />
+    <ClCompile Include="GameEngine\Effect\PostEffect\GrayScale.cpp" />
+    <ClCompile Include="GameEngine\Effect\PostEffect\IPostEffect.cpp" />
+    <ClCompile Include="GameEngine\Effect\PostEffect\LuminanceOutline.cpp" />
+    <ClCompile Include="GameEngine\Effect\PostEffect\PostEffectManager.cpp" />
+    <ClCompile Include="GameEngine\Effect\PostEffect\Vignette.cpp" />
     <ClCompile Include="GameEngine\Object\Model\MultiModel.cpp" />
     <ClCompile Include="GameEngine\Object\Screen\RenderCopyImage.cpp" />
     <ClCompile Include="GameEngine\Base\DirectX\DSV.cpp" />
@@ -179,6 +187,14 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="GameEngine\GameBase\Player\Player.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="GameEngine\Effect\PostEffect\BoxFilter.h" />
+    <ClInclude Include="GameEngine\Effect\PostEffect\DepthOutline.h" />
+    <ClInclude Include="GameEngine\Effect\PostEffect\GaussianFilter.h" />
+    <ClInclude Include="GameEngine\Effect\PostEffect\GrayScale.h" />
+    <ClInclude Include="GameEngine\Effect\PostEffect\IPostEffect.h" />
+    <ClInclude Include="GameEngine\Effect\PostEffect\LuminanceOutline.h" />
+    <ClInclude Include="GameEngine\Effect\PostEffect\PostEffectManager.h" />
+    <ClInclude Include="GameEngine\Effect\PostEffect\Vignette.h" />
     <ClInclude Include="GameEngine\Object\Model\MultiModel.h" />
     <ClInclude Include="GameEngine\Object\Screen\RenderCopyImage.h" />
     <ClInclude Include="GameEngine\Base\DirectX\DSV.h" />

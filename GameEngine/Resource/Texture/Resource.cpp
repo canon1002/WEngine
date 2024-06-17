@@ -108,7 +108,7 @@ namespace Resource
 		Microsoft::WRL::ComPtr <ID3D12Resource> resource = nullptr;
 		HRESULT hr;
 		hr = device->CreateCommittedResource(
-			&heapProperties,
+			&heapProps,
 			D3D12_HEAP_FLAG_NONE,
 			&resourceDesc,
 			D3D12_RESOURCE_STATE_DEPTH_WRITE,

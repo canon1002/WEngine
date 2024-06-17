@@ -7,8 +7,6 @@ Sphere::Sphere() {}
 Sphere::~Sphere()
 {
 	delete mWvpData;
-	delete vertexData;
-	delete wvpData;
 	delete mVertexData;
 	delete materialData;
 	delete directionalLightDate;

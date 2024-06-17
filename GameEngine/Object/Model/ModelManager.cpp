@@ -126,10 +126,10 @@ void ModelManager::CreateRootSignature(){
 
 	// TextureCube用 PixelShaderのレジスタ(t1)で使う
 	D3D12_DESCRIPTOR_RANGE descriptorRangeTextureCube[1] = {};
-	descriptorRange[0].BaseShaderRegister = 1; // レジスタ番号は1を指定
-	descriptorRange[0].NumDescriptors = 1;
-	descriptorRange[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
-	descriptorRange[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;// offset自動計算
+	descriptorRangeTextureCube[0].BaseShaderRegister = 1; // レジスタ番号は1を指定
+	descriptorRangeTextureCube[0].NumDescriptors = 1;
+	descriptorRangeTextureCube[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+	descriptorRangeTextureCube[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;// offset自動計算
 
 
 	// RootParamenter作成
@@ -315,10 +315,10 @@ void ModelManager::CreateRootSignatureForSkinning() {
 
 	// TextureCube用 PixelShaderのレジスタ(t1)で使う
 	D3D12_DESCRIPTOR_RANGE descriptorRangeTextureCube[1] = {};
-	descriptorRange[0].BaseShaderRegister = 1; // レジスタ番号は1を指定
-	descriptorRange[0].NumDescriptors = 1;
-	descriptorRange[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
-	descriptorRange[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;// offset自動計算
+	descriptorRangeTextureCube[0].BaseShaderRegister = 1; // レジスタ番号は1を指定
+	descriptorRangeTextureCube[0].NumDescriptors = 1;
+	descriptorRangeTextureCube[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+	descriptorRangeTextureCube[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;// offset自動計算
 
 	// RootParamenter作成
 	D3D12_ROOT_PARAMETER rootParameters[7] = {};
@@ -343,6 +343,7 @@ void ModelManager::CreateRootSignatureForSkinning() {
 	rootParameters[4].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
 	rootParameters[4].Descriptor.ShaderRegister = 2;	// レジスタ番号2を使う
 
+	// CubeTexture
 	rootParameters[5].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE; // DescriptorTable
 	rootParameters[5].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
 	rootParameters[5].DescriptorTable.pDescriptorRanges = descriptorRangeTextureCube;
