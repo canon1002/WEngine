@@ -28,6 +28,8 @@ void MainCamera::Initialize(WinAPI* winApp){
 }
 void MainCamera::Update()
 {
+#ifdef _DEBUG
+
 	ImGui::Begin("MainCamera");
 	ImGui::SliderAngle("RotateX", &mWorldTransform->rotation.x);
 	ImGui::SliderAngle("RotateY", &mWorldTransform->rotation.y);
@@ -37,6 +39,8 @@ void MainCamera::Update()
 	ImGui::DragFloat("NearClip", &nearClip_, 0.01f, 0.0f, 100.0f);
 	ImGui::DragFloat("FarClip", &farClip_, 0.1f, 1.0f, 1000.0f);
 	ImGui::End();
+
+#endif // DEBUG
 
 	// フォロー対象がいれば追従を行う
 	if (mTarget) {

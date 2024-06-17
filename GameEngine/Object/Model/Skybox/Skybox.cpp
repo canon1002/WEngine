@@ -62,6 +62,7 @@ void Skybox::Draw()
 }
 
 void Skybox::DrawGUI(const std::string& label) {
+	label;
 #ifdef _DEBUG
 
 	/// デバック情報を描画
@@ -399,7 +400,8 @@ void Skybox::CreateGraphicsPipeline() {
 	graphicsPipelineStateDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
 
 	// 実際に生成
-	HRESULT hr = mDxCommon->device_->CreateGraphicsPipelineState(&graphicsPipelineStateDesc,
+	HRESULT hr;
+	hr = mDxCommon->device_->CreateGraphicsPipelineState(&graphicsPipelineStateDesc,
 		IID_PPV_ARGS(&graphicsPipelineState));
 	assert(SUCCEEDED(hr));
 

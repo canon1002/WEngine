@@ -58,27 +58,26 @@ void TitleScene::Init() {
 void TitleScene::Update() {
 #ifdef _DEBUG
 	skybox_->DrawGUI("Skybox");
+	testObject_->DrawGUI();
+	mPlayer->DrawGUI();
+	testObject02_->DrawGUI();
 #endif // _DEBUG
 	MainCamera::GetInstance()->Update();
-
 
 	// グリッド
 	grid_->Update();
 
 	// SkinningModel 忍び歩き
 	testObject_->Update();
-	testObject_->DrawGUI();
 
 	// スカイボックス
 	skybox_->Update();
 
 	mPlayer->Update();
-	mPlayer->DrawGUI();
 
 	// obj
 	testObject02_->mWorldTransform->SetParent(mPlayer->GetModel()->skinning_->GetSkeleton().joints.at(35).transform.GetAffinMatrix());
 	testObject02_->Update();
-	testObject02_->DrawGUI();
 
 
 }

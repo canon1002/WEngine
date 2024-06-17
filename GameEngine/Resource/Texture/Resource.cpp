@@ -62,7 +62,8 @@ namespace Resource
 
 		// リソースを生成する
 		Microsoft::WRL::ComPtr <ID3D12Resource> resource = nullptr;
-		HRESULT hr = device->CreateCommittedResource(
+		HRESULT hr;
+		hr = device->CreateCommittedResource(
 			&heapProperties,// Heapの設定
 			D3D12_HEAP_FLAG_NONE,// Heapの特殊な設定(特になし)
 			&resourceDesc, // Resourceの設定
@@ -101,7 +102,8 @@ namespace Resource
 
 		// リソースを生成する
 		Microsoft::WRL::ComPtr <ID3D12Resource> resource = nullptr;
-		HRESULT hr = device->CreateCommittedResource(
+		HRESULT hr;
+		hr = device->CreateCommittedResource(
 			&heapProperties,
 			D3D12_HEAP_FLAG_NONE,
 			&resourceDesc,
@@ -142,7 +144,8 @@ namespace Resource
 
 		// Resourceの生成
 		Microsoft::WRL::ComPtr <ID3D12Resource> resource = nullptr;
-		HRESULT hr =
+		HRESULT hr;
+		hr =
 			device->CreateCommittedResource(
 				&heapProperties,
 				D3D12_HEAP_FLAG_NONE,
@@ -168,7 +171,8 @@ namespace Resource
 			// MipMapを指定して各Imageを取得
 			const DirectX::Image* img = mipImages.GetImage(mipLevel, 0, 0);
 			// Textureに転送
-			HRESULT hr = texture->WriteToSubresource(
+			HRESULT hr;
+			hr = texture->WriteToSubresource(
 				UINT(mipLevel),
 				nullptr,
 				img->pixels,

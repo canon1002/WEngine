@@ -69,8 +69,8 @@ void MultiModel::Draw()
 }
 
 void MultiModel::DrawGUI(const std::string& label){
-#ifdef _DEBUG
 	label;
+#ifdef _DEBUG
 #endif // _DEBUG
 }
 

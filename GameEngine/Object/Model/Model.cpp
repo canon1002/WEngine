@@ -65,6 +65,7 @@ void Model::Draw()
 }
 
 void Model::DrawGUI(const std::string& label){
+	label;
 #ifdef _DEBUG
 
 	/// デバック情報を描画
