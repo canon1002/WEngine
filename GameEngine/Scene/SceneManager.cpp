@@ -26,6 +26,10 @@ void SceneManager::Init(WinAPI* winApp, DirectXCommon* dxCommon){
 	// オブジェクト管理者クラス
 	objectAdmin_ = ObjectAdministrator::GetInstance();
 
+	// ポストエフェクト管理者クラス
+	mPostEffectManager = std::make_unique<PostEffectManager>();
+	mPostEffectManager->Init();
+
 	// 各シーンの配列
 	sceneArr_[TITLE] = std::make_unique<TitleScene>();
 	sceneArr_[STAGE] = std::make_unique<GameScene>();
@@ -86,6 +90,7 @@ int SceneManager::Run() {
 
 		/// 更新処理
 		sceneArr_[currentSceneNo_]->Update();
+		mPostEffectManager->Update();
 		copyImage_->Update();
 		#ifdef _DEBUG
 		// 開発用UIの表示
@@ -108,10 +113,9 @@ int SceneManager::Run() {
 		mDxCommon->PostDrawForRenderTarget();
 
 		// 描画前処理
-		mDxCommon->DrawBegin();
+		mDxCommon->PreDraw();
 
-		copyImage_->PreDraw();
-		copyImage_->Draw();
+		mPostEffectManager->Draw();
 
 #ifdef _DEBUG
 		// ImGuiの描画
@@ -119,7 +123,7 @@ int SceneManager::Run() {
 #endif // _DEBUG
 
 		// 描画後処理
-		mDxCommon->DrawEnd();
+		mDxCommon->PostDraw();
 
 		// ESCキーが押されたらループを抜ける
 		if (inputManager_->GetKey()->GetTriggerKey(DIK_ESCAPE)) {

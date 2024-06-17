@@ -148,3 +148,34 @@ int32_t SRV::GetEmptyIndex(){
 
 	return textureId_;
 }
+
+int32_t SRV::CreateDepthSRV(Microsoft::WRL::ComPtr<ID3D12Resource> depthStencilResource)
+{
+	// 新たにデータを登録する
+	TextureData textureData;
+	++textureId_;
+
+	// SRVの設定をおこなう
+	D3D12_SHADER_RESOURCE_VIEW_DESC depthTextureSrvDesc{};
+	depthTextureSrvDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
+	depthTextureSrvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	depthTextureSrvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+	depthTextureSrvDesc.Texture2D.MipLevels = 1;
+
+	// デスクリプタサイズを取得
+	const uint32_t descriptorSizeSRV = mDxCommon->device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	//const uint32_t descriptorSizeRTV = dx_->device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+	//const uint32_t descriptorSizeDSV = dx_->device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
+
+	textureData.textureSrvHandleCPU = mDxCommon->GetCPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, textureId_);
+	textureData.textureSrvHandleGPU = mDxCommon->GetGPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, textureId_);
+
+	textureData_.insert(std::make_pair(textureId_, textureData));
+
+	// SRVの生成
+	mDxCommon->device_->CreateShaderResourceView(depthStencilResource.Get(),
+		&depthTextureSrvDesc, textureData.textureSrvHandleCPU);
+
+	return textureId_;
+}
+

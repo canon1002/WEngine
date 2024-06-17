@@ -71,7 +71,7 @@ void ObjectAdministrator::Draw(){
 		//wvp用のCBufferの場所を指定
 		mDxCommon->commandList->SetGraphicsRootConstantBufferView(1, object->mWvpResource->GetGPUVirtualAddress());
 		// VBV
-		mDxCommon->commandList->IASetVertexBuffers(0, 1, &object->GetModel()->vertexBufferView);
+		mDxCommon->commandList->IASetVertexBuffers(0, 1, &object->GetModel()->mVertexBufferView);
 		// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけばいい
 		mDxCommon->commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		// マテリアルのCBufferの場所を指定

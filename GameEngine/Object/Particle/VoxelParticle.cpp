@@ -26,7 +26,7 @@ void VoxelParticle::Initialize(DirectXCommon* dxCommon,CameraCommon* camera) {
 
 	mWvpResource->SetName(L"Voxel");
 	materialResource->SetName(L"Voxel");
-	vertexResource->SetName(L"Voxel");
+	mVertexResource->SetName(L"Voxel");
 	directionalLightResource->SetName(L"Voxel");
 	instancingResource->SetName(L"Voxel");
 }
@@ -102,7 +102,7 @@ void VoxelParticle::Update() {
 
 void VoxelParticle::Draw() {
 
-	mDxCommon->commandList->IASetVertexBuffers(0, 1, &vertexBufferView);
+	mDxCommon->commandList->IASetVertexBuffers(0, 1, &mVertexBufferView);
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけばいい
 	mDxCommon->commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
@@ -153,8 +153,7 @@ void VoxelParticle::CreateVertexResource() {
 
 	// VertexResourceを生成する(P.42)
 	// 実際に頂点リソースを作る
-	vertexResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(VertexData) *
-		modelData_.vertices.size());
+	mVertexResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(VertexData) * modelData_.vertices.size());
 
 	// マテリアル用のResourceを作る
 	materialResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(Material));
@@ -201,19 +200,18 @@ void VoxelParticle::CreateTransformationRsource() {
 void VoxelParticle::CreateBufferView() {
 
 	// リソースの先頭のアドレスから使う
-	vertexBufferView.BufferLocation = vertexResource->GetGPUVirtualAddress();
+	mVertexBufferView.BufferLocation = mVertexResource->GetGPUVirtualAddress();
 	// 使用するリソースサイズは頂点分のサイズ
-	vertexBufferView.SizeInBytes = UINT(sizeof(VertexData) * modelData_.vertices.size());
+	mVertexBufferView.SizeInBytes = UINT(sizeof(VertexData) * modelData_.vertices.size());
 	// 1頂点あたりのサイズ
-	vertexBufferView.StrideInBytes = sizeof(VertexData);
+	mVertexBufferView.StrideInBytes = sizeof(VertexData);
 
 	// Resourceにデータを書き込む
 
 	// 頂点リソースにデータを書き込む
-	vertexResource->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));// 書き込むためのアドレスを取得
+	mVertexResource->Map(0, nullptr, reinterpret_cast<void**>(&mVertexData));// 書き込むためのアドレスを取得
 
-	std::memcpy(vertexData, modelData_.vertices.data(),
-		sizeof(VertexData) * modelData_.vertices.size());
+	std::memcpy(mVertexData, modelData_.vertices.data(), sizeof(VertexData) * modelData_.vertices.size());
 }
 
 Particle VoxelParticle::MakeNewParticle(std::mt19937& randomEngine) {

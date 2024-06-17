@@ -76,11 +76,11 @@ public:
 	WorldTransform* mWorldTransform;
 
 	// 頂点リソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12Resource> mVertexResource = nullptr;
 	// 頂点バッファビュー
-	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
+	D3D12_VERTEX_BUFFER_VIEW mVertexBufferView{};
 	// 頂点データ
-	VertexDataForGrid* vertexData = nullptr;
+	VertexDataForGrid* mVertexData = nullptr;
 
 	// Indexリソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> indexResource = nullptr;

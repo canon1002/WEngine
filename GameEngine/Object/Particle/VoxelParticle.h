@@ -77,7 +77,7 @@ public:
 		mTextureHandle = textureId;
 	}
 
-	const D3D12_VERTEX_BUFFER_VIEW& GetVBV() const { return vertexBufferView; }
+	const D3D12_VERTEX_BUFFER_VIEW& GetVBV() const { return mVertexBufferView; }
 	auto* GetMaterial() { return  materialResource.Get(); }
 	auto* GetWVP() { return mWvpResource.Get(); }
 
@@ -94,7 +94,7 @@ private:
 
 	// VertexResourceを生成する(P.42)
 	// 実際に頂点リソースを作る
-	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12Resource> mVertexResource = nullptr;
 	// マテリアル用のResourceを作る
 	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource = nullptr;
 	// Transformation用のResourceを作る
@@ -107,9 +107,9 @@ private:
 	ParticleForGPU* mWvpData = nullptr;
 	ParticleForGPU* instancingData_ = nullptr;
 	// 頂点リソースにデータを書き込む
-	VertexData* vertexData = nullptr;
+	VertexData* mVertexData = nullptr;
 	// 頂点バッファビューを作成する
-	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
+	D3D12_VERTEX_BUFFER_VIEW mVertexBufferView{};
 	// マテリアルデータ
 	Material* materialData_ = nullptr;
 	// 平行光源　

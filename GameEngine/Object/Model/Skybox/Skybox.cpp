@@ -4,7 +4,7 @@
 #include "GameEngine/Base/Debug/ImGuiManager.h"
 
 Skybox::~Skybox() {
-	vertexResource.Reset();
+	mVertexResource.Reset();
 	CameraResource.Reset();
 }
 
@@ -41,7 +41,7 @@ void Skybox::Draw()
 	mDxCommon->commandList->SetGraphicsRootConstantBufferView(1, mWvpResource->GetGPUVirtualAddress());
 
 
-	mDxCommon->commandList->IASetVertexBuffers(0, 1, &vertexBufferView);
+	mDxCommon->commandList->IASetVertexBuffers(0, 1, &mVertexBufferView);
 	mDxCommon->commandList->IASetIndexBuffer(&indexBufferView);
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけばいい
 	mDxCommon->commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -94,7 +94,7 @@ void Skybox::DrawGUI(const std::string& label) {
 	if (ImGui::TreeNode("頂点データ")) {
 		for (int32_t index = 0; index < 24; ++index) {
 			std::string str = "頂点" + std::to_string(index);
-			ImGui::DragFloat3(str.c_str(), &vertexData[index].position.x);
+			ImGui::DragFloat3(str.c_str(), &mVertexData[index].position.x);
 		}
 		ImGui::TreePop();
 	}
@@ -134,46 +134,46 @@ void Skybox::CreateVertexResource() {
 		mDxCommon->device_.Get(), sizeof(VertexData) * 24);
 
 	// リソースの先頭のアドレスから使う
-	vertexBufferView.BufferLocation = vertexResource->GetGPUVirtualAddress();
+	mVertexBufferView.BufferLocation = mVertexResource->GetGPUVirtualAddress();
 	// 使用するリソースサイズは頂点分のサイズ
-	vertexBufferView.SizeInBytes = UINT(sizeof(VertexData) * 24);
+	mVertexBufferView.SizeInBytes = UINT(sizeof(VertexData) * 24);
 	// 1頂点あたりのサイズ
-	vertexBufferView.StrideInBytes = sizeof(VertexData);
+	mVertexBufferView.StrideInBytes = sizeof(VertexData);
 
 	// 頂点リソースにデータを書き込む
-	vertexResource->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));// 書き込むためのアドレスを取得
+	mVertexResource->Map(0, nullptr, reinterpret_cast<void**>(&mVertexData));// 書き込むためのアドレスを取得
 
 	// 右面 描画インデックスは[0,1,2][2,1,3]で内側を向く
-	vertexData[0].position = { 1.0f,1.0f,1.0f,1.0f };
-	vertexData[1].position = { 1.0f,1.0f,-1.0f,1.0f };
-	vertexData[2].position = { 1.0f,-1.0f,1.0f,1.0f };
-	vertexData[3].position = { 1.0f,-1.0f,-1.0f,1.0f };
+	mVertexData[0].position = { 1.0f,1.0f,1.0f,1.0f };
+	mVertexData[1].position = { 1.0f,1.0f,-1.0f,1.0f };
+	mVertexData[2].position = { 1.0f,-1.0f,1.0f,1.0f };
+	mVertexData[3].position = { 1.0f,-1.0f,-1.0f,1.0f };
 	// 左面 描画インデックスは[4,5,6][6,5,7]
-	vertexData[4].position = { -1.0f,1.0f,-1.0f,1.0f };
-	vertexData[5].position = { -1.0f,1.0f,1.0f,1.0f };
-	vertexData[6].position = { -1.0f,-1.0f,-1.0f,1.0f };
-	vertexData[7].position = { -1.0f,-1.0f,1.0f,1.0f };
+	mVertexData[4].position = { -1.0f,1.0f,-1.0f,1.0f };
+	mVertexData[5].position = { -1.0f,1.0f,1.0f,1.0f };
+	mVertexData[6].position = { -1.0f,-1.0f,-1.0f,1.0f };
+	mVertexData[7].position = { -1.0f,-1.0f,1.0f,1.0f };
 
 	// 前面 描画インデックスは[8,9,10][10,9,11]
-	vertexData[8].position = { -1.0f,1.0f,1.0f,1.0f };
-	vertexData[9].position = { 1.0f,1.0f,1.0f,1.0f };
-	vertexData[10].position = { -1.0f,-1.0f,1.0f,1.0f };
-	vertexData[11].position = { 1.0f,-1.0f,1.0f,1.0f };
+	mVertexData[8].position = { -1.0f,1.0f,1.0f,1.0f };
+	mVertexData[9].position = { 1.0f,1.0f,1.0f,1.0f };
+	mVertexData[10].position = { -1.0f,-1.0f,1.0f,1.0f };
+	mVertexData[11].position = { 1.0f,-1.0f,1.0f,1.0f };
 	// 後面 描画インデックスは[12,13,14][14,13,15]
-	vertexData[12].position = { -1.0f,1.0f,-1.0f,1.0f };
-	vertexData[13].position = { 1.0f,1.0f,-1.0f,1.0f };
-	vertexData[14].position = { -1.0f,-1.0f,-1.0f,1.0f };
-	vertexData[15].position = { 1.0f,-1.0f,-1.0f,1.0f };
+	mVertexData[12].position = { -1.0f,1.0f,-1.0f,1.0f };
+	mVertexData[13].position = { 1.0f,1.0f,-1.0f,1.0f };
+	mVertexData[14].position = { -1.0f,-1.0f,-1.0f,1.0f };
+	mVertexData[15].position = { 1.0f,-1.0f,-1.0f,1.0f };
 	// 上面 描画インデックスは[16,17,18][18,17,19]
-	vertexData[16].position = { -1.0f,1.0f,-1.0f,1.0f };
-	vertexData[17].position = { 1.0f,1.0f,-1.0f,1.0f };
-	vertexData[18].position = { -1.0f,1.0f,1.0f,1.0f };
-	vertexData[19].position = { 1.0f,1.0f,1.0f,1.0f };
+	mVertexData[16].position = { -1.0f,1.0f,-1.0f,1.0f };
+	mVertexData[17].position = { 1.0f,1.0f,-1.0f,1.0f };
+	mVertexData[18].position = { -1.0f,1.0f,1.0f,1.0f };
+	mVertexData[19].position = { 1.0f,1.0f,1.0f,1.0f };
 	// 下面 描画インデックスは[20,21,22][22,21,23]
-	vertexData[20].position = { -1.0f,-1.0f,-1.0f,1.0f };
-	vertexData[21].position = { 1.0f,-1.0f,-1.0f,1.0f };
-	vertexData[22].position = { -1.0f,-1.0f,1.0f,1.0f };
-	vertexData[23].position = { 1.0f,-1.0f,1.0f,1.0f };
+	mVertexData[20].position = { -1.0f,-1.0f,-1.0f,1.0f };
+	mVertexData[21].position = { 1.0f,-1.0f,-1.0f,1.0f };
+	mVertexData[22].position = { -1.0f,-1.0f,1.0f,1.0f };
+	mVertexData[23].position = { 1.0f,-1.0f,1.0f,1.0f };
 
 	indexResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(uint32_t) * 36);
 	indexBufferView.BufferLocation = indexResource->GetGPUVirtualAddress();

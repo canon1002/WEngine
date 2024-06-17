@@ -12,15 +12,25 @@ struct FullScereenEffect {
 	int32_t enableScreenColor;  // 画面全体の色を変更する
 	int32_t enableGrayScele;	// Graysceleの有無
 	int32_t padding[2];
+
 	Vector4 screenColor;     // 上記の際に使うVector4(RGB+A型)
+
 	int32_t enableVignetting;   // ビネット処理の有無(画面端を暗くする)
 	float vigneMultipliier; // ビネット処理の際に使用する乗数
 	float vigneIndex;       // ビネット処理の際に使用する指数
 	int32_t enableSmooting;     // Smooting(ぼかし)の有無 (ぼかしの種類は以下の変数で決める)
+	
 	int32_t enableBoxFilter;    // ぼかしの際にBoxFillterを使用するのか
 	int32_t enableGaussianFilter;    // ぼかしをガウスぼかしにするのか
 	int32_t kernelSize;       // カーネルの大きさ
 	float GaussianSigma;    // GaussianFilterの際に使う標準偏差
+
+	int32_t enableLuminanceOutline; // 輝度で検出したアウトラインの有無
+	float outlineMultipliier;   // アウトライン生成時の差を大きくするための数値  
+	int32_t enableDepthOutline; // 深度(Depth)で検出したアウトラインの有無
+	int32_t padding02[1];
+
+	Matrix4x4 projectionInverse; // NDCをViewに変換するために使う逆行列    
 };
 
 struct EffectFlags {
@@ -29,6 +39,8 @@ struct EffectFlags {
 	bool isEnableSmooting;
 	bool isEnableBoxFilter;
 	bool isEnableGaussianFilter;
+	bool isEnebleLuminanceOutline;
+	bool isEnableDepthOutline;
 };
 
 class RenderCopyImage{
@@ -99,7 +111,7 @@ public:
 		*materialData = Color(color.r, color.g, color.b, color.a);
 	}
 
-	const D3D12_VERTEX_BUFFER_VIEW& GetVBV() const { return vertexBufferView; }
+	const D3D12_VERTEX_BUFFER_VIEW& GetVBV() const { return mVertexBufferView; }
 	auto* GetMaterial() { return  fullScreenResource.Get(); }
 	auto* GetWVP() { return mWvpResource.Get(); }
 
@@ -120,7 +132,7 @@ private:
 
 	// VertexResourceを生成する(P.42)
 	// 実際に頂点リソースを作る
-	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12Resource> mVertexResource = nullptr;
 	// マテリアル用のResourceを作る
 	Microsoft::WRL::ComPtr<ID3D12Resource> fullScreenResource = nullptr;
 	// Transformation用のResourceを作る
@@ -128,9 +140,9 @@ private:
 	// データを書き込む
 	Matrix4x4* mWvpData = nullptr;
 	// 頂点リソースにデータを書き込む
-	VertexData* vertexData = nullptr;
+	VertexData* mVertexData = nullptr;
 	// 頂点バッファビューを作成する
-	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
+	D3D12_VERTEX_BUFFER_VIEW mVertexBufferView{};
 	// マテリアルデータ
 	Color* materialData = nullptr;
 	// PostEffectデータ
@@ -138,7 +150,9 @@ private:
 	// フラグ(これはHLSL関連に送らない)
 	EffectFlags effectFlags;
 	// テクスチャハンドル
-	int32_t mTextureHandle;
-
+	int32_t textureHandle_;
+	// depStencilResourceの登録番号とリソース
+	Microsoft::WRL::ComPtr<ID3D12Resource> mDepthStencilResource;
+	int32_t mDepthStencilHandle;
 };
 
