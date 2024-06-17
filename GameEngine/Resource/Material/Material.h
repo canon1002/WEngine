@@ -4,10 +4,11 @@
 
 struct Material {
 	Color color;
-	int32_t enableLighting;
-	float paddding[3];
 	Matrix4x4 uvTransform;
+	int32_t enableLighting;
 	float shininess;
+	float environmentCoefficient;
+	float paddding;	
 };
 
 struct MultiMaterial {

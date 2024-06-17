@@ -3,9 +3,10 @@
 // マテリアル
 struct Material{
     float32_t4 color;
-    int32_t enableLighting;
     float32_t4x4 uvTransform;
+    int32_t enableLighting;
     float32_t shininess;
+    float32_t environmentCoefficient;
 };
 ConstantBuffer<Material> gMaterial : register(b0);
 
@@ -81,7 +82,7 @@ PixelShaderOutput main(VertexShaderOutput input) {
         float32_t3 refrectedVector = reflect(cameraToPosition, normalize(input.normal));
         float32_t4 enviromentColor = gEnvironmentTexture.Sample(gSampler, refrectedVector);
         // 計算結果を適用する
-        output.color.rgb += enviromentColor.rgb;
+        output.color.rgb += enviromentColor.rgb * gMaterial.environmentCoefficient;
     }
     else// Lightingしない場合
     {

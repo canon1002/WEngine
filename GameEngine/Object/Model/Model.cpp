@@ -88,6 +88,10 @@ void Model::DrawGUI(const std::string& label){
 		ImGui::DragFloat("Intensity", &directionalLightDate->intensity, 0.1f, 0.0f, 1.0f);
 		ImGui::TreePop();
 	}
+	if (ImGui::TreeNode("環境マップ")) {
+		ImGui::DragFloat("EnvironmentCoefficient", &materialData_->environmentCoefficient, 0.01f, 0.0f, 1.0f);
+		ImGui::TreePop();// ノードを閉じる(この場合は "マテリアル" を閉じる)
+	}
 	if (skinning_ != nullptr) {
 		if (ImGui::TreeNode("Skinning")) {
 			if (ImGui::Button("再生")) {
