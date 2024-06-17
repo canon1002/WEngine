@@ -13,7 +13,7 @@ Triangle::~Triangle()
 void Triangle::Initialize(DirectXCommon* dxCommon,CameraCommon* camera) {
 
 	mDxCommon = dxCommon;
-	camera_ = camera;
+	mCamera = camera;
 
 
 	CreateVertexResource();
@@ -89,7 +89,7 @@ void Triangle::CreateTransformationRsource() {
 	// 書き込むためのアドレスを取得
 	mWvpResource->Map(0, nullptr, reinterpret_cast<void**>(&mWvpData));
 	// 単位行列を書き込む
-	*mWvpData = camera_->GetViewProjectionMatrix();
+	*mWvpData = mCamera->GetViewProjectionMatrix();
 
 }
 

@@ -66,7 +66,7 @@ public:
 private:
 
 	// 外部ポインタ
-	CameraCommon* camera_ = nullptr;
+	CameraCommon* mCamera = nullptr;
 	DirectXCommon* mDxCommon = nullptr;
 
 	WorldTransform mWorldTransform;

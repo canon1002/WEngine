@@ -74,7 +74,7 @@ public:
 	}
 
 	void SetTexture(int32_t textureId) {
-		textureHandle_ = textureId;
+		mTextureHandle = textureId;
 	}
 
 	const D3D12_VERTEX_BUFFER_VIEW& GetVBV() const { return vertexBufferView; }
@@ -84,7 +84,7 @@ public:
 private:
 
 	// 外部ポインタ
-	CameraCommon* camera_ = nullptr;
+	CameraCommon* mCamera = nullptr;
 	DirectXCommon* mDxCommon = nullptr;
 
 	WorldTransform mWorldTransform;
@@ -118,7 +118,7 @@ private:
 	// テクスチャ切り替え
 	bool useBall = true;
 	// テクスチャハンドル
-	int32_t textureHandle_;
+	int32_t mTextureHandle;
 	int32_t instancingHandle_;
 	// モデルデータ
 	ModelData modelData_;

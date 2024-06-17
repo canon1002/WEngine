@@ -15,7 +15,7 @@ Sphere::~Sphere()
 void Sphere::Initialize(DirectXCommon* dxCommon,CameraCommon* camera) {
 
 	mDxCommon = dxCommon;
-	camera_=camera;
+	mCamera=camera;
 
 	CreateVertexResource();
 	CreateTransformationRsource();
@@ -109,7 +109,7 @@ void Sphere::CreateTransformationRsource() {
 	// 書き込むためのアドレスを取得
 	mWvpResource->Map(0, nullptr, reinterpret_cast<void**>(&mWvpData));
 	// 単位行列を書き込む
-	mWvpData->WVP = camera_->GetViewProjectionMatrix();
+	mWvpData->WVP = mCamera->GetViewProjectionMatrix();
 	mWvpData->World = MakeIdentity();
 
 }

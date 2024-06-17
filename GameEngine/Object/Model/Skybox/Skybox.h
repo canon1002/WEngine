@@ -46,7 +46,7 @@ public: // -- public メンバ変数 -- //
 	//ModelCommon* modelCommon_ = nullptr;
 	// DirectXのポインタ
 	DirectXCommon* mDxCommon = nullptr;
-	CameraCommon* camera_ = nullptr;
+	CameraCommon* mCamera = nullptr;
 
 	// -- Object3Dの要素 -- //
 
@@ -62,7 +62,7 @@ public: // -- public メンバ変数 -- //
 
 	
 	// ddsのテクスチャハンドル
-	int32_t textureHandle_;
+	int32_t mTextureHandle;
 
 	// 実際に頂点リソースを作る
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource = nullptr;

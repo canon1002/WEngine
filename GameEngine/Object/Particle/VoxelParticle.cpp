@@ -11,7 +11,7 @@ VoxelParticle::~VoxelParticle()
 void VoxelParticle::Initialize(DirectXCommon* dxCommon,CameraCommon* camera) {
 
 	mDxCommon = dxCommon;
-	camera_=camera;
+	mCamera=camera;
 	mWorldTransform.scale = { 1.0f,1.0f,1.0f };
 	mWorldTransform.rotation = { 0.0f,0.0f,0.0f };
 	mWorldTransform.translation = { 0.0f,0.0f,0.0f };
@@ -56,11 +56,11 @@ void VoxelParticle::Update() {
 	ImGui::End();*/
 
 	// カメラ行列のビュー行列(カメラのワールド行列の逆行列)
-	viewM = camera_->GetViewMatrix();
+	viewM = mCamera->GetViewMatrix();
 	// 正規化デバイス座標系(NDC)に変換(正射影行列をかける)
-	pespectiveM = camera_->GetProjectionMatrix();
+	pespectiveM = mCamera->GetProjectionMatrix();
 	// WVPにまとめる
-	wvpM = camera_->GetViewProjectionMatrix();
+	wvpM = mCamera->GetViewProjectionMatrix();
 	// 矩形のワールド行列とWVP行列を掛け合わした行列を代入
 	mWvpData->WVP = Multiply(mWorldTransform.GetWorldMatrix(), wvpM);
 	mWvpData->World = mWorldTransform.GetWorldMatrix();
@@ -191,7 +191,7 @@ void VoxelParticle::CreateTransformationRsource() {
 	// 書き込むためのアドレスを取得
 	mWvpResource->Map(0, nullptr, reinterpret_cast<void**>(&mWvpData));
 	// 単位行列を書き込む
-	mWvpData->WVP = camera_->GetViewProjectionMatrix();
+	mWvpData->WVP = mCamera->GetViewProjectionMatrix();
 	mWvpData->World = MakeIdentity();
 	mWvpData->color = Color(1.0f, 1.0f, 1.0f, 1.0f);
 

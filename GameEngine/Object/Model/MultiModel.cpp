@@ -10,7 +10,7 @@ MultiModel::~MultiModel() {
 void MultiModel::Initialize(DirectXCommon* dxCommon,CameraCommon* camera,const std::string& directrypath,const std::string& filename)
 {
 	mDxCommon = dxCommon;
-	camera_ = camera;
+	mCamera = camera;
 
 	// モデル読み込み
 	modelData = Resource::LoadMultiModelFile(directrypath,filename);
@@ -27,7 +27,7 @@ void MultiModel::Initialize(DirectXCommon* dxCommon,CameraCommon* camera,const s
 void MultiModel::Initialize(const std::string& directrypath, const std::string& filename){
 
 	mDxCommon = DirectXCommon::GetInstance();
-	camera_ = MainCamera::GetInstance();
+	mCamera = MainCamera::GetInstance();
 	
 
 	// モデル読み込み
@@ -146,7 +146,7 @@ void MultiModel::CreateMaterialResource(){
 	CameraResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(CameraForGPU));
 	// データを書き込む
 	CameraResource->Map(0, nullptr, reinterpret_cast<void**>(&cameraData));
-	camera_->Initialize(mDxCommon->win_);
-	cameraData->worldPosition = camera_->GetTranslate();
+	mCamera->Initialize(mDxCommon->win_);
+	cameraData->worldPosition = mCamera->GetTranslate();
 
 }

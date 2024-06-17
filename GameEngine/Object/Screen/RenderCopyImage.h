@@ -106,7 +106,7 @@ public:
 private:
 
 	// 外部ポインタ
-	CameraCommon* camera_ = nullptr;
+	CameraCommon* mCamera = nullptr;
 	DirectXCommon* mDxCommon = nullptr;
 
 	// グラフィックパイプライン
@@ -138,7 +138,7 @@ private:
 	// フラグ(これはHLSL関連に送らない)
 	EffectFlags effectFlags;
 	// テクスチャハンドル
-	int32_t textureHandle_;
+	int32_t mTextureHandle;
 
 };
 

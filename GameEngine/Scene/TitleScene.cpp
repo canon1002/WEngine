@@ -36,7 +36,6 @@ void TitleScene::Init() {
 	testObject_->SetTranslate({ 0.0f,0.0f,5.0f });
 	
 	
-	
 	testObject02_ = std::make_unique<Object3d>("Test Plane");
 	testObject02_->Init("Test Plane");
 	testObject02_->SetModel("Bow.obj");
@@ -47,6 +46,11 @@ void TitleScene::Init() {
 	// skyboxの宣言
 	skybox_ = std::make_unique<Skybox>();
 	skybox_->Init("skybox","rostock_laage_airport_4k.dds");
+
+	// オブジェクトにCubeMapのテクスチャ番号を渡す
+	testObject_->GetModel()->SetCubeTexture(skybox_->mTextureHandle);
+	testObject02_->GetModel()->SetCubeTexture(skybox_->mTextureHandle);
+	mPlayer->GetModel()->SetCubeTexture(skybox_->mTextureHandle);
 
 	// グリッド生成  // 左の引数はグリッドのセル数、右の引数はセルの大きさを入れる
 	grid_ = std::make_unique<Grid3D>(5,1.0f);

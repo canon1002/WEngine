@@ -11,12 +11,12 @@ class Object3dCommon
 	void Init(DirectXCommon* dxCommon);
 	void Update();
 	void Draw();
-	void SetCamera(CameraCommon* camera) { camera_ = camera; }
+	void SetCamera(CameraCommon* camera) { mCamera = camera; }
 
 private:
 
 	// 外部ポインタ
-	CameraCommon* camera_ = nullptr;
+	CameraCommon* mCamera = nullptr;
 	DirectXCommon* mDxCommon = nullptr;
 
 	//WorldTransform* mWorldTransform = nullptr;
@@ -48,7 +48,7 @@ private:
 	//// テクスチャ切り替え
 	//bool useBall = true;
 	//// テクスチャハンドル
-	//int32_t textureHandle_;
+	//int32_t mTextureHandle;
 	//// モデルデータ
 	//ModelData modelData;
 	//// UVTransform用の変数

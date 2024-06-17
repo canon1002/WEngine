@@ -38,21 +38,21 @@ public:
 	void CreateMaterialResource();
 
 	// カメラ座標を設定
-	void SetCameraPosition(CameraCommon camera) { cameraData->worldPosition = camera.GetTranslate(); }
-
+	inline void SetCameraPosition(CameraCommon camera) { cameraData->worldPosition = camera.GetTranslate(); }
+	inline void SetCubeTexture(const int32_t& textureHandle) { mTextureHandleCubeMap = textureHandle; }
 public:
 
 	// ModelCommonのポインタ
 	//ModelCommon* modelCommon_ = nullptr;
 	// DirectXのポインタ
 	DirectXCommon* mDxCommon = nullptr;
-	CameraCommon* camera_ = nullptr;
+	CameraCommon* mCamera = nullptr;
 
 	// モデルデータ
 	ModelData modelData;
 	// テクスチャハンドル
-	int32_t textureHandle_;
-
+	int32_t mTextureHandle;
+	int32_t mTextureHandleCubeMap;
 
 	// 頂点リソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource = nullptr;

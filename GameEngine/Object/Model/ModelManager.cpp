@@ -26,7 +26,7 @@ void ModelManager::Finalize() {
 
 void ModelManager::Initialize(DirectXCommon* dxCommon, CameraCommon* camera){
 	mDxCommon = dxCommon;
-	camera_ = camera;
+	mCamera = camera;
 	CreateGraphicsPipeline();
 	CreateGraphicsPipelineForSkinning();
 }
@@ -41,7 +41,7 @@ void ModelManager::LoadModel(const std::string& directoryPath, const std::string
 	// モデルの生成とファイル読み込み
 	std::unique_ptr<Model> model = std::make_unique<Model>();
 	//初期化
-	model->Initialize(mDxCommon, camera_, directoryPath, filepath);
+	model->Initialize(mDxCommon, mCamera, directoryPath, filepath);
 
 	// モデルをmapコンテナに格納
 	models.insert(std::make_pair(filepath, std::move(model)));
@@ -57,7 +57,7 @@ void ModelManager::LoadMultiModel(const std::string& directoryPath, const std::s
 	// モデルの生成とファイル読み込み
 	std::unique_ptr<MultiModel> model = std::make_unique<MultiModel>();
 	//初期化
-	model->Initialize(mDxCommon, camera_, directoryPath, filepath);
+	model->Initialize(mDxCommon, mCamera, directoryPath, filepath);
 
 	// モデルをmapコンテナに格納
 	multiModels.insert(std::make_pair(filepath, std::move(model)));
@@ -124,8 +124,16 @@ void ModelManager::CreateRootSignature(){
 	descriptorRange[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
 	descriptorRange[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;// offset自動計算
 
+	// TextureCube用 PixelShaderのレジスタ(t1)で使う
+	D3D12_DESCRIPTOR_RANGE descriptorRangeTextureCube[1] = {};
+	descriptorRange[0].BaseShaderRegister = 1; // レジスタ番号は1を指定
+	descriptorRange[0].NumDescriptors = 1;
+	descriptorRange[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+	descriptorRange[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;// offset自動計算
+
+
 	// RootParamenter作成
-	D3D12_ROOT_PARAMETER rootParameters[5] = {};
+	D3D12_ROOT_PARAMETER rootParameters[6] = {};
 	rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; // CBVを使う // b0のbと一致
 	rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
 	rootParameters[0].Descriptor.ShaderRegister = 0; // レジスタ番号とバインド // b0のと一致
@@ -146,6 +154,12 @@ void ModelManager::CreateRootSignature(){
 	rootParameters[4].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; // CBVを使う
 	rootParameters[4].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
 	rootParameters[4].Descriptor.ShaderRegister = 2;	// レジスタ番号2を使う
+
+	rootParameters[5].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE; // DescriptorTable
+	rootParameters[5].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
+	rootParameters[5].DescriptorTable.pDescriptorRanges = descriptorRangeTextureCube;
+	rootParameters[5].DescriptorTable.NumDescriptorRanges = _countof(descriptorRangeTextureCube);
+
 
 	descriptionRootSignature.pParameters = rootParameters; // ルートパラメータ配列へのポインタ
 	descriptionRootSignature.NumParameters = _countof(rootParameters); // 配列の長さ
@@ -299,9 +313,15 @@ void ModelManager::CreateRootSignatureForSkinning() {
 	descriptorRangeVertex[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
 	descriptorRangeVertex[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;// offset自動計算
 
+	// TextureCube用 PixelShaderのレジスタ(t1)で使う
+	D3D12_DESCRIPTOR_RANGE descriptorRangeTextureCube[1] = {};
+	descriptorRange[0].BaseShaderRegister = 1; // レジスタ番号は1を指定
+	descriptorRange[0].NumDescriptors = 1;
+	descriptorRange[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+	descriptorRange[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;// offset自動計算
 
 	// RootParamenter作成
-	D3D12_ROOT_PARAMETER rootParameters[6] = {};
+	D3D12_ROOT_PARAMETER rootParameters[7] = {};
 	rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; // CBVを使う // b0のbと一致
 	rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
 	rootParameters[0].Descriptor.ShaderRegister = 0; // レジスタ番号とバインド // b0のと一致
@@ -323,11 +343,16 @@ void ModelManager::CreateRootSignatureForSkinning() {
 	rootParameters[4].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
 	rootParameters[4].Descriptor.ShaderRegister = 2;	// レジスタ番号2を使う
 
+	rootParameters[5].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE; // DescriptorTable
+	rootParameters[5].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
+	rootParameters[5].DescriptorTable.pDescriptorRanges = descriptorRangeTextureCube;
+	rootParameters[5].DescriptorTable.NumDescriptorRanges = _countof(descriptorRangeTextureCube);
+
 	// Animation
-	rootParameters[5].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE; //DescriptorTableを使う
-	rootParameters[5].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX; // VertexShaderで使う
-	rootParameters[5].DescriptorTable.pDescriptorRanges = descriptorRangeVertex; // Tableの中身の配列を指定
-	rootParameters[5].DescriptorTable.NumDescriptorRanges = _countof(descriptorRangeVertex); // Tableの中身の配列を指定
+	rootParameters[6].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE; //DescriptorTableを使う
+	rootParameters[6].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX; // VertexShaderで使う
+	rootParameters[6].DescriptorTable.pDescriptorRanges = descriptorRangeVertex; // Tableの中身の配列を指定
+	rootParameters[6].DescriptorTable.NumDescriptorRanges = _countof(descriptorRangeVertex); // Tableの中身の配列を指定
 
 
 	descriptionRootSignature.pParameters = rootParameters; // ルートパラメータ配列へのポインタ

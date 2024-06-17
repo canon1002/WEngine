@@ -71,7 +71,7 @@ private: // -- private メンバ変数 -- //
 
 	// ポインタ
 	DirectXCommon* mDxCommon = nullptr;
-	CameraCommon* camera_ = nullptr;
+	CameraCommon* mCamera = nullptr;
 
 	// モデルデータ
 	std::unordered_map<std::string, std::unique_ptr<Model>> models;

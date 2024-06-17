@@ -14,7 +14,7 @@ RenderCopyImage::~RenderCopyImage()
 void RenderCopyImage::Initialize(DirectXCommon* dxCommon, CameraCommon* camera) {
 
 	mDxCommon = dxCommon;
-	camera_ = camera;
+	mCamera = camera;
 
 	// CopyImage用のPSO及びRootSignatureを生成する
 	CreateGraphicsPipeline();
@@ -23,8 +23,8 @@ void RenderCopyImage::Initialize(DirectXCommon* dxCommon, CameraCommon* camera) 
 	CreateTransformationRsource();
 	CreateBufferView();
 
-	textureHandle_ = mDxCommon->srv_->LoadTexture("uvChecker.png");
-	textureHandle_ = mDxCommon->srv_->CreateRenderTextureSRV(mDxCommon->rtv_->renderTextureResource.Get());
+	mTextureHandle = mDxCommon->srv_->LoadTexture("uvChecker.png");
+	mTextureHandle = mDxCommon->srv_->CreateRenderTextureSRV(mDxCommon->rtv_->renderTextureResource.Get());
 }
 
 void RenderCopyImage::Update() {
@@ -124,7 +124,7 @@ void RenderCopyImage::Draw() {
 	//wvp用のCBufferの場所を指定
 	mDxCommon->commandList->SetGraphicsRootConstantBufferView(1, mWvpResource->GetGPUVirtualAddress());
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である
-	mDxCommon->commandList->SetGraphicsRootDescriptorTable(2, mDxCommon->srv_->textureData_.at(textureHandle_).textureSrvHandleGPU);
+	mDxCommon->commandList->SetGraphicsRootDescriptorTable(2, mDxCommon->srv_->textureData_.at(mTextureHandle).textureSrvHandleGPU);
 
 	// インスタンス生成
 	mDxCommon->commandList->DrawInstanced(3, 1, 0, 0);
@@ -321,7 +321,7 @@ void RenderCopyImage::CreateTransformationRsource() {
 	// 書き込むためのアドレスを取得
 	mWvpResource->Map(0, nullptr, reinterpret_cast<void**>(&mWvpData));
 	// 単位行列を書き込む
-	*mWvpData = camera_->GetViewProjectionMatrix();
+	*mWvpData = mCamera->GetViewProjectionMatrix();
 
 }
 

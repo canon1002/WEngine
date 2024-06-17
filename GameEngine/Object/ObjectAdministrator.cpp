@@ -79,7 +79,7 @@ void ObjectAdministrator::Draw(){
 		mDxCommon->commandList->SetGraphicsRootConstantBufferView(3, object->GetModel()->directionalLightResource->GetGPUVirtualAddress());
 		mDxCommon->commandList->SetGraphicsRootConstantBufferView(4, object->GetModel()->CameraResource->GetGPUVirtualAddress());
 		// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である
-		mDxCommon->commandList->SetGraphicsRootDescriptorTable(2, mDxCommon->srv_->textureData_.at(object->GetModel()->textureHandle_).textureSrvHandleGPU);
+		mDxCommon->commandList->SetGraphicsRootDescriptorTable(2, mDxCommon->srv_->textureData_.at(object->GetModel()->mTextureHandle).textureSrvHandleGPU);
 		// ドローコール
 		mDxCommon->commandList->DrawInstanced(UINT(object->GetModel()->modelData.vertices.size()), 1, 0, 0);
 

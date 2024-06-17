@@ -4,7 +4,7 @@
 void Sprite::Initialize(DirectXCommon* dxCommon, CameraCommon* camera) {
 
 	mDxCommon = dxCommon;
-	camera_ = camera;
+	mCamera = camera;
 	CreateVertexResource();
 	CreateIndexResource();
 	CreateTransformationRsource();
@@ -98,7 +98,7 @@ void Sprite::Draw() {
 	mDxCommon->commandList->SetGraphicsRootConstantBufferView(1, mWvpResource->GetGPUVirtualAddress());
 	
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である
-	mDxCommon->commandList->SetGraphicsRootDescriptorTable(2, mDxCommon->srv_->textureData_.at(textureHandle_).textureSrvHandleGPU);
+	mDxCommon->commandList->SetGraphicsRootDescriptorTable(2, mDxCommon->srv_->textureData_.at(mTextureHandle).textureSrvHandleGPU);
 
 	// インデックスを使用してドローコール
 	mDxCommon->commandList->DrawIndexedInstanced(6, 1, 0, 0, 0);
@@ -122,8 +122,8 @@ void Sprite::CreateVertexResource() {
 	// マテリアルにデータを書き込む
 	materialData = nullptr;
 	// テクスチャの情報を転送
-	if (textureHandle_ == 0) {
-		textureHandle_ = mDxCommon->srv_->defaultTexId_;
+	if (mTextureHandle == 0) {
+		mTextureHandle = mDxCommon->srv_->defaultTexId_;
 	}
 	// 書き込むためのアドレスを取得
 	materialResourceSprite->Map(0, nullptr, reinterpret_cast<void**>(&materialData));
@@ -144,7 +144,7 @@ void Sprite::CreateTransformationRsource() {
 	// 書き込むためのアドレスを取得
 	mWvpResource->Map(0, nullptr, reinterpret_cast<void**>(&mWvpData));
 	// 単位行列を書き込む
-	mWvpData->WVP = camera_->GetViewProjectionMatrix();
+	mWvpData->WVP = mCamera->GetViewProjectionMatrix();
 	mWvpData->World = MakeIdentity();
 }
 
@@ -192,7 +192,7 @@ void Sprite::CreateBufferView() {
 void Sprite::AdjustTextureSize()
 {
 	// テクスチャメタデータ取得
-	const DirectX::TexMetadata& metadata = mDxCommon->srv_->GetMetaData(textureHandle_);
+	const DirectX::TexMetadata& metadata = mDxCommon->srv_->GetMetaData(mTextureHandle);
 	textureFullSize_.x = static_cast<float>(metadata.width);
 	textureFullSize_.y = static_cast<float>(metadata.height);
 

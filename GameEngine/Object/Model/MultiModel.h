@@ -55,7 +55,7 @@ public:
 	//ModelCommon* modelCommon_ = nullptr;
 	// DirectXのポインタ
 	DirectXCommon* mDxCommon = nullptr;
-	CameraCommon* camera_ = nullptr;
+	CameraCommon* mCamera = nullptr;
 
 	// モデルデータ
 	MultiModelData modelData;

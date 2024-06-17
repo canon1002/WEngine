@@ -86,7 +86,7 @@ void Object3d::Draw() {
 
 		// 配列を渡す(開始スロット番号、使用スロット数、VBV配列へのポインタ)
 		mDxCommon->commandList->IASetVertexBuffers(0, 2, vbvs);
-		mDxCommon->commandList->SetGraphicsRootDescriptorTable(5,
+		mDxCommon->commandList->SetGraphicsRootDescriptorTable(6,
 			mModel->skinning_->GetSkinCluster().paletteSrvHandle_.second);
 	}
 	else {

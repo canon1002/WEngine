@@ -82,7 +82,7 @@ public:
 private:
 
 	// 外部ポインタ
-	CameraCommon* camera_ = nullptr;
+	CameraCommon* mCamera = nullptr;
 	DirectXCommon* mDxCommon = nullptr;
 
 	// グラフィックパイプライン
@@ -110,7 +110,7 @@ private:
 	// マテリアルデータ
 	Color* materialData = nullptr;
 	// テクスチャハンドル
-	int32_t textureHandle_;
+	int32_t mTextureHandle;
 
 };
 

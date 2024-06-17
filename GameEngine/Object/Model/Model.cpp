@@ -11,7 +11,7 @@ Model::~Model() {
 void Model::Initialize(DirectXCommon* dxCommon,CameraCommon* camera,const std::string& directrypath,const std::string& filename)
 {
 	mDxCommon = dxCommon;
-	camera_ = camera;
+	mCamera = camera;
 
 	// モデル読み込み
 	modelData = Resource::LoadModelFile(directrypath,filename);
@@ -28,7 +28,7 @@ void Model::Initialize(DirectXCommon* dxCommon,CameraCommon* camera,const std::s
 void Model::Initialize(const std::string& directrypath, const std::string& filename){
 
 	mDxCommon = DirectXCommon::GetInstance();
-	camera_ = MainCamera::GetInstance();
+	mCamera = MainCamera::GetInstance();
 	
 
 	// モデル読み込み
@@ -58,8 +58,11 @@ void Model::Draw()
 	mDxCommon->commandList->SetGraphicsRootConstantBufferView(3, directionalLightResource->GetGPUVirtualAddress());
 	mDxCommon->commandList->SetGraphicsRootConstantBufferView(4, CameraResource->GetGPUVirtualAddress());
 
-	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である
-	mDxCommon->commandList->SetGraphicsRootDescriptorTable(2, mDxCommon->srv_->textureData_.at(textureHandle_).textureSrvHandleGPU);
+	// テクスチャをセット
+	mDxCommon->commandList->SetGraphicsRootDescriptorTable(2, mDxCommon->srv_->textureData_.at(mTextureHandle).textureSrvHandleGPU);
+	// CueMapのテクスチャをセット
+	mDxCommon->commandList->SetGraphicsRootDescriptorTable(5, mDxCommon->srv_->textureData_.at(mTextureHandleCubeMap).textureSrvHandleGPU);
+
 	// インデックスを使用してドローコール
 	mDxCommon->commandList->DrawIndexedInstanced(UINT(modelData.indices.size()), 1, 0, 0, 0);
 }
@@ -160,10 +163,10 @@ void Model::CreateMaterialResource()
 	materialResource->Map(0, nullptr, reinterpret_cast<void**>(&materialData_));
 	// テクスチャの情報を転送
 	if (modelData.material.textureFilePath.empty()) {
-		textureHandle_ = mDxCommon->srv_->defaultTexId_;
+		mTextureHandle = mDxCommon->srv_->defaultTexId_;
 	}
 	else {
-		textureHandle_ = mDxCommon->srv_->LoadTexture(modelData.material.textureFilePath);
+		mTextureHandle = mDxCommon->srv_->LoadTexture(modelData.material.textureFilePath);
 	}
 	// 色の書き込み・Lightingの無効化
 	materialData_->color = { 1.0f, 1.0f, 1.0f, 1.0f };
@@ -185,7 +188,7 @@ void Model::CreateMaterialResource()
 	CameraResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(CameraForGPU));
 	// データを書き込む
 	CameraResource->Map(0, nullptr, reinterpret_cast<void**>(&cameraData));
-	camera_->Initialize(mDxCommon->win_);
-	cameraData->worldPosition = camera_->GetTranslate();
+	mCamera->Initialize(mDxCommon->win_);
+	cameraData->worldPosition = mCamera->GetTranslate();
 
 }

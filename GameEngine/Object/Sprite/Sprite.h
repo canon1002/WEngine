@@ -24,7 +24,7 @@ public:
 	auto* GetMaterial() { return  materialResourceSprite.Get(); }
 	auto* GetWVP() { return mWvpResource.Get(); }
 	void SetTexture(std::string filepath){
-		textureHandle_ = mDxCommon->srv_->LoadTexture(filepath); 
+		mTextureHandle = mDxCommon->srv_->LoadTexture(filepath); 
 		AdjustTextureSize();
 	}
 	void SetColor(Color color) { materialData->color = color; }
@@ -44,14 +44,14 @@ private:
 private:
 
 	// 外部ポインタ
-	CameraCommon* camera_ = nullptr;
+	CameraCommon* mCamera = nullptr;
 	DirectXCommon* mDxCommon = nullptr;
 
 	WorldTransform mWorldTransform;
 	Matrix4x4 worldM, cameraM, viewM, projectM, wvpM;
 	Vector4 translate_;
 	// テクスチャハンドル
-	int32_t textureHandle_ = 0;
+	int32_t mTextureHandle = 0;
 
 	// VertexResourceを生成する(P.42)
 	// 実際に頂点リソースを作る

@@ -11,10 +11,10 @@ Skybox::~Skybox() {
 void Skybox::Init(const std::string& directrypath, const std::string& filename) {
 
 	mDxCommon = DirectXCommon::GetInstance();
-	camera_ = MainCamera::GetInstance();
+	mCamera = MainCamera::GetInstance();
 	mWorldTransform = new WorldTransform();
 	mWorldTransform->scale = { 512.0f,512.0f,512.0f };
-	textureHandle_ = mDxCommon->srv_->LoadTexture(directrypath + "/" + filename);
+	mTextureHandle = mDxCommon->srv_->LoadTexture(directrypath + "/" + filename);
 	CreateTransformationRsource();
 	CreateVertexResource();
 	CreateMaterialResource();
@@ -55,7 +55,7 @@ void Skybox::Draw()
 	mDxCommon->commandList->SetGraphicsRootConstantBufferView(4, CameraResource->GetGPUVirtualAddress());
 
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である
-	mDxCommon->commandList->SetGraphicsRootDescriptorTable(2, mDxCommon->srv_->textureData_.at(textureHandle_).textureSrvHandleGPU);
+	mDxCommon->commandList->SetGraphicsRootDescriptorTable(2, mDxCommon->srv_->textureData_.at(mTextureHandle).textureSrvHandleGPU);
 
 	// インデックスを使用してドローコール
 	mDxCommon->commandList->DrawIndexedInstanced(36, 1, 0, 0,0);
@@ -234,8 +234,8 @@ void Skybox::CreateMaterialResource()
 	CameraResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(CameraForGPU));
 	// データを書き込む
 	CameraResource->Map(0, nullptr, reinterpret_cast<void**>(&cameraData));
-	camera_->Initialize(mDxCommon->win_);
-	cameraData->worldPosition = camera_->GetTranslate();
+	mCamera->Initialize(mDxCommon->win_);
+	cameraData->worldPosition = mCamera->GetTranslate();
 
 }
 
