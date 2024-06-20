@@ -19,7 +19,7 @@ void Grayscale::Init(){
 	CreateEffectResource();
 
 	// レンダーターゲットの格納番号を受け取る
-	textureHandle_ = mDxCommon->srv_->CreateRenderTextureSRV(mDxCommon->rtv_->renderTextureResource.Get());
+	textureHandle_ = mDxCommon->srv_->CreateRenderTextureSRV(mDxCommon->rtv_->mRenderTextureResource.Get());
 }
 
 void Grayscale::Update(){
@@ -43,6 +43,11 @@ void Grayscale::DrawGUI()
 }
 
 void Grayscale::PreDraw(){
+
+	// リソースバリア
+
+
+
 	// RootSignatureを設定。PSOに設定しているが、別途設定が必要
 	mDxCommon->commandList->SetGraphicsRootSignature(mRootSignature.Get());
 	mDxCommon->commandList->SetPipelineState(mGraphicsPipelineState.Get());

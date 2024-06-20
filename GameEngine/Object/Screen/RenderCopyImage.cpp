@@ -26,7 +26,7 @@ void RenderCopyImage::Initialize(DirectXCommon* dxCommon, CameraCommon* camera) 
 	CreateBufferView();
 
 	mTextureHandle = mDxCommon->srv_->LoadTexture("uvChecker.png");
-	mTextureHandle = mDxCommon->srv_->CreateRenderTextureSRV(mDxCommon->rtv_->renderTextureResource.Get());
+	mTextureHandle = mDxCommon->srv_->CreateRenderTextureSRV(mDxCommon->rtv_->mRenderTextureResource.Get());
 
 	mDepthStencilHandle = mDxCommon->srv_->CreateDepthSRV(mDxCommon->dsv_->mDepthStencilTextureResource.Get());
 }

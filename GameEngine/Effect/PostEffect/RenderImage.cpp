@@ -1,12 +1,12 @@
-#include "DepthOutline.h"
+#include "RenderImage.h"
 #include "GameEngine/Object/Camera/MainCamera.h"
 #include "GameEngine/Base/Debug/ImGuiManager.h"
 
-DepthOutline::~DepthOutline() {
-	delete mEnableEffect;
+RenderImage::~RenderImage() {
+	
 }
 
-void DepthOutline::Init(){
+void RenderImage::Init() {
 
 	mDxCommon = DirectXCommon::GetInstance();
 	mCamera = MainCamera::GetInstance();
@@ -15,70 +15,45 @@ void DepthOutline::Init(){
 	CreateGraphicsPipeline();
 	// 頂点データ・リソースを生成
 	CreateVertexResource();
-	// エフェクトリソース生成
-	CreateEffectResource();
 
 	// レンダーターゲットの格納番号を受け取る
 	textureHandle_ = mDxCommon->srv_->CreateRenderTextureSRV(mDxCommon->rtv_->mRenderTextureResource.Get());
 }
 
-void DepthOutline::Update(){
+void RenderImage::Update() {
 }
 
-void DepthOutline::DrawGUI()
-{
-#ifdef _DEBUG
-	if (ImGui::TreeNode("DepthOutline")) {
-		static bool enable = mEnableEffect;
-		ImGui::Checkbox("Enable", &enable);
-		if (enable == true) {
-			*mEnableEffect = 1;
-		}
-		else {
-			*mEnableEffect = 0;
-		}
-		ImGui::TreePop();
-	}
-#endif // _DEBUG
-}
+void RenderImage::DrawGUI(){}
 
-void DepthOutline::PreDraw(){
+
+void RenderImage::PreDraw() {
+
+	// リソースバリア
+
+
+
 	// RootSignatureを設定。PSOに設定しているが、別途設定が必要
 	mDxCommon->commandList->SetGraphicsRootSignature(mRootSignature.Get());
 	mDxCommon->commandList->SetPipelineState(mGraphicsPipelineState.Get());
 }
 
-void DepthOutline::Draw(){
+void RenderImage::Draw() {
 
 	// 頂点バッファビューをセット
 	mDxCommon->commandList->IASetVertexBuffers(0, 1, &mVertexBufferView);
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけばいい
 	mDxCommon->commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	// ポストエフェクトのパラメータのCBufferの場所を指定
-	mDxCommon->commandList->SetGraphicsRootConstantBufferView(0, mEffectResource->GetGPUVirtualAddress());
 	// SRVのDescriptorTableの先頭を設定
 	mDxCommon->commandList->SetGraphicsRootDescriptorTable(1, mDxCommon->srv_->textureData_.at(textureHandle_).textureSrvHandleGPU);
 	// インスタンス生成
 	mDxCommon->commandList->DrawInstanced(3, 1, 0, 0);
 }
 
-void DepthOutline::PostDraw(){
+void RenderImage::PostDraw() {
 
 }
 
-
-void DepthOutline::CreateEffectResource() {
-
-	// リソース生成
-	mEffectResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(int32_t));
-	// 書き込むためのアドレスを取得
-	mEffectResource->Map(0, nullptr, reinterpret_cast<void**>(&mEnableEffect));
-	// エフェクトを有効にしておく
-	*mEnableEffect = 1;
-}
-
-
-void DepthOutline::CreateGraphicsPipeline(){
+void RenderImage::CreateGraphicsPipeline() {
 	// ルートシグネチャを生成する
 	CreateRootSignature();
 
@@ -112,7 +87,7 @@ void DepthOutline::CreateGraphicsPipeline(){
 		L"vs_6_0", mDxCommon->dxcUtils, mDxCommon->dxcCompiler, mDxCommon->includeHandler);
 	assert(vertexShaderBlob != nullptr);
 
-	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob = WinAPI::CompileShader(L"Shaders/PostEffect/DepthOutline.PS.hlsl",
+	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob = WinAPI::CompileShader(L"Shaders/PostEffect/RenderImage.PS.hlsl",
 		L"ps_6_0", mDxCommon->dxcUtils, mDxCommon->dxcCompiler, mDxCommon->includeHandler);
 	assert(pixelShaderBlob != nullptr);
 
@@ -153,7 +128,7 @@ void DepthOutline::CreateGraphicsPipeline(){
 	assert(SUCCEEDED(hr));
 }
 
-void DepthOutline::CreateRootSignature(){
+void RenderImage::CreateRootSignature() {
 	// 複数枚のSRVを扱えるように一括で設定をする
 	D3D12_DESCRIPTOR_RANGE descriptorRange[1] = {};
 	descriptorRange[0].BaseShaderRegister = 0;
@@ -161,22 +136,12 @@ void DepthOutline::CreateRootSignature(){
 	descriptorRange[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
 	descriptorRange[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;// offset自動計算
 
-	D3D12_DESCRIPTOR_RANGE descriptorRangeDepth[1] = {};
-	descriptorRangeDepth[0].BaseShaderRegister = 1;
-	descriptorRangeDepth[0].NumDescriptors = 1;
-	descriptorRangeDepth[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
-	descriptorRangeDepth[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;// offset自動計算
-
 	// RootParamenter作成
-	D3D12_ROOT_PARAMETER rootParameters[2] = {};
-	rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; // CBVを使う // b0のbと一致
+	D3D12_ROOT_PARAMETER rootParameters[1] = {};
+	rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE; //DescriptorTableを使う
 	rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
-	rootParameters[0].Descriptor.ShaderRegister = 0; // レジスタ番号とバインド // b0のと一致
-
-	rootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE; //DescriptorTableを使う
-	rootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
-	rootParameters[1].DescriptorTable.pDescriptorRanges = descriptorRange;
-	rootParameters[1].DescriptorTable.NumDescriptorRanges = _countof(descriptorRange);
+	rootParameters[0].DescriptorTable.pDescriptorRanges = descriptorRange;
+	rootParameters[0].DescriptorTable.NumDescriptorRanges = _countof(descriptorRange);
 
 	// RootSignatureを生成する
 	D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature{};

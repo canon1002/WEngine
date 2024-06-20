@@ -473,7 +473,7 @@ void DirectXCommon::PreDrawForRenderTarget(){
 	// Noneにしておく
 	barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
 	// バリアを張る対象のリソース。現在のバックバッファに対して行う
-	barrier.Transition.pResource = rtv_->renderTextureResource.Get();
+	barrier.Transition.pResource = rtv_->mRenderTextureResource.Get();
 	// 遷移前(現在)のResourceState
 	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
 	// 遷移後のResourceState
@@ -511,7 +511,7 @@ void DirectXCommon::PostDrawForRenderTarget(){
 	// Noneにしておく
 	barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
 	// バリアを張る対象のリソース。現在のバックバッファに対して行う
-	barrier.Transition.pResource = rtv_->renderTextureResource.Get();
+	barrier.Transition.pResource = rtv_->mRenderTextureResource.Get();
 	// 遷移前(現在)のResourceState
 	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
 	// 遷移後のResourceState

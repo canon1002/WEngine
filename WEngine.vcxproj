@@ -185,6 +185,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="GameEngine\Append\Animation\Node\NodeAnimation.cpp" />
     <ClCompile Include="GameEngine\Append\Collider\ObjCollider.cpp" />
     <ClCompile Include="GameEngine\GameBase\Player\Player.cpp" />
+    <ClCompile Include="GameEngine\Effect\PostEffect\RenderImage.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameEngine\Effect\PostEffect\BoxFilter.h" />
@@ -261,6 +262,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="GameEngine\Object\Grid3D.h" />
     <ClInclude Include="GameEngine\Append\Collider\ObjCollider.h" />
     <ClInclude Include="GameEngine\GameBase\Player\Player.h" />
+    <ClInclude Include="GameEngine\Effect\PostEffect\RenderImage.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt" />

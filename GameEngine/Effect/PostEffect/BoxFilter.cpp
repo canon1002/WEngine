@@ -19,7 +19,7 @@ void BoxFilter::Init(){
 	CreateEffectResource();
 
 	// レンダーターゲットの格納番号を受け取る
-	textureHandle_ = mDxCommon->srv_->CreateRenderTextureSRV(mDxCommon->rtv_->renderTextureResource.Get());
+	textureHandle_ = mDxCommon->srv_->CreateRenderTextureSRV(mDxCommon->rtv_->mRenderTextureResource.Get());
 }
 
 void BoxFilter::Update(){

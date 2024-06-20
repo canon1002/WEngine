@@ -112,10 +112,11 @@ int SceneManager::Run() {
 		// 描画後処理 -- RenderTexture --
 		mDxCommon->PostDrawForRenderTarget();
 
+		// ポストエフェクトの描画
+		mPostEffectManager->Draw();
+
 		// 描画前処理
 		mDxCommon->PreDraw();
-
-		mPostEffectManager->Draw();
 
 #ifdef _DEBUG
 		// ImGuiの描画

@@ -24,7 +24,7 @@ void Line::Init() {
 	CreateBufferView();
 
 	mTextureHandle = mDxCommon->srv_->LoadTexture("white2x2.png");
-	//mTextureHandle = dxCommon_->srv_->CreateRenderTextureSRV(dxCommon_->rtv_->renderTextureResource.Get());
+	//mTextureHandle = dxCommon_->srv_->CreateRenderTextureSRV(dxCommon_->rtv_->mRenderTextureResource.Get());
 }
 
 

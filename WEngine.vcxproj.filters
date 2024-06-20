@@ -239,6 +239,7 @@
     <ClCompile Include="GameEngine\Effect\PostEffect\LuminanceOutline.cpp" />
     <ClCompile Include="GameEngine\Effect\PostEffect\PostEffectManager.cpp" />
     <ClCompile Include="GameEngine\Effect\PostEffect\Vignette.cpp" />
+    <ClCompile Include="GameEngine\Effect\PostEffect\RenderImage.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameEngine\Base\WinApp\WinAPI.h">
@@ -405,6 +406,7 @@
     <ClInclude Include="GameEngine\Effect\PostEffect\IPostEffect.h" />
     <ClInclude Include="GameEngine\Effect\PostEffect\LuminanceOutline.h" />
     <ClInclude Include="GameEngine\Effect\PostEffect\PostEffectManager.h" />
+    <ClInclude Include="GameEngine\Effect\PostEffect\RenderImage.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt">

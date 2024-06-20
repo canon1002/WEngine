@@ -38,7 +38,8 @@ public: // -- public メンバ変数 -- //
 	// RenderTextureで初期化する際の色
 	const float kRenderTargetColor[4] = { 1.0f,0.0f,0.0f,1.0f };
 
-	Microsoft::WRL::ComPtr <ID3D12Resource> renderTextureResource = nullptr;
+	Microsoft::WRL::ComPtr <ID3D12Resource> mRenderTextureResource = nullptr;
+	Microsoft::WRL::ComPtr <ID3D12Resource> mIntermediateRenderTextureh = nullptr;
 
 private: // -- private メンバ変数 -- //
 
