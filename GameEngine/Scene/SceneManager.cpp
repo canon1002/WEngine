@@ -109,14 +109,18 @@ int SceneManager::Run() {
 
 		/// 描画処理
 		sceneArr_[currentSceneNo_]->Draw();
+
+		// ポストエフェクトの積み込み
+		mPostEffectManager->Draw();
+
 		// 描画後処理 -- RenderTexture --
 		mDxCommon->PostDrawForRenderTarget();
 
-		// ポストエフェクトの描画
-		mPostEffectManager->Draw();
-
 		// 描画前処理
 		mDxCommon->PreDraw();
+
+		// ポストエフェクトの描画
+		mPostEffectManager->RenderFinalOutput();
 
 #ifdef _DEBUG
 		// ImGuiの描画

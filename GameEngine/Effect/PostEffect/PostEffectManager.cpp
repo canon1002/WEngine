@@ -31,8 +31,8 @@ void PostEffectManager::Init(){
 	CreateIntermediateTextures();
 
 	// 出力用クラスの宣言
-	//mFinalRender = new RenderImage();
-	//mFinalRender->Init();
+	mFinalRender = new RenderImage();
+	mFinalRender->Init();
 
 }
 
@@ -51,56 +51,16 @@ void PostEffectManager::Update(){
 	for (const auto&postEffect : mPostEffects) {
 		postEffect->Update();
 	}
-	//mFinalRender->Update();
+	mFinalRender->Update();
 }
 
 void PostEffectManager::Draw() {
 	//// レンダーターゲットのリソースを取得
-	Microsoft::WRL::ComPtr<ID3D12Resource> currentInput = mDxCommon->rtv_->mRenderTextureResource.Get();
-
-	// これから書き込むバックバッファのインデックスを取得
-	UINT backBufferIndex = mDxCommon->swapChain->GetCurrentBackBufferIndex();
-
-	// TransitionBarrierの設定
-	// 今回のバリアはトランジション
-	mDxCommon->barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-	// Noneにしておく
-	mDxCommon->barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-	// バリアを張る対象のリソース。現在のバックバッファに対して行う
-	mDxCommon->barrier.Transition.pResource = mDxCommon->swapChainResources[backBufferIndex].Get();
-	// 遷移前(現在)のResourceState
-	mDxCommon->barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
-	// 遷移後のResourceState
-	mDxCommon->barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
-	// TransitionBarrierを張る
-	mDxCommon->commandList->ResourceBarrier(1, &mDxCommon->barrier);
-
-
-	// 描画先のRTVとDSVを設定する
-	mDxCommon->commandList->OMSetRenderTargets(1,
-		&mDxCommon->rtv_->rtvHandles[backBufferIndex], false, 
-		&mDxCommon->dsv_->mDsvHandle);
-
-	// 指定した深度で画面全体をクリアにする
-	// フレームの最初に最も遠く(1.0)でクリアする
-	//commandList->ClearDepthStencilView(dsv_->mDsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
-
-	// 指定した色で画面全体をクリアにする
-	float clearColor[] = { 0.1f,0.25f,0.5f,1.0f };	// 青っぽい色 RGBAの順
-	mDxCommon->commandList->ClearRenderTargetView(mDxCommon->rtv_->rtvHandles[backBufferIndex],
-		clearColor, 0, nullptr);
-
-	// 描画用のディスクリプタヒープの設定
-	ID3D12DescriptorHeap* descriptorHeaps[] = { mDxCommon->srv_->srvDescriptorHeap.Get() };
-	mDxCommon->commandList->SetDescriptorHeaps(1, descriptorHeaps);
-
-	// コマンドを積み込む
-	mDxCommon->commandList->RSSetViewports(1, &mDxCommon->viewport);
-	mDxCommon->commandList->RSSetScissorRects(1, &mDxCommon->scissorRect);
+	//Microsoft::WRL::ComPtr<ID3D12Resource> currentInput = mDxCommon->rtv_->mRenderTextureResource.Get();
 
 	for (int32_t i = 0; i < mPostEffects.size(); ++i) {
 		// 入力テクスチャを設定
-		mPostEffects[i]->SetInputTexture(currentInput);
+		//mPostEffects[i]->SetInputTexture(currentInput);
 		
 		// 描画前処理
 		// ルートシグネチャやグラフィックスパイプラインなどをセットする
@@ -116,25 +76,12 @@ void PostEffectManager::Draw() {
 		mPostEffects[i]->PostDraw();
 	}
 
-	// TransitionBarrierの設定
-	mDxCommon->barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-	// Noneにしておく
-	mDxCommon->barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-	// バリアを張る対象のリソース。現在のバックバッファに対して行う
-	mDxCommon->barrier.Transition.pResource = mDxCommon->rtv_->mRenderTextureResource.Get();
-	// 遷移前(現在)のResourceState
-	mDxCommon->barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
-	// 遷移後のResourceState
-	mDxCommon->barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
-	// TransitionBarrierを張る
-	mDxCommon->commandList->ResourceBarrier(1, &mDxCommon->barrier);
-
 }
 
 void PostEffectManager::RenderFinalOutput() {
-	//mFinalRender->PreDraw();
-	//mFinalRender->Draw();
-	//mFinalRender->PostDraw();
+	mFinalRender->PreDraw();
+	mFinalRender->Draw();
+	mFinalRender->PostDraw();
 }
 
 void PostEffectManager::CreateIntermediateTextures() {
