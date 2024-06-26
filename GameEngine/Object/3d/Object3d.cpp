@@ -133,7 +133,7 @@ void Object3d::DrawGUI()
 		ImGui::TreePop();
 	}
 	if (mModel != nullptr) {
-		mModel->DrawGUI("Model");
+		mModel->DrawGUI(mObjname + "Model");
 	}
 	ImGui::End();
 

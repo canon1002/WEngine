@@ -239,6 +239,13 @@
     <ClCompile Include="GameEngine\Effect\PostEffect\LuminanceOutline.cpp" />
     <ClCompile Include="GameEngine\Effect\PostEffect\PostEffectManager.cpp" />
     <ClCompile Include="GameEngine\Effect\PostEffect\Vignette.cpp" />
+    <ClCompile Include="GameEngine\GameBase\AI\BehaviorTree\SequenceNode.cpp" />
+    <ClCompile Include="GameEngine\GameBase\AI\BehaviorTree\ActionNode.cpp" />
+    <ClCompile Include="GameEngine\GameBase\AI\BehaviorTree\SelectorNode.cpp" />
+    <ClCompile Include="GameEngine\GameBase\Command\ICommand.cpp" />
+    <ClCompile Include="GameEngine\GameBase\AI\State\IBossState.cpp" />
+    <ClCompile Include="GameEngine\GameBase\Enemy\BossEnemy.cpp" />
+    <ClCompile Include="GameEngine\GameBase\AI\State\VitalityBossState.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameEngine\Base\WinApp\WinAPI.h">
@@ -405,6 +412,16 @@
     <ClInclude Include="GameEngine\Effect\PostEffect\IPostEffect.h" />
     <ClInclude Include="GameEngine\Effect\PostEffect\LuminanceOutline.h" />
     <ClInclude Include="GameEngine\Effect\PostEffect\PostEffectManager.h" />
+    <ClInclude Include="GameEngine\GameBase\AI\BehaviorTree\IBehavior.h" />
+    <ClInclude Include="GameEngine\GameBase\AI\BehaviorTree\SequenceNode.h" />
+    <ClInclude Include="GameEngine\GameBase\AI\BehaviorTree\ActionNode.h" />
+    <ClInclude Include="GameEngine\GameBase\AI\BehaviorTree\SelectorNode.h" />
+    <ClInclude Include="GameEngine\GameBase\Command\ICommand.h" />
+    <ClInclude Include="GameEngine\GameBase\Command\MoveCommand.h" />
+    <ClInclude Include="IBossState.h" />
+    <ClInclude Include="GameEngine\GameBase\Enemy\BossEnemy.h" />
+    <ClInclude Include="GameEngine\GameBase\AI\State\VitalityBossState.h" />
+    <ClInclude Include="GameEngine\GameBase\AI\BehaviorTree\BehaviorTree.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt">

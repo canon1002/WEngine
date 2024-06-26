@@ -70,9 +70,11 @@ void Model::Draw()
 void Model::DrawGUI(const std::string& label){
 	label;
 #ifdef _DEBUG
+	// 親ウィンドウ内で使用可能なスペースを取得
+	ImVec2 availableSize = ImGui::GetContentRegionAvail();
 
 	/// デバック情報を描画
-	ImGui::BeginChild(label.c_str());
+	ImGui::BeginChild(label.c_str(), availableSize,true);
 	// マテリアル
 	if (ImGui::TreeNode("マテリアル")) {
 		ImGui::DragFloat4("Color", &materialData_->color.r,0.01f,0.0f,1.0f);

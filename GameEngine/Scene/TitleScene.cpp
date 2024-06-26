@@ -25,15 +25,6 @@ void TitleScene::Init() {
 
 	// SkyBox 読み込み
 	DirectXCommon::GetInstance()->srv_->LoadTexture("skybox/rostock_laage_airport_4k.dds");
-
-	// 3dオブジェクトの宣言
-	testObject_ = std::make_unique<Object3d>();
-	testObject_->Init("TestObj");
-	testObject_->SetModel("sneakWalk.gltf");
-	testObject_->GetModel()->skinning_ = new Skinnig();
-	testObject_->GetModel()->skinning_->Init("human", "walk.gltf",
-		testObject_->GetModel()->modelData);
-	testObject_->SetTranslate({ 0.0f,0.0f,5.0f });
 	
 	
 	testObject02_ = std::make_unique<Object3d>("Test Plane");
@@ -49,11 +40,14 @@ void TitleScene::Init() {
 
 	mPlayer = std::make_unique<Player>();
 	mPlayer->Init();
+	
+	mBoss = std::make_unique<BossEnemy>();
+	mBoss->Init();
 
 	// オブジェクトにCubeMapのテクスチャ番号を渡す
-	testObject_->GetModel()->SetCubeTexture(skybox_->mTextureHandle);
 	testObject02_->GetModel()->SetCubeTexture(skybox_->mTextureHandle);
 	mPlayer->GetModel()->SetCubeTexture(skybox_->mTextureHandle);
+	mBoss->GetModel()->SetCubeTexture(skybox_->mTextureHandle);
 
 	// グリッド生成  // 左の引数はグリッドのセル数、右の引数はセルの大きさを入れる
 	grid_ = std::make_unique<Grid3D>(5,1.0f);
@@ -64,8 +58,8 @@ void TitleScene::Init() {
 void TitleScene::Update() {
 #ifdef _DEBUG
 	skybox_->DrawGUI("Skybox");
-	testObject_->DrawGUI();
 	mPlayer->DrawGUI();
+	mBoss->DrawGUI();
 	testObject02_->DrawGUI();
 #endif // _DEBUG
 	MainCamera::GetInstance()->Update();
@@ -73,13 +67,11 @@ void TitleScene::Update() {
 	// グリッド
 	grid_->Update();
 
-	// SkinningModel 忍び歩き
-	testObject_->Update();
-
 	// スカイボックス
 	skybox_->Update();
 
 	mPlayer->Update();
+	mBoss->Update();
 
 	// obj
 	testObject02_->mWorldTransform->SetParent(mPlayer->GetModel()->skinning_->GetSkeleton().joints.at(35).transform.GetAffinMatrix());
@@ -106,7 +98,7 @@ void TitleScene::Draw(){
 	// Object3D(Skinning)の描画前処理
 	ModelManager::GetInstance()->PreDrawForSkinning();
 
-	testObject_->Draw();
 	mPlayer->Draw();
+	mBoss->Draw();
 
 }
