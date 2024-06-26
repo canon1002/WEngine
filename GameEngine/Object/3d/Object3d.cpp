@@ -158,7 +158,7 @@ void Object3d::CreateTransformationRsource() {
 void Object3d::SetModel(const std::string& filepath)
 {
 	// モデルを検索してセット
-	//modelManager_->LoadModel(filepath);
+	//mModelManager->LoadModel(filepath);
 	mModel = mModelManager->FindModel(filepath);
 
 }

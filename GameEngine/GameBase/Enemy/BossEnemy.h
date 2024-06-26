@@ -1,6 +1,8 @@
 #pragma once
 #include "GameEngine/Object/3d/Object3d.h"
 #include "GameEngine/GameBase/AI/BehaviorTree/BehaviorTree.h"
+#include "GameEngine/GameBase/AI/State/IBossState.h"
+#include "GameEngine/GameBase/AI/State/VitalityBossState.h"
 
 class BossEnemy
 {
@@ -55,4 +57,8 @@ private: // -- 非公開 メンバ変数 -- //
 	// メンバ関数ポインタ
 	static void(BossEnemy::*CommandTable[])();
 
+	// ボスのState番号の配列(実行中に増減しないため、長さ固定の配列を宣言)
+	std::array<std::unique_ptr<IBossState>, 1> mStateArr;
+	int mCurrentSceneNo;
+	int mPrevSceneNo;
 };

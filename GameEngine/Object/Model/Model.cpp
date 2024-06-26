@@ -70,51 +70,48 @@ void Model::Draw()
 void Model::DrawGUI(const std::string& label){
 	label;
 #ifdef _DEBUG
-	// 親ウィンドウ内で使用可能なスペースを取得
-	ImVec2 availableSize = ImGui::GetContentRegionAvail();
-
-	/// デバック情報を描画
-	ImGui::BeginChild(label.c_str(), availableSize,true);
-	// マテリアル
-	if (ImGui::TreeNode("マテリアル")) {
-		ImGui::DragFloat4("Color", &materialData_->color.r,0.01f,0.0f,1.0f);
-		ImGui::TreePop();// ノードを閉じる(この場合は "マテリアル" を閉じる)
-	}
-	if (ImGui::TreeNode("平行光源")) {
-		ImGui::Checkbox("Lighting Flag",&isLighting_);
-		// Lightingの設定を変更できるように
-		materialData_->enableLighting = isLighting_;
-		ImGui::DragFloat("Shininess", &materialData_->shininess, 0.05f, 0.0f, 1.0f);
-		ImGui::DragFloat4("Color", &directionalLightDate->color.r);
-		ImGui::DragFloat3("Directon", &directionalLightDate->direction.x,0.1f,0.0f,1.0f);
-		ImGui::DragFloat("Intensity", &directionalLightDate->intensity, 0.1f, 0.0f, 1.0f);
-		ImGui::TreePop();
-	}
-	if (ImGui::TreeNode("環境マップ")) {
-		ImGui::DragFloat("EnvironmentCoefficient", &materialData_->environmentCoefficient, 0.01f, 0.0f, 1.0f);
-		ImGui::TreePop();// ノードを閉じる(この場合は "マテリアル" を閉じる)
-	}
-	if (skinning_ != nullptr) {
-		if (ImGui::TreeNode("Skinning")) {
-			if (ImGui::Button("再生")) {
-				skinning_->Play();
-			}
-			if (ImGui::Button("停止")) {
-				skinning_->Pause();
-			}
-
-			if(ImGui::Button("忍び足") ){
-				skinning_->Init("human", "sneakWalk.gltf", modelData);
-			}
-			if (ImGui::Button("歩き")) {
-				skinning_->Init("human", "walk.gltf", modelData);
-			}
-
+	if (ImGui::TreeNode(label.c_str())) {
+		// マテリアル
+		if (ImGui::TreeNode("マテリアル")) {
+			ImGui::DragFloat4("Color", &materialData_->color.r, 0.01f, 0.0f, 1.0f);
+			ImGui::TreePop();// ノードを閉じる(この場合は "マテリアル" を閉じる)
+		}
+		if (ImGui::TreeNode("平行光源")) {
+			ImGui::Checkbox("Lighting Flag", &isLighting_);
+			// Lightingの設定を変更できるように
+			materialData_->enableLighting = isLighting_;
+			ImGui::DragFloat("Shininess", &materialData_->shininess, 0.05f, 0.0f, 1.0f);
+			ImGui::DragFloat4("Color", &directionalLightDate->color.r);
+			ImGui::DragFloat3("Directon", &directionalLightDate->direction.x, 0.1f, 0.0f, 1.0f);
+			ImGui::DragFloat("Intensity", &directionalLightDate->intensity, 0.1f, 0.0f, 1.0f);
 			ImGui::TreePop();
 		}
+		if (ImGui::TreeNode("環境マップ")) {
+			ImGui::DragFloat("EnvironmentCoefficient", &materialData_->environmentCoefficient, 0.01f, 0.0f, 1.0f);
+			ImGui::TreePop();// ノードを閉じる(この場合は "マテリアル" を閉じる)
+		}
+		if (skinning_ != nullptr) {
+			if (ImGui::TreeNode("Skinning")) {
+				if (ImGui::Button("再生")) {
+					skinning_->Play();
+				}
+				if (ImGui::Button("停止")) {
+					skinning_->Pause();
+				}
+
+				if (ImGui::Button("忍び足")) {
+					skinning_->Init("human", "sneakWalk.gltf", modelData);
+				}
+				if (ImGui::Button("歩き")) {
+					skinning_->Init("human", "walk.gltf", modelData);
+				}
+
+				ImGui::TreePop();
+			}
+		}
+
+		ImGui::TreePop();
 	}
-	
-	ImGui::EndChild();
 
 #endif // _DEBUG
 }

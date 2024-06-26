@@ -276,7 +276,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="GameEngine\GameBase\AI\BehaviorTree\IBehavior.h" />
     <ClInclude Include="GameEngine\GameBase\AI\BehaviorTree\SequenceNode.h" />
     <ClInclude Include="GameEngine\GameBase\Command\ICommand.h" />
-    <ClInclude Include="IBossState.h" />
+    <ClInclude Include="GameEngine\GameBase\AI\State\IBossState.h" />
     <ClInclude Include="GameEngine\GameBase\AI\State\VitalityBossState.h" />
   </ItemGroup>
   <ItemGroup>

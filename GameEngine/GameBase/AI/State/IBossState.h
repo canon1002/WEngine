@@ -16,17 +16,26 @@ class IBossState {
 public: // -- 公開 メンバ関数 -- //
 
 	IBossState() = default;
-	~IBossState() = default;
+	// エラー対策で仮想デストラクタを宣言
+	virtual ~IBossState() = default;
 	
 	virtual void Init() = 0;
 	virtual void Update() = 0;
 
+	// ボスのポインタをセットする
 	inline void SetBoss(BossEnemy* boss) { mBoss = boss; }
+
+	// State番号の取得
+	inline int GetStateNo() { return stateNo; }
 
 private: // -- 非公開 メンバ変数 -- //
 
 	// ボスクラスのポインタ
 	BossEnemy* mBoss;
 
+protected: // -- 限定公開 メンバ変数 -- //
+
+	// 現在のState番号
+	static int stateNo;
 };
 
