@@ -12,6 +12,13 @@ struct AdjustmentItems
 };
 ConstantBuffer<AdjustmentItems> gItems : register(b0);
 
+
+// Depth読み込み用
+Texture2D<float32_t> gDepthTexture : register(t1);
+// PointSampling用
+SamplerState gSamplerPoint : register(s1);
+
+
 struct PixelShaderOutput{
     float32_t4 color : SV_TARGET0;
 };

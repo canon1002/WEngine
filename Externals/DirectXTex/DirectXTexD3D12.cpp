@@ -94,12 +94,12 @@ namespace
 
     //--------------------------------------------------------------------------------------
     inline void TransitionResource(
-        _In_ ID3D12GraphicsCommandList* commandList,
+        _In_ ID3D12GraphicsCommandList* mCommandList,
         _In_ ID3D12Resource* resource,
         _In_ D3D12_RESOURCE_STATES stateBefore,
         _In_ D3D12_RESOURCE_STATES stateAfter)
     {
-        assert(commandList != nullptr);
+        assert(mCommandList != nullptr);
         assert(resource != nullptr);
 
         if (stateBefore == stateAfter)
@@ -112,7 +112,7 @@ namespace
         desc.Transition.StateBefore = stateBefore;
         desc.Transition.StateAfter = stateAfter;
 
-        commandList->ResourceBarrier(1, &desc);
+        mCommandList->ResourceBarrier(1, &desc);
     }
 
 
@@ -181,8 +181,8 @@ namespace
             return hr;
 
         // Spin up a new command list
-        ComPtr<ID3D12GraphicsCommandList> commandList;
-        hr = device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, commandAlloc.Get(), nullptr, IID_GRAPHICS_PPV_ARGS(commandList.GetAddressOf()));
+        ComPtr<ID3D12GraphicsCommandList> mCommandList;
+        hr = device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, commandAlloc.Get(), nullptr, IID_GRAPHICS_PPV_ARGS(mCommandList.GetAddressOf()));
         if (FAILED(hr))
             return hr;
 
@@ -252,7 +252,7 @@ namespace
                     for (UINT level = 0; level < desc.MipLevels; ++level)
                     {
                         const UINT index = D3D12CalcSubresource(level, item, plane, desc.MipLevels, desc.DepthOrArraySize);
-                        commandList->ResolveSubresource(pTemp.Get(), index, pSource, index, fmt);
+                        mCommandList->ResolveSubresource(pTemp.Get(), index, pSource, index, fmt);
                     }
                 }
             }
@@ -274,25 +274,25 @@ namespace
         assert(pStaging);
 
         // Transition the resource if necessary
-        TransitionResource(commandList.Get(), pSource, beforeState, D3D12_RESOURCE_STATE_COPY_SOURCE);
+        TransitionResource(mCommandList.Get(), pSource, beforeState, D3D12_RESOURCE_STATE_COPY_SOURCE);
 
         // Get the copy target location
         for (UINT j = 0; j < numberOfResources; ++j)
         {
             const CD3DX12_TEXTURE_COPY_LOCATION copyDest(pStaging.Get(), pLayout[j]);
             const CD3DX12_TEXTURE_COPY_LOCATION copySrc(copySource.Get(), j);
-            commandList->CopyTextureRegion(&copyDest, 0, 0, 0, &copySrc, nullptr);
+            mCommandList->CopyTextureRegion(&copyDest, 0, 0, 0, &copySrc, nullptr);
         }
 
         // Transition the resource to the next state
-        TransitionResource(commandList.Get(), pSource, D3D12_RESOURCE_STATE_COPY_SOURCE, afterState);
+        TransitionResource(mCommandList.Get(), pSource, D3D12_RESOURCE_STATE_COPY_SOURCE, afterState);
 
-        hr = commandList->Close();
+        hr = mCommandList->Close();
         if (FAILED(hr))
             return hr;
 
         // Execute the command list
-        pCommandQ->ExecuteCommandLists(1, CommandListCast(commandList.GetAddressOf()));
+        pCommandQ->ExecuteCommandLists(1, CommandListCast(mCommandList.GetAddressOf()));
 
         // Signal the fence
         hr = pCommandQ->Signal(fence.Get(), 1);

@@ -40,7 +40,7 @@ void ImGuiManager::End(){
 
 void ImGuiManager::Draw(){
 	// ImGuiの描画
-	ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), mDxCommon->commandList.Get());
+	ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), mDxCommon->mCommandList.Get());
 }
 
 void ImGuiManager::ReleseProcess(){

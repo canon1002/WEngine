@@ -5,7 +5,7 @@
 #include "BoxFilter.h"
 #include "GaussianFilter.h"
 #include "LuminanceOutline.h"
-
+#include "DepthOutline.h"
 
 PostEffectManager::~PostEffectManager(){
 
@@ -21,6 +21,7 @@ void PostEffectManager::Init(){
 	mPostEffects.push_back(new BoxFilter()); // BoxFilter
 	mPostEffects.push_back(new GaussianFilter()); // ガウスぼかし
 	mPostEffects.push_back(new LuminanceOutline()); // 輝度検出アウトライン
+	mPostEffects.push_back(new DepthOutline()); // 深度 アウトライン
 
 	// 追加した派生クラスを初期化する
 	for (const auto& postEffect : mPostEffects) {

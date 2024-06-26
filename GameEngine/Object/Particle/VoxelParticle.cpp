@@ -102,23 +102,23 @@ void VoxelParticle::Update() {
 
 void VoxelParticle::Draw() {
 
-	mDxCommon->commandList->IASetVertexBuffers(0, 1, &mVertexBufferView);
+	mDxCommon->mCommandList->IASetVertexBuffers(0, 1, &mVertexBufferView);
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけばいい
-	mDxCommon->commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	mDxCommon->mCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	/// CBV設定
 
 	// マテリアルのCBufferの場所を指定
-	mDxCommon->commandList->SetGraphicsRootConstantBufferView(0, materialResource->GetGPUVirtualAddress());
+	mDxCommon->mCommandList->SetGraphicsRootConstantBufferView(0, materialResource->GetGPUVirtualAddress());
 
 	//wvp用のCBufferの場所を指定
-	mDxCommon->commandList->SetGraphicsRootDescriptorTable(1, mDxCommon->srv_->instancingSrvHandleGPU);
+	mDxCommon->mCommandList->SetGraphicsRootDescriptorTable(1, mDxCommon->srv_->instancingSrvHandleGPU);
 
 	// テクスチャ
-	mDxCommon->commandList->SetGraphicsRootDescriptorTable(2, mDxCommon->srv_->textureData_.at(mDxCommon->srv_->defaultTexId_).textureSrvHandleGPU);
+	mDxCommon->mCommandList->SetGraphicsRootDescriptorTable(2, mDxCommon->srv_->textureData_.at(mDxCommon->srv_->defaultTexId_).textureSrvHandleGPU);
 
 	// インデックスを使用してドローコール
-	mDxCommon->commandList->DrawInstanced(6, instanceCount_, 0, 0);
+	mDxCommon->mCommandList->DrawInstanced(6, instanceCount_, 0, 0);
 
 }
 

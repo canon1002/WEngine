@@ -70,15 +70,10 @@ public: // -- 公開 メンバ関数 -- //
 	void PreDrawForRenderTarget();
 	void PostDrawForRenderTarget();
 
-	void DrawPariticleBegin();
-
 	/// <summary>
 	/// 
 	/// </summary>
 	void PostDraw();
-
-	void SetResourceBarrier();
-
 
 	inline D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDescriptorHandle(Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap,
 		uint32_t descriptorSize, uint32_t index) {
@@ -128,11 +123,29 @@ private: // --非公開 メンバ関数 -- //
 	/// 
 	/// </summary>
 	void InitializeDXC();
-	
-	/// <summary>
-	/// 
-	/// </summary>
-	void InitializePSOP();
+
+	void SetResourceBarrier(
+		ID3D12GraphicsCommandList* commandList,
+		ID3D12Resource* resource,
+		D3D12_RESOURCE_STATES stateBefore,
+		D3D12_RESOURCE_STATES stateAfter);
+
+	void ClearRenderTargetView(ID3D12GraphicsCommandList* commandList, D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle, const float clearColor[4]) {
+		commandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
+	}
+
+	void ClearDepthStencilView(ID3D12GraphicsCommandList* commandList, D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle, float depth, UINT8 stencil) {
+		commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, depth, stencil, 0, nullptr);
+	}
+
+	void SetRenderTargets(ID3D12GraphicsCommandList* commandList, UINT numRenderTargets, const D3D12_CPU_DESCRIPTOR_HANDLE* rtvHandles, D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle) {
+		commandList->OMSetRenderTargets(numRenderTargets, rtvHandles, FALSE, &dsvHandle);
+	}
+
+	void SetDescriptorHeaps(ID3D12GraphicsCommandList* commandList, UINT numDescriptorHeaps, ID3D12DescriptorHeap* const* descriptorHeaps) {
+		commandList->SetDescriptorHeaps(numDescriptorHeaps, descriptorHeaps);
+	}
+
 
 public: // ** メンバ変数 ** //
 	
@@ -151,7 +164,7 @@ public: // ** メンバ変数 ** //
 	// コマンドキュー
 	Microsoft::WRL::ComPtr < ID3D12CommandQueue> commandQueue = nullptr;
 	// コマンドリスト
-	Microsoft::WRL::ComPtr < ID3D12GraphicsCommandList> commandList = nullptr;
+	Microsoft::WRL::ComPtr < ID3D12GraphicsCommandList> mCommandList = nullptr;
 	// スワップチェイン
 	Microsoft::WRL::ComPtr < IDXGISwapChain4> swapChain = nullptr;
 	// スワップチェーンデスク
@@ -160,7 +173,7 @@ public: // ** メンバ変数 ** //
 	Microsoft::WRL::ComPtr < ID3D12Resource> swapChainResources[2] = { nullptr };
 
 	// TransitionBarrier
-	D3D12_RESOURCE_BARRIER barrier{};
+	D3D12_RESOURCE_BARRIER mBarrier{};
 	// 現在のBarrierState
 	D3D12_RESOURCE_STATES mCurrentBarrierState;
 
@@ -171,12 +184,6 @@ public: // ** メンバ変数 ** //
 
 	// 返す用の変数を宣言
 	Microsoft::WRL::ComPtr<ID3D12Resource> result_ = nullptr;
-
-
-	// グラフィックパイプライン
-	Microsoft::WRL::ComPtr <ID3D12PipelineState> pGraphicsPipelineState = nullptr;
-	// ルートシグネチャー
-	Microsoft::WRL::ComPtr < ID3D12RootSignature> particleRootSignature = nullptr;
 
 	// dxCompilerを初期化
 	Microsoft::WRL::ComPtr < IDxcUtils> dxcUtils = nullptr;

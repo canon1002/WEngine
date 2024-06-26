@@ -134,30 +134,30 @@ void RenderCopyImage::Update() {
 
 void RenderCopyImage::PreDraw(){
 	// RootSignatureを設定。PSOに設定しているが、別途設定が必要
-	mDxCommon->commandList->SetGraphicsRootSignature(rootSignature.Get());
-	mDxCommon->commandList->SetPipelineState(graphicsPipelineState.Get());
+	mDxCommon->mCommandList->SetGraphicsRootSignature(rootSignature.Get());
+	mDxCommon->mCommandList->SetPipelineState(graphicsPipelineState.Get());
 }
 
 void RenderCopyImage::Draw() {
 
 	
-	mDxCommon->commandList->IASetVertexBuffers(0, 1, &mVertexBufferView);
+	mDxCommon->mCommandList->IASetVertexBuffers(0, 1, &mVertexBufferView);
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけばいい
-	mDxCommon->commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	mDxCommon->mCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	/// CBV設定
 
 	// マテリアルのCBufferの場所を指定
-	mDxCommon->commandList->SetGraphicsRootConstantBufferView(0, fullScreenResource->GetGPUVirtualAddress());
+	mDxCommon->mCommandList->SetGraphicsRootConstantBufferView(0, fullScreenResource->GetGPUVirtualAddress());
 	//wvp用のCBufferの場所を指定
-	mDxCommon->commandList->SetGraphicsRootConstantBufferView(1, mWvpResource->GetGPUVirtualAddress());
+	mDxCommon->mCommandList->SetGraphicsRootConstantBufferView(1, mWvpResource->GetGPUVirtualAddress());
 	// テクスチャをセット
-	mDxCommon->commandList->SetGraphicsRootDescriptorTable(2, mDxCommon->srv_->textureData_.at(mTextureHandle).textureSrvHandleGPU);
+	mDxCommon->mCommandList->SetGraphicsRootDescriptorTable(2, mDxCommon->srv_->textureData_.at(mTextureHandle).textureSrvHandleGPU);
 	// DepthTextureを設定
-	mDxCommon->commandList->SetGraphicsRootDescriptorTable(3, mDxCommon->srv_->textureData_.at(mDepthStencilHandle).textureSrvHandleGPU);
+	mDxCommon->mCommandList->SetGraphicsRootDescriptorTable(3, mDxCommon->srv_->textureData_.at(mDepthStencilHandle).textureSrvHandleGPU);
 
 	// インスタンス生成
-	mDxCommon->commandList->DrawInstanced(3, 1, 0, 0);
+	mDxCommon->mCommandList->DrawInstanced(3, 1, 0, 0);
 
 }
 

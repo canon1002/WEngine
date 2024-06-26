@@ -44,21 +44,21 @@ void Triangle::Draw() {
 	// 三角形のワールド行列とWVP行列を掛け合わした行列を代入
 	*mWvpData = Multiply(mWorldTransform.GetWorldMatrix(), wvpM);
 
-	mDxCommon->commandList->IASetVertexBuffers(0, 1, &mVertexBufferView);
+	mDxCommon->mCommandList->IASetVertexBuffers(0, 1, &mVertexBufferView);
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけばいい
-	mDxCommon->commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	mDxCommon->mCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	/// CBV設定
 
 	// マテリアルのCBufferの場所を指定
-	mDxCommon->commandList->SetGraphicsRootConstantBufferView(0, materialResource->GetGPUVirtualAddress());
+	mDxCommon->mCommandList->SetGraphicsRootConstantBufferView(0, materialResource->GetGPUVirtualAddress());
 	//wvp用のCBufferの場所を指定
-	mDxCommon->commandList->SetGraphicsRootConstantBufferView(1, mWvpResource->GetGPUVirtualAddress());
+	mDxCommon->mCommandList->SetGraphicsRootConstantBufferView(1, mWvpResource->GetGPUVirtualAddress());
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である
-	mDxCommon->commandList->SetGraphicsRootDescriptorTable(2, mDxCommon->srv_->textureData_.at(1).textureSrvHandleGPU);
+	mDxCommon->mCommandList->SetGraphicsRootDescriptorTable(2, mDxCommon->srv_->textureData_.at(1).textureSrvHandleGPU);
 
 	// インスタンス生成
-	mDxCommon->commandList->DrawInstanced(3, 1, 0, 0);
+	mDxCommon->mCommandList->DrawInstanced(3, 1, 0, 0);
 
 }
 

@@ -68,24 +68,24 @@ void Grid3D::Update()
 void Grid3D::PreDraw() {
 
 	// RootSignatureを設定。PSOに設定しているが、別途設定が必要
-	mDxCommon->commandList->SetGraphicsRootSignature(rootSignature.Get());
-	mDxCommon->commandList->SetPipelineState(graphicsPipelineState.Get());
+	mDxCommon->mCommandList->SetGraphicsRootSignature(rootSignature.Get());
+	mDxCommon->mCommandList->SetPipelineState(graphicsPipelineState.Get());
 
 }
 
 void Grid3D::Draw()
 {
 	//wvp用のCBufferの場所を指定
-	mDxCommon->commandList->SetGraphicsRootConstantBufferView(0, mWvpResource->GetGPUVirtualAddress());
+	mDxCommon->mCommandList->SetGraphicsRootConstantBufferView(0, mWvpResource->GetGPUVirtualAddress());
 	
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけばいい
-	mDxCommon->commandList->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_LINELIST);
+	mDxCommon->mCommandList->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_LINELIST);
 	// 配列を渡す(開始スロット番号、使用スロット数、VBV配列へのポインタ)
-	mDxCommon->commandList->IASetVertexBuffers(0, 1, &mVertexBufferView);
+	mDxCommon->mCommandList->IASetVertexBuffers(0, 1, &mVertexBufferView);
 	// IndexBufferViewをセット
-	mDxCommon->commandList->IASetIndexBuffer(&indexBufferView);
+	mDxCommon->mCommandList->IASetIndexBuffer(&indexBufferView);
 	// インデックスを使用してドローコール
-	mDxCommon->commandList->DrawIndexedInstanced(UINT(mGridIndices.size()), 1, 0, 0, 0);
+	mDxCommon->mCommandList->DrawIndexedInstanced(UINT(mGridIndices.size()), 1, 0, 0, 0);
 
 }
 

@@ -43,22 +43,22 @@ void BoxFilter::DrawGUI()
 
 void BoxFilter::PreDraw(){
 	// RootSignatureを設定。PSOに設定しているが、別途設定が必要
-	mDxCommon->commandList->SetGraphicsRootSignature(mRootSignature.Get());
-	mDxCommon->commandList->SetPipelineState(mGraphicsPipelineState.Get());
+	mDxCommon->mCommandList->SetGraphicsRootSignature(mRootSignature.Get());
+	mDxCommon->mCommandList->SetPipelineState(mGraphicsPipelineState.Get());
 }
 
 void BoxFilter::Draw(){
 
 	// 頂点バッファビューをセット
-	mDxCommon->commandList->IASetVertexBuffers(0, 1, &mVertexBufferView);
+	mDxCommon->mCommandList->IASetVertexBuffers(0, 1, &mVertexBufferView);
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけばいい
-	mDxCommon->commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	mDxCommon->mCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	// ポストエフェクトのパラメータのCBufferの場所を指定
-	mDxCommon->commandList->SetGraphicsRootConstantBufferView(0, mEffectResource->GetGPUVirtualAddress());
+	mDxCommon->mCommandList->SetGraphicsRootConstantBufferView(0, mEffectResource->GetGPUVirtualAddress());
 	// SRVのDescriptorTableの先頭を設定
-	mDxCommon->commandList->SetGraphicsRootDescriptorTable(1, mDxCommon->srv_->textureData_.at(textureHandle_).textureSrvHandleGPU);
+	mDxCommon->mCommandList->SetGraphicsRootDescriptorTable(1, mDxCommon->srv_->textureData_.at(textureHandle_).textureSrvHandleGPU);
 	// インスタンス生成
-	mDxCommon->commandList->DrawInstanced(3, 1, 0, 0);
+	mDxCommon->mCommandList->DrawInstanced(3, 1, 0, 0);
 }
 
 void BoxFilter::PostDraw(){
