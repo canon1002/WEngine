@@ -8,8 +8,8 @@ void Player::Init(){
 	mObject = std::make_unique<Object3d>();
 	mObject->Init("PlayerObj");
 	mObject->SetModel("walk.gltf");
-	mObject->GetModel()->skinning_ = new Skinnig();
-	mObject->GetModel()->skinning_->Init("human", "walk.gltf",
+	mObject->mSkinning = new Skinnig();
+	mObject->mSkinning->Init("human", "walk.gltf",
 		mObject->GetModel()->modelData);
 	mObject->SetTranslate({ 1.0f,1.0f,7.0f });
 
@@ -34,13 +34,13 @@ void Player::Update(){
 
 	// RBボタンを押してたら歩く
 	if (mInput->GetPused(Gamepad::Button::RIGHT_SHOULDER)) {
-		mObject->GetModel()->skinning_->Init("human", "walk.gltf",
+		mObject->mSkinning->Init("human", "walk.gltf",
 			mObject->GetModel()->modelData);
 	}
 
 	// RBを離したらスニーク
 	if (mInput->GetReleased(Gamepad::Button::RIGHT_SHOULDER)) {
-		mObject->GetModel()->skinning_->Init("human", "sneakWalk.gltf",
+		mObject->mSkinning->Init("human", "sneakWalk.gltf",
 			mObject->GetModel()->modelData);
 	}
 
@@ -122,7 +122,7 @@ void Player::Update(){
 
 	// オブジェクト更新
 	mObject->Update();
-	mObject->mModel->skinning_->GetSkeleton().joints;
+	mObject->mSkinning->GetSkeleton().joints;
 }
 
 void Player::Draw(){

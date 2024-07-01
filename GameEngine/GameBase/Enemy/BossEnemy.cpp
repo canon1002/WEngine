@@ -3,14 +3,16 @@
 #include "GameEngine/Object/ObjectAdministrator.h"
 #include "GameEngine/Base/Debug/ImGuiManager.h"
 #include "GameEngine/Object/Camera/MainCamera.h"
+#include "GameEngine/GameBase/Player/Player.h"
 
 void BossEnemy::Init() {
 	mObject = std::make_unique<Object3d>();
 	mObject->Init("BossEnemyObj");
-	mObject->SetModel("sneakWalk.gltf");
-	mObject->GetModel()->skinning_ = new Skinnig();
-	mObject->GetModel()->skinning_->Init("human", "sneakWalk.gltf",
+	mObject->SetModel("walk.gltf");
+	mObject->mSkinning = new Skinnig();
+	mObject->mSkinning->Init("human", "walk.gltf",
 		mObject->GetModel()->modelData);
+	mObject->mSkeleton = Skeleton::Create(mObject->GetModel()->modelData.rootNode);
 	mObject->SetTranslate({ 3.0f,1.0f,7.0f });
 	mObject->GetModel()->materialData_->color = { 1.0f,0.7f,0.7f,1.0f };
 
@@ -30,10 +32,6 @@ void BossEnemy::InitBehavior() {
 
 	// ボスのState番号の配列(実行中に増減しないため、長さ固定の配列を宣言)
 	mStateArr[VITALITY] = std::make_unique<VitalityBossState>();
-	
-
-	mRoot = std::make_unique<SelectorNode>();
-	mRoot->AddBehavior(new ActionNode());
 }
 
 // 関数ポインタテーブルの実体
@@ -47,12 +45,12 @@ void BossEnemy::Update() {
 
 	// テーブルから関数を呼び出す
 	(this->*CommandTable[0])();
-	mCurrentSceneNo;
-	mPrevSceneNo;
+	mCurrentStateNo;
+	mPrevStateNo;
 
 	// オブジェクト更新
 	mObject->Update();
-	mObject->mModel->skinning_->GetSkeleton().joints;
+	
 }
 
 void BossEnemy::Draw() {

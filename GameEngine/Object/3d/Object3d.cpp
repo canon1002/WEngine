@@ -61,8 +61,8 @@ void Object3d::Update() {
 
 	// -- アニメーションが設定されている場合 -- // 
 
-	if (mModel->skinning_ != nullptr) {
-		mModel->skinning_->Update();
+	if (mSkinning != nullptr) {
+		mSkinning->Update();
 	}
 
 }
@@ -80,14 +80,14 @@ void Object3d::Draw() {
 
 	D3D12_VERTEX_BUFFER_VIEW vbvs[2]{};
 	vbvs[0] = mModel->mVertexBufferView;// VertexDataのVBV
-	if (mModel->skinning_ != nullptr) {
+	if (mSkinning != nullptr) {
 
-		vbvs[1] = mModel->skinning_->GetSkinCluster().influenceBufferView_; // influenceのVBV
+		vbvs[1] = mSkinning->GetSkinCluster().influenceBufferView_; // influenceのVBV
 
 		// 配列を渡す(開始スロット番号、使用スロット数、VBV配列へのポインタ)
 		mDxCommon->commandList->IASetVertexBuffers(0, 2, vbvs);
 		mDxCommon->commandList->SetGraphicsRootDescriptorTable(6,
-			mModel->skinning_->GetSkinCluster().paletteSrvHandle_.second);
+			mSkinning->GetSkinCluster().paletteSrvHandle_.second);
 	}
 	else {
 		// 配列を渡す(開始スロット番号、使用スロット数、VBV配列へのポインタ)
@@ -134,6 +134,26 @@ void Object3d::DrawGUI()
 	}
 	if (mModel != nullptr) {
 		mModel->DrawGUI(mObjname + "Model");
+
+		if (mSkinning != nullptr) {
+			if (ImGui::TreeNode("Skinning")) {
+				if (ImGui::Button("再生")) {
+					mSkinning->Play();
+				}
+				if (ImGui::Button("停止")) {
+					mSkinning->Pause();
+				}
+
+				if (ImGui::Button("忍び足")) {
+					mSkinning->Init("human", "sneakWalk.gltf", GetModel()->modelData);
+				}
+				if (ImGui::Button("歩き")) {
+					mSkinning->Init("human", "walk.gltf", GetModel()->modelData);
+				}
+
+				ImGui::TreePop();
+			}
+		}
 	}
 	ImGui::End();
 
@@ -160,5 +180,4 @@ void Object3d::SetModel(const std::string& filepath)
 	// モデルを検索してセット
 	//mModelManager->LoadModel(filepath);
 	mModel = mModelManager->FindModel(filepath);
-
 }

@@ -421,7 +421,6 @@
     <ClInclude Include="GameEngine\GameBase\AI\State\IBossState.h" />
     <ClInclude Include="GameEngine\GameBase\Enemy\BossEnemy.h" />
     <ClInclude Include="GameEngine\GameBase\AI\State\VitalityBossState.h" />
-    <ClInclude Include="GameEngine\GameBase\AI\BehaviorTree\BehaviorTree.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt">

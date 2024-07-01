@@ -194,7 +194,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="GameEngine\GameBase\AI\State\VitalityBossState.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="GameEngine\GameBase\AI\BehaviorTree\BehaviorTree.h" />
     <ClInclude Include="GameEngine\GameBase\Enemy\BossEnemy.h" />
     <ClInclude Include="GameEngine\Effect\PostEffect\BoxFilter.h" />
     <ClInclude Include="GameEngine\Effect\PostEffect\DepthOutline.h" />

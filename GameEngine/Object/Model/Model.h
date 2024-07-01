@@ -92,7 +92,7 @@ public:
 	// -- Animation 関連 -- //
 
 	// スキニング アニメーション
-	Skinnig* skinning_ = nullptr;
+	//Skinnig* mSkinning = nullptr;
 
 };
 

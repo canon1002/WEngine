@@ -1,8 +1,10 @@
 #pragma once
 #include "GameEngine/Object/3d/Object3d.h"
-#include "GameEngine/GameBase/AI/BehaviorTree/BehaviorTree.h"
 #include "GameEngine/GameBase/AI/State/IBossState.h"
 #include "GameEngine/GameBase/AI/State/VitalityBossState.h"
+
+// 前方宣言
+class Player;
 
 class BossEnemy
 {
@@ -24,14 +26,33 @@ public: // -- 公開 メンバ関数 -- //
 
 	Model* GetModel() { return mObject->mModel; }
 
+	// プレイヤーのポインタをセットする
+	void SetPlayer(const Player* player) { pPlayer = player; }
+
 #pragma region コマンド・ステート関連
 
 	inline void MoveForward() { mObject->mWorldTransform->translation.z += mVelocity.z; }
 	inline void BackStep(){ mObject->mWorldTransform->translation.z -= mVelocity.z; }
 
+
+	// -- ActionNodeの実行条件を設定する関数 -- //
+
+	// 距離が近い場合に実行
+	bool invokeNearDistance(){
+		return false;
+	};
+
+	// 距離が遠い場合に実行
+	bool invokeFarDistance(){
+		return false;
+	};
+
 #pragma endregion
 
 private: // -- 非公開 メンバ変数 -- //
+
+	// プレイヤー(ターゲット)のポインタ
+	const Player* pPlayer;
 
 	// オブジェクトクラス
 	std::unique_ptr<Object3d> mObject;
@@ -51,14 +72,11 @@ private: // -- 非公開 メンバ変数 -- //
 	// 最大コンボ回数
 	const int32_t kComboCountMax = 3;
 
-	// ビヘイビアツリー
-	std::unique_ptr<SelectorNode> mRoot;
-
 	// メンバ関数ポインタ
 	static void(BossEnemy::*CommandTable[])();
 
 	// ボスのState番号の配列(実行中に増減しないため、長さ固定の配列を宣言)
 	std::array<std::unique_ptr<IBossState>, 1> mStateArr;
-	int mCurrentSceneNo;
-	int mPrevSceneNo;
+	int mCurrentStateNo;
+	int mPrevStateNo;
 };

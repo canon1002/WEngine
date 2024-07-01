@@ -90,25 +90,6 @@ void Model::DrawGUI(const std::string& label){
 			ImGui::DragFloat("EnvironmentCoefficient", &materialData_->environmentCoefficient, 0.01f, 0.0f, 1.0f);
 			ImGui::TreePop();// ノードを閉じる(この場合は "マテリアル" を閉じる)
 		}
-		if (skinning_ != nullptr) {
-			if (ImGui::TreeNode("Skinning")) {
-				if (ImGui::Button("再生")) {
-					skinning_->Play();
-				}
-				if (ImGui::Button("停止")) {
-					skinning_->Pause();
-				}
-
-				if (ImGui::Button("忍び足")) {
-					skinning_->Init("human", "sneakWalk.gltf", modelData);
-				}
-				if (ImGui::Button("歩き")) {
-					skinning_->Init("human", "walk.gltf", modelData);
-				}
-
-				ImGui::TreePop();
-			}
-		}
 
 		ImGui::TreePop();
 	}

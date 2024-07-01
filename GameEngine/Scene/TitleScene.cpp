@@ -74,7 +74,7 @@ void TitleScene::Update() {
 	mBoss->Update();
 
 	// obj
-	testObject02_->mWorldTransform->SetParent(mPlayer->GetModel()->skinning_->GetSkeleton().joints.at(35).transform.GetAffinMatrix());
+	//testObject02_->mWorldTransform->SetParent(mPlayer->mSkinning->GetSkeleton().joints.at(35).transform.GetAffinMatrix());
 	testObject02_->Update();
 
 
