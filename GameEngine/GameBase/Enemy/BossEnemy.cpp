@@ -81,8 +81,5 @@ void BossEnemy::UpdateState() {
 }
 
 Vector3 BossEnemy::GetWorldPosForTarget() {
-	if (pPlayer != nullptr) {
-		return pPlayer->GetWorldPos();
-	}
-	return Vector3(1, 0, 1);
+	return pPlayer->GetWorldPos();
 }

@@ -18,7 +18,7 @@ public: // -- 公開 メンバ関数 -- //
 private: // -- 非公開 メンバ変数 -- //
 
     // Behavior Treeの実行速度
-    const int32_t kBehaviorRunCountMax = 60;
+    const int32_t kBehaviorRunCountMax = 90;
     int32_t mBehaviorRunCount;
 
     // ビヘイビアツリー

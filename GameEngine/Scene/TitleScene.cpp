@@ -29,9 +29,9 @@ void TitleScene::Init() {
 	
 	testObject02_ = std::make_unique<Object3d>("Test Plane");
 	testObject02_->Init("Test Plane");
-	testObject02_->SetModel("Bow.obj");
-	testObject02_->SetScale({ 1.0f,1.0f,1.0f });
-	testObject02_->SetRotate({ 0.0f,0.0f,0.0f });
+	testObject02_->SetModel("plane.gltf");
+	testObject02_->SetScale({ 10.0f,10.0f,1.0f });
+	testObject02_->SetRotate({ 1.54f,0.0f,0.0f });
 	testObject02_->SetTranslate({ 2.0f,0.0f,7.5f });
 
 	// skyboxの宣言
@@ -43,6 +43,7 @@ void TitleScene::Init() {
 	
 	mBoss = std::make_unique<BossEnemy>();
 	mBoss->Init();
+	mBoss->SetPlayer(mPlayer.get());
 
 	// オブジェクトにCubeMapのテクスチャ番号を渡す
 	testObject02_->GetModel()->SetCubeTexture(skybox_->mTextureHandle);

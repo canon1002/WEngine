@@ -56,7 +56,7 @@ Vector3 CatmullRomPosition(const std::vector<Vector3>& points, float t);
 /// </summary>
 /// <param name="v"></param>
 /// <returns></returns>
-static float Length(const Vector3& v);
+float Length(const Vector3& v);
 
 /// <summary>
 /// 正規化

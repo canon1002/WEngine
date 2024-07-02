@@ -12,18 +12,19 @@ MoveToTargetNode::MoveToTargetNode(BossEnemy* boss, std::function<bool()> func){
 	mBoss = boss;
 	// 条件用の関数ポインタをセット
 	this->func = func;
+}
+
+void MoveToTargetNode::Init() {
 	// 移動の始点
 	mStartPos = mBoss->GetWorldPos();
 	// 移動の終点
 	mEndPos = mBoss->GetWorldPosForTarget();
 	// 方向の設定
-	mDirection = Normalize(mStartPos - mEndPos);
+	mDirection = Normalize(mEndPos - mStartPos);
 	// 移動速度の設定
 	mMoveSpeed = (1.0f / 60.0f) * 2.0f;
 	// 移動量の設定
 	mVelocity = Scalar(mMoveSpeed, mDirection);
-
-
 }
 
 void MoveToTargetNode::Update(){
@@ -46,6 +47,9 @@ void MoveToTargetNode::Update(){
 	// 計算結果をBossクラスに渡す
 	mBoss->SetRotation(Vector3(0.0f, rotateY, 0.0f));
 
+	if (Length(mEndPos - mStartPos) <= 5.0f){
+		mVelocity = { 0.0f,0.0f,0.0f };
+	}
 
 }
 

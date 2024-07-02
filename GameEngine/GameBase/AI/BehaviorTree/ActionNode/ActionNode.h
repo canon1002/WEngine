@@ -1,4 +1,4 @@
-#include "IBehavior.h"
+#include "../IBehavior.h"
 
 class BossEnemy;
 
@@ -60,7 +60,9 @@ public: // -- 公開 メンバ関数 -- //
 		// 実際のアクションを実行する
 		return true; // あるいは成功か失敗の結果を返す
 	};
-
+	// 初期化
+	void Init();
+	// 更新処理
 	void Update();
 
 	// メンバ関数ポインタを返す関数
@@ -68,7 +70,8 @@ public: // -- 公開 メンバ関数 -- //
 
 		// 受け取った条件に応じて行動の成否を決める
 		if (func()) {
-
+			// 成功した場合、初期化を行う
+			this->Init();
 			// 条件に合致していればメンバ関数ポインタを返す
 			return [this]() { this->Update(); };
 

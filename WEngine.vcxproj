@@ -126,7 +126,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="GameEngine\Effect\PostEffect\LuminanceOutline.cpp" />
     <ClCompile Include="GameEngine\Effect\PostEffect\PostEffectManager.cpp" />
     <ClCompile Include="GameEngine\Effect\PostEffect\Vignette.cpp" />
-    <ClCompile Include="GameEngine\GameBase\AI\BehaviorTree\ActionNode.cpp" />
+    <ClCompile Include="GameEngine\GameBase\AI\BehaviorTree\ActionNode\ActionNode.cpp" />
     <ClCompile Include="GameEngine\GameBase\AI\BehaviorTree\SelectorNode.cpp" />
     <ClCompile Include="GameEngine\Object\Model\MultiModel.cpp" />
     <ClCompile Include="GameEngine\Object\Screen\RenderCopyImage.cpp" />
@@ -193,6 +193,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="GameEngine\GameBase\Player\Player.cpp" />
     <ClCompile Include="GameEngine\GameBase\AI\BehaviorTree\SequenceNode.cpp" />
     <ClCompile Include="GameEngine\GameBase\AI\State\VitalityBossState.cpp" />
+    <ClCompile Include="GameEngine\GameBase\AI\BehaviorTree\ActionNode\MoveToTarget.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameEngine\GameBase\Enemy\BossEnemy.h" />
@@ -204,7 +205,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="GameEngine\Effect\PostEffect\LuminanceOutline.h" />
     <ClInclude Include="GameEngine\Effect\PostEffect\PostEffectManager.h" />
     <ClInclude Include="GameEngine\Effect\PostEffect\Vignette.h" />
-    <ClInclude Include="GameEngine\GameBase\AI\BehaviorTree\ActionNode.h" />
+    <ClInclude Include="GameEngine\GameBase\AI\BehaviorTree\ActionNode\ActionNode.h" />
     <ClInclude Include="GameEngine\GameBase\AI\BehaviorTree\SelectorNode.h" />
     <ClInclude Include="GameEngine\GameBase\Command\MoveCommand.h" />
     <ClInclude Include="GameEngine\Object\Model\MultiModel.h" />
@@ -279,6 +280,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="GameEngine\GameBase\AI\State\IBossState.h" />
     <ClInclude Include="GameEngine\GameBase\AI\State\VitalityBossState.h" />
     <ClInclude Include="GameEngine\GameBase\IObjectBase.h" />
+    <ClInclude Include="GameEngine\GameBase\AI\BehaviorTree\ActionNode\MoveToTarget.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt" />

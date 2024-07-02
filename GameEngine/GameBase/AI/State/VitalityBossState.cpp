@@ -1,5 +1,5 @@
 #include "VitalityBossState.h"
-#include "GameEngine/GameBase/AI/BehaviorTree/ActionNode.h"
+#include "GameEngine/GameBase/AI/BehaviorTree/ActionNode/ActionNode.h"
 #include "GameEngine/GameBase/Enemy/BossEnemy.h"
 
 void VitalityBossState::Init(BossEnemy* boss) {
