@@ -7,9 +7,10 @@ void VitalityBossState::Init(BossEnemy* boss) {
 	// ポインタを渡す
 	mBoss = boss;
 
-	// Behavior Treeを構築する
+	// Behavior Treeを構築する 
+	// 子ノード生成時、ボスのポインタと条件用の関数ポインタを渡すこと
 	mRoot = std::make_unique<SelectorNode>();
-	mRoot->AddBehavior(new ActionNode(std::bind(&BossEnemy::invokeFarDistance,mBoss)));
+	mRoot->AddBehavior(new MoveToTargetNode(mBoss,std::bind(&BossEnemy::invokeFarDistance,mBoss)));
 
 	// Behavior Treeの実行速度を設定
 	mBehaviorRunCount = kBehaviorRunCountMax;
@@ -23,11 +24,14 @@ void VitalityBossState::Update() {
 	// カウントが0になったら実行する
 	if (mBehaviorRunCount <= 0) {
 		// 行動選択を実行
-		mRoot->Run();
+		mBehaviorUpdate = mRoot->Execute();
 		// カウントを最大に戻す
 		mBehaviorRunCount = kBehaviorRunCountMax;
 	}
-
-
+	
+	// 取得したコマンドを実行
+	if (mBehaviorUpdate != nullptr) {
+		mBehaviorUpdate();
+	}
 
 };

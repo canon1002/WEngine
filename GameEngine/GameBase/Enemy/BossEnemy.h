@@ -24,27 +24,42 @@ public: // -- 公開 メンバ関数 -- //
 	// デバッグUI表示
 	void DrawGUI();
 
+	// モデルの取得
 	Model* GetModel() { return mObject->mModel; }
 
 	// プレイヤーのポインタをセットする
-	void SetPlayer(const Player* player) { pPlayer = player; }
+	void SetPlayer(Player* player) { pPlayer = player; }
+
+	// ステートの更新処理
+	void UpdateState();
 
 #pragma region コマンド・ステート関連
 
 	inline void MoveForward() { mObject->mWorldTransform->translation.z += mVelocity.z; }
 	inline void BackStep(){ mObject->mWorldTransform->translation.z -= mVelocity.z; }
 
+	// -- 変更用関数 -- //
+
+	// 移動させる
+	void AddTransform(Vector3 velocity) { mObject->mWorldTransform->translation += velocity; }
+	// 回転量を任意の値に変更する
+	void SetRotation(Vector3 rotation) { mObject->mWorldTransform->rotation = rotation; }
+
+	// -- 取得関数 -- //
+
+	Vector3 GetWorldPos() { return mObject->GetWorldTransform()->translation; }
+	Vector3 GetWorldPosForTarget();
 
 	// -- ActionNodeの実行条件を設定する関数 -- //
 
 	// 距離が近い場合に実行
 	bool invokeNearDistance(){
-		return false;
+		return true;
 	};
 
 	// 距離が遠い場合に実行
 	bool invokeFarDistance(){
-		return false;
+		return true;
 	};
 
 #pragma endregion
@@ -52,7 +67,7 @@ public: // -- 公開 メンバ関数 -- //
 private: // -- 非公開 メンバ変数 -- //
 
 	// プレイヤー(ターゲット)のポインタ
-	const Player* pPlayer;
+	Player* pPlayer;
 
 	// オブジェクトクラス
 	std::unique_ptr<Object3d> mObject;

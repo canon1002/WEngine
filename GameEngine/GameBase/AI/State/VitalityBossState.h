@@ -25,7 +25,7 @@ private: // -- 非公開 メンバ変数 -- //
     std::unique_ptr<SelectorNode> mRoot;
 
     // メンバ関数ポインタ
-    //static void(IBehavior::* CommandTable[])();
+    std::function<void()> mBehaviorUpdate;
 
 
 };

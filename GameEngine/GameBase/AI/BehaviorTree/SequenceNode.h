@@ -16,9 +16,7 @@ private:
 public:
 
 	// 子ノードの解放処理
-	inline ~SequenceNode() {
-		
-	}
+	inline ~SequenceNode() {}
 
 	// 子ノードを追加する
 	inline void AddBehavior(IBehavior* behavior) { children.push_back(behavior); }
@@ -33,6 +31,11 @@ public:
 		return true; // 全ての子ノードが成功した場合は成功
 	}
 	
+	// 実行
+	virtual std::function<void()> Execute()override {
+		return nullptr; // 全ての子ノードが失敗した場合は失敗
+	}
+
 	// メンバ関数ポインタ
 	//static void(BossEnemy::*condition_[])();
 

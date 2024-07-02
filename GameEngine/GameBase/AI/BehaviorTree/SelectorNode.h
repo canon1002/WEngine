@@ -16,9 +16,7 @@ private:
 public:
 
 	// 子ノードの解放処理
-	inline ~SelectorNode(){
-		
-	}
+	inline ~SelectorNode(){}
 
 	// 子ノードを追加する
 	inline void AddBehavior(IBehavior* behavior) { children.push_back(behavior); }
@@ -31,6 +29,20 @@ public:
 			}
 		}
 		return false; // 全ての子ノードが失敗した場合は失敗
+	}
+
+	// 実行
+	virtual std::function<void()> Execute()override {
+		for (auto child : children) {
+			// 子ノードの関数ポインタを取得する
+			std::function<void()> func = child->Execute();
+
+			if (func!=nullptr) {
+
+				return func; // 一つでも成功したら成功
+			}
+		}
+		return nullptr; // 全ての子ノードが失敗した場合は失敗
 	}
 };
 

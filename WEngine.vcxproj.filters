@@ -246,6 +246,7 @@
     <ClCompile Include="GameEngine\GameBase\AI\State\IBossState.cpp" />
     <ClCompile Include="GameEngine\GameBase\Enemy\BossEnemy.cpp" />
     <ClCompile Include="GameEngine\GameBase\AI\State\VitalityBossState.cpp" />
+    <ClCompile Include="GameEngine\GameBase\IObjectBase.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameEngine\Base\WinApp\WinAPI.h">
@@ -421,6 +422,7 @@
     <ClInclude Include="GameEngine\GameBase\AI\State\IBossState.h" />
     <ClInclude Include="GameEngine\GameBase\Enemy\BossEnemy.h" />
     <ClInclude Include="GameEngine\GameBase\AI\State\VitalityBossState.h" />
+    <ClInclude Include="GameEngine\GameBase\IObjectBase.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt">

@@ -174,6 +174,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="GameEngine\Object\Grid3D.cpp" />
     <ClCompile Include="GameEngine\GameBase\Command\ICommand.cpp" />
     <ClCompile Include="GameEngine\GameBase\AI\State\IBossState.cpp" />
+    <ClCompile Include="GameEngine\GameBase\IObjectBase.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="GameEngine\Object\3d\Object3dCommon.cpp" />
     <ClCompile Include="GameEngine\Object\3d\Object3d.cpp" />
@@ -277,6 +278,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="GameEngine\GameBase\Command\ICommand.h" />
     <ClInclude Include="GameEngine\GameBase\AI\State\IBossState.h" />
     <ClInclude Include="GameEngine\GameBase\AI\State\VitalityBossState.h" />
+    <ClInclude Include="GameEngine\GameBase\IObjectBase.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt" />

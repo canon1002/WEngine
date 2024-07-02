@@ -27,6 +27,8 @@ public: // -- 公開 メンバ関数 -- //
 
 	Model* GetModel() { return mObject->mModel; }
 
+	Vector3 GetWorldPos() { return mObject->GetWorldTransform()->translation; }
+
 private: // -- 非公開 メンバ変数 -- //
 
 	// 入力を取得

@@ -32,6 +32,8 @@ void BossEnemy::InitBehavior() {
 
 	// ボスのState番号の配列(実行中に増減しないため、長さ固定の配列を宣言)
 	mStateArr[VITALITY] = std::make_unique<VitalityBossState>();
+	// 初期シーンの初期化
+	mStateArr[VITALITY]->Init(this);
 }
 
 // 関数ポインタテーブルの実体
@@ -44,9 +46,10 @@ void (BossEnemy::* BossEnemy::CommandTable[])() = {
 void BossEnemy::Update() {
 
 	// テーブルから関数を呼び出す
-	(this->*CommandTable[0])();
-	mCurrentStateNo;
-	mPrevStateNo;
+	//(this->*CommandTable[0])();
+
+	// ステートの更新処理を行う
+	this->UpdateState();
 
 	// オブジェクト更新
 	mObject->Update();
@@ -59,4 +62,27 @@ void BossEnemy::Draw() {
 
 void BossEnemy::DrawGUI() {
 	mObject->DrawGUI();
+}
+
+void BossEnemy::UpdateState() {
+	// ステートのチェック
+	mPrevStateNo = mCurrentStateNo;
+	mCurrentStateNo = mStateArr[mCurrentStateNo]->GetStateNo();
+
+	// ステートが変更されているかの確認
+	if (mPrevStateNo != mCurrentStateNo) {
+		// ステートが変更されたら初期化を行う
+		mStateArr[mCurrentStateNo]->Init(this);
+	}
+
+	// ステート 更新処理
+	mStateArr[mCurrentStateNo]->Update();
+
+}
+
+Vector3 BossEnemy::GetWorldPosForTarget() {
+	if (pPlayer != nullptr) {
+		return pPlayer->GetWorldPos();
+	}
+	return Vector3(1, 0, 1);
 }
