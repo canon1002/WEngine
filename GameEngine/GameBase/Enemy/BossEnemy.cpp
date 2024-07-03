@@ -83,3 +83,27 @@ void BossEnemy::UpdateState() {
 Vector3 BossEnemy::GetWorldPosForTarget() {
 	return pPlayer->GetWorldPos();
 }
+
+bool BossEnemy::invokeNearDistance() {
+	//	距離が近い場合のみ実行
+	if (Length(Vector3(
+		GetWorldPos().x - GetWorldPosForTarget().x,
+		GetWorldPos().y - GetWorldPosForTarget().y,
+		GetWorldPos().z - GetWorldPosForTarget().z)) 
+		<= 1.0f) {
+		return true;
+	}
+	return false;
+}
+
+bool BossEnemy::invokeFarDistance(){
+	//	距離が遠い場合のみ実行
+	if (Length(Vector3(
+		GetWorldPos().x - GetWorldPosForTarget().x,
+		GetWorldPos().y - GetWorldPosForTarget().y,
+		GetWorldPos().z - GetWorldPosForTarget().z))
+		>= 1.0f) {
+		return true;
+	}
+	return false;
+}

@@ -53,14 +53,10 @@ public: // -- 公開 メンバ関数 -- //
 	// -- ActionNodeの実行条件を設定する関数 -- //
 
 	// 距離が近い場合に実行
-	bool invokeNearDistance(){
-		return true;
-	};
+	bool invokeNearDistance();
 
 	// 距離が遠い場合に実行
-	bool invokeFarDistance(){
-		return true;
-	};
+	bool invokeFarDistance();
 
 #pragma endregion
 

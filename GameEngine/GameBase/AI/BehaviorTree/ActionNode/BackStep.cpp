@@ -1,7 +1,7 @@
-#include "MoveToTarget.h"
+#include "BackStep.h"
 #include "GameEngine/GameBase/Enemy/BossEnemy.h"
 
-MoveToTargetNode::MoveToTargetNode(BossEnemy* boss, std::function<bool()> func) {
+BackStep::BackStep(BossEnemy* boss, std::function<bool()> func) {
 
 	// ボスのポインタを取得
 	mBoss = boss;
@@ -19,7 +19,7 @@ MoveToTargetNode::MoveToTargetNode(BossEnemy* boss, std::function<bool()> func) 
 	mVelocity = Vector3(0.0f, 0.0f, 0.0f);
 }
 
-void MoveToTargetNode::Init() {
+void BackStep::Init() {
 	// 移動の始点
 	mStartPos = mBoss->GetWorldPos();
 	// 移動の終点
@@ -29,10 +29,10 @@ void MoveToTargetNode::Init() {
 	// 移動速度の設定
 	mMoveSpeed = (1.0f / 60.0f) * 2.0f;
 	// 移動量の設定
-	mVelocity = Scalar(mMoveSpeed, mDirection);
+	mVelocity = Scalar(-mMoveSpeed, mDirection);
 }
 
-void MoveToTargetNode::Update() {
+void BackStep::Update() {
 
 	// 移動させる
 	mBoss->AddTransform(mVelocity);
@@ -52,7 +52,7 @@ void MoveToTargetNode::Update() {
 	// 計算結果をBossクラスに渡す
 	mBoss->SetRotation(Vector3(0.0f, rotateY, 0.0f));
 
-	if (Length(mEndPos - mStartPos) <= 2.0f) {
+	if (Length(mEndPos - mStartPos) >= 10.0f) {
 		mVelocity = { 0.0f,0.0f,0.0f };
 	}
 

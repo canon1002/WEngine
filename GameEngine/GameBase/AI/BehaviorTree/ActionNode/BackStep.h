@@ -4,12 +4,12 @@
 class BossEnemy;
 
 // アクションノード
-class MoveToTargetNode : public IBehavior {
+class BackStep : public IBehavior {
 
 public: // -- 公開 メンバ関数 -- //
 
 	// コンストラクタ // 条件分岐用の関数を引数として渡す
-	MoveToTargetNode(BossEnemy* boss, std::function<bool()> func);
+	BackStep(BossEnemy* boss, std::function<bool()> func);
 
 	inline virtual bool Run() override {
 		// 実際のアクションを実行する
@@ -54,6 +54,10 @@ protected: // -- 限定公開 メンバ変数 -- //
 	Vector3 mVelocity;
 	// 移動速度
 	float mMoveSpeed;
+	// バックステップ時のジャンプ力
+	float mJumpPower;
+	// バックステップにかかる時間
+	float mBackStepTimer;
 
 };
 

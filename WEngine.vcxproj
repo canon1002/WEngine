@@ -117,6 +117,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="GameEngine\GameBase\AI\BehaviorTree\ActionNode\BackStep.cpp" />
     <ClCompile Include="GameEngine\GameBase\Enemy\BossEnemy.cpp" />
     <ClCompile Include="GameEngine\Effect\PostEffect\BoxFilter.cpp" />
     <ClCompile Include="GameEngine\Effect\PostEffect\DepthOutline.cpp" />
@@ -196,6 +197,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="GameEngine\GameBase\AI\BehaviorTree\ActionNode\MoveToTarget.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="GameEngine\GameBase\AI\BehaviorTree\ActionNode\BackStep.h" />
     <ClInclude Include="GameEngine\GameBase\Enemy\BossEnemy.h" />
     <ClInclude Include="GameEngine\Effect\PostEffect\BoxFilter.h" />
     <ClInclude Include="GameEngine\Effect\PostEffect\DepthOutline.h" />

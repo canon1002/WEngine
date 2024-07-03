@@ -1,5 +1,7 @@
 #include "VitalityBossState.h"
 #include "GameEngine/GameBase/AI/BehaviorTree/ActionNode/ActionNode.h"
+#include "GameEngine/GameBase/AI/BehaviorTree/ActionNode/MoveToTarget.h"
+#include "GameEngine/GameBase/AI/BehaviorTree/ActionNode/BackStep.h"
 #include "GameEngine/GameBase/Enemy/BossEnemy.h"
 
 void VitalityBossState::Init(BossEnemy* boss) {
@@ -11,6 +13,7 @@ void VitalityBossState::Init(BossEnemy* boss) {
 	// 子ノード生成時、ボスのポインタと条件用の関数ポインタを渡すこと
 	mRoot = std::make_unique<SelectorNode>();
 	mRoot->AddBehavior(new MoveToTargetNode(mBoss,std::bind(&BossEnemy::invokeFarDistance,mBoss)));
+	mRoot->AddBehavior(new BackStep(mBoss,std::bind(&BossEnemy::invokeNearDistance,mBoss)));
 
 	// Behavior Treeの実行速度を設定
 	mBehaviorRunCount = kBehaviorRunCountMax;

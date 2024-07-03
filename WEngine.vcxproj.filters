@@ -248,6 +248,7 @@
     <ClCompile Include="GameEngine\GameBase\AI\State\VitalityBossState.cpp" />
     <ClCompile Include="GameEngine\GameBase\IObjectBase.cpp" />
     <ClCompile Include="GameEngine\GameBase\AI\BehaviorTree\ActionNode\MoveToTarget.cpp" />
+    <ClCompile Include="GameEngine\GameBase\AI\BehaviorTree\ActionNode\BackStep.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameEngine\Base\WinApp\WinAPI.h">
@@ -425,6 +426,7 @@
     <ClInclude Include="GameEngine\GameBase\AI\State\VitalityBossState.h" />
     <ClInclude Include="GameEngine\GameBase\IObjectBase.h" />
     <ClInclude Include="GameEngine\GameBase\AI\BehaviorTree\ActionNode\MoveToTarget.h" />
+    <ClInclude Include="GameEngine\GameBase\AI\BehaviorTree\ActionNode\BackStep.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt">
