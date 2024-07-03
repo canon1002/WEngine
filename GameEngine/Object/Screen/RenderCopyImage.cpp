@@ -100,19 +100,6 @@ void RenderCopyImage::Update() {
 		ImGui::DragFloat("Multipliier", &fullScreenData->outlineMultipliier);
 	}
 
-	// Outline 深度検出
-	ImGui::Checkbox("DepthOutline Flag", &effectFlags.isEnableDepthOutline);
-	fullScreenData->enableDepthOutline = effectFlags.isEnableDepthOutline;
-	if (effectFlags.isEnableDepthOutline) {
-		if (ImGui::TreeNode("Projection Inverse")) {
-			for (int i = 0; i < 4; ++i) {
-				// Floatの4x4行列内の数値を表示
-				ImGui::DragFloat4(("Row " + std::to_string(i)).c_str(), fullScreenData->projectionInverse.m[i]);
-			}
-			ImGui::TreePop();
-		}
-	}
-
 	ImGui::End();
 
 #endif // _DEBUG
@@ -348,11 +335,11 @@ void RenderCopyImage::CreateVertexResource() {
 	fullScreenData->enableSmooting = 0;
 	fullScreenData->enableBoxFilter = 0;
 	fullScreenData->enableGaussianFilter = 0;
-	fullScreenData->kernelSize = 11;
+	fullScreenData->kernelSize = 5;
 	fullScreenData->GaussianSigma = 2.0f;
 	fullScreenData->enableLuminanceOutline = 1;
 	fullScreenData->outlineMultipliier = 6.0f;
-	fullScreenData->enableDepthOutline = 1;
+	fullScreenData->enableDepthOutline = 0;
 	fullScreenData->projectionInverse = Inverse(MainCamera::GetInstance()->GetProjectionMatrix());
 }
 

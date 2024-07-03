@@ -219,7 +219,6 @@
     <ClCompile Include="GameEngine\Base\DirectX\DSV.cpp" />
     <ClCompile Include="GameEngine\Object\Model\Skybox\Skybox.cpp" />
     <ClCompile Include="GameEngine\Object\Screen\RenderCopyImage.cpp" />
-    <ClCompile Include="GameEngine\Object\Screen\RenderTextureAdmin.cpp" />
     <ClCompile Include="GameEngine\Resource\ResourceCommon.cpp" />
     <ClCompile Include="GameEngine\Object\Model\Line.cpp" />
     <ClCompile Include="GameEngine\Append\Animation\Skinning\Skeleton.cpp" />
@@ -386,7 +385,6 @@
     <ClInclude Include="GameEngine\Base\DirectX\DSV.h" />
     <ClInclude Include="GameEngine\Object\Model\Skybox\Skybox.h" />
     <ClInclude Include="GameEngine\Object\Screen\RenderCopyImage.h" />
-    <ClInclude Include="GameEngine\Object\Screen\RenderTextureAdmin.h" />
     <ClInclude Include="GameEngine\Resource\ResourceCommon.h" />
     <ClInclude Include="GameEngine\Object\Model\Line.h" />
     <ClInclude Include="GameEngine\Append\Animation\Skinning\Skeleton.h" />

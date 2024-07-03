@@ -10,9 +10,9 @@ void ImGuiManager::Initialize(WinAPI* winApp, DirectXCommon* dxCommon){
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	// フォントを変更
-	ImGuiIO& io = ImGui::GetIO();
+	//ImGuiIO& io = ImGui::GetIO();
 	//io.Fonts->AddFontFromFileTTF("Resources/Font/M_PLUS_1_Code/MPLUS1Code-VariableFont_wght.ttf", 12.0f, nullptr, io.Fonts->GetGlyphRangesJapanese());
-	io.Fonts->AddFontFromFileTTF("Resources/Font/makinas4/Makinas-4-Flat.otf", 12.0f, nullptr, io.Fonts->GetGlyphRangesJapanese());
+	//io.Fonts->AddFontFromFileTTF("Resources/Font/makinas4/Makinas-4-Flat.otf", 12.0f, nullptr, io.Fonts->GetGlyphRangesJapanese());
 	//io.Fonts->AddFontFromFileTTF("Resources/Font/makinas4/Makinas-4-Square.otf", 12.0f, nullptr, io.Fonts->GetGlyphRangesJapanese());
 	
 	ImGui::StyleColorsDark();

@@ -117,7 +117,10 @@ int SceneManager::Run() {
 		mDxCommon->PreDraw();
 
 		// ポストエフェクトの積み込み
-		mPostEffectManager->Draw();
+		//mPostEffectManager->Draw();
+
+		copyImage_->PreDraw();
+		copyImage_->Draw();
 
 		// ポストエフェクトの描画
 		//mPostEffectManager->RenderFinalOutput();
