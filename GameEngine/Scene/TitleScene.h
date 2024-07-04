@@ -12,6 +12,8 @@
 #include "GameEngine/GameBase/Player/Player.h"
 #include "GameEngine/GameBase/Enemy/BossEnemy.h"
 
+#include "GameEngine/Append/Collider/CollisionManager.h"
+
 class TitleScene :
     public IScene
 {
@@ -36,6 +38,9 @@ private:
 
 	std::unique_ptr<Player> mPlayer;
 	std::unique_ptr<BossEnemy> mBoss;
-	
+
+	// 衝突判定マネージャ
+	std::unique_ptr<CollisionManager> mCollisionManager;
+
 };
 

@@ -4,6 +4,8 @@
 #include "GameEngine/Base/Debug/ImGuiManager.h"
 #include "GameEngine/Object/Camera/MainCamera.h"
 
+#include "GameEngine/Append/Collider/AABBCollider.h"
+
 void Player::Init(){
 	mObject = std::make_unique<Object3d>();
 	mObject->Init("PlayerObj");
@@ -28,6 +30,9 @@ void Player::Init(){
 	// ジャンプ回数のセット
 	mJumpCount = kJumpCountMax;
 
+	// コライダーの宣言
+	mObject->mCollider = new AABBCollider(mObject->mWorldTransform, Vector3(0.5f, 0.5f, 0.5f));
+	mObject->mCollider->Init();
 }
 
 void Player::Update(){
@@ -123,6 +128,7 @@ void Player::Update(){
 	// オブジェクト更新
 	mObject->Update();
 	mObject->mSkinning->GetSkeleton().joints;
+	mObject->mCollider->Update();
 }
 
 void Player::Draw(){
@@ -131,4 +137,8 @@ void Player::Draw(){
 
 void Player::DrawGUI(){
 	mObject->DrawGUI();
+}
+
+void Player::ColliderDraw(){
+	mObject->mCollider->Draw();
 }

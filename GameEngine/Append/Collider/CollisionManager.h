@@ -2,13 +2,19 @@
 #include"Collider.h"
 #include"CollisionConfig.h"
 
+#include "AABBCollider.h"
+#include "OBBCollider.h"
+#include "RayCollider.h"
+#include "SphereCollider.h"
+#include "PlaneCollider.h"
+
 class CollisionManager 
 {
 public:
 
 	CollisionManager();
 	~CollisionManager();
-	void Initialize();
+	void Init();
 	void Update();
 	void Draw();
 
@@ -21,8 +27,13 @@ private:
 
 	void CheckCollisionPair(Collider* colliderA, Collider* colliderB);
 
-	bool IsCollision(const AABB& a, const AABB& b);
-	bool IsCollision(const OBB& a, const OBB& b);
+
+	bool IsCollision(const AABBCollider& a, const AABBCollider& b);
+
+	bool IsCollision(const SphereCollider& s1, const SphereCollider& s2);
+
+
+	bool IsCollision(const AABBCollider& aabb, const SphereCollider& sphere);
 
 private:
 

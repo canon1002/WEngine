@@ -24,6 +24,7 @@ public: // -- 公開 メンバ関数 -- //
 	void Draw();
 	// デバッグUI表示
 	void DrawGUI();
+	void ColliderDraw();
 
 	Model* GetModel() { return mObject->mModel; }
 

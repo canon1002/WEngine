@@ -9,6 +9,8 @@ void TitleScene::Finalize(){}
 void TitleScene::Init() {
 	// 入力を取得する
 	mInput = InputManager::GetInstance();
+	// 衝突判定マネージャ
+	mCollisionManager = std::make_unique<CollisionManager>();
 	
 	//testObject_ = ObjectAdministrator::GetInstance()->CreateObject("Resources/objs", "emptyAxis.obj");
 	
@@ -57,6 +59,9 @@ void TitleScene::Init() {
 }
 
 void TitleScene::Update() {
+	// コライダーリストのクリア
+	mCollisionManager->ClearColliders();
+
 #ifdef _DEBUG
 	skybox_->DrawGUI("Skybox");
 	mPlayer->DrawGUI();
@@ -78,6 +83,11 @@ void TitleScene::Update() {
 	//testObject02_->mWorldTransform->SetParent(mPlayer->mSkinning->GetSkeleton().joints.at(35).transform.GetAffinMatrix());
 	testObject02_->Update();
 
+	// コライダーリストへの追加処理
+	//mCollisionManager->SetCollider();
+
+	// 衝突判定を行う
+	mCollisionManager->Update();
 
 }
 
@@ -101,5 +111,7 @@ void TitleScene::Draw(){
 
 	mPlayer->Draw();
 	mBoss->Draw();
+
+	mPlayer->ColliderDraw();
 
 }

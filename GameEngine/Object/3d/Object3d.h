@@ -5,7 +5,8 @@
 #include "GameEngine/Object/Light/DirectionalLight.h"
 #include "GameEngine/Object/Camera/CameraCommon.h"
 #include "GameEngine/Append/Animation/Skinning/Skinnig.h"
-#include "GameEngine/Append/Collider/ObjCollider.h"
+
+#include "GameEngine/Append/Collider/Collider.h"
 
 class Object3dCommon;
 class Model;
@@ -57,14 +58,14 @@ public: // メンバ変数
 	TransformationMatrix* mWvpData = nullptr;
 	WorldTransform* mWorldTransform;
 
-	// コライダー
-	ObjCollider* mCollider;
-
 	// スキニング アニメーション
 	Skinnig* mSkinning = nullptr;
-
 	// スケルトン
 	Skeleton mSkeleton;
+
+	// コライダー
+	Collider* mCollider;
+
 
 };
 

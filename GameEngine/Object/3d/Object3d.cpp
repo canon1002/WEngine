@@ -47,23 +47,15 @@ void Object3d::Update() {
 	mWvpData->World = mWorldTransform->GetWorldMatrix();
 	mWvpData->InverseTransposeWorld = Inverse(Transpose(mWorldTransform->GetWorldMatrix()));
 
+	// -- モデル関連処理 -- //
+
 	// 早期リターン
-	if (mModel == nullptr) {
-		return;
-	}
-
-	// モデルデータに存在するNodeのLocalMatrixを適用する
-	/*mWvpData->WVP = Multiply(model_->modelData.rootNode.localMatrix, Multiply(mWorldTransform->GetWorldMatrix(), wvpM));
-	mWvpData->World = Multiply(model_->modelData.rootNode.localMatrix, mWorldTransform->GetWorldMatrix());
-	mWvpData->InverseTransposeWorld = Transpose(Inverse(mWvpData->World));*/
-
+	if (mModel == nullptr) {return;}
+	// 更新
 	mModel->Update();
 
-	// -- アニメーションが設定されている場合 -- // 
-
-	if (mSkinning != nullptr) {
-		mSkinning->Update();
-	}
+	// アニメーションが設定されている場合
+	if (mSkinning != nullptr) { mSkinning->Update(); }
 
 }
 
