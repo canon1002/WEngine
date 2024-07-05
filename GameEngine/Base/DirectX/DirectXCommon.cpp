@@ -21,14 +21,14 @@ void DirectXCommon::Initialize(WinAPI* win) {
 	// FPS固定
 	InitFixFPS();
 
-	// デバッグレイヤーでエラーと警告を受け取る
+	// デバッグレイヤーでエラーと警告を受け取る // ComPtrにも反応するので一旦コメントアウト
 	#ifdef _DEBUG
-	if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&mDebugController)))) {
-		// デバッグレイヤーを有効化する
-		mDebugController->EnableDebugLayer();
-		// さらにGPU側でもチェックを行うようにする
-		mDebugController->SetEnableGPUBasedValidation(TRUE);
-	}	
+	//if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&mDebugController)))) {
+	//	// デバッグレイヤーを有効化する
+	//	mDebugController->EnableDebugLayer();
+	//	// さらにGPU側でもチェックを行うようにする
+	//	mDebugController->SetEnableGPUBasedValidation(TRUE);
+	//}	
 	#endif // _DEBUG
 
 	// 外部のやつ

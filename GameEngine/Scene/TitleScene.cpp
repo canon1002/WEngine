@@ -50,7 +50,9 @@ void TitleScene::Init() {
 	// オブジェクトにCubeMapのテクスチャ番号を渡す
 	testObject02_->GetModel()->SetCubeTexture(skybox_->mTextureHandle);
 	mPlayer->GetModel()->SetCubeTexture(skybox_->mTextureHandle);
+	mPlayer->GetCollider()->GetModel()->SetCubeTexture(skybox_->mTextureHandle);
 	mBoss->GetModel()->SetCubeTexture(skybox_->mTextureHandle);
+	mBoss->GetCollider()->GetModel()->SetCubeTexture(skybox_->mTextureHandle);
 
 	// グリッド生成  // 左の引数はグリッドのセル数、右の引数はセルの大きさを入れる
 	grid_ = std::make_unique<Grid3D>(5,1.0f);
@@ -84,7 +86,8 @@ void TitleScene::Update() {
 	testObject02_->Update();
 
 	// コライダーリストへの追加処理
-	//mCollisionManager->SetCollider();
+	mCollisionManager->SetCollider(mPlayer->GetObject3D()->mCollider);
+	mCollisionManager->SetCollider(mBoss->GetObject3D()->mCollider);
 
 	// 衝突判定を行う
 	mCollisionManager->Update();
@@ -106,12 +109,15 @@ void TitleScene::Draw(){
 
 	testObject02_->Draw();
 
+	mPlayer->ColliderDraw();
+	mBoss->ColliderDraw();
+
 	// Object3D(Skinning)の描画前処理
 	ModelManager::GetInstance()->PreDrawForSkinning();
 
 	mPlayer->Draw();
 	mBoss->Draw();
 
-	mPlayer->ColliderDraw();
+	
 
 }

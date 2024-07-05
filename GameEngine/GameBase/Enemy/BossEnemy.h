@@ -23,9 +23,12 @@ public: // -- 公開 メンバ関数 -- //
 	void Draw();
 	// デバッグUI表示
 	void DrawGUI();
+	void ColliderDraw();
 
+	Object3d* GetObject3D() { return mObject.get(); }
 	// モデルの取得
 	Model* GetModel() { return mObject->mModel; }
+	Collider* GetCollider() { return mObject->mCollider; }
 
 	// プレイヤーのポインタをセットする
 	void SetPlayer(Player* player) { pPlayer = player; }

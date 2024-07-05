@@ -124,6 +124,19 @@ void Object3d::DrawGUI()
 		}
 		ImGui::TreePop();
 	}
+	if (mCollider != nullptr) {
+		if (ImGui::TreeNode("Collider")) {
+			ImGui::SliderAngle("RotateX", &mCollider->GetWorld()->rotation.x);
+			ImGui::SliderAngle("RotateY", &mCollider->GetWorld()->rotation.y);
+			ImGui::SliderAngle("RotateZ", &mCollider->GetWorld()->rotation.z);
+			ImGui::DragFloat3("Scale", &mCollider->GetWorld()->scale.x, 0.05f, -10.0f, 10.0f);
+			ImGui::DragFloat3("Rotate", &mCollider->GetWorld()->rotation.x, 0.01f, -6.28f, 6.28f);
+			ImGui::DragFloat3("translate", &mCollider->GetWorld()->translation.x, 0.1f, -100.0f, 100.0f);
+
+			mCollider->DebugDraw("CollderModel");
+			ImGui::TreePop();
+		}
+	}
 	if (mModel != nullptr) {
 		mModel->DrawGUI(mObjname + "Model");
 

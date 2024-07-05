@@ -4,6 +4,7 @@
 #include "GameEngine/Base/Debug/ImGuiManager.h"
 #include "GameEngine/Object/Camera/MainCamera.h"
 #include "GameEngine/GameBase/Player/Player.h"
+#include "GameEngine/Append/Collider/AABBCollider.h"
 
 void BossEnemy::Init() {
 	mObject = std::make_unique<Object3d>();
@@ -25,6 +26,10 @@ void BossEnemy::Init() {
 
 	// ビヘイビアツリーの初期化
 	this->InitBehavior();
+
+	// コライダーの宣言
+	mObject->mCollider = new AABBCollider(mObject->mWorldTransform, Vector3(0.5f, 0.5f, 0.5f));
+	mObject->mCollider->Init();
 
 }
 
@@ -53,7 +58,7 @@ void BossEnemy::Update() {
 
 	// オブジェクト更新
 	mObject->Update();
-	
+	mObject->mCollider->Update();
 }
 
 void BossEnemy::Draw() {
@@ -106,4 +111,8 @@ bool BossEnemy::invokeFarDistance(){
 		return true;
 	}
 	return false;
+}
+
+void BossEnemy::ColliderDraw() {
+	mObject->mCollider->Draw();
 }

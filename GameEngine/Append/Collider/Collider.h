@@ -12,7 +12,17 @@
 #include<algorithm>
 
 #include "GameEngine/Append/Transform/WorldTransform.h"
+
+#ifdef _DEBUG
+
 #include "GameEngine/Object/Grid3D.h"
+#include "GameEngine/Object/Model/Model.h"
+
+#endif // _DEBUG
+
+
+class AABBCollider;
+class SphereCollider;
 
 /// <summary>
 ///	コライダー
@@ -25,11 +35,7 @@ public: // -- 公開 メンバ関数 -- //
 	virtual void Init() = 0;
 	virtual void Update() = 0;
 	virtual void Draw() = 0;
-	virtual void CreateRootSigneture() = 0;
-	virtual void CreatePSO() = 0;
 	virtual void CreateTransformation() = 0;
-	virtual void CreateVertex() = 0;
-	virtual void CreateIndex() = 0;
 
 	// 衝突時の処理
 	virtual void OnCollision() = 0;
@@ -49,6 +55,12 @@ public: // -- 公開 メンバ関数 -- //
 
 	// コライダー同士の衝突判定(マネージャで呼び出す用)
 	virtual bool IsCollision(Collider* c) = 0;
+	virtual bool IsCollision(AABBCollider* c) = 0;
+	virtual bool IsCollision(SphereCollider* c) = 0;
+
+	WorldTransform* GetWorld() { return pWorldTransform; }
+	Model* GetModel() const{ return mModel; }
+	void DebugDraw(std::string label) { mModel->DrawGUI(label); }
 
 protected: // -- 限定公開 メンバ変数 -- //
 
@@ -58,6 +70,8 @@ protected: // -- 限定公開 メンバ変数 -- //
 	uint32_t mCollisionMask = 0xffffffff;
 
 	// -- ここから下はデバッグ用の変数 -- //
+
+#ifdef _DEBUG
 
 	// 外部ポインタ
 	DirectXCommon* mDxCommon = nullptr;
@@ -69,21 +83,9 @@ protected: // -- 限定公開 メンバ変数 -- //
 	TransformationMatrixForGrid3D* mWvpData = nullptr;
 	WorldTransform* pWorldTransform;
 
-	// 頂点リソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> mVertexResource = nullptr;
-	// 頂点バッファビュー
-	D3D12_VERTEX_BUFFER_VIEW mVertexBufferView{};
-	// 頂点データ
-	VertexDataForGrid* mVertexData = nullptr;
+	// モデル
+	Model* mModel;
 
-	// Indexリソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> mIndexResource = nullptr;
-	// Indexバッファビュー
-	D3D12_INDEX_BUFFER_VIEW mIndexBufferView{};
+#endif // _DEBUG
 
-	// グラフィックパイプライン
-	Microsoft::WRL::ComPtr <ID3D12PipelineState> mGraphicsPipelineState = nullptr;
-	// ルートシグネチャー
-	Microsoft::WRL::ComPtr <ID3D12RootSignature> mRootSignature = nullptr;
-	
 };

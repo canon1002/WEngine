@@ -26,7 +26,9 @@ public: // -- 公開 メンバ関数 -- //
 	void DrawGUI();
 	void ColliderDraw();
 
+	Object3d* GetObject3D() { return mObject.get(); }
 	Model* GetModel() { return mObject->mModel; }
+	Collider* GetCollider() { return mObject->mCollider; }
 
 	Vector3 GetWorldPos() { return mObject->GetWorldTransform()->translation; }
 

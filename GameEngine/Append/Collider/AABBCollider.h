@@ -18,9 +18,9 @@ public: // -- 公開 メンバ関数 -- //
     void Draw()override;
 
     // 衝突判定関数
-    bool IsCollision(Collider* c)override;
-    bool IsCollision(AABBCollider* c);
-    bool IsCollision(SphereCollider* c);
+    virtual bool IsCollision(Collider* c)override;
+    virtual bool IsCollision(AABBCollider* c);
+    virtual bool IsCollision(SphereCollider* c);
 
     // 衝突時
     virtual void OnCollision()override {};
@@ -34,11 +34,7 @@ public: // -- 公開 メンバ関数 -- //
 
 private: // -- 非公開 メンバ関数 -- //
 
-    void CreateRootSigneture()override;
-    void CreatePSO()override;
     void CreateTransformation()override;
-    void CreateVertex()override;
-    void CreateIndex()override;
 
 protected:
 

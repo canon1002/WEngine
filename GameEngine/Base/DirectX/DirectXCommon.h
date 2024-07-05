@@ -195,7 +195,7 @@ private:
 #ifdef _DEBUG
 
 	
-	ID3D12Debug1* mDebugController;
+	//ID3D12Debug1* mDebugController;
 
 #endif // _DEBUG
 
