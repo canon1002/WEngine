@@ -80,6 +80,8 @@ void AABBCollider::Update(){
 
 	// AABBなので回転をなくしたワールド行列を作る
 	WorldTransform world = *pWorldTransform;
+	// ridiusに合わせて拡大縮小を行う
+	world.scale = { mRadius.x * 2.0f,mRadius.y * 2.0f,mRadius.z * 2.0f };
 	world.rotation = { 0.0f,0.0f,0.0f };
 	Matrix4x4 worldM = world.GetWorldMatrix();
 	// 矩形のワールド行列とWVP行列を掛け合わした行列を代入
