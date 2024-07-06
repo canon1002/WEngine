@@ -90,8 +90,12 @@ int SceneManager::Run() {
 
 		/// 更新処理
 		sceneArr_[currentSceneNo_]->Update();
-		mPostEffectManager->Update();
+		
+		//mPostEffectManager->Update();
+		
+		// ポストエフェクト
 		copyImage_->Update();
+		
 		#ifdef _DEBUG
 		// 開発用UIの表示
 		//ImGui::ShowDemoWindow();

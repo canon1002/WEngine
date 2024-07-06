@@ -43,15 +43,15 @@ void RenderCopyImage::Update() {
 
 	ImGui::Begin("RenderTexture");
 
-	//画面全体のカラー変更
-	ImGui::Checkbox("ScreenColor Flag", &effectFlags.isEnableScreenColor);
-	fullScreenData->enableScreenColor = effectFlags.isEnableScreenColor;
+	//画面全体のカラー変更 // とりあえずグレースケールに設定
+	ImGui::Checkbox("GrayScale Flag", &effectFlags.isEnableScreenColor);
+	fullScreenData->enableGrayScele = effectFlags.isEnableScreenColor;
 	if (effectFlags.isEnableScreenColor) {
 		// 色を変更
-		Color newColor = { fullScreenData->screenColor.x,fullScreenData->screenColor.y,
+		/*Color newColor = { fullScreenData->screenColor.x,fullScreenData->screenColor.y,
 			fullScreenData->screenColor.z,fullScreenData->screenColor.w};
 		ImGui::ColorEdit4("SctreenColor", &newColor.r);
-		fullScreenData->screenColor = Vector4(newColor.r,newColor.g,newColor.b,newColor.a);
+		fullScreenData->screenColor = Vector4(newColor.r,newColor.g,newColor.b,newColor.a);*/
 	}
 	// ビネット
 	ImGui::Checkbox("Viggetting Flag", &effectFlags.isEnableViggetting);
@@ -63,7 +63,7 @@ void RenderCopyImage::Update() {
 
 	// ぼかし(BoxFilter/GuaseFilter)
 	ImGui::Checkbox("Smooting Flag", &effectFlags.isEnableSmooting);
-	fullScreenData->enableScreenColor = effectFlags.isEnableScreenColor;
+	fullScreenData->enableSmooting = effectFlags.isEnableSmooting;
 	if (effectFlags.isEnableSmooting) {
 
 		// GuaseFilter
