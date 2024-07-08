@@ -25,15 +25,8 @@ public:
 
 private:
 
+	// コライダー同士の衝突判定を行う
 	void CheckCollisionPair(Collider* colliderA, Collider* colliderB);
-
-
-	bool IsCollision(const AABBCollider& a, const AABBCollider& b);
-
-	bool IsCollision(const SphereCollider& s1, const SphereCollider& s2);
-
-
-	bool IsCollision(const AABBCollider& aabb, const SphereCollider& sphere);
 
 private:
 

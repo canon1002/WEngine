@@ -21,6 +21,11 @@
 #endif // _DEBUG
 
 
+struct Plane {
+	Vector3 normal;// 法線(単位ベクトル)
+	float distance;// 距離
+};
+
 class AABBCollider;
 class SphereCollider;
 
