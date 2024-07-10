@@ -1,4 +1,5 @@
 #include "Object3d.hlsli"
+#include "ColorConvert.hlsli"
 
 // マテリアル
 struct Material{
@@ -44,6 +45,12 @@ PixelShaderOutput main(VertexShaderOutput input) {
     PixelShaderOutput output;    
     float4 transformedUV = mul(float32_t4(input.texcoord, 0.0f, 1.0f), gMaterial.uvTransform);
     float32_t4 textureColor = gTexture.Sample(gSampler, transformedUV.xy);
+    
+    // RGB->HSV変換を行う
+    float32_t3 hsv = RGBToHSV(textureColor.rgb);
+    
+    // HSV->RGB変換を行う
+    float32_t3 rgb = HSVToRGB(hsv);
     
     if (gMaterial.enableLighting != 0)// Lightingする場合
     {

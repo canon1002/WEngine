@@ -1,4 +1,5 @@
 #include "Object3d.hlsli"
+#include "ColorConvert.hlsli"
 
 struct TransformationMatrix {
     float32_t4x4 WVP;

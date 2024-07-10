@@ -416,6 +416,7 @@
     <None Include="Shaders\Particle.hlsli" />
     <None Include="Shaders\Object3d.hlsli" />
     <None Include="Shaders\CopyImage.hlsli" />
+    <None Include="Shaders\ColorConvert.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\Sprite2d.PS.hlsl" />
