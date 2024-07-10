@@ -254,6 +254,7 @@
     <ClCompile Include="GameEngine\Append\Collider\SphereCollider.cpp" />
     <ClCompile Include="GameEngine\Append\Collider\TriangleCollider.cpp" />
     <ClCompile Include="GameEngine\Append\Collider\OBBCollider.cpp" />
+    <ClCompile Include="GameEngine\GameBase\Reticle\Reticle3D.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameEngine\Base\WinApp\WinAPI.h">
@@ -437,6 +438,7 @@
     <ClInclude Include="GameEngine\Append\Collider\SphereCollider.h" />
     <ClInclude Include="GameEngine\Append\Collider\TriangleCollider.h" />
     <ClInclude Include="GameEngine\Append\Collider\OBBCollider.h" />
+    <ClInclude Include="GameEngine\GameBase\Reticle\Reticle3D.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt">

@@ -200,6 +200,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="GameEngine\GameBase\AI\BehaviorTree\SequenceNode.cpp" />
     <ClCompile Include="GameEngine\GameBase\AI\State\VitalityBossState.cpp" />
     <ClCompile Include="GameEngine\GameBase\AI\BehaviorTree\ActionNode\MoveToTarget.cpp" />
+    <ClCompile Include="GameEngine\GameBase\Reticle\Reticle3D.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameEngine\Append\Collider\AABBCollider.h" />
@@ -293,6 +294,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="GameEngine\GameBase\AI\State\VitalityBossState.h" />
     <ClInclude Include="GameEngine\GameBase\IObjectBase.h" />
     <ClInclude Include="GameEngine\GameBase\AI\BehaviorTree\ActionNode\MoveToTarget.h" />
+    <ClInclude Include="GameEngine\GameBase\Reticle\Reticle3D.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt" />

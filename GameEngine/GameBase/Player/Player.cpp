@@ -38,16 +38,16 @@ void Player::Init(){
 void Player::Update(){
 
 	// RBボタンを押してたら歩く
-	if (mInput->GetPused(Gamepad::Button::RIGHT_SHOULDER)) {
-		mObject->mSkinning->Init("human", "walk.gltf",
-			mObject->GetModel()->modelData);
-	}
+	//if (mInput->GetPused(Gamepad::Button::RIGHT_SHOULDER)) {
+	//	mObject->mSkinning->Init("human", "walk.gltf",
+	//		mObject->GetModel()->modelData);
+	//}
 
-	// RBを離したらスニーク
-	if (mInput->GetReleased(Gamepad::Button::RIGHT_SHOULDER)) {
-		mObject->mSkinning->Init("human", "sneakWalk.gltf",
-			mObject->GetModel()->modelData);
-	}
+	//// RBを離したらスニーク
+	//if (mInput->GetReleased(Gamepad::Button::RIGHT_SHOULDER)) {
+	//	mObject->mSkinning->Init("human", "sneakWalk.gltf",
+	//		mObject->GetModel()->modelData);
+	//}
 
 	// ジャンプ
 	if (mJumpCount > 0) {
