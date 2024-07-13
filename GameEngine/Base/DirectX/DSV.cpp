@@ -43,7 +43,8 @@ void DSV::CreateDepthBuffer()
 	clearValue.DepthStencil.Depth = 1.0f;
 	clearValue.DepthStencil.Stencil = 0;
 
-	HRESULT hr = mDxCommon->device_->CreateCommittedResource(
+	HRESULT hr;
+	hr = mDxCommon->device_->CreateCommittedResource(
 		&heapProps,
 		D3D12_HEAP_FLAG_NONE,
 		&depthBufferDesc,

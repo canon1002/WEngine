@@ -414,7 +414,8 @@ void DirectXCommon::CreateFence() {
 
 	// 初期値0でFenceを作る
 	mFenceValue = 0;
-	HRESULT hr = device_->CreateFence(mFenceValue, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&mFence));
+	HRESULT hr;
+	hr = device_->CreateFence(mFenceValue, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&mFence));
 	assert(SUCCEEDED(hr));
 	// FenceのSignalを待つためのイベントを作成する
 	mFenceEvent = CreateEvent(NULL, FALSE, FALSE, NULL);

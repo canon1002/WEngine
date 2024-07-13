@@ -24,6 +24,7 @@ void TitleScene::Init() {
 	ModelManager::GetInstance()->LoadModel("human", "walk.gltf");
 	ModelManager::GetInstance()->LoadModel("Bow", "BowBody.gltf");
 	ModelManager::GetInstance()->LoadModel("Bow", "Bow.obj");
+	ModelManager::GetInstance()->LoadModel("Arrow", "Arrow.gltf");
 
 	// SkyBox 読み込み
 	DirectXCommon::GetInstance()->srv_->LoadTexture("skybox/rostock_laage_airport_4k.dds");
@@ -53,6 +54,7 @@ void TitleScene::Init() {
 	mPlayer->GetCollider()->GetModel()->SetCubeTexture(skybox_->mTextureHandle);
 	mBoss->GetModel()->SetCubeTexture(skybox_->mTextureHandle);
 	mBoss->GetCollider()->GetModel()->SetCubeTexture(skybox_->mTextureHandle);
+	mPlayer->GetReticle3D()->SetCubeMap(skybox_->mTextureHandle);
 
 	// グリッド生成  // 左の引数はグリッドのセル数、右の引数はセルの大きさを入れる
 	grid_ = std::make_unique<Grid3D>(5,1.0f);
@@ -118,6 +120,6 @@ void TitleScene::Draw(){
 	mPlayer->Draw();
 	mBoss->Draw();
 
-	
+	mPlayer->GetReticle3D()->Draw2DReticle();
 
 }

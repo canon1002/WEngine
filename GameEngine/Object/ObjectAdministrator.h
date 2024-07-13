@@ -36,7 +36,7 @@ public: // -- public メンバ変数 -- //
 	// モデル管理者クラス
 	ModelManager* modelAdmin_ = nullptr;
 	// スプライト管理者クラス
-	std::unique_ptr<SpriteAdministrator> spriteAdmin_ = nullptr;
+	SpriteAdministrator* spriteAdmin_ = nullptr;
 	// パーティクル管理者クラス
 	//std::unique_ptr<> particleAdmin_ = nullptr;
 

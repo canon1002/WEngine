@@ -31,6 +31,9 @@ public: // -- アクセッサ -- //
 	void SetNearClip() {}
 	void SetFarClip() {}
 	void SetCamera() {}
+	
+	float GetFarClip()const { return farClip_; }
+	float GetNearClip()const { return nearClip_; }
 
 #pragma endregion
 
@@ -41,6 +44,8 @@ public: // -- アクセッサ -- //
 	const Matrix4x4& GetViewProjectionMatrix() const { return viewprojectionMatrix_; }
 	Vector3 GetRotate()const { return mWorldTransform->rotation; }
 	Vector3 GetTranslate()const { return mWorldTransform->GetWorldPosition(); }
+
+	Vec2 GetWindowSize() { return Vec2((float)winApp_->kClientHeight, (float)winApp_->kClientHeight); }
 
 #pragma endregion
 

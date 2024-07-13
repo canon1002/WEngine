@@ -13,12 +13,9 @@
 
 #include "GameEngine/Append/Transform/WorldTransform.h"
 
-#ifdef _DEBUG
-
 #include "GameEngine/Object/Grid3D.h"
 #include "GameEngine/Object/Model/Model.h"
 
-#endif // _DEBUG
 
 
 struct Plane {
@@ -76,7 +73,6 @@ protected: // -- 限定公開 メンバ変数 -- //
 
 	// -- ここから下はデバッグ用の変数 -- //
 
-#ifdef _DEBUG
 
 	// 外部ポインタ
 	DirectXCommon* mDxCommon = nullptr;
@@ -91,6 +87,5 @@ protected: // -- 限定公開 メンバ変数 -- //
 	// モデル
 	Model* mModel;
 
-#endif // _DEBUG
 
 };

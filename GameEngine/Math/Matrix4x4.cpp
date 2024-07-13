@@ -330,61 +330,58 @@ Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Quaternion& rotate, const
 }
 
 // 透視投影行列の作成
-Matrix4x4 MakePerspectiveMatrix(
-	float fovY, float aspectRatio, float nearClip, float farClip) {
-	float m11 = (1 / aspectRatio) * (1 / std::tan(fovY / 2));
-	float m22 = (1 / std::tan(fovY / 2));
-	float m33 = farClip / (farClip - nearClip);
-	float m44 = (-nearClip*farClip) / (farClip - nearClip);
-	return Matrix4x4{
-		m11,    0,   0,  0,
-		  0, m22,    0,  0,
-		  0,    0, m33,  1,
-		  0,    0, m44,  0
-	};
+Matrix4x4 MakePerspectiveMatrix(float fovY, float aspectRatio, float nearClip, float farClip) {
+	
+	Matrix4x4 result{};
+
+	result.m[0][0] = (1.0f / aspectRatio) * (1.0f / std::tan(fovY / 2.0f));
+
+	result.m[1][1] = (1.0f / std::tan(fovY / 2.0f));
+
+	result.m[2][2] = farClip / (farClip - nearClip);
+	result.m[2][3] = 1;
+
+	result.m[3][2] = (-nearClip * farClip) / (farClip - nearClip);
+
+	return result;
 }
 
 // 正射影行列の作成
-Matrix4x4 MakeOrthographicMatrix(
-	float left, float top, float right, float bottom, float nearClip, float farClip) {
+Matrix4x4 MakeOrthographicMatrix(float left, float top, float right, float bottom, float nearClip, float farClip) {
+	Matrix4x4 result{};
 
-	return Matrix4x4{
-		2 / (right - left),0,0,0,
+	result.m[0][0] = 2.0f / (right - left);
+	result.m[1][1] = 2.0f / (top - bottom);
+	result.m[2][2] = 1.0f / (farClip - nearClip);
 
-		0,2 / (top - bottom),0,0,
+	result.m[3][0] = (left + right) / (left - right);
+	result.m[3][1] = (top + bottom) / (bottom - top);
+	result.m[3][2] = nearClip / (nearClip - farClip);
+	result.m[3][3] = 1;
 
-		0,0,1 / (farClip - nearClip),0,
-
-		(left + right) / (left - right),
-		(top + bottom) / (bottom - top),
-		nearClip / (nearClip - farClip),
-		1
-	};
+	return result;
 
 }
 
 // ビューポート変換行列の作成
 Matrix4x4 MakeViewportMatrix(
 	float left, float top, float width, float height, float minDepth, float maxDepth) {
-
+	
 	// minD <= maxD でなければ実行しない
 	assert(minDepth <= maxDepth);
-	return Matrix4x4{
-		width / 2,
-		0,
-		0,
-		0,
-		0,
-		-height / 2,
-		0,
-		0,
-		0,
-		0,
-		maxDepth - minDepth,
-		0,
-		left + (width / 2),
-		top + (height / 2),
-		minDepth,
-		1 };
+	
+	Matrix4x4 result{};
+
+	result.m[0][0] = width / 2.0f;
+	result.m[1][1] = -(height / 2.0f);
+	result.m[2][2] = maxDepth - minDepth;
+
+	result.m[3][0] = left + (width / 2.0f);
+	result.m[3][1] = top + (height / 2.0f);
+	result.m[3][2] = minDepth;
+	result.m[3][3] = 1;
+
+	return result;
+	
 }
 

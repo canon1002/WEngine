@@ -11,7 +11,7 @@ public:
 	Sprite() = default;
 	~Sprite() = default;
 
-	void Initialize(DirectXCommon* dxCommon,CameraCommon* camera);
+	void Initialize();
 	void Update();
 	void Draw();
 

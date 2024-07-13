@@ -31,8 +31,8 @@ void ObjectAdministrator::Init(DirectXCommon* dxCommon){
 	modelAdmin_->Initialize(mDxCommon, MainCamera::GetInstance());
 
 	// スプライト管理者クラス
-	spriteAdmin_ = std::make_unique<SpriteAdministrator>();
-	spriteAdmin_->Initialize(mDxCommon);
+	spriteAdmin_ = SpriteAdministrator::GetInstance();
+	spriteAdmin_->Init(mDxCommon);
 
 
 }

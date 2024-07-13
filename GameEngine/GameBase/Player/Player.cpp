@@ -33,6 +33,11 @@ void Player::Init(){
 	// コライダーの宣言
 	mObject->mCollider = new AABBCollider(mObject->mWorldTransform, Vector3(0.5f, 0.5f, 0.5f));
 	mObject->mCollider->Init();
+
+	// レティクルの初期化
+	mReticle = std::make_unique<Reticle3D>();
+	mReticle->Init();
+
 }
 
 void Player::Update(){
@@ -125,6 +130,30 @@ void Player::Update(){
 		mObject->mWorldTransform->rotation.y = rotateY;
 	}
 
+	mReticle->Update();
+	// プレイヤー攻撃処理
+	if (mInput->GetKey()->GetTriggerKey(DIK_RETURN) || mInput->GetPused(Gamepad::Button::X)) {
+		Vector3 startPos = this->GetWorldPos();// 移動の始点
+		Vector3 endPos = mReticle->GetWorld3D();// 移動の終点
+		// アローの進行方向を設定し、正規化しておく
+		Vector3 directionForArrow = endPos - startPos;
+		directionForArrow = Normalize(directionForArrow);
+
+		// アロークラスの宣言と初期化を行う(上記で求めた移動方向と始点の座標を代入)
+		Arrow* arrow = new Arrow();
+		arrow->Init(startPos, directionForArrow);
+		arrow->SetCubeMap(mObject->GetModel()->mTextureHandleCubeMap);
+		// アロークラスの配列に要素を追加する
+		mArrows.push_back(arrow);
+
+	}
+
+	for (const auto& arrow : mArrows) {
+		arrow->Update();
+		arrow->DebugDraw();
+
+	}
+
 	// オブジェクト更新
 	mObject->Update();
 	mObject->mSkinning->GetSkeleton().joints;
@@ -133,6 +162,11 @@ void Player::Update(){
 
 void Player::Draw(){
 	mObject->Draw();
+
+	for (const auto& arrow : mArrows) {
+		arrow->Draw();
+	}
+
 }
 
 void Player::DrawGUI(){
@@ -141,4 +175,5 @@ void Player::DrawGUI(){
 
 void Player::ColliderDraw(){
 	mObject->mCollider->Draw();
+	mReticle->Draw3DReticle();
 }

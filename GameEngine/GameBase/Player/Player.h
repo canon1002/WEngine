@@ -1,6 +1,8 @@
 #pragma once
 #include "GameEngine/Object/3d/Object3d.h"
 #include "GameEngine/Input/InputManager.h"
+#include "GameEngine/GameBase/Reticle/Reticle3D.h"
+#include "GameEngine/GameBase/Player/Arrow.h"
 
 // 振る舞い
 enum class Behavior {
@@ -31,6 +33,7 @@ public: // -- 公開 メンバ関数 -- //
 	Collider* GetCollider() { return mObject->mCollider; }
 
 	Vector3 GetWorldPos() { return mObject->GetWorldTransform()->translation; }
+	Reticle3D* GetReticle3D() { return mReticle.get(); }
 
 private: // -- 非公開 メンバ変数 -- //
 
@@ -58,5 +61,11 @@ private: // -- 非公開 メンバ変数 -- //
 	// 最大コンボ回数
 	const int32_t kComboCountMax = 3;
 
+	// 3D照準クラス
+	std::unique_ptr<Reticle3D> mReticle;
+
+	// アロークラス
+	std::list<Arrow*> mArrows;
+	 
 };
 

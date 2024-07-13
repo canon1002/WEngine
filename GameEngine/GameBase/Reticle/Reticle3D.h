@@ -3,6 +3,7 @@
 #include "GameEngine/Math/Math.h"
 #include "GameEngine/Object/3d/Object3d.h"
 #include "GameEngine/Input/InputManager.h"
+#include "GameEngine/Object/Sprite/Sprite.h"
 
 class InputManager;
 
@@ -17,6 +18,11 @@ public: // -- 公開 メンバ関数 -- //
 	void Draw3DReticle();
 	void Draw2DReticle();
 
+	// 3Dレティクルのワールド座標を取得する
+	Vector3 GetWorld3D() { return mWorldReticle3D->GetWorldPosition(); }
+	void SetCubeMap(const int32_t& textureHandle) { mObject->GetModel()->SetCubeTexture(textureHandle); }
+
+
 private: // -- 非公開 メンバ変数 -- //
 
 	InputManager* pInput;
@@ -29,7 +35,13 @@ private: // -- 非公開 メンバ変数 -- //
 	// 2Dレティクルの座標
 	Vec2 mPostionReticle2D;
 
+	// 3Dレティクルオブジェクト
+	std::unique_ptr<Object3d> mObject;
+	// 2Dレティクルスプライト
+	std::unique_ptr<Sprite> mSprite;
 
+	Vector3 mPosNear;
+	Vector3 mPosFar;
 
 };
 

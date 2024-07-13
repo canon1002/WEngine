@@ -117,6 +117,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="GameEngine\GameBase\Player\Arrow.cpp" />
     <ClCompile Include="GameEngine\Append\Collider\AABBCollider.cpp" />
     <ClCompile Include="GameEngine\Append\Collider\OBBCollider.cpp" />
     <ClCompile Include="GameEngine\Append\Collider\PlaneCollider.cpp" />
@@ -203,6 +204,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="GameEngine\GameBase\Reticle\Reticle3D.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="GameEngine\GameBase\Player\Arrow.h" />
     <ClInclude Include="GameEngine\Append\Collider\AABBCollider.h" />
     <ClInclude Include="GameEngine\Append\Collider\OBBCollider.h" />
     <ClInclude Include="GameEngine\Append\Collider\PlaneCollider.h" />

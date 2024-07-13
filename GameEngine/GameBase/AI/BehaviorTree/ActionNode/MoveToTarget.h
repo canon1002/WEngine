@@ -11,14 +11,14 @@ public: // -- 公開 メンバ関数 -- //
 	// コンストラクタ // 条件分岐用の関数を引数として渡す
 	MoveToTargetNode(BossEnemy* boss, std::function<bool()> func);
 
-	inline virtual bool Run() override {
-		// 実際のアクションを実行する
-		return true; // あるいは成功か失敗の結果を返す
-	};
 	// 初期化
 	void Init();
 	// 更新処理
 	void Update();
+
+	virtual bool Run()override{
+		return true;
+	}
 
 	// メンバ関数ポインタを返す関数
 	std::function<void()> Execute() override {
