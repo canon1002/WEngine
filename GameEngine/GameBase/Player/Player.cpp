@@ -157,7 +157,7 @@ void Player::Update(){
 		// 回転量が超過していたり、下限を下回っていたら補正する
 		if (rotate.y > PI) { rotate.y -= 2.0f * PI; }
 		if (rotate.y < -PI) { rotate.y += 2.0f * PI; }
-		rotate.x = std::atan2f(directionForArrow.y, directionForArrow.z);
+		rotate.x = -std::atan2f(directionForArrow.y, directionForArrow.z);
 		rotate.x = std::fmodf(rotate.x, 2.0f * PI);
 		// 回転量が超過していたり、下限を下回っていたら補正する
 		if (rotate.x > PI) { rotate.y -= 2.0f * PI; }

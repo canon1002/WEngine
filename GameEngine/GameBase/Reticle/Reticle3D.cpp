@@ -59,10 +59,10 @@ void Reticle3D::Update()
 	// ベクトルをクォータニオンで回転
 	Vector3 cameraDirection = RotateVector(RotateVector(RotateVector(forward,qRoll), qPitch), qYaw);
 
-	// レティクルの位置を計算
+	// レティクルの位置を計算 // Y座標をやや高めの位置に
 	mWorldReticle3D->translation = {
-		pCamera->GetTranslate().x + cameraDirection.x * kDistancePlayerTo3DReticle+10.0f,
-		pCamera->GetTranslate().y + cameraDirection.y * kDistancePlayerTo3DReticle,
+		pCamera->GetTranslate().x + cameraDirection.x * kDistancePlayerTo3DReticle,
+		pCamera->GetTranslate().y + cameraDirection.y * kDistancePlayerTo3DReticle + 5.0f,
 		pCamera->GetTranslate().z + cameraDirection.z * kDistancePlayerTo3DReticle
 	};
 
