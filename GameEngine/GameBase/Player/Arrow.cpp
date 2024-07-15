@@ -4,6 +4,7 @@
 #include "GameEngine/Base/Debug/ImGuiManager.h"
 #include "GameEngine/Append/Collider/AABBCollider.h"
 #include "GameEngine/Append/Collider/RayCollider.h"
+#include <numbers>
 
 Arrow::Arrow() {}
 Arrow::~Arrow() {}
@@ -20,6 +21,16 @@ void Arrow::Init(Vector3 pos, Vector3 vel)
 
 	// 移動量を設定
 	mMoveVel = vel;
+
+	//回転
+	Vector3 rotate = { 0.0f,0.0f,0.0f };
+	const float PI = float(std::numbers::pi);
+	rotate.y = std::atan2f(mMoveVel.x, mMoveVel.z);
+	rotate.y = std::fmodf(rotate.y, 2.0f * PI);
+	// 回転量が超過していたり、下限を下回っていたら補正する
+	if (rotate.y > PI) { rotate.y -= 2.0f * PI; }
+	if (rotate.y < -PI) { rotate.y += 2.0f * PI; }
+	mObject->SetRotate(rotate);
 
 	//コライダーの宣言
 	//mObject->mCollider = new AABBCollider(mObject->mWorldTransform, Vector3(0.1f, 0.1f, 1.0f));

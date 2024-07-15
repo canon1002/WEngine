@@ -14,9 +14,14 @@ Reticle3D::~Reticle3D()
 
 void Reticle3D::Init()
 {
+	pInput = InputManager::GetInstance();
+	pCamera = MainCamera::GetInstance();
+
+
 	mObject = std::make_unique<Object3d>();
 	mObject->Init("Retcle3D");
 	mObject->SetModel("box.gltf");
+	//mObject->mWorldTransform->SetParent(pCamera->mWorldTransform->GetWorldMatrix());
 
 	mSprite = std::make_unique<Sprite>();
 	mSprite->Initialize();
@@ -27,46 +32,54 @@ void Reticle3D::Init()
 	// 3Dレティクルのワールド座標
 	mWorldReticle3D = new WorldTransform();
 	mWorldReticle3D->Init();
+	//mWorldReticle3D->SetParent(pCamera->mWorldTransform->GetWorldMatrix());
 	// 2Dレティクルの座標
-	mPostionReticle2D = Vec2(640.0f, 360.0f);
+	mPostionReticle2D = Vec2(0.0f, 0.0f);
 
 }
 
 void Reticle3D::Update()
 {
-	pInput = InputManager::GetInstance();
-	pCamera = MainCamera::GetInstance();
 
-	
-	// -- 2Dレティクルから3Dレティクルへの変換 -- //
+	// 自機から3Dレティクルへの距離
+	const float kDistancePlayerTo3DReticle = 50.0f;
 
-	// 2Dから3Dへの変換を行う
-	Matrix4x4 viewPort = MakeViewportMatrix(0, 0, 
+	// カメラの回転量から3Dレティクルの位置を計算する
+	float pitch = pCamera->GetRotate().x;
+	float yaw = pCamera->GetRotate().y;
+	float roll = pCamera->GetRotate().z;
+
+	// ピッチとヨーの回転をクォータニオンに変換
+	Quaternion qPitch = MakeRotateAxisAngleQuaternion({ 1.0f, 0.0f, 0.0f }, pitch);
+	Quaternion qYaw = MakeRotateAxisAngleQuaternion({ 0.0f, 1.0f, 0.0f }, yaw);
+	Quaternion qRoll = MakeRotateAxisAngleQuaternion({ 0.0f, 0.0f, 1.0f }, roll);
+
+	// 初期の方向ベクトル
+	Vector3 forward = { 0.0f,0.0f,1.0f };
+	// ベクトルをクォータニオンで回転
+	Vector3 cameraDirection = RotateVector(RotateVector(RotateVector(forward,qRoll), qPitch), qYaw);
+
+	// レティクルの位置を計算
+	mWorldReticle3D->translation = {
+		pCamera->GetTranslate().x + cameraDirection.x * kDistancePlayerTo3DReticle,
+		pCamera->GetTranslate().y + cameraDirection.y * kDistancePlayerTo3DReticle,
+		pCamera->GetTranslate().z + cameraDirection.z * kDistancePlayerTo3DReticle
+	};
+
+	// 3Dから2Dへの変換を行う
+	const static Matrix4x4 viewPort = MakeViewportMatrix(0, 0,
 		pCamera->GetWindowSize().x, pCamera->GetWindowSize().y, 0.0f, 1.0f);
-	Matrix4x4 VPV = Multiply(pCamera->GetProjectionMatrix(), viewPort);
-	// 逆行列化(行列の合成後に行う)
-	Matrix4x4 inVPV = Inverse(VPV);
-	// スクリーン座標系
-	mPosNear = { mPostionReticle2D.x, mPostionReticle2D.y, 0.0f };
-	mPosFar = { mPostionReticle2D.x, mPostionReticle2D.y, 1.0f };
 
-	// ここでワールド座標に変換
-	mPosNear = Transform(mPosNear, inVPV);
-	mPosFar = Transform(mPosFar, inVPV);
 
-	// 上記で宣言した二点を用いて方向を得る
-	Vector3 reticleDirction = Subtract(mPosFar, mPosNear);
-	// 正規化してベクトルの長さを整える
-	reticleDirction = Normalize(reticleDirction);
+	Matrix4x4 V = pCamera->GetViewMatrix();
+	Matrix4x4 P = pCamera->GetProjectionMatrix();
+	Matrix4x4 VPV = Multiply(Multiply(V,P), viewPort);
 
-	// カメラからどれくらいの長さで進むか設定
-	const float kDistance = 30.0f;
-	// 移動量は方向*移動距離
-	reticleDirction.x *= kDistance;
-	reticleDirction.y *= kDistance;
-	reticleDirction.z *= kDistance;
-	// 終点に結果を加算
-	mWorldReticle3D->translation = Add(mPosNear, reticleDirction);
+	// スクリーン座標に変換する
+	Vector3 screenPos = Transform(mWorldReticle3D->GetWorldPosition(), VPV);
+	// スクリーン座標を代入
+	mPostionReticle2D = Vec2(screenPos.x, screenPos.y);
+
 
 	ImGui::Begin("Reticle");
 	ImGui::DragFloat2("Reticle2D", &mPostionReticle2D.x, 1.0f, -1280.0f, 1280.0f);
@@ -77,8 +90,8 @@ void Reticle3D::Update()
 	ImGui::DragFloat3("Reticle3D T", &mWorldReticle3D->translation.x);
 	ImGui::End();
 
-	mObject->mWorldTransform->translation = mWorldReticle3D->translation;
-	mObject->mWorldTransform->SetParent(pCamera->mWorldTransform->GetWorldMatrix());
+	Vector3 pos = mWorldReticle3D->GetWorldPosition();
+	mObject->SetTranslate(pos);
 
 	mObject->Update();
 	mObject->DrawGUI();

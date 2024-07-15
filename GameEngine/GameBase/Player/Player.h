@@ -16,7 +16,7 @@ class Player {
 public: // -- 公開 メンバ関数 -- //
 
 	Player() = default;
-	~Player() = default;
+	~Player();
 
 	// 初期化
 	void Init();

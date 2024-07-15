@@ -45,7 +45,7 @@ public: // -- アクセッサ -- //
 	Vector3 GetRotate()const { return mWorldTransform->rotation; }
 	Vector3 GetTranslate()const { return mWorldTransform->GetWorldPosition(); }
 
-	Vec2 GetWindowSize() { return Vec2((float)winApp_->kClientHeight, (float)winApp_->kClientHeight); }
+	Vec2 GetWindowSize() { return Vec2((float)winApp_->kClientWidth, (float)winApp_->kClientHeight); }
 
 #pragma endregion
 

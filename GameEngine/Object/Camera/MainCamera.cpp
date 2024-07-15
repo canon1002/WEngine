@@ -51,6 +51,8 @@ void MainCamera::Update()
 		// オフセット分ずらす
 		mWorldTransform->translation = mTarget->translation + offset;
 		
+		Matrix4x4 matW = mWorldTransform->GetWorldMatrix();
+
 		// スティック入力の量
 		const static int stickValue = 6000;
 

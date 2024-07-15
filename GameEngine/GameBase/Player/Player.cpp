@@ -6,6 +6,13 @@
 
 #include "GameEngine/Append/Collider/AABBCollider.h"
 
+Player::~Player(){
+
+	for (auto& arrow : mArrows) {
+		delete arrow;
+	}
+}
+
 void Player::Init(){
 	mObject = std::make_unique<Object3d>();
 	mObject->Init("PlayerObj");
@@ -138,6 +145,7 @@ void Player::Update(){
 		// アローの進行方向を設定し、正規化しておく
 		Vector3 directionForArrow = endPos - startPos;
 		directionForArrow = Normalize(directionForArrow);
+		directionForArrow = Scalar(0.1f, directionForArrow);
 
 		// アロークラスの宣言と初期化を行う(上記で求めた移動方向と始点の座標を代入)
 		Arrow* arrow = new Arrow();
@@ -148,10 +156,19 @@ void Player::Update(){
 
 	}
 
-	for (const auto& arrow : mArrows) {
-		arrow->Update();
-		arrow->DebugDraw();
-
+	// プレイヤーの弾 -- 更新 --
+	auto arrowIt = mArrows.begin();  // イテレータを初期化
+	while (arrowIt != mArrows.end()) {
+		const auto& arrow = *arrowIt;
+		// Bulletが消失条件を満たす場合
+		if (!arrow->GetIsActive()) {
+			arrowIt = mArrows.erase(arrowIt);  // erase()は削除された要素の次の有効なイテレータを返す
+		}
+		else {
+			arrow->Update();
+			arrow->DebugDraw();
+			++arrowIt;  // イテレータを次に進める
+		}
 	}
 
 	// オブジェクト更新

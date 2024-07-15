@@ -18,6 +18,8 @@ public: // -- 公開 メンバ関数 -- //
 	Vector3 GetWorldPos() { return mObject->GetWorldTransform()->translation; };
 	void SetCubeMap(const int32_t& textureHandle) { mObject->GetModel()->SetCubeTexture(textureHandle); }
 
+	bool GetIsActive()const { return mIsActive; }
+
 private: // -- 非公開 メンバ変数 -- //
 
 	// オブジェクトクラス
