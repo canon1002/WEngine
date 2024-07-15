@@ -138,18 +138,35 @@ void Player::Update(){
 	}
 
 	mReticle->Update();
+
 	// プレイヤー攻撃処理
 	if (mInput->GetKey()->GetTriggerKey(DIK_RETURN) || mInput->GetPused(Gamepad::Button::X)) {
 		Vector3 startPos = this->GetWorldPos();// 移動の始点
 		Vector3 endPos = mReticle->GetWorld3D();// 移動の終点
+
 		// アローの進行方向を設定し、正規化しておく
 		Vector3 directionForArrow = endPos - startPos;
 		directionForArrow = Normalize(directionForArrow);
-		directionForArrow = Scalar(0.1f, directionForArrow);
+		Vector3 vel = Scalar(1.0f, directionForArrow);
 
+		//回転
+		Vector3 rotate = { 0.0f,0.0f,0.0f };
+		const float PI = 3.14f;
+		rotate.y = std::atan2f(directionForArrow.x, directionForArrow.z);
+		rotate.y = std::fmodf(rotate.y, 2.0f * PI);
+		// 回転量が超過していたり、下限を下回っていたら補正する
+		if (rotate.y > PI) { rotate.y -= 2.0f * PI; }
+		if (rotate.y < -PI) { rotate.y += 2.0f * PI; }
+		rotate.x = std::atan2f(directionForArrow.y, directionForArrow.z);
+		rotate.x = std::fmodf(rotate.x, 2.0f * PI);
+		// 回転量が超過していたり、下限を下回っていたら補正する
+		if (rotate.x > PI) { rotate.y -= 2.0f * PI; }
+		if (rotate.x < -PI) { rotate.y += 2.0f * PI; }
+	
 		// アロークラスの宣言と初期化を行う(上記で求めた移動方向と始点の座標を代入)
 		Arrow* arrow = new Arrow();
-		arrow->Init(startPos, directionForArrow);
+		arrow->Init(startPos, vel);
+		arrow->SetRotate(rotate);
 		arrow->SetCubeMap(mObject->GetModel()->mTextureHandleCubeMap);
 		// アロークラスの配列に要素を追加する
 		mArrows.push_back(arrow);

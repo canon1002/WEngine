@@ -61,7 +61,7 @@ void Reticle3D::Update()
 
 	// レティクルの位置を計算
 	mWorldReticle3D->translation = {
-		pCamera->GetTranslate().x + cameraDirection.x * kDistancePlayerTo3DReticle,
+		pCamera->GetTranslate().x + cameraDirection.x * kDistancePlayerTo3DReticle+10.0f,
 		pCamera->GetTranslate().y + cameraDirection.y * kDistancePlayerTo3DReticle,
 		pCamera->GetTranslate().z + cameraDirection.z * kDistancePlayerTo3DReticle
 	};
@@ -108,5 +108,5 @@ void Reticle3D::Draw3DReticle()
 void Reticle3D::Draw2DReticle(){
 
 	SpriteAdministrator::GetInstance()->PreDraw();
-	mSprite->Draw();
+	//mSprite->Draw();
 }
