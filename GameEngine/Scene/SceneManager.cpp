@@ -1,4 +1,5 @@
 #include "SceneManager.h"
+#include "GameEngine/Editor/GlobalVariables.h"
 
 // コンストラクタ
 SceneManager::SceneManager() {}
@@ -68,8 +69,11 @@ int SceneManager::Run() {
 #ifdef _DEBUG
 		imGuiManager_->Begin();
 #endif // _DEBUG
+
 		// 入力処理の更新を行う
 		inputManager_->Update();
+		// グローバル変数の更新
+		GlobalVariables::GetInstance()->Update();
 		// シーンのチェック
 		currentSceneNo_ = sceneArr_[currentSceneNo_]->GetSceneNo();
 		// シーン変更チェック

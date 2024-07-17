@@ -44,12 +44,12 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir)Externals\DirectXTex;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Externals\DirectXTex;$(ProjectDir)Externals\nlohmann;$(IncludePath)</IncludePath>
     <IntDir>$(SolutionDir)..\Generated\Obj\$(ProjectName)\$(Configuration)\</IntDir>
     <OutDir>$(SolutionDir)..\Generated\Outputs\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(SolutionDir)Externals\DirectXTex;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Externals\DirectXTex;$(ProjectDir)Externals\nlohmann;$(IncludePath)</IncludePath>
     <IntDir>$(SolutionDir)..\Generated\Obj\$(ProjectName)\$(Configuration)\</IntDir>
     <OutDir>$(SolutionDir)..\Generated\Outputs\$(Configuration)\</OutDir>
   </PropertyGroup>
@@ -183,6 +183,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="GameEngine\GameBase\Command\ICommand.cpp" />
     <ClCompile Include="GameEngine\GameBase\AI\State\IBossState.cpp" />
     <ClCompile Include="GameEngine\GameBase\IObjectBase.cpp" />
+    <ClCompile Include="GameEngine\Editor\GlobalVariables.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="GameEngine\Object\3d\Object3dCommon.cpp" />
     <ClCompile Include="GameEngine\Object\3d\Object3d.cpp" />
@@ -297,6 +298,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="GameEngine\GameBase\IObjectBase.h" />
     <ClInclude Include="GameEngine\GameBase\AI\BehaviorTree\ActionNode\MoveToTarget.h" />
     <ClInclude Include="GameEngine\GameBase\Reticle\Reticle3D.h" />
+    <ClInclude Include="GameEngine\Editor\GlobalVariables.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt" />

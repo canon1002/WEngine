@@ -275,6 +275,7 @@
     <ClCompile Include="GameEngine\GameBase\Enemy\BossEnemy.cpp">
       <Filter>Engine\GameBase</Filter>
     </ClCompile>
+    <ClCompile Include="GameEngine\Editor\GlobalVariables.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameEngine\Base\System.h">
@@ -470,6 +471,7 @@
     <ClInclude Include="GameEngine\GameBase\Enemy\BossEnemy.h">
       <Filter>Engine\GameBase</Filter>
     </ClInclude>
+    <ClInclude Include="GameEngine\Editor\GlobalVariables.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt">
