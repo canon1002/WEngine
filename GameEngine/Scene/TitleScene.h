@@ -32,7 +32,6 @@ private:
 	// 入力を取得
 	InputManager* mInput;
 
-	std::unique_ptr<Object3d> testObject02_;
 	std::unique_ptr<Skybox> skybox_;
 	std::unique_ptr<Grid3D> grid_;
 

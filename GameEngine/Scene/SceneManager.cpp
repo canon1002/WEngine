@@ -1,5 +1,6 @@
 #include "SceneManager.h"
 #include "GameEngine/Editor/GlobalVariables.h"
+#include "GameEngine/Editor/LevelEditor.h"
 
 // コンストラクタ
 SceneManager::SceneManager() {}
@@ -23,13 +24,24 @@ void SceneManager::Init(WinAPI* winApp, DirectXCommon* dxCommon){
 	audio_ = Audio::GetInstance();
 	// メインカメラ
 	mainCamera_ = std::make_unique<MainCamera>();
-	
+	mainCamera_->Initialize(winApp_);
+
 	// オブジェクト管理者クラス
 	objectAdmin_ = ObjectAdministrator::GetInstance();
+	objectAdmin_->Init(mDxCommon);
+
+	// モデル管理クラス
+	ModelManager::GetInstance()->Initialize(dxCommon, mainCamera_.get());
+
 
 	// ポストエフェクト管理者クラス
 	mPostEffectManager = std::make_unique<PostEffectManager>();
 	mPostEffectManager->Init();
+
+	// グローバル変数読み込み
+	GlobalVariables::GetInstance()->LoadFiles();
+	// レベルデータ読み込み
+	LevelEditor::GetInstance()->CheckLevelEditorFile();
 
 	// 各シーンの配列
 	sceneArr_[TITLE] = std::make_unique<TitleScene>();
@@ -56,10 +68,7 @@ int SceneManager::Run() {
 
 	inputManager_->Initialize(winApp_);
 	audio_->Initialize();
-	mainCamera_->Initialize(winApp_);
 	//mainCamera_->mWorldTransform->translation = { 0.0f,0.0f,-6.0f };
-	
-	objectAdmin_->Init(mDxCommon);
 
 
 	// Windowsのメッセージ処理があればゲームループを抜ける

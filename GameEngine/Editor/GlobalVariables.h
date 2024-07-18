@@ -43,8 +43,24 @@ public: // -- 公開 メンバ関数 -- //
 	// 値のセット(Vector3型)
 	void SetValue(const std::string& groupName, const std::string& key, const Vector3& value);
 
+	// 項目の追加(int型)
+	void AddItem(const std::string& groupName, const std::string& key, int32_t value);
+	// 項目の追加(float型)
+	void AddItem(const std::string& groupName, const std::string& key, float value);
+	// 項目の追加(Vector3型)
+	void AddItem(const std::string& groupName, const std::string& key, const Vector3& value);
+
+	// 値の取得
+	int32_t GetIntValue(const std::string& groupName, const std::string& key);
+	float GetFloatValue(const std::string& groupName, const std::string& key);
+	Vector3 GetVector3Value(const std::string& groupName, const std::string& key);
+
 	// ファイルへの書き出し
 	void SaveFile(const std::string& groupName);
+	// ディレクトリの全ファイル読み込み
+	void LoadFiles();
+	// ファイル読み込み
+	void LoadFile(const std::string& groupName);
 
 private: // -- 非公開 メンバ関数 -- //
 

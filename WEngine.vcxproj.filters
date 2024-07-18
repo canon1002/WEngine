@@ -276,6 +276,8 @@
       <Filter>Engine\GameBase</Filter>
     </ClCompile>
     <ClCompile Include="GameEngine\Editor\GlobalVariables.cpp" />
+    <ClCompile Include="GameEngine\GameBase\Reaction\DamageReaction.cpp" />
+    <ClCompile Include="GameEngine\Editor\LevelEditor.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameEngine\Base\System.h">
@@ -472,6 +474,8 @@
       <Filter>Engine\GameBase</Filter>
     </ClInclude>
     <ClInclude Include="GameEngine\Editor\GlobalVariables.h" />
+    <ClInclude Include="GameEngine\GameBase\Reaction\DamageReaction.h" />
+    <ClInclude Include="GameEngine\Editor\LevelEditor.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt">

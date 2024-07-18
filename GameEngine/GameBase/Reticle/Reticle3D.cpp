@@ -40,7 +40,6 @@ void Reticle3D::Init()
 
 void Reticle3D::Update()
 {
-
 	// 自機から3Dレティクルへの距離
 	const float kDistancePlayerTo3DReticle = 50.0f;
 

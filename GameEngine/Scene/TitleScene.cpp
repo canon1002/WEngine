@@ -2,6 +2,7 @@
 #include "GameEngine/Object/Model/ModelManager.h"
 #include "GameEngine/Object/ObjectAdministrator.h"
 #include "GameEngine/Base/Debug/ImGuiManager.h"
+#include "GameEngine/Editor/LevelEditor.h"
 
 void TitleScene::Finalize(){}
 
@@ -29,13 +30,6 @@ void TitleScene::Init() {
 	// SkyBox 読み込み
 	DirectXCommon::GetInstance()->srv_->LoadTexture("skybox/rostock_laage_airport_4k.dds");
 	
-	
-	testObject02_ = std::make_unique<Object3d>("Test Plane");
-	testObject02_->Init("Test Plane");
-	testObject02_->SetModel("plane.gltf");
-	testObject02_->SetScale({ 10.0f,10.0f,1.0f });
-	testObject02_->SetRotate({ 1.54f,0.0f,0.0f });
-	testObject02_->SetTranslate({ 2.0f,0.0f,7.5f });
 
 	// skyboxの宣言
 	skybox_ = std::make_unique<Skybox>();
@@ -49,12 +43,12 @@ void TitleScene::Init() {
 	mBoss->SetPlayer(mPlayer.get());
 
 	// オブジェクトにCubeMapのテクスチャ番号を渡す
-	testObject02_->GetModel()->SetCubeTexture(skybox_->mTextureHandle);
 	mPlayer->GetModel()->SetCubeTexture(skybox_->mTextureHandle);
 	mPlayer->GetCollider()->GetModel()->SetCubeTexture(skybox_->mTextureHandle);
 	mBoss->GetModel()->SetCubeTexture(skybox_->mTextureHandle);
 	mBoss->GetCollider()->GetModel()->SetCubeTexture(skybox_->mTextureHandle);
 	mPlayer->GetReticle3D()->SetCubeMap(skybox_->mTextureHandle);
+	LevelEditor::GetInstance()->SetTextureCubeMap(skybox_->mTextureHandle);
 
 	// グリッド生成  // 左の引数はグリッドのセル数、右の引数はセルの大きさを入れる
 	grid_ = std::make_unique<Grid3D>(5,1.0f);
@@ -70,7 +64,6 @@ void TitleScene::Update() {
 	skybox_->DrawGUI("Skybox");
 	mPlayer->DrawGUI();
 	mBoss->DrawGUI();
-	testObject02_->DrawGUI();
 #endif // _DEBUG
 	MainCamera::GetInstance()->Update();
 
@@ -83,9 +76,8 @@ void TitleScene::Update() {
 	mPlayer->Update();
 	mBoss->Update();
 
-	// obj
-	//testObject02_->mWorldTransform->SetParent(mPlayer->mSkinning->GetSkeleton().joints.at(35).transform.GetAffinMatrix());
-	testObject02_->Update();
+	// レベルエディタ更新
+	LevelEditor::GetInstance()->Update();
 
 	// コライダーリストへの追加処理
 	mCollisionManager->SetCollider(mPlayer->GetObject3D()->mCollider);
@@ -106,13 +98,15 @@ void TitleScene::Draw(){
 	//grid_->PreDraw();
 	//grid_->Draw();
 
+	// レベルデータ読み込み
+	LevelEditor::GetInstance()->Draw();
+
 	// Object3D(3DModel)の描画前処理
 	ModelManager::GetInstance()->PreDraw();
 
-	testObject02_->Draw();
-
 	mPlayer->ColliderDraw();
 	mBoss->ColliderDraw();
+
 
 	// Object3D(Skinning)の描画前処理
 	ModelManager::GetInstance()->PreDrawForSkinning();

@@ -117,6 +117,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="GameEngine\GameBase\Reaction\DamageReaction.cpp" />
     <ClCompile Include="GameEngine\GameBase\Player\Arrow.cpp" />
     <ClCompile Include="GameEngine\Append\Collider\AABBCollider.cpp" />
     <ClCompile Include="GameEngine\Append\Collider\OBBCollider.cpp" />
@@ -184,6 +185,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="GameEngine\GameBase\AI\State\IBossState.cpp" />
     <ClCompile Include="GameEngine\GameBase\IObjectBase.cpp" />
     <ClCompile Include="GameEngine\Editor\GlobalVariables.cpp" />
+    <ClCompile Include="GameEngine\Editor\LevelEditor.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="GameEngine\Object\3d\Object3dCommon.cpp" />
     <ClCompile Include="GameEngine\Object\3d\Object3d.cpp" />
@@ -205,6 +207,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="GameEngine\GameBase\Reticle\Reticle3D.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="GameEngine\GameBase\Reaction\DamageReaction.h" />
     <ClInclude Include="GameEngine\GameBase\Player\Arrow.h" />
     <ClInclude Include="GameEngine\Append\Collider\AABBCollider.h" />
     <ClInclude Include="GameEngine\Append\Collider\OBBCollider.h" />
@@ -299,6 +302,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="GameEngine\GameBase\AI\BehaviorTree\ActionNode\MoveToTarget.h" />
     <ClInclude Include="GameEngine\GameBase\Reticle\Reticle3D.h" />
     <ClInclude Include="GameEngine\Editor\GlobalVariables.h" />
+    <ClInclude Include="GameEngine\Editor\LevelEditor.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt" />
