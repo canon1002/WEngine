@@ -279,8 +279,8 @@ Matrix4x4 MakeAffineMatrix(
 	Matrix4x4 rotateXMatrix = MakeRoatateXMatrix(rotate.x);
 	Matrix4x4 rotateYMatrix = MakeRoatateYMatrix(rotate.y);
 	Matrix4x4 rotateZMatrix = MakeRoatateZMatrix(rotate.z);
-	Matrix4x4 rotateXYZMatrix = Multiply(
-		rotateXMatrix, Multiply(rotateYMatrix, rotateZMatrix));
+	Matrix4x4 rotateXYZMatrix = Multiply(rotateXMatrix
+		, Multiply(rotateZMatrix, rotateYMatrix));
 
 	return Matrix4x4{
 		scale.x * rotateXYZMatrix.m[0][0],

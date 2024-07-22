@@ -1,7 +1,7 @@
 #include "Sprite.h"
 #include "GameEngine/Base/Debug/ImGuiManager.h"
 
-void Sprite::Initialize() {
+void Sprite::Init() {
 
 	mDxCommon = DirectXCommon::GetInstance();
 	mCamera = MainCamera::GetInstance();

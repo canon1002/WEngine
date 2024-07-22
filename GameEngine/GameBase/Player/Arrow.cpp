@@ -18,7 +18,6 @@ void Arrow::Init(Vector3 pos, Vector3 vel)
 
 	// 拡大率を変更
 	mObject->mWorldTransform->scale = { 0.1f,0.1f,1.0f };
-
 	// 代入した数値を初期座標にする
 	mObject->SetTranslate(pos);
 
@@ -36,7 +35,7 @@ void Arrow::Init(Vector3 pos, Vector3 vel)
 	//mObject->SetRotate(rotate);
 
 	//コライダーの宣言
-	//mObject->mCollider = new AABBCollider(mObject->mWorldTransform, Vector3(0.1f, 0.1f, 1.0f));
+	mObject->mCollider = new AABBCollider(mObject->mWorldTransform, Vector3(0.1f, 0.1f, 1.0f));
 
 	// フラグをtrueにする
 	mIsActive = true;

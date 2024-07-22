@@ -1,6 +1,7 @@
 #include "SceneManager.h"
 #include "GameEngine/Editor/GlobalVariables.h"
 #include "GameEngine/Editor/LevelEditor.h"
+#include "GameEngine/GameBase/Reaction/DamageReaction.h"
 
 // コンストラクタ
 SceneManager::SceneManager() {}
@@ -42,6 +43,7 @@ void SceneManager::Init(WinAPI* winApp, DirectXCommon* dxCommon){
 	GlobalVariables::GetInstance()->LoadFiles();
 	// レベルデータ読み込み
 	LevelEditor::GetInstance()->CheckLevelEditorFile();
+	DamageReaction::GetInstance()->Init();
 
 	// 各シーンの配列
 	sceneArr_[TITLE] = std::make_unique<TitleScene>();
@@ -108,10 +110,21 @@ int SceneManager::Run() {
 		#ifdef _DEBUG
 		// 開発用UIの表示
 		//ImGui::ShowDemoWindow();
+		ImGui::BeginMainMenuBar();
 		// フレームレートの表示
-		ImGui::Text("FPS : %.2f", ImGui::GetIO().Framerate);
+		//ImGui::Text("FPS : %.2f", ImGui::GetIO().Framerate);
+		if(ImGui::Button("LoadLevelEditor")) {
+			LevelEditor::GetInstance()->CheckLevelEditorFile();
+		}
+
+		if (ImGui::Button("SetDamage")) {
+			DamageReaction::GetInstance()->Reaction(Vector3(2.0f, 2.0f, 10.0f), 147, mainCamera_.get());
+		}
+		ImGui::EndMainMenuBar();
 		imGuiManager_->End();
 		#endif // _DEBUG
+
+		DamageReaction::GetInstance()->UpdateSprite();
 
 		///
 		/// 描画処理(推定) 
@@ -122,6 +135,7 @@ int SceneManager::Run() {
 
 		/// 描画処理
 		sceneArr_[currentSceneNo_]->Draw();
+		
 		// 描画後処理 -- RenderTexture --
 		mDxCommon->PostDrawForRenderTarget();
 

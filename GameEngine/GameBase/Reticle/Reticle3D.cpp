@@ -24,7 +24,7 @@ void Reticle3D::Init()
 	//mObject->mWorldTransform->SetParent(pCamera->mWorldTransform->GetWorldMatrix());
 
 	mSprite = std::make_unique<Sprite>();
-	mSprite->Initialize();
+	mSprite->Init();
 	mSprite->SetTexture("uvChecker.png");
 	mSprite->SetAnchorPoint(Vec2(0.5f, 0.5f));
 	mSprite->SetSpriteSize(Vec2(32.0f, 32.0f));

@@ -29,6 +29,7 @@ public: // メンバ関数
 	/// 描画
 	void Draw();
 	void DrawGUI();
+	void DrawGuiTree();
 
 	void CreateTransformationRsource();
 	void SetModel(const std::string& filepath);

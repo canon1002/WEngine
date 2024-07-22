@@ -26,6 +26,7 @@ void MoveToTargetNode::Init() {
 	mEndPos = mBoss->GetWorldPosForTarget();
 	// 方向の設定
 	mDirection = Normalize(mEndPos - mStartPos);
+	mDirection.y = 0.0f;
 	// 移動速度の設定
 	mMoveSpeed = (1.0f / 60.0f) * 2.0f;
 	// 移動量の設定

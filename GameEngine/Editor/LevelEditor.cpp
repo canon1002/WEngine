@@ -14,7 +14,7 @@ LevelEditor* LevelEditor::GetInstance()
 
 void LevelEditor::CheckLevelEditorFile(){
 
-	GlobalVariables::GetInstance();
+	mObjects.clear();
 
 	// グローバル変数の保存先ファイルパス
 	const std::string kDirectoryPath = "Resources/LevelEditor/";
@@ -117,15 +117,32 @@ void LevelEditor::CheckLevelEditorFile(){
 
 void LevelEditor::Update(){
 
+#ifdef _DEBUG
+	// メニューバーを表示する
+	if (!ImGui::Begin("LevelEditor", nullptr, ImGuiWindowFlags_MenuBar)) {
+		ImGui::End();
+		return;
+	}
+	if (!ImGui::BeginMenuBar()) return;
+
+#endif // _DEBUG
+
 	for (auto& object : mObjects) {
 		
 		// オブジェクトの更新処理
 		object->Update();
 
 		// デバッグ用のImGuiを表示
-		object->DrawGUI();
-
+		#ifdef _DEBUG
+		object->DrawGuiTree();
+		#endif // _DEBUG
 	}
+
+#ifdef _DEBUG
+	ImGui::EndMenuBar();
+	ImGui::End();
+#endif // _DEBUG
+
 }
 
 void LevelEditor::Draw(){

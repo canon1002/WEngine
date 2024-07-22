@@ -32,6 +32,9 @@ public: // -- 公開 メンバ関数 -- //
     Vector3 GetMin()const;
     Vector3 GetMax()const;
 
+    // 移動量取得
+    Vector3 GetVelocity();
+
 private: // -- 非公開 メンバ関数 -- //
 
     void CreateTransformation()override;
@@ -40,6 +43,8 @@ protected:
 
     // AABBの各ベクトルごとの半径
     Vector3 mRadius;
+    // 前フレームの座標
+    Vector3 mPrePosition;
 
 };
 

@@ -11,7 +11,7 @@ public:
 	Sprite() = default;
 	~Sprite() = default;
 
-	void Initialize();
+	void Init();
 	void Update();
 	void Draw();
 
@@ -27,6 +27,11 @@ public:
 		mTextureHandle = mDxCommon->srv_->LoadTexture(filepath); 
 		AdjustTextureSize();
 	}
+	void SetTexture(int32_t textureHandle) {
+		mTextureHandle = textureHandle;
+		AdjustTextureSize();
+	}
+
 	void SetColor(Color color) { materialData->color = color; }
 	void SetTextureSize(Vec2 size) { textureSize_ = size; }
 	void SetSpriteSize(Vec2 size) { spriteSize = size; }

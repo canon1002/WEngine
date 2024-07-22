@@ -3,6 +3,7 @@
 #include "GameEngine/Object/ObjectAdministrator.h"
 #include "GameEngine/Base/Debug/ImGuiManager.h"
 #include "GameEngine/Editor/LevelEditor.h"
+#include "GameEngine/GameBase/Reaction/DamageReaction.h"
 
 void TitleScene::Finalize(){}
 
@@ -115,5 +116,8 @@ void TitleScene::Draw(){
 	mBoss->Draw();
 
 	mPlayer->GetReticle3D()->Draw2DReticle();
+
+	//DamageReaction::GetInstance()->RenderText(winApp_->ConvertString("124"), 200, 200);
+	DamageReaction::GetInstance()->DrawSprite();
 
 }

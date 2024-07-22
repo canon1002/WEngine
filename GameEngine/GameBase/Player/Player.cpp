@@ -75,10 +75,10 @@ void Player::Update(){
 
 	// ジャンプ中
 	if (mBehavior == Behavior::kJump) {
+		
 		// 移動量を加算
 		mObject->mWorldTransform->translation.y += mVelocity.y;
 
-		mVelocity.y -= 9.8f * (1.0f / 360.0f);
 		// 地面を y==0 として地面にめり込んだら地面の上まで戻す
 		if (mObject->mWorldTransform->translation.y < 0.0f) {
 			mObject->mWorldTransform->translation.y = 0.0f;
@@ -89,6 +89,18 @@ void Player::Update(){
 			// 通常状態に変更
 			mBehavior = Behavior::kRoot;
 		}
+	}
+
+	// 一旦ここに落下処理をつくる
+	if (mObject->mWorldTransform->translation.y > 0.0f) {
+		// 移動量を加算
+		mObject->mWorldTransform->translation.y += mVelocity.y;
+		mVelocity.y -= 9.8f * (1.0f / 360.0f);
+	}
+	else if (mObject->mWorldTransform->translation.y < 0.0f) {
+		mObject->mWorldTransform->translation.y = 0.0f;
+		// 移動量修正
+		mVelocity.y = 0.0f;
 	}
 
 	// スティック入力の量

@@ -3,123 +3,11 @@
     "objects": [
         {
             "type": "MESH",
-            "name": "Cube",
+            "name": "Cylinder.001",
             "transform": {
                 "translation": [
-                    4.0,
-                    4.0,
-                    0.0
-                ],
-                "rotate": [
-                    -2.3492930267821066e-07,
-                    30.0,
-                    30.0
-                ],
-                "scaling": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            },
-            "file_name": "Cube",
-            "collider": {
-                "type": "BOX",
-                "center": [
-                    0.0,
-                    0.0,
-                    1.0
-                ],
-                "size": [
-                    2.0,
-                    2.0,
-                    4.0
-                ]
-            }
-        },
-        {
-            "type": "LIGHT",
-            "name": "Light",
-            "transform": {
-                "translation": [
-                    4.076245307922363,
-                    1.0054539442062378,
-                    5.903861999511719
-                ],
-                "rotate": [
-                    37.26104736328125,
-                    3.1637091636657715,
-                    106.93632507324219
-                ],
-                "scaling": [
-                    1.0,
-                    0.9999999403953552,
-                    1.0
-                ]
-            }
-        },
-        {
-            "type": "CAMERA",
-            "name": "Camera",
-            "transform": {
-                "translation": [
-                    7.358891487121582,
-                    -6.925790786743164,
-                    4.958309173583984
-                ],
-                "rotate": [
-                    63.559295654296875,
-                    2.2983238068263745e-07,
-                    46.69194412231445
-                ],
-                "scaling": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "type": "MESH",
-            "name": "Cube.001",
-            "transform": {
-                "translation": [
-                    0.0,
-                    -9.0,
-                    0.0
-                ],
-                "rotate": [
-                    40.000003814697266,
-                    45.00000762939453,
-                    -2.1024986835982418e-06
-                ],
-                "scaling": [
-                    0.9999999403953552,
-                    0.9999999403953552,
-                    1.0
-                ]
-            },
-            "file_name": "Cube",
-            "collider": {
-                "type": "BOX",
-                "center": [
-                    0.0,
-                    0.0,
-                    1.0
-                ],
-                "size": [
-                    2.0,
-                    2.0,
-                    4.0
-                ]
-            }
-        },
-        {
-            "type": "MESH",
-            "name": "Cube.002",
-            "transform": {
-                "translation": [
-                    -9.0,
-                    0.0,
+                    19.076669692993164,
+                    12.036495208740234,
                     0.0
                 ],
                 "rotate": [
@@ -128,33 +16,20 @@
                     0.0
                 ],
                 "scaling": [
-                    1.0,
-                    1.0,
-                    2.0
+                    2.0,
+                    2.0,
+                    6.0
                 ]
             },
-            "file_name": "Cube",
-            "collider": {
-                "type": "BOX",
-                "center": [
-                    0.0,
-                    0.0,
-                    1.0
-                ],
-                "size": [
-                    2.0,
-                    2.0,
-                    4.0
-                ]
-            }
+            "file_name": "Cylinder"
         },
         {
             "type": "MESH",
-            "name": "Cube.003",
+            "name": "Cylinder",
             "transform": {
                 "translation": [
-                    0.0,
-                    9.0,
+                    18.412113189697266,
+                    -7.105368614196777,
                     0.0
                 ],
                 "rotate": [
@@ -163,60 +38,12 @@
                     0.0
                 ],
                 "scaling": [
-                    1.0,
-                    1.0,
-                    1.0
+                    2.0,
+                    2.0,
+                    6.0
                 ]
             },
-            "file_name": "Cube",
-            "collider": {
-                "type": "BOX",
-                "center": [
-                    0.0,
-                    0.0,
-                    1.0
-                ],
-                "size": [
-                    2.0,
-                    2.0,
-                    4.0
-                ]
-            }
-        },
-        {
-            "type": "MESH",
-            "name": "Cube.004",
-            "transform": {
-                "translation": [
-                    9.0,
-                    0.0,
-                    0.0
-                ],
-                "rotate": [
-                    0.0,
-                    -0.0,
-                    0.0
-                ],
-                "scaling": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            },
-            "file_name": "Cube",
-            "collider": {
-                "type": "BOX",
-                "center": [
-                    0.0,
-                    0.0,
-                    1.0
-                ],
-                "size": [
-                    2.0,
-                    2.0,
-                    4.0
-                ]
-            }
+            "file_name": "Cylinder"
         },
         {
             "type": "MESH",
@@ -225,6 +52,41 @@
                 "translation": [
                     0.0,
                     0.0,
+                    -0.5
+                ],
+                "rotate": [
+                    0.0,
+                    -0.0,
+                    0.0
+                ],
+                "scaling": [
+                    64.0,
+                    64.0,
+                    1.0
+                ]
+            },
+            "file_name": "Plane",
+            "collider": {
+                "type": "Box",
+                "center": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "size": [
+                    1.0,
+                    1.0,
+                    0.0
+                ]
+            }
+        },
+        {
+            "type": "MESH",
+            "name": "Cylinder.002",
+            "transform": {
+                "translation": [
+                    6.847982406616211,
+                    16.592039108276367,
                     0.0
                 ],
                 "rotate": [
@@ -233,25 +95,122 @@
                     0.0
                 ],
                 "scaling": [
-                    1.0,
-                    1.0,
-                    1.0
+                    2.0,
+                    2.0,
+                    6.0
                 ]
             },
-            "file_name": "Plane",
-            "collider": {
-                "type": "Plane",
-                "center": [
-                    0.0,
-                    0.0,
+            "file_name": "Cylinder"
+        },
+        {
+            "type": "MESH",
+            "name": "Cylinder.003",
+            "transform": {
+                "translation": [
+                    -11.424172401428223,
+                    19.024045944213867,
                     0.0
                 ],
-                "size": [
-                    64.0,
-                    64.0,
+                "rotate": [
+                    0.0,
+                    -0.0,
                     0.0
+                ],
+                "scaling": [
+                    2.0,
+                    2.0,
+                    6.0
                 ]
-            }
+            },
+            "file_name": "Cylinder"
+        },
+        {
+            "type": "MESH",
+            "name": "Cylinder.004",
+            "transform": {
+                "translation": [
+                    -18.99216651916504,
+                    0.7998018264770508,
+                    0.0
+                ],
+                "rotate": [
+                    0.0,
+                    -0.0,
+                    0.0
+                ],
+                "scaling": [
+                    2.0,
+                    2.0,
+                    6.0
+                ]
+            },
+            "file_name": "Cylinder"
+        },
+        {
+            "type": "MESH",
+            "name": "Cylinder.005",
+            "transform": {
+                "translation": [
+                    -22.59212875366211,
+                    14.288095474243164,
+                    0.0
+                ],
+                "rotate": [
+                    0.0,
+                    -0.0,
+                    0.0
+                ],
+                "scaling": [
+                    2.0,
+                    2.0,
+                    6.0
+                ]
+            },
+            "file_name": "Cylinder"
+        },
+        {
+            "type": "MESH",
+            "name": "Cylinder.006",
+            "transform": {
+                "translation": [
+                    -23.696237564086914,
+                    -10.864374160766602,
+                    0.0
+                ],
+                "rotate": [
+                    0.0,
+                    -0.0,
+                    0.0
+                ],
+                "scaling": [
+                    2.0,
+                    2.0,
+                    6.0
+                ]
+            },
+            "file_name": "Cylinder"
+        },
+        {
+            "type": "MESH",
+            "name": "Cylinder.007",
+            "transform": {
+                "translation": [
+                    9.712268829345703,
+                    -18.640491485595703,
+                    0.0
+                ],
+                "rotate": [
+                    0.0,
+                    -0.0,
+                    0.0
+                ],
+                "scaling": [
+                    2.0,
+                    2.0,
+                    6.0
+                ]
+            },
+            "file_name": "Cylinder"
         }
     ]
 }

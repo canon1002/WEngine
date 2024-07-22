@@ -16,15 +16,47 @@ bool AABBCollider::IsCollision(Collider* c) {
 
 bool AABBCollider::IsCollision(AABBCollider* c)
 {
-	// AABB同士の判定を行う
-	if ((this->GetMin().x <= c->GetMax().x && this->GetMax().x >= c->GetMin().x) &&
-		(this->GetMin().y <= c->GetMax().y && this->GetMax().y >= c->GetMin().y) &&
-		(this->GetMin().z <= c->GetMax().z && this->GetMax().z >= c->GetMin().z)) {
 
-		return true;
+	// AABB同士の判定を行う
+	if (!((this->GetMin().x <= c->GetMax().x && this->GetMax().x >= c->GetMin().x) &&
+		(this->GetMin().y <= c->GetMax().y && this->GetMax().y >= c->GetMin().y) &&
+		(this->GetMin().z <= c->GetMax().z && this->GetMax().z >= c->GetMin().z))) {
+
+		// 衝突してなければfalseを返す
+		return false;
 	}
 
-	return false;
+	// ここから押し出し処理
+	//if (Length(this->GetVelocity()) < Length(c->GetVelocity())) {
+	//	// 相手側の移動量が多い場合
+
+	//	// 差分の取得
+
+	//	// とりあえず頂点の位置を計算
+	//	Vector3 LTF = { c->GetMin().x,c->GetMax().y,c->GetMin().z };
+	//	Vector3 RTF = { c->GetMax().x,c->GetMax().y,c->GetMin().z };
+	//	Vector3 LBF = { c->GetMin().x,c->GetMin().y,c->GetMin().z };
+	//	Vector3 RBF = { c->GetMax().x,c->GetMin().y,c->GetMin().z };
+	//	Vector3 LTB = { c->GetMin().x,c->GetMax().y,c->GetMax().z };
+	//	Vector3 RTB = { c->GetMax().x,c->GetMax().y,c->GetMax().z };
+	//	Vector3 LBB = { c->GetMin().x,c->GetMin().y,c->GetMax().z };
+	//	Vector3 RBB = { c->GetMax().x,c->GetMin().y,c->GetMax().z };
+
+	//	// どれがめり込んでいるのかを確認
+	//	if ((this->GetMin().x <= LTF.x && this->GetMax().x >= LTF.x) &&
+	//		(this->GetMin().y <= LTF.y && this->GetMax().y >= LTF.y) &&
+	//		(this->GetMin().z <= LTF.z && this->GetMax().z >= LTF.z)) {
+
+
+
+	//	}
+
+	//	Vector3 difference = this->GetWorldPos() - c->GetWorldPos();
+
+
+	//}
+
+	return true;
 }
 
 bool AABBCollider::IsCollision(SphereCollider* c){
@@ -59,6 +91,13 @@ Vector3 AABBCollider::GetMax()const {
 	return max;
 }
 
+Vector3 AABBCollider::GetVelocity()
+{
+	Vector3 result = {};
+	result = pWorldTransform->translation - mPrePosition;
+	return result;
+}
+
 void AABBCollider::Init() {
 	mDxCommon = DirectXCommon::GetInstance();
 	// 矩形のモデルを読み込み // いずれは他の場所に移す
@@ -70,7 +109,8 @@ void AABBCollider::Init() {
 
 void AABBCollider::Update(){
 
-	
+	// 前フレームの座標を取得
+	mPrePosition = pWorldTransform->translation;
 
 	MainCamera* camera = MainCamera::GetInstance();
 	// カメラ行列のビュー行列(カメラのワールド行列の逆行列)

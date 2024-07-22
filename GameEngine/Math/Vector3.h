@@ -104,3 +104,6 @@ Vector3 Project(const Vector3& v1, const Vector3& v2);
 /// <returns></returns>
 Vector3 Perpendicular(const Vector3& v);
 
+Vector3 Min(const Vector3& a, const Vector3& b);
+
+Vector3 Max(const Vector3& a, const Vector3& b);

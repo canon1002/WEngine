@@ -53,8 +53,21 @@ void BossEnemy::Update() {
 	// テーブルから関数を呼び出す
 	//(this->*CommandTable[0])();
 
+
+	// 一旦ここに落下処理をつくる
+	if (mObject->mWorldTransform->translation.y > 0.0f) {
+		// 移動量を加算
+		mObject->mWorldTransform->translation.y += mVelocity.y;
+		mVelocity.y -= 9.8f * (1.0f / 360.0f);
+	}
+	else if (mObject->mWorldTransform->translation.y < 0.0f) {
+		mObject->mWorldTransform->translation.y = 0.0f;
+		// 移動量修正
+		mVelocity.y = 0.0f;
+	}
+
 	// ステートの更新処理を行う
-	this->UpdateState();
+	//this->UpdateState();
 
 	// オブジェクト更新
 	mObject->Update();

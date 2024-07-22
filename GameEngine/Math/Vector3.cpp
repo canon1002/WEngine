@@ -1,7 +1,8 @@
 #include "Vector3.h"
 #define _USE_MATH_DEFINES
-#include<cmath>
-#include<algorithm>
+#include <cmath>
+#include <algorithm>
+#include <functional>
 #include <cassert>
 #ifdef _DEBUG
 #include "GameEngine/Base/Debug/ImGuiManager.h"
@@ -317,4 +318,22 @@ Vector3 Perpendicular(const Vector3& v) {
 	}
 
 	return{ 0.0f,-v.z,v.y };
+}
+
+Vector3 Min(const Vector3& a, const Vector3& b)
+{
+	Vector3 result{};
+	result.x = min(a.x, b.x);
+	result.y = min(a.y, b.y);
+	result.z = min(a.z, b.z);
+	return result;
+}
+
+Vector3 Max(const Vector3& a, const Vector3& b)
+{
+	Vector3 result{};
+	result.x = max(a.x, b.x);
+	result.y = max(a.y, b.y);
+	result.z = max(a.z, b.z);
+	return result;
 }
