@@ -4,11 +4,16 @@
 #include "GameEngine/GameBase/Reticle/Reticle3D.h"
 #include "GameEngine/GameBase/Player/Arrow.h"
 
+// 前方宣言
+class CollisionManager;
+
 // 振る舞い
 enum class Behavior {
 	kRoot,   // 通常状態
 	kAttack, // 攻撃中
 	kJump,	 // ジャンプ中
+	kCharge, // 溜め動作中
+
 };
 
 class Player {
@@ -34,6 +39,8 @@ public: // -- 公開 メンバ関数 -- //
 
 	Vector3 GetWorldPos() { return mObject->GetWorldTransform()->translation; }
 	Reticle3D* GetReticle3D() { return mReticle.get(); }
+
+	void SetColliderListForArrow(CollisionManager* cManager);
 
 private: // -- 非公開 メンバ変数 -- //
 

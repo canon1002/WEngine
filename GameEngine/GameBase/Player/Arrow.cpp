@@ -5,6 +5,7 @@
 #include "GameEngine/Append/Collider/AABBCollider.h"
 #include "GameEngine/Append/Collider/RayCollider.h"
 #include <numbers>
+#include "GameEngine/GameBase/Reaction/DamageReaction.h"
 
 Arrow::Arrow() {}
 Arrow::~Arrow() {}
@@ -35,7 +36,9 @@ void Arrow::Init(Vector3 pos, Vector3 vel)
 	//mObject->SetRotate(rotate);
 
 	//コライダーの宣言
-	mObject->mCollider = new AABBCollider(mObject->mWorldTransform, Vector3(0.1f, 0.1f, 1.0f));
+	// コライダーの宣言
+	mObject->mCollider = new AABBCollider(mObject->mWorldTransform, { 0.1f,0.1f,0.1f });
+	mObject->mCollider->Init();
 
 	// フラグをtrueにする
 	mIsActive = true;
@@ -58,8 +61,18 @@ void Arrow::Update()
 		mIsActive = false;
 	}
 
-	mObject->Update();
+	// 衝突時の処理
+	if (mObject->mCollider->GetOnCollisionFlag()) {
+		// 次のフレームで消す
+		mIsActive = false;
 
+		// ダメージ表示
+		int32_t damage = rand() % 200;
+		DamageReaction::GetInstance()->Reaction(this->GetWorldPos(), damage, MainCamera::GetInstance());
+	}
+
+	mObject->Update();
+	mObject->mCollider->Update();
 }
 
 void Arrow::Draw(){

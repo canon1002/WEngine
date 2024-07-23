@@ -5,6 +5,7 @@
 #include "GameEngine/Object/Camera/MainCamera.h"
 
 #include "GameEngine/Append/Collider/AABBCollider.h"
+#include "GameEngine/Append/Collider/CollisionManager.h"
 
 Player::~Player(){
 
@@ -222,4 +223,21 @@ void Player::DrawGUI(){
 void Player::ColliderDraw(){
 	mObject->mCollider->Draw();
 	mReticle->Draw3DReticle();
+
+	for (const auto& arrow : mArrows) {
+		arrow->GetCollider()->Draw();
+	}
+}
+
+void Player::SetColliderListForArrow(CollisionManager* cManager)
+{
+
+	// アロークラスのコライダーをリストに追加する
+	auto arrowIt = mArrows.begin();  // イテレータを初期化
+	while (arrowIt != mArrows.end()) {
+		const auto& arrow = *arrowIt;
+		cManager->SetCollider(arrow->GetCollider());
+		++arrowIt;  // イテレータを次に進める
+	}
+
 }

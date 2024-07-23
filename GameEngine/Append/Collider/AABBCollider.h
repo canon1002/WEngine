@@ -24,7 +24,13 @@ public: // -- 公開 メンバ関数 -- //
 
     // 衝突時
     virtual void OnCollision()override {};
-    virtual void OnCollision(Collider* collider) override { collider; }
+    virtual void OnCollision(Collider* collider) override {
+        collider;
+        if (mOnCollisionCount == 0) {
+            mIsOnCollision = true;
+            mOnCollisionCount = 60;
+        }
+    }
 
     // ワールド座標
     virtual Vector3 GetWorldPos()const override { return pWorldTransform->GetWorldPosition(); }
@@ -34,6 +40,9 @@ public: // -- 公開 メンバ関数 -- //
 
     // 移動量取得
     Vector3 GetVelocity();
+
+    // 衝突フラグ取得
+    virtual bool GetOnCollisionFlag()const override{ return mIsOnCollision; }
 
 private: // -- 非公開 メンバ関数 -- //
 

@@ -64,6 +64,9 @@ public: // -- 公開 メンバ関数 -- //
 	Model* GetModel() const{ return mModel; }
 	void DebugDraw(std::string label) { mModel->DrawGUI(label); }
 
+	// 衝突フラグ取得
+	virtual bool GetOnCollisionFlag()const { return mIsOnCollision; }
+
 protected: // -- 限定公開 メンバ変数 -- //
 
 	// 衝突属性 自分
@@ -87,5 +90,9 @@ protected: // -- 限定公開 メンバ変数 -- //
 	// モデル
 	Model* mModel;
 
+	// 衝突フラグ
+	bool mIsOnCollision;
+	// 衝突フラグ解消までの時間
+	int32_t mOnCollisionCount;
 
 };

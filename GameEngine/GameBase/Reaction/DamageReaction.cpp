@@ -117,7 +117,7 @@ void DamageReaction::RenderSprite(const int32_t value, Vec2 pos)
         newDamageData->sprite->SetSpriteSize(Vec2(16.0f, 16.0f));
 
         // 表示時間の設定
-        newDamageData->activeTime = 120;
+        newDamageData->activeTime = 60;
 
         newSprites.push_back(newDamageData);
     }

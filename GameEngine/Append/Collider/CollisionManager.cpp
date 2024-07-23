@@ -46,8 +46,8 @@ void CollisionManager::CheckCollisionPair(Collider* colliderA, Collider* collide
 	// 衝突判定を行う
 	if (colliderA->IsCollision(colliderB)) {
 		// 衝突していたら衝突時の処理を呼び出す
-		colliderA->OnCollision();
-		colliderB->OnCollision();
+		colliderA->OnCollision(colliderB);
+		colliderB->OnCollision(colliderA);
 	}
 
 }

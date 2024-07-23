@@ -83,6 +83,7 @@ void TitleScene::Update() {
 	// コライダーリストへの追加処理
 	mCollisionManager->SetCollider(mPlayer->GetObject3D()->mCollider);
 	mCollisionManager->SetCollider(mBoss->GetObject3D()->mCollider);
+	mPlayer->SetColliderListForArrow(mCollisionManager.get());
 
 	// 衝突判定を行う
 	mCollisionManager->Update();
@@ -106,6 +107,7 @@ void TitleScene::Draw(){
 	ModelManager::GetInstance()->PreDraw();
 
 	mPlayer->ColliderDraw();
+	//mPlayer->ColliderDraw();
 	mBoss->ColliderDraw();
 
 

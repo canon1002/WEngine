@@ -8,6 +8,10 @@ AABBCollider::AABBCollider(WorldTransform* worldtransform, Vector3 radius) {
 	pWorldTransform = worldtransform;
 	// 各ベクトルの半径を代入
 	mRadius = radius;
+	// 衝突フラグはfalseにしておく
+	mIsOnCollision = false;
+	// カウントを0で初期化
+	mOnCollisionCount = 0;
 }
 
 bool AABBCollider::IsCollision(Collider* c) {
@@ -130,6 +134,17 @@ void AABBCollider::Update(){
 
 	// 更新
 	mModel->Update();
+
+	// カウント減少
+	if (mOnCollisionCount > 0) {
+		mOnCollisionCount--;
+
+		if (mOnCollisionCount <= 0) {
+			mOnCollisionCount = 0;
+			// フラグをfalseに
+			mIsOnCollision = false;
+		}
+	}
 
 }
 
