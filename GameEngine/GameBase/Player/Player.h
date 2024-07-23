@@ -42,6 +42,13 @@ public: // -- 公開 メンバ関数 -- //
 
 	void SetColliderListForArrow(CollisionManager* cManager);
 
+	// 攻撃処理
+	void Attack();
+	// 溜め処理
+	void Charge();
+	// 溜め->攻撃 移行処理
+	void ChengeChageToAttack();
+
 private: // -- 非公開 メンバ変数 -- //
 
 	// 入力を取得
@@ -70,6 +77,9 @@ private: // -- 非公開 メンバ変数 -- //
 
 	// 3D照準クラス
 	std::unique_ptr<Reticle3D> mReticle;
+
+	// ため動作継続時間
+	int32_t mChargeCount;
 
 	// アロークラス
 	std::list<Arrow*> mArrows;

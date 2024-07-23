@@ -7,14 +7,14 @@
 #include "GameEngine/Append/Collider/AABBCollider.h"
 #include "GameEngine/Append/Collider/CollisionManager.h"
 
-Player::~Player(){
+Player::~Player() {
 
 	for (auto& arrow : mArrows) {
 		delete arrow;
 	}
 }
 
-void Player::Init(){
+void Player::Init() {
 	mObject = std::make_unique<Object3d>();
 	mObject->Init("PlayerObj");
 	mObject->SetModel("walk.gltf");
@@ -25,7 +25,7 @@ void Player::Init(){
 
 	// メインカメラをフォローカメラ仕様にする
 	MainCamera::GetInstance()->SetTarget(mObject->GetWorldTransform());
-	
+
 	// 最初は通常状態から始める
 	mBehavior = Behavior::kRoot;
 
@@ -48,19 +48,8 @@ void Player::Init(){
 
 }
 
-void Player::Update(){
+void Player::Update() {
 
-	// RBボタンを押してたら歩く
-	//if (mInput->GetPused(Gamepad::Button::RIGHT_SHOULDER)) {
-	//	mObject->mSkinning->Init("human", "walk.gltf",
-	//		mObject->GetModel()->modelData);
-	//}
-
-	//// RBを離したらスニーク
-	//if (mInput->GetReleased(Gamepad::Button::RIGHT_SHOULDER)) {
-	//	mObject->mSkinning->Init("human", "sneakWalk.gltf",
-	//		mObject->GetModel()->modelData);
-	//}
 
 	// ジャンプ
 	if (mJumpCount > 0) {
@@ -76,7 +65,7 @@ void Player::Update(){
 
 	// ジャンプ中
 	if (mBehavior == Behavior::kJump) {
-		
+
 		// 移動量を加算
 		mObject->mWorldTransform->translation.y += mVelocity.y;
 
@@ -123,10 +112,10 @@ void Player::Update(){
 		direction = Normalize(direction);
 
 		// 移動速度を設定
-		float moveSpeed = 0.05f;
-		// RB入力時、移動速度を上げる
+		float moveSpeed = 0.15f;
+		// RB入力時、移動速度を下げる
 		if (mInput->GetLongPush(Gamepad::Button::RIGHT_SHOULDER)) {
-			moveSpeed *= 2.0f;
+			moveSpeed *= 0.4f;
 		}
 
 		// カメラの回転量を反映
@@ -150,40 +139,20 @@ void Player::Update(){
 		mObject->mWorldTransform->rotation.y = rotateY;
 	}
 
+	// レティクル 更新
 	mReticle->Update();
 
-	// プレイヤー攻撃処理
-	if (mInput->GetKey()->GetTriggerKey(DIK_RETURN) || mInput->GetPused(Gamepad::Button::X)) {
-		Vector3 startPos = this->GetWorldPos();// 移動の始点
-		Vector3 endPos = mReticle->GetWorld3D();// 移動の終点
-
-		// アローの進行方向を設定し、正規化しておく
-		Vector3 directionForArrow = endPos - startPos;
-		directionForArrow = Normalize(directionForArrow);
-		Vector3 vel = Scalar(1.0f, directionForArrow);
-
-		//回転
-		Vector3 rotate = { 0.0f,0.0f,0.0f };
-		const float PI = 3.14f;
-		rotate.y = std::atan2f(directionForArrow.x, directionForArrow.z);
-		rotate.y = std::fmodf(rotate.y, 2.0f * PI);
-		// 回転量が超過していたり、下限を下回っていたら補正する
-		if (rotate.y > PI) { rotate.y -= 2.0f * PI; }
-		if (rotate.y < -PI) { rotate.y += 2.0f * PI; }
-		rotate.x = -std::atan2f(directionForArrow.y, directionForArrow.z);
-		rotate.x = std::fmodf(rotate.x, 2.0f * PI);
-		// 回転量が超過していたり、下限を下回っていたら補正する
-		if (rotate.x > PI) { rotate.y -= 2.0f * PI; }
-		if (rotate.x < -PI) { rotate.y += 2.0f * PI; }
-	
-		// アロークラスの宣言と初期化を行う(上記で求めた移動方向と始点の座標を代入)
-		Arrow* arrow = new Arrow();
-		arrow->Init(startPos, vel);
-		arrow->SetRotate(rotate);
-		arrow->SetCubeMap(mObject->GetModel()->mTextureHandleCubeMap);
-		// アロークラスの配列に要素を追加する
-		mArrows.push_back(arrow);
-
+	// RBボタン長押しでため動作を行う
+	if (mInput->GetLongPush(Gamepad::Button::RIGHT_SHOULDER)) {
+		Charge();
+	}
+	// ボタンを離したら攻撃する
+	if (mInput->GetReleased(Gamepad::Button::RIGHT_SHOULDER)) {
+		ChengeChageToAttack();
+	}
+	if (mBehavior == Behavior::kAttack) {
+		Attack();
+		mBehavior = Behavior::kRoot;
 	}
 
 	// プレイヤーの弾 -- 更新 --
@@ -207,7 +176,7 @@ void Player::Update(){
 	mObject->mCollider->Update();
 }
 
-void Player::Draw(){
+void Player::Draw() {
 	mObject->Draw();
 
 	for (const auto& arrow : mArrows) {
@@ -216,11 +185,11 @@ void Player::Draw(){
 
 }
 
-void Player::DrawGUI(){
+void Player::DrawGUI() {
 	mObject->DrawGUI();
 }
 
-void Player::ColliderDraw(){
+void Player::ColliderDraw() {
 	mObject->mCollider->Draw();
 	mReticle->Draw3DReticle();
 
@@ -231,7 +200,6 @@ void Player::ColliderDraw(){
 
 void Player::SetColliderListForArrow(CollisionManager* cManager)
 {
-
 	// アロークラスのコライダーをリストに追加する
 	auto arrowIt = mArrows.begin();  // イテレータを初期化
 	while (arrowIt != mArrows.end()) {
@@ -239,5 +207,63 @@ void Player::SetColliderListForArrow(CollisionManager* cManager)
 		cManager->SetCollider(arrow->GetCollider());
 		++arrowIt;  // イテレータを次に進める
 	}
+
+}
+
+void Player::Attack()
+{
+
+
+}
+
+void Player::Charge()
+{
+	// [ため動作中]に状態を変更
+	mBehavior = Behavior::kCharge;
+
+	// 設定したボタンが長押しされている間、ため動作を行う
+	mChargeCount++;
+
+}
+
+void Player::ChengeChageToAttack()
+{
+	// [攻撃動作中]に状態を変更
+	mBehavior = Behavior::kAttack;
+	// ため動作の継続時間リセット
+	mChargeCount = 0;
+
+	// アローの生成
+	Vector3 startPos = this->GetWorldPos();// 移動の始点
+	Vector3 endPos = mReticle->GetWorld3D();// 移動の終点
+
+	// アローの進行方向を設定し、正規化しておく
+	Vector3 directionForArrow = endPos - startPos;
+	directionForArrow = Normalize(directionForArrow);
+	Vector3 vel = Scalar(1.0f, directionForArrow);
+
+	//回転
+	Vector3 rotate = { 0.0f,0.0f,0.0f };
+	const float PI = 3.14f;
+	rotate.y = std::atan2f(directionForArrow.x, directionForArrow.z);
+	rotate.y = std::fmodf(rotate.y, 2.0f * PI);
+	// 回転量が超過していたり、下限を下回っていたら補正する
+	if (rotate.y > PI) { rotate.y -= 2.0f * PI; }
+	if (rotate.y < -PI) { rotate.y += 2.0f * PI; }
+	rotate.x = -std::atan2f(directionForArrow.y, directionForArrow.z);
+	rotate.x = std::fmodf(rotate.x, 2.0f * PI);
+	// 回転量が超過していたり、下限を下回っていたら補正する
+	if (rotate.x > PI) { rotate.y -= 2.0f * PI; }
+	if (rotate.x < -PI) { rotate.y += 2.0f * PI; }
+
+	// アロークラスの宣言と初期化を行う(上記で求めた移動方向と始点の座標を代入)
+	Arrow* arrow = new Arrow();
+	arrow->Init(startPos, vel);
+	arrow->SetRotate(rotate);
+	arrow->SetCubeMap(mObject->GetModel()->mTextureHandleCubeMap);
+	// アロークラスの配列に要素を追加する
+	mArrows.push_back(arrow);
+
+
 
 }
