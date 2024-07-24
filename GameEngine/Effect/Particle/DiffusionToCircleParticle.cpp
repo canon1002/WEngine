@@ -13,6 +13,8 @@ void DiffusionToCircleParticle::Init() {
 	// エミッター初期設定
 	mEmitter = {};
 	mEmitter.count = 3;
+	mEmitter.frequency = 0.5f;// 0.5秒ごとに発生
+	mEmitter.frequencyTime = 0.0f;// 発生頻度用の時刻 0で初期化
 
 	// リソースを生成
 	CreateTransformation();
@@ -28,26 +30,29 @@ void DiffusionToCircleParticle::Init() {
 void DiffusionToCircleParticle::Update() {
 
 #ifdef _DEBUG
-
 	ImGui::Begin("DTCPatricle");
-	if (ImGui::Button("Add Particle")) {
-		// ボタンを押したらパーティクルを生成する
-		mParticles.splice(mParticles.end(), Emit(mEmitter, randomEngine_));
-	}
-	ImGui::End();
-
 #endif // _DEBUG
 
 
 	// Δtを定義 60fps固定してあるが、実時間を計測して可変fpsで動かせるようにしておきたい
 	const float kDeltaTime = 1.0f / 60.0f;
 
-	// instancingCountが最大値を上回らにようにする
+	// instancingCountが最大値を上回らないようにする
 	if (instanceCount_ > kNumMaxInstance) { instanceCount_ = kNumMaxInstance; }
+
+	// エミッター更新処理
+	mEmitter.frequencyTime += kDeltaTime;// 時刻を進める
+	if (mEmitter.frequency <= mEmitter.frequencyTime) {// 発生頻度より数値が大きくなったら発生
+		mParticles.splice(mParticles.end(), Emit(mEmitter, randomEngine_));// 発生処理
+		mEmitter.frequencyTime -= mEmitter.frequency;// 余計に過ぎた時間も加味して頻度計算を行う
+	}
 
 	// ワールド行列とWVP行列を掛け合わした行列を代入
 	mWVPData->WVP = Multiply(mWorldTransform.GetWorldMatrix(), mCamera->GetViewProjectionMatrix());
 	mWVPData->World = mWorldTransform.GetWorldMatrix();
+
+	// イテレーターの位置を保持する数値
+	int32_t numInstance = 0;
 
 	// イテレーターを使用してfor文を回す
 	for (std::list<Particle>::iterator it = mParticles.begin(); it != mParticles.end();) {
@@ -67,8 +72,7 @@ void DiffusionToCircleParticle::Update() {
 		//mWorldTransform.rotation = (*it).worldTransform.rotation;
 		//mWorldTransform.translation = (*it).worldTransform.translation;
 
-		// イテレーターの位置を取得
-		int32_t numInstance = 0;
+		
 		//uint32_t numInstance = std::distance(mParticles.begin(), it);
 		if (numInstance < kNumMaxInstance) {
 
@@ -82,6 +86,26 @@ void DiffusionToCircleParticle::Update() {
 
 			numInstance++;
 		}
+
+#ifdef _DEBUG
+		
+		if (ImGui::TreeNode(std::to_string(numInstance).c_str())) {
+			float treeScale = mWorldTransform.scale.x;
+			ImGui::DragFloat("Scale", &treeScale, 0.05f);
+			mWorldTransform.scale = { treeScale ,treeScale ,treeScale };
+			ImGui::SliderAngle("RotateX", &(*it).worldTransform.rotation.x);
+			ImGui::SliderAngle("RotateY", &(*it).worldTransform.rotation.y);
+			ImGui::SliderAngle("RotateZ", &(*it).worldTransform.rotation.z);
+			ImGui::DragFloat3("Tranlate", &(*it).worldTransform.translation.x);
+			ImGui::DragFloat("lifeTime", &(*it).lifeTime);
+			ImGui::Spacing();
+			ImGui::DragFloat2("UVScale", &uvTransform_.scale.x, 0.01f, -10.0f, 10.0f);
+			ImGui::DragFloat2("UVTranlate", &uvTransform_.translation.x, 0.01f, -10.0f, 10.0f);
+			ImGui::SliderAngle("UVRotate", &uvTransform_.rotation.z);
+			ImGui::ColorEdit4("Color", &(*it).color.r);
+			ImGui::TreePop();
+		}
+#endif // _DEBUG
 
 		// イテレーターを次に進める
 		++it;
@@ -98,6 +122,9 @@ void DiffusionToCircleParticle::Update() {
 	// 変換したデータを代入する
 	mMaterialData->uvTransform = uvTransformMatrix;
 
+#ifdef _DEBUG
+	ImGui::End();
+#endif // _DEBUG
 
 }
 

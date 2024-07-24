@@ -92,7 +92,7 @@ protected: // -- 限定公開 メンバ変数 -- //
 	UVTransform uvTransform_;
 
 	// インスタンスの数
-	const int32_t kNumMaxInstance = 20;
+	const int32_t kNumMaxInstance = 100;
 	int32_t instanceCount_;
 
 	// 乱数生成機
