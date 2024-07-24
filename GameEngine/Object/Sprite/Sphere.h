@@ -19,7 +19,7 @@ public:
 	void Draw() const;
 
 	void CreateVertexResource();
-	void CreateTransformationRsource();
+	void CreateTransformation();
 	void CreateBufferView();
 	void DrawBeginResource();
 

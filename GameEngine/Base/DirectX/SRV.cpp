@@ -73,7 +73,7 @@ int SRV::LoadTexture(const std::string filePath) {
 
 int SRV::SetStructuredBuffer(int32_t kNumInstance, Microsoft::WRL::ComPtr<ID3D12Resource> instancingResource) {
 
-	++particleId_;
+	++textureId_;
 
 	// SRVの設定をおこなう
 	D3D12_SHADER_RESOURCE_VIEW_DESC instancingSrvDesc{};
@@ -83,14 +83,14 @@ int SRV::SetStructuredBuffer(int32_t kNumInstance, Microsoft::WRL::ComPtr<ID3D12
 	instancingSrvDesc.Buffer.FirstElement = 0;
 	instancingSrvDesc.Buffer.Flags= D3D12_BUFFER_SRV_FLAG_NONE;
 	instancingSrvDesc.Buffer.NumElements = kNumInstance;
-	instancingSrvDesc.Buffer.StructureByteStride = sizeof(TransformationMatrix);
+	instancingSrvDesc.Buffer.StructureByteStride = sizeof(ParticleForGPU);
 	// デスクリプタサイズを取得
 	const uint32_t descriptorSizeSRV = mDxCommon->device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	instancingSrvHandleCPU = mDxCommon->GetCPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, particleId_);
-	instancingSrvHandleGPU = mDxCommon->GetGPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, particleId_);
+	instancingSrvHandleCPU = mDxCommon->GetCPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, textureId_);
+	instancingSrvHandleGPU = mDxCommon->GetGPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, textureId_);
 	mDxCommon->device_->CreateShaderResourceView(instancingResource.Get(), &instancingSrvDesc, instancingSrvHandleCPU);
 
-	return  particleId_;
+	return  textureId_;
 
 }
 

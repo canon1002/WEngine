@@ -7,7 +7,7 @@ void Sprite::Init() {
 	mCamera = MainCamera::GetInstance();
 	CreateVertexResource();
 	CreateIndexResource();
-	CreateTransformationRsource();
+	CreateTransformation();
 	CreateBufferView();
 
 	// テクスチャサイズをイメージに合わせる
@@ -136,7 +136,7 @@ void Sprite::CreateVertexResource() {
 }
 
 //
-void Sprite::CreateTransformationRsource() {
+void Sprite::CreateTransformation() {
 
 	// Transformation用のResourceを作る
 	mWvpResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(TransformationMatrix));

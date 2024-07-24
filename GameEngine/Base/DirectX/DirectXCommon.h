@@ -78,34 +78,12 @@ public: // ** メンバ関数 ** //
 	/// </summary>
 	void CreateFence();
 
-	/// <summary>
-	/// 
-	/// </summary>
 	void InitializeDXC();
-	
-	/// <summary>
-	/// 
-	/// </summary>
-	void InitializePSOP();
-	
-	/// <summary>
-	/// 
-	/// </summary>
 	void InitializeViewPort();
-
-	/// <summary>
-	/// 
-	/// </summary>
-	void PreDraw();
-
+	
 	void PreDrawForRenderTarget();
 	void PostDrawForRenderTarget();
-
-	void DrawPariticleBegin();
-
-	/// <summary>
-	/// 
-	/// </summary>
+	void PreDraw();
 	void PostDraw();
 
 

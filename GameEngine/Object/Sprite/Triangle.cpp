@@ -17,7 +17,7 @@ void Triangle::Initialize(DirectXCommon* dxCommon,CameraCommon* camera) {
 
 
 	CreateVertexResource();
-	CreateTransformationRsource();
+	CreateTransformation();
 	CreateBufferView();
 
 	mWvpResource->SetName(L"Tri");
@@ -81,7 +81,7 @@ void Triangle::CreateVertexResource() {
 }
 
 //
-void Triangle::CreateTransformationRsource() {
+void Triangle::CreateTransformation() {
 
 	// Transformation用のResourceを作る
 	mWvpResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(Matrix4x4));

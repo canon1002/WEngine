@@ -15,7 +15,7 @@ void Skybox::Init(const std::string& directrypath, const std::string& filename) 
 	mWorldTransform = new WorldTransform();
 	mWorldTransform->scale = { 512.0f,512.0f,512.0f };
 	mTextureHandle = mDxCommon->srv_->LoadTexture(directrypath + "/" + filename);
-	CreateTransformationRsource();
+	CreateTransformation();
 	CreateVertexResource();
 	CreateMaterialResource();
 	CreateGraphicsPipeline();
@@ -113,7 +113,7 @@ void Skybox::PreDraw() {
 
 }
 
-void Skybox::CreateTransformationRsource() {
+void Skybox::CreateTransformation() {
 
 	// Transformation用のResourceを作る
 	mWvpResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(TransformationMatrix));

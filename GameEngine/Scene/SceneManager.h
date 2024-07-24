@@ -13,7 +13,6 @@
 #include "GameEngine/Resource/Texture/Resource.h"
 #include "GameEngine/Object/Sprite/Sphere.h"
 
-#include "GameEngine/Object/Particle/VoxelParticle.h"
 #include "GameEngine/Input/InputManager.h"
 #include "GameEngine/Resource/Audio/Audio.h"
 

@@ -18,7 +18,7 @@ void Sphere::Initialize(DirectXCommon* dxCommon,CameraCommon* camera) {
 	mCamera=camera;
 
 	CreateVertexResource();
-	CreateTransformationRsource();
+	CreateTransformation();
 	CreateBufferView();
 
 }
@@ -101,7 +101,7 @@ void Sphere::CreateVertexResource() {
 }
 
 //
-void Sphere::CreateTransformationRsource() {
+void Sphere::CreateTransformation() {
 
 	// Transformation用のResourceを作る
 	mWvpResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(TransformationMatrix));

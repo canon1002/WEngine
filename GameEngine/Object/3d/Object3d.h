@@ -31,7 +31,7 @@ public: // メンバ関数
 	void DrawGUI();
 	void DrawGuiTree();
 
-	void CreateTransformationRsource();
+	void CreateTransformation();
 	void SetModel(const std::string& filepath);
 	void SetScale(Vector3 scale) { mWorldTransform->scale = scale; }
 	void SetRotate(Vector3 rotate) { mWorldTransform->rotation = rotate; }

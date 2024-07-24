@@ -124,9 +124,6 @@
     <ClCompile Include="GameEngine\Base\DirectX\SRV.cpp">
       <Filter>Engine\base\DirectX\SRV</Filter>
     </ClCompile>
-    <ClCompile Include="GameEngine\Object\Particle\VoxelParticle.cpp">
-      <Filter>Engine\object\primitive</Filter>
-    </ClCompile>
     <ClCompile Include="Externals\imgui\imgui.cpp">
       <Filter>Externals\imgui</Filter>
     </ClCompile>
@@ -219,7 +216,7 @@
     </ClCompile>
     <ClCompile Include="GameEngine\Base\Debug\ImGuiManager.cpp" />
     <ClCompile Include="GameEngine\Base\Engine.cpp" />
-    <ClCompile Include="GameEngine\Object\Particle\ParticleManager.cpp" />
+    <ClCompile Include="GameEngine\Effect\Particle\ParticleManager.cpp" />
     <ClCompile Include="GameEngine\Object\ObjectAdministrator.cpp" />
     <ClCompile Include="GameEngine\Base\DirectX\RTV.cpp" />
     <ClCompile Include="GameEngine\Base\DirectX\DSV.cpp" />
@@ -278,6 +275,8 @@
     <ClCompile Include="GameEngine\Editor\GlobalVariables.cpp" />
     <ClCompile Include="GameEngine\GameBase\Reaction\DamageReaction.cpp" />
     <ClCompile Include="GameEngine\Editor\LevelEditor.cpp" />
+    <ClCompile Include="GameEngine\Effect\Particle\ParticleCommon.cpp" />
+    <ClCompile Include="GameEngine\Effect\Particle\DiffusionToCircleParticle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameEngine\Base\System.h">
@@ -306,9 +305,6 @@
     </ClInclude>
     <ClInclude Include="GameEngine\Base\DirectX\SRV.h">
       <Filter>Engine\base\DirectX\SRV</Filter>
-    </ClInclude>
-    <ClInclude Include="GameEngine\Object\Particle\VoxelParticle.h">
-      <Filter>Engine\object\primitive</Filter>
     </ClInclude>
     <ClInclude Include="Externals\imgui\imconfig.h">
       <Filter>Externals\imgui</Filter>
@@ -415,7 +411,7 @@
     </ClInclude>
     <ClInclude Include="GameEngine\Base\Debug\ImGuiManager.h" />
     <ClInclude Include="GameEngine\Base\Engine.h" />
-    <ClInclude Include="GameEngine\Object\Particle\ParticleManager.h" />
+    <ClInclude Include="GameEngine\Effect\Particle\ParticleManager.h" />
     <ClInclude Include="GameEngine\Object\ObjectAdministrator.h" />
     <ClInclude Include="GameEngine\Base\DirectX\RTV.h" />
     <ClInclude Include="GameEngine\Base\DirectX\DSV.h" />
@@ -476,6 +472,8 @@
     <ClInclude Include="GameEngine\Editor\GlobalVariables.h" />
     <ClInclude Include="GameEngine\GameBase\Reaction\DamageReaction.h" />
     <ClInclude Include="GameEngine\Editor\LevelEditor.h" />
+    <ClInclude Include="GameEngine\Effect\Particle\ParticleCommon.h" />
+    <ClInclude Include="GameEngine\Effect\Particle\DiffusionToCircleParticle.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt">

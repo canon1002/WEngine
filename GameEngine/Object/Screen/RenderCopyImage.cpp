@@ -22,7 +22,7 @@ void RenderCopyImage::Initialize(DirectXCommon* dxCommon, CameraCommon* camera) 
 	CreateGraphicsPipeline();
 
 	CreateVertexResource();
-	CreateTransformationRsource();
+	CreateTransformation();
 	CreateBufferView();
 
 	mTextureHandle = mDxCommon->srv_->LoadTexture("uvChecker.png");
@@ -357,7 +357,7 @@ void RenderCopyImage::CreateVertexResource() {
 }
 
 //
-void RenderCopyImage::CreateTransformationRsource() {
+void RenderCopyImage::CreateTransformation() {
 
 	// Transformation用のResourceを作る
 	mWvpResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(Matrix4x4));

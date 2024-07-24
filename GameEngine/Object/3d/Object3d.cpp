@@ -32,7 +32,7 @@ void Object3d::Init(std::string name) {
 	mModelManager = ModelManager::GetInstance();
 	mWorldTransform = new WorldTransform();
 	mWorldTransform->Init();
-	CreateTransformationRsource();
+	CreateTransformation();
 }
 
 void Object3d::Update() {
@@ -247,7 +247,7 @@ void Object3d::DrawGuiTree()
 }
 
 //
-void Object3d::CreateTransformationRsource() {
+void Object3d::CreateTransformation() {
 
 	// Transformation用のResourceを作る
 	mWvpResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(TransformationMatrix));

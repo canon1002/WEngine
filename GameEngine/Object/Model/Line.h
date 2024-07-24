@@ -33,7 +33,7 @@ private:	// -- private メンバ関数 -- //
 	void CreateGraphicsPipeline();
 
 	void CreateVertexResource();
-	void CreateTransformationRsource();
+	void CreateTransformation();
 	void CreateBufferView();
 
 public:

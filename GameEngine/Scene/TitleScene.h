@@ -1,18 +1,17 @@
 #pragma once
 #include "IScene.h"
-#include "GameEngine/Object/3d/Object3d.h"
-#include "GameEngine/Object/Particle/VoxelParticle.h"
-#include "GameEngine/Input/InputManager.h"
-#include "GameEngine/Object/Camera/MainCamera.h"
-#include "GameEngine/Object/Sprite/Sprite.h"
-#include "GameEngine/Object/Model/Skybox/Skybox.h"
-#include "GameEngine/Object/Model/Line.h"
-#include "GameEngine/Object/Grid3D.h"
 
+#include "GameEngine/Object/Camera/MainCamera.h"
+#include "GameEngine/Object/Model/Skybox/Skybox.h"
+#include "GameEngine/Object/Grid3D.h"
+#include "GameEngine/Effect/Particle/DiffusionToCircleParticle.h"
+
+// ゲーム用
 #include "GameEngine/GameBase/Player/Player.h"
 #include "GameEngine/GameBase/Enemy/BossEnemy.h"
-
+// マネージャー
 #include "GameEngine/Append/Collider/CollisionManager.h"
+#include "GameEngine/Input/InputManager.h"
 
 class TitleScene :
     public IScene
@@ -40,6 +39,9 @@ private:
 
 	// 衝突判定マネージャ
 	std::unique_ptr<CollisionManager> mCollisionManager;
+
+	// 円形拡散パーティクル
+	std::unique_ptr<DiffusionToCircleParticle> mDTCParticle;
 
 };
 

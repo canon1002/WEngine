@@ -20,7 +20,7 @@ void Line::Init() {
 	CreateGraphicsPipeline();
 
 	CreateVertexResource();
-	CreateTransformationRsource();
+	CreateTransformation();
 	CreateBufferView();
 
 	mTextureHandle = mDxCommon->srv_->LoadTexture("white2x2.png");
@@ -236,7 +236,7 @@ void Line::CreateVertexResource() {
 }
 
 //
-void Line::CreateTransformationRsource() {
+void Line::CreateTransformation() {
 
 	// Transformation用のResourceを作る
 	mWvpResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(Matrix4x4));

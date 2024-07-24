@@ -18,7 +18,7 @@ public:
 	void Draw();
 
 	void CreateVertexResource();
-	void CreateTransformationRsource();
+	void CreateTransformation();
 	void CreateBufferView();
 	void DrawBeginResource();
 

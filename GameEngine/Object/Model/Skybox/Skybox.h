@@ -28,7 +28,7 @@ private: // -- private メンバ関数 -- //
 	/// <summary>
 	/// 座標関連の要素を作成する
 	/// </summary>
-	void CreateTransformationRsource();
+	void CreateTransformation();
 
 	/// <summary>
 	/// 3Dモデル用のルートシグネチャを生成

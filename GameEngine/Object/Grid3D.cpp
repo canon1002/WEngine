@@ -16,7 +16,7 @@ void Grid3D::Init(){
 	
 	mWorldTransform = new WorldTransform();
 	mWorldTransform->Init();
-	CreateTransformationRsource();
+	CreateTransformation();
 	CreateGraphicsPipeline();
 	CreateIndexResource();
 }
@@ -89,7 +89,7 @@ void Grid3D::Draw()
 
 }
 
-void Grid3D::CreateTransformationRsource(){
+void Grid3D::CreateTransformation(){
 
 	// Transformation用のResourceを作る
 	mWvpResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(TransformationMatrixForGrid3D));

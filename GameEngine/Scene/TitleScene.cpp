@@ -4,6 +4,7 @@
 #include "GameEngine/Base/Debug/ImGuiManager.h"
 #include "GameEngine/Editor/LevelEditor.h"
 #include "GameEngine/GameBase/Reaction/DamageReaction.h"
+#include "GameEngine/Effect/Particle/ParticleManager.h"
 
 void TitleScene::Finalize(){}
 
@@ -54,7 +55,11 @@ void TitleScene::Init() {
 	// グリッド生成  // 左の引数はグリッドのセル数、右の引数はセルの大きさを入れる
 	grid_ = std::make_unique<Grid3D>(5,1.0f);
 
-	
+	// パーティクル
+	ParticleManager::GetInstance()->Init();
+	mDTCParticle = std::make_unique<DiffusionToCircleParticle>();
+	mDTCParticle->Init();
+
 }
 
 void TitleScene::Update() {
@@ -88,6 +93,10 @@ void TitleScene::Update() {
 	// 衝突判定を行う
 	mCollisionManager->Update();
 
+	// パーティクル
+	ParticleManager::GetInstance()->Update();
+	mDTCParticle->Update();
+
 }
 
 void TitleScene::Draw(){
@@ -119,7 +128,7 @@ void TitleScene::Draw(){
 
 	mPlayer->GetReticle3D()->Draw2DReticle();
 
-	//DamageReaction::GetInstance()->RenderText(winApp_->ConvertString("124"), 200, 200);
-	DamageReaction::GetInstance()->DrawSprite();
+	ParticleManager::GetInstance()->PreDraw();
+	mDTCParticle->Draw();
 
 }

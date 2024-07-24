@@ -117,6 +117,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="GameEngine\Effect\Particle\DiffusionToCircleParticle.cpp" />
     <ClCompile Include="GameEngine\GameBase\Reaction\DamageReaction.cpp" />
     <ClCompile Include="GameEngine\GameBase\Player\Arrow.cpp" />
     <ClCompile Include="GameEngine\Append\Collider\AABBCollider.cpp" />
@@ -160,7 +161,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="GameEngine\Object\Sprite\Sphere.cpp" />
     <ClCompile Include="GameEngine\Object\Sprite\Sprite.cpp" />
     <ClCompile Include="GameEngine\Object\Sprite\Triangle.cpp" />
-    <ClCompile Include="GameEngine\Object\Particle\VoxelParticle.cpp" />
     <ClCompile Include="GameEngine\Resource\Audio\Audio.cpp" />
     <ClCompile Include="GameEngine\Resource\Texture\Resource.cpp" />
     <ClCompile Include="GameEngine\Scene\GameScene.cpp" />
@@ -186,11 +186,12 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="GameEngine\GameBase\IObjectBase.cpp" />
     <ClCompile Include="GameEngine\Editor\GlobalVariables.cpp" />
     <ClCompile Include="GameEngine\Editor\LevelEditor.cpp" />
+    <ClCompile Include="GameEngine\Effect\Particle\ParticleCommon.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="GameEngine\Object\3d\Object3dCommon.cpp" />
     <ClCompile Include="GameEngine\Object\3d\Object3d.cpp" />
     <ClCompile Include="GameEngine\Object\Model\ModelManager.cpp" />
-    <ClCompile Include="GameEngine\Object\Particle\ParticleManager.cpp" />
+    <ClCompile Include="GameEngine\Effect\Particle\ParticleManager.cpp" />
     <ClCompile Include="GameEngine\Object\ObjectAdministrator.cpp" />
     <ClCompile Include="GameEngine\Base\DirectX\RTV.cpp" />
     <ClCompile Include="GameEngine\Object\Model\Skybox\Skybox.cpp" />
@@ -207,6 +208,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="GameEngine\GameBase\Reticle\Reticle3D.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="GameEngine\Effect\Particle\DiffusionToCircleParticle.h" />
     <ClInclude Include="GameEngine\GameBase\Reaction\DamageReaction.h" />
     <ClInclude Include="GameEngine\GameBase\Player\Arrow.h" />
     <ClInclude Include="GameEngine\Append\Collider\AABBCollider.h" />
@@ -257,7 +259,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="GameEngine\Object\Sprite\Sphere.h" />
     <ClInclude Include="GameEngine\Object\Sprite\Sprite.h" />
     <ClInclude Include="GameEngine\Object\Sprite\Triangle.h" />
-    <ClInclude Include="GameEngine\Object\Particle\VoxelParticle.h" />
     <ClInclude Include="GameEngine\Resource\Audio\Audio.h" />
     <ClInclude Include="GameEngine\Resource\Texture\Resource.h" />
     <ClInclude Include="GameEngine\Scene\GameScene.h" />
@@ -279,7 +280,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="GameEngine\Object\Model\ModelManager.h" />
     <ClInclude Include="GameEngine\Input\InputManager.h" />
     <ClInclude Include="GameEngine\Input\Keyboard.h" />
-    <ClInclude Include="GameEngine\Object\Particle\ParticleManager.h" />
+    <ClInclude Include="GameEngine\Effect\Particle\ParticleManager.h" />
     <ClInclude Include="GameEngine\Object\ObjectAdministrator.h" />
     <ClInclude Include="GameEngine\Base\DirectX\RTV.h" />
     <ClInclude Include="GameEngine\Object\Model\Skybox\Skybox.h" />
@@ -303,6 +304,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="GameEngine\GameBase\Reticle\Reticle3D.h" />
     <ClInclude Include="GameEngine\Editor\GlobalVariables.h" />
     <ClInclude Include="GameEngine\Editor\LevelEditor.h" />
+    <ClInclude Include="GameEngine\Effect\Particle\ParticleCommon.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt" />

@@ -116,10 +116,6 @@ int SceneManager::Run() {
 		if(ImGui::Button("LoadLevelEditor")) {
 			LevelEditor::GetInstance()->CheckLevelEditorFile();
 		}
-
-		if (ImGui::Button("SetDamage")) {
-			DamageReaction::GetInstance()->Reaction(Vector3(2.0f, 2.0f, 10.0f), 147, mainCamera_.get());
-		}
 		ImGui::EndMainMenuBar();
 		imGuiManager_->End();
 		#endif // _DEBUG
@@ -144,10 +140,15 @@ int SceneManager::Run() {
 
 		mPostEffectManager->Draw();
 
+		//DamageReaction::GetInstance()->RenderText(winApp_->ConvertString("124"), 200, 200);
+		DamageReaction::GetInstance()->DrawSprite();
+
 #ifdef _DEBUG
 		// ImGuiの描画
 		imGuiManager_->Draw();
 #endif // _DEBUG
+
+		
 
 		// 描画後処理
 		mDxCommon->PostDraw();

@@ -31,7 +31,7 @@ public:
 
 	void CreateVertexResource();
 	void CreateIndexResource();
-	void CreateTransformationRsource();
+	void CreateTransformation();
 	void CreateBufferView();
 
 	Particle MakeNewParticle(std::mt19937& randomEngine);

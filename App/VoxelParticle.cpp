@@ -20,7 +20,7 @@ void VoxelParticle::Initialize(DirectXCommon* dxCommon,CameraCommon* camera) {
 
 	CreateVertexResource();
 	CreateIndexResource();
-	CreateTransformationRsource();
+	CreateTransformation();
 	CreateBufferView();
 	instancingHandle_ = mDxCommon->srv_->SetStructuredBuffer(kNumMaxInstance, instancingResource);
 
@@ -178,7 +178,7 @@ void VoxelParticle::CreateVertexResource() {
 }
 
 //
-void VoxelParticle::CreateTransformationRsource() {
+void VoxelParticle::CreateTransformation() {
 
 	for (int32_t index = 0; index < instanceCount_; ++index) {
 		particles[index] = MakeNewParticle(randomEngine_);

@@ -49,7 +49,7 @@ private:	// -- private メンバ関数 -- //
 	/// </summary>
 	void CreateGraphicsPipeline();
 
-	void CreateTransformationRsource();
+	void CreateTransformation();
 	void CreateVertexResource();
 	void CreateIndexResource();
 	void CreateMaterialResource();

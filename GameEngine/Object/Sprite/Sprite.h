@@ -17,7 +17,7 @@ public:
 
 	void CreateVertexResource();
 	void CreateIndexResource();
-	void CreateTransformationRsource();
+	void CreateTransformation();
 	void CreateBufferView();
 
 	const D3D12_VERTEX_BUFFER_VIEW& GetVBV() const { return mVertexBufferView; }
