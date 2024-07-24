@@ -25,6 +25,11 @@ void MainCamera::Initialize(WinAPI* winApp){
 	viewMatrix_ = Inverse(mWorldTransform->GetWorldMatrix());
 	projectionMatrix_ = MakePerspectiveMatrix(verticalFOV_, aspectRatio_, nearClip_, farClip_);
 	viewprojectionMatrix_ = Multiply(viewMatrix_, projectionMatrix_);
+
+	// ターゲット
+	mTarget = nullptr;
+	// 追加平行移動値
+	mAddTranslation = { 0.0f,0.0f,0.0f };
 }
 void MainCamera::Update()
 {
@@ -45,12 +50,15 @@ void MainCamera::Update()
 	// フォロー対象がいれば追従を行う
 	if (mTarget) {
 		// 追従対象からカメラまでの距離
-		Vector3 offset = { 0.0f,0.0f,-15.0f };
+		Vector3 offset = { 0.0f,1.0f,-15.0f };
 		// オフセットをカメラの回転に合わせて回転させる
 		offset = TransformNomal(offset, mWorldTransform->GetWorldMatrix());
 		// オフセット分ずらす
 		mWorldTransform->translation = mTarget->translation + offset;
 		
+		// 追加で平行移動値が設定されていれば更にずらす
+		mWorldTransform->translation += mAddTranslation;
+
 		Matrix4x4 matW = mWorldTransform->GetWorldMatrix();
 
 		// スティック入力の量

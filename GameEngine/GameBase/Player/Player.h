@@ -86,6 +86,10 @@ private: // -- 非公開 メンバ変数 -- //
 
 	// アロークラス
 	std::list<Arrow*> mArrows;
+
+	// 狙い撃ちの構えをしているか
+	bool mIsAimMode;
+
 	 
 };
 

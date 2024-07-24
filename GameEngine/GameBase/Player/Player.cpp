@@ -46,6 +46,9 @@ void Player::Init() {
 	mReticle = std::make_unique<Reticle3D>();
 	mReticle->Init();
 
+	// 構え
+	mIsAimMode = false;
+
 }
 
 void Player::Update() {
@@ -144,6 +147,51 @@ void Player::Update() {
 
 	// レティクル 更新
 	mReticle->Update();
+
+	// 補間数値
+	static float t = 0.0f;
+	// 勾配
+	static float k = 0.5f;
+	// 始点と終点
+	static Vector3 s = { 0.0f,0.0f,0.0f };
+	static Vector3 e = { 2.0f,0.0f,4.0f };
+	
+	// 狙えるようにカメラの移動 
+	if (mInput->GetLongPush(Gamepad::Button::LEFT_SHOULDER)) {
+		mIsAimMode = true;
+	}
+	else {
+		mIsAimMode = false;
+	}
+	if (mIsAimMode) {
+		if (t < 1.0f) {
+			t += 1.0f / 60.0f;
+		}
+		else if (t > 1.0f) {
+			t = 1.0f;
+		}
+	}
+	else {
+		if (t > 0.0f) {
+			t -= 1.0f / 60.0f;
+		}
+		else if (t < 0.0f) {
+			t = 0.0f;
+		}
+	}
+	// 補間後の数値を計算
+	Vector3 cVel = ExponentialInterpolation({ 0.0f,0.0f,0.0f }, { 1.0f, 0.0f,2.0f }, t, k);
+
+	ImGui::Begin("AddCamera");
+	ImGui::DragFloat3("Start", &s.x);
+	ImGui::DragFloat3("End", &e.x);
+	ImGui::DragFloat("t", &t);
+	ImGui::DragFloat("k", &k);
+	ImGui::DragFloat3("cVel", &cVel.x);
+	ImGui::End();
+
+	// メインカメラに追加の平行移動値を与える
+	MainCamera::GetInstance()->SetAddTranslation(cVel);
 
 	// RBボタン長押しでため動作を行う
 	if (mInput->GetLongPush(Gamepad::Button::RIGHT_SHOULDER)) {

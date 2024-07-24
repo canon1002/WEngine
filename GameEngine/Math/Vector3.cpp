@@ -337,3 +337,13 @@ Vector3 Max(const Vector3& a, const Vector3& b)
 	result.z = max(a.z, b.z);
 	return result;
 }
+
+Vector3 ExponentialInterpolation(Vector3 a, Vector3 b, float t, float k) {
+	Vector3 result = {};
+	result.x = a.x + ((b.x - a.x) * k * t);
+	result.y = a.y + ((b.y - a.y) * k * t);
+	result.z = a.z + ((b.z - a.z) * k * t);
+	return result;
+	//return a + ((b - a) * (1.0f - std::expf(-k * t)));
+
+}

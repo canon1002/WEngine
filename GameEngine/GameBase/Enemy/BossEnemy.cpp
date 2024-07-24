@@ -16,6 +16,10 @@ void BossEnemy::Init() {
 	mObject->mSkeleton = Skeleton::Create(mObject->GetModel()->modelData.rootNode);
 	mObject->SetTranslate({ 3.0f,1.0f,7.0f });
 	mObject->GetModel()->materialData_->color = { 1.0f,0.7f,0.7f,1.0f };
+	
+	// ワールドトランスフォーム
+	mObject->mWorldTransform->scale= { 2.5f,2.5f,2.5f};
+	mObject->mWorldTransform->translation= { 0.0f,0.0f,20.0f};
 
 	// 移動量を初期化
 	mVelocity = { 0.0f,0.0f ,0.002f };
@@ -28,7 +32,7 @@ void BossEnemy::Init() {
 	this->InitBehavior();
 
 	// コライダーの宣言
-	mObject->mCollider = new AABBCollider(mObject->mWorldTransform, Vector3(0.5f, 0.5f, 0.5f));
+	mObject->mCollider = new AABBCollider(mObject->mWorldTransform, mObject->GetWorldTransform()->scale);
 	mObject->mCollider->Init();
 
 }
