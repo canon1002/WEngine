@@ -26,15 +26,15 @@ void Reticle3D::Init()
 	mSprite = std::make_unique<Sprite>();
 	mSprite->Init();
 	mSprite->SetTexture("uvChecker.png");
-	mSprite->SetAnchorPoint(Vec2(0.5f, 0.5f));
-	mSprite->SetSpriteSize(Vec2(32.0f, 32.0f));
+	mSprite->SetAnchorPoint(Vector2(0.5f, 0.5f));
+	mSprite->SetSpriteSize(Vector2(32.0f, 32.0f));
 
 	// 3Dレティクルのワールド座標
 	mWorldReticle3D = new WorldTransform();
 	mWorldReticle3D->Init();
 	//mWorldReticle3D->SetParent(pCamera->mWorldTransform->GetWorldMatrix());
 	// 2Dレティクルの座標
-	mPostionReticle2D = Vec2(0.0f, 0.0f);
+	mPostionReticle2D = Vector2(0.0f, 0.0f);
 
 }
 
@@ -77,7 +77,7 @@ void Reticle3D::Update()
 	// スクリーン座標に変換する
 	Vector3 screenPos = Transform(mWorldReticle3D->GetWorldPosition(), VPV);
 	// スクリーン座標を代入
-	mPostionReticle2D = Vec2(screenPos.x, screenPos.y);
+	mPostionReticle2D = Vector2(screenPos.x, screenPos.y);
 
 
 	ImGui::Begin("Reticle");

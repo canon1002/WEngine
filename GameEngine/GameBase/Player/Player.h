@@ -49,6 +49,9 @@ public: // -- 公開 メンバ関数 -- //
 	// 溜め->攻撃 移行処理
 	void ChengeChageToAttack();
 
+	// アロー生成関数
+	Arrow* CreateArrow(Vector3 startPos,Vector3 endPos);
+
 private: // -- 非公開 メンバ変数 -- //
 
 	// 入力を取得

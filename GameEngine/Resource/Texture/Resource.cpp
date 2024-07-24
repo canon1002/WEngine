@@ -216,7 +216,7 @@ namespace Resource
 		ModelData modelData;// 構築するモデルのデータ
 		std::vector<Vector4> positions;//位置
 		std::vector<Vector3> normals;//法線
-		std::vector<Vec2> texcoords;//テクスチャ座標
+		std::vector<Vector2> texcoords;//テクスチャ座標
 		std::string line; // ファイルから読んだ一行を格納する
 
 		// -- ファイルを開く -- //
@@ -323,7 +323,7 @@ namespace Resource
 		MultiModelData modelData;// 構築するモデルのデータ
 		std::vector<Vector4> positions;//位置
 		std::vector<Vector3> normals;//法線
-		std::vector<Vec2> texcoords;//テクスチャ座標
+		std::vector<Vector2> texcoords;//テクスチャ座標
 		std::string line; // ファイルから読んだ一行を格納する
 
 		// -- ファイルを開く -- //
@@ -442,7 +442,7 @@ ModelData LoadObjFile(const std::string& directoryPath, const std::string& filen
 	ModelData modelData;// 構築するモデルのデータ
 	std::vector<Vector4> positions;//位置
 	std::vector<Vector3> normals;//法線
-	std::vector<Vec2> texcoords;//テクスチャ座標
+	std::vector<Vector2> texcoords;//テクスチャ座標
 	std::string line; // ファイルから読んだ一行を格納する
 
 	/// ファイルを開く
@@ -467,7 +467,7 @@ ModelData LoadObjFile(const std::string& directoryPath, const std::string& filen
 		}
 		// テクスチャ座標
 		else if (identifier == "vt") {
-			Vec2 texcoord;
+			Vector2 texcoord;
 			s >> texcoord.x >> texcoord.y;
 			texcoord.y = 1.0f - texcoord.y;
 			texcoords.push_back(texcoord);
@@ -495,7 +495,7 @@ ModelData LoadObjFile(const std::string& directoryPath, const std::string& filen
 				}
 				// 要素へのインデックスから、実際の要素の値を取得しt、頂点を構築する
 				Vector4 position = positions[elementIndices[0] - 1];
-				Vec2 texcoord = texcoords[elementIndices[1] - 1];
+				Vector2 texcoord = texcoords[elementIndices[1] - 1];
 				Vector3 normal = normals[elementIndices[2] - 1];
 				//VertexData vertex = { position,texcoord,normal };
 				//modelData.vertices.push_back(vertex);

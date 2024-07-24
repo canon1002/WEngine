@@ -33,6 +33,7 @@ void DamageReaction::UpdateSprite(){
 
     // スプライト配列のリストを更新する
     for (auto& sprites : mDataList) {
+
         for (auto& sprite : sprites) {
             // 更新処理
             sprite->sprite->Update();
@@ -49,6 +50,9 @@ void DamageReaction::UpdateSprite(){
                 }
                 return false; // 削除しない
             }), sprites.end());
+
+        // 各画像配列ごとに座標を更新する
+        PositionUpdate(sprites);
     }
 
     // 空のベクトルを持つリストの要素を削除
@@ -56,8 +60,6 @@ void DamageReaction::UpdateSprite(){
         return vec.empty();
         });
 
-
-    
 
 }
 
@@ -78,21 +80,21 @@ void DamageReaction::DrawSprite() {
 
 void DamageReaction::Reaction(const Vector3 pos,int32_t damage, const MainCamera* camera){
 	
-	// ワールド座標をスクリーン座標に変換する
-	Vec2 screenPos = GetScreenPos(pos, camera);
     // リストにセットする
-    RenderSprite(damage, screenPos);
-
+    RenderSprite(damage, pos,camera);
 }
 
-void DamageReaction::RenderSprite(const int32_t value, Vec2 pos)
+void DamageReaction::RenderSprite(const int32_t value, Vector3 pos,const MainCamera* camera)
 {
+    // スクリーン座標に変換
+    Vector2 screenPos = GetScreenPos(pos, camera);
+
     // 数値の桁数を取得
     int32_t digits = GetDigits(value);
     // 次のテクスチャのX座標
-    float nextSpritePosX = pos.x;
+    float nextSpritePosX = screenPos.x;
     int32_t nextValue = value;
-
+    // 画像データの配列
     std::vector<DamageData*> newSprites;
 
     for (int32_t i = 0; i < digits; i++) {
@@ -100,8 +102,7 @@ void DamageReaction::RenderSprite(const int32_t value, Vec2 pos)
         // 宣言
         DamageData* newDamageData = new DamageData;
 
-        // 画像関連
-       
+        // 画像生成
         newDamageData->sprite=new Sprite();
         newDamageData->sprite->Init();
         // 数値のテクスチャをセット
@@ -110,15 +111,22 @@ void DamageReaction::RenderSprite(const int32_t value, Vec2 pos)
         nextValue = (int32_t)nextValue % GetDigitNumber(digits-i);
        
         // 座標設定
-        newDamageData->sprite->SetPos(Vec2(nextSpritePosX, pos.y));
+        newDamageData->world = new WorldTransform();
+        newDamageData->world->translation = pos;
+        newDamageData->sprite->SetPos(Vector2(nextSpritePosX, screenPos.y));
         nextSpritePosX += 16;
 
         // サイズ設定
-        newDamageData->sprite->SetSpriteSize(Vec2(16.0f, 16.0f));
+        newDamageData->sprite->SetSpriteSize(Vector2(16.0f, 16.0f));
+        newDamageData->sprite->SetScale(Vector2(1.5f, 1.5f));
+        
+        // 色の変更
+        newDamageData->sprite->SetColor({ 1.0f,0.4f,0.0f,1.0f });
 
         // 表示時間の設定
         newDamageData->activeTime = 60;
 
+        // 配列に追加
         newSprites.push_back(newDamageData);
     }
 
@@ -126,7 +134,22 @@ void DamageReaction::RenderSprite(const int32_t value, Vec2 pos)
     mDataList.push_back(newSprites);
 }
 
-Vec2 DamageReaction::GetScreenPos(const Vector3 pos, const MainCamera* camera)
+void DamageReaction::PositionUpdate(std::vector<DamageData*> sprites){
+
+    int32_t index = 0;
+
+    for (auto& sprite : sprites) {
+        // スクリーン座標に変換
+        Vector2 screenPos = GetScreenPos(sprite->world->GetWorldPosition(), MainCamera::GetInstance());
+
+        // 座標設定
+        sprite->sprite->SetPos(Vector2(screenPos.x + (index * 16.0f), screenPos.y));
+        index++;
+    }
+
+}
+
+Vector2 DamageReaction::GetScreenPos(const Vector3 pos, const MainCamera* camera)
 {
 
 	// 3Dから2Dへの変換を行う
@@ -140,7 +163,7 @@ Vec2 DamageReaction::GetScreenPos(const Vector3 pos, const MainCamera* camera)
 	// スクリーン座標に変換する
 	Vector3 screenPos = Transform(pos, VPV);
 
-	return Vec2(screenPos.x,screenPos.y);
+	return Vector2(screenPos.x,screenPos.y);
 }
 
 int32_t DamageReaction::GetDigits(int32_t num){

@@ -33,7 +33,7 @@ private: // -- 非公開 メンバ変数 -- //
 	// 3Dレティクルのワールド座標
 	WorldTransform* mWorldReticle3D;
 	// 2Dレティクルの座標
-	Vec2 mPostionReticle2D;
+	Vector2 mPostionReticle2D;
 
 	// 3Dレティクルオブジェクト
 	std::unique_ptr<Object3d> mObject;

@@ -23,14 +23,14 @@
 // 頂点データ
 struct VertexData {
 	Vector4 position;
-	Vec2 texcoord;
+	Vector2 texcoord;
 	Vector3 normal;
 };
 
 // 2D用 頂点データ
 struct VertexData2D {
 	Vector4 position;
-	Vec2 texcoord;
+	Vector2 texcoord;
 };
 // 
 struct TransformationMatrix {

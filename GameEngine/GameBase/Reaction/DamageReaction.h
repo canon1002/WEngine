@@ -14,6 +14,8 @@ using namespace Microsoft::WRL;
 struct DamageData {
 	// 画像データ
 	Sprite* sprite;
+	// 3Dワールド座標
+	WorldTransform* world;
 	// 表示時間
 	int32_t activeTime;
 };
@@ -37,13 +39,15 @@ public: // -- 公開 メンバ関数 -- //
 	void Reaction(const Vector3 pos, int32_t damage, const MainCamera* camera);
 
 	// テキスト画像の表示
-	void RenderSprite(const int32_t value, Vec2 pos);
+	void RenderSprite(const int32_t value, Vector3 pos, const MainCamera* camera);
+	// テキスト画像の座標更新
+	void PositionUpdate(std::vector<DamageData*> sprites);
 
 	// テキストの表示
 	void RenderText(const std::wstring& text, float x, float y);
 
 	// ワールド座標をスクリーン座標に変換する
-	static Vec2 GetScreenPos(const Vector3 pos,const MainCamera* camera);
+	static Vector2 GetScreenPos(const Vector3 pos,const MainCamera* camera);
 
 	// int型の桁数を計算する関数
 	int32_t GetDigits(int32_t num);

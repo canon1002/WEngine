@@ -91,6 +91,9 @@ void Player::Update() {
 		mObject->mWorldTransform->translation.y = 0.0f;
 		// 移動量修正
 		mVelocity.y = 0.0f;
+
+		// ジャンプ回数のリセット
+		mJumpCount = kJumpCountMax;
 	}
 
 	// スティック入力の量
@@ -237,12 +240,25 @@ void Player::ChengeChageToAttack()
 	Vector3 startPos = this->GetWorldPos();// 移動の始点
 	Vector3 endPos = mReticle->GetWorld3D();// 移動の終点
 
+	// 初期位置をずらし、アローの着弾位置をずらす
+	for (int32_t i = 0; i < 3; i++) {
+		Vector3 randomStartPos = startPos;
+		randomStartPos.x += (rand() % (i * 2 + 2)) * 0.25f;
+		randomStartPos.y += (rand() % (i + 2)) * 0.25f;
+		// 複数のアローを生成し、アロークラスの配列に要素を追加する
+		mArrows.push_back(CreateArrow(randomStartPos, endPos));
+	}
+
+}
+
+Arrow* Player::CreateArrow(Vector3 startPos, Vector3 endPos)
+{
 	// アローの進行方向を設定し、正規化しておく
 	Vector3 directionForArrow = endPos - startPos;
 	directionForArrow = Normalize(directionForArrow);
 	Vector3 vel = Scalar(1.0f, directionForArrow);
 
-	//回転
+	// 回転
 	Vector3 rotate = { 0.0f,0.0f,0.0f };
 	const float PI = 3.14f;
 	rotate.y = std::atan2f(directionForArrow.x, directionForArrow.z);
@@ -261,9 +277,6 @@ void Player::ChengeChageToAttack()
 	arrow->Init(startPos, vel);
 	arrow->SetRotate(rotate);
 	arrow->SetCubeMap(mObject->GetModel()->mTextureHandleCubeMap);
-	// アロークラスの配列に要素を追加する
-	mArrows.push_back(arrow);
 
-
-
+	return arrow;
 }

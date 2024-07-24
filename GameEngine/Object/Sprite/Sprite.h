@@ -33,13 +33,17 @@ public:
 	}
 
 	void SetColor(Color color) { materialData->color = color; }
-	void SetTextureSize(Vec2 size) { textureSize_ = size; }
-	void SetSpriteSize(Vec2 size) { spriteSize = size; }
-	void SetPos(Vec2 pos) {
+	void SetTextureSize(Vector2 size) { textureSize_ = size; }
+	void SetSpriteSize(Vector2 size) { spriteSize = size; }
+	void SetPos(Vector2 pos) {
 		mWorldTransform.translation.x = pos.x;
 		mWorldTransform.translation.y = pos.y;
 	}
-	void SetAnchorPoint(Vec2 point) { anchorPoint = point; }
+	void SetAnchorPoint(Vector2 point) { anchorPoint = point; }
+	void SetScale(Vector2 scale) { 
+		mWorldTransform.scale.x = scale.x;
+		mWorldTransform.scale.y = scale.y;
+	}
 
 private:
 
@@ -81,17 +85,17 @@ private:
 	UVTransform uvTransform_;
 
 	// アンカーポイント
-	Vec2 anchorPoint = { 0.0f,0.0f };
+	Vector2 anchorPoint = { 0.0f,0.0f };
 
 	// スプライトのサイズ
-	Vec2 spriteSize = { 256.0f,256.0f };
+	Vector2 spriteSize = { 256.0f,256.0f };
 
 	// テクスチャ左上座標
-	Vec2 textureLeftTop_ = { 0.0f,0.0f };
+	Vector2 textureLeftTop_ = { 0.0f,0.0f };
 	// テクスチャ全体サイズ
-	Vec2 textureFullSize_ = { 64.0f,64.0f };
+	Vector2 textureFullSize_ = { 64.0f,64.0f };
 	// テクスチャ切り出しサイズ
-	Vec2 textureSize_ = { 64.0f,64.0f };
+	Vector2 textureSize_ = { 64.0f,64.0f };
 
 };
 

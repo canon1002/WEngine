@@ -39,6 +39,8 @@ void Arrow::Init(Vector3 pos, Vector3 vel)
 	// コライダーの宣言
 	mObject->mCollider = new AABBCollider(mObject->mWorldTransform, { 0.1f,0.1f,0.1f });
 	mObject->mCollider->Init();
+	mObject->mCollider->SetCollisionAttribute(kCollisionAttributePlayerBullet);
+	mObject->mCollider->SetCollisionMask(kCollisionAttributeEnemy);
 
 	// フラグをtrueにする
 	mIsActive = true;
