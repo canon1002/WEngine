@@ -117,6 +117,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Framerate.cpp" />
     <ClCompile Include="GameEngine\Effect\Particle\DiffusionToCircleParticle.cpp" />
     <ClCompile Include="GameEngine\GameBase\Reaction\DamageReaction.cpp" />
     <ClCompile Include="GameEngine\GameBase\Player\Arrow.cpp" />
@@ -208,6 +209,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="GameEngine\GameBase\Reticle\Reticle3D.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Framerate.h" />
     <ClInclude Include="GameEngine\Effect\Particle\DiffusionToCircleParticle.h" />
     <ClInclude Include="GameEngine\GameBase\Reaction\DamageReaction.h" />
     <ClInclude Include="GameEngine\GameBase\Player\Arrow.h" />

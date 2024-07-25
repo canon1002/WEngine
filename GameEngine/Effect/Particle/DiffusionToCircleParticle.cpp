@@ -10,10 +10,12 @@ void DiffusionToCircleParticle::Init() {
 	mWorldTransform.rotation = { 0.0f,0.0f,0.0f };
 	mWorldTransform.translation = { 0.0f,0.0f,0.0f };
 
+	instanceCount_ = kNumMaxInstance;
+
 	// エミッター初期設定
 	mEmitter = {};
 	mEmitter.count = 3;
-	mEmitter.frequency = 0.5f;// 0.5秒ごとに発生
+	mEmitter.frequency = 1.5f;// 1.5秒ごとに発生
 	mEmitter.frequencyTime = 0.0f;// 発生頻度用の時刻 0で初期化
 
 	// リソースを生成
@@ -31,6 +33,12 @@ void DiffusionToCircleParticle::Update() {
 
 #ifdef _DEBUG
 	ImGui::Begin("DTCPatricle");
+	ImGui::DragScalar("Emitter Count", ImGuiDataType_U16, &mEmitter.count, 1, 0, nullptr, "%u");
+	ImGui::DragFloat("Emitter Frequency", &mEmitter.frequency, 0.1f, 0.0f, 10.0f);
+	ImGui::DragFloat("Emitter Scale", &mEmitter.worldTransform.scale.x, 0.1f, 0.01f, 10.0f);
+	ImGui::DragFloat3("Emitter Rotation", &mEmitter.worldTransform.rotation.x, 0.01f, -100.0f, 100.0f);
+	ImGui::DragFloat3("Emitter Translation", &mEmitter.worldTransform.translation.x, 0.01f, -100.0f, 100.0f);
+
 #endif // _DEBUG
 
 
@@ -39,7 +47,6 @@ void DiffusionToCircleParticle::Update() {
 
 	// instancingCountが最大値を上回らないようにする
 	if (instanceCount_ > kNumMaxInstance) { instanceCount_ = kNumMaxInstance; }
-
 	// エミッター更新処理
 	mEmitter.frequencyTime += kDeltaTime;// 時刻を進める
 	if (mEmitter.frequency <= mEmitter.frequencyTime) {// 発生頻度より数値が大きくなったら発生
@@ -52,7 +59,7 @@ void DiffusionToCircleParticle::Update() {
 	mWVPData->World = mWorldTransform.GetWorldMatrix();
 
 	// イテレーターの位置を保持する数値
-	int32_t numInstance = 0;
+	instanceCount_ = 0;
 
 	// イテレーターを使用してfor文を回す
 	for (std::list<Particle>::iterator it = mParticles.begin(); it != mParticles.end();) {
@@ -66,46 +73,41 @@ void DiffusionToCircleParticle::Update() {
 		(*it).worldTransform.translation += (*it).vel * kDeltaTime;
 		// 経過時間の加算
 		(*it).currentTime += kDeltaTime;
-
-		//　ワールド行列
-		//mWorldTransform.scale = (*it).worldTransform.scale;
-		//mWorldTransform.rotation = (*it).worldTransform.rotation;
-		//mWorldTransform.translation = (*it).worldTransform.translation;
-
 		
-		//uint32_t numInstance = std::distance(mParticles.begin(), it);
-		if (numInstance < kNumMaxInstance) {
+		if (instanceCount_ < kNumMaxInstance) {
 
 			// 徐々に透明にする
 			float alpha = 1.0f - ((*it).currentTime / (*it).lifeTime);
 
-			mInstancingData[numInstance].WVP = Multiply((*it).worldTransform.GetWorldMatrix(), mCamera->GetViewProjectionMatrix());
-			mInstancingData[numInstance].World = (*it).worldTransform.GetWorldMatrix();
-			mInstancingData[numInstance].color = (*it).color;
-			mInstancingData[numInstance].color.a = alpha;
-
-			numInstance++;
-		}
+			mInstancingData[instanceCount_].WVP = Multiply((*it).worldTransform.GetWorldMatrix(), mCamera->GetViewProjectionMatrix());
+			mInstancingData[instanceCount_].World = (*it).worldTransform.GetWorldMatrix();
+			mInstancingData[instanceCount_].color = (*it).color;
+			mInstancingData[instanceCount_].color.a = alpha;
 
 #ifdef _DEBUG
-		
-		if (ImGui::TreeNode(std::to_string(numInstance).c_str())) {
-			float treeScale = mWorldTransform.scale.x;
-			ImGui::DragFloat("Scale", &treeScale, 0.05f);
-			mWorldTransform.scale = { treeScale ,treeScale ,treeScale };
-			ImGui::SliderAngle("RotateX", &(*it).worldTransform.rotation.x);
-			ImGui::SliderAngle("RotateY", &(*it).worldTransform.rotation.y);
-			ImGui::SliderAngle("RotateZ", &(*it).worldTransform.rotation.z);
-			ImGui::DragFloat3("Tranlate", &(*it).worldTransform.translation.x);
-			ImGui::DragFloat("lifeTime", &(*it).lifeTime);
-			ImGui::Spacing();
-			ImGui::DragFloat2("UVScale", &uvTransform_.scale.x, 0.01f, -10.0f, 10.0f);
-			ImGui::DragFloat2("UVTranlate", &uvTransform_.translation.x, 0.01f, -10.0f, 10.0f);
-			ImGui::SliderAngle("UVRotate", &uvTransform_.rotation.z);
-			ImGui::ColorEdit4("Color", &(*it).color.r);
-			ImGui::TreePop();
-		}
+
+			if (ImGui::TreeNode(std::to_string(instanceCount_).c_str())) {
+				float treeScale = mWorldTransform.scale.x;
+				ImGui::DragFloat("Scale", &treeScale, 0.05f);
+				mWorldTransform.scale = { treeScale ,treeScale ,treeScale };
+				ImGui::SliderAngle("RotateX", &(*it).worldTransform.rotation.x);
+				ImGui::SliderAngle("RotateY", &(*it).worldTransform.rotation.y);
+				ImGui::SliderAngle("RotateZ", &(*it).worldTransform.rotation.z);
+				ImGui::DragFloat3("Tranlate", &(*it).worldTransform.translation.x);
+				ImGui::DragFloat("lifeTime", &(*it).lifeTime);
+				ImGui::Spacing();
+				ImGui::DragFloat2("UVScale", &uvTransform_.scale.x, 0.01f, -10.0f, 10.0f);
+				ImGui::DragFloat2("UVTranlate", &uvTransform_.translation.x, 0.01f, -10.0f, 10.0f);
+				ImGui::SliderAngle("UVRotate", &uvTransform_.rotation.z);
+				ImGui::ColorEdit4("Color", &(*it).color.r);
+				ImGui::TreePop();
+			}
+
 #endif // _DEBUG
+
+			instanceCount_++;
+		}
+
 
 		// イテレーターを次に進める
 		++it;
@@ -129,23 +131,26 @@ void DiffusionToCircleParticle::Update() {
 }
 
 void DiffusionToCircleParticle::Draw() {
-	// 頂点バッファをセット
-	mDxCommon->commandList->IASetVertexBuffers(0, 1, &mVertexBufferView);
-	// 形状を三角形に設定
-	mDxCommon->commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	// マテリアルのCBufferの場所を指定
-	mDxCommon->commandList->SetGraphicsRootConstantBufferView(0, mMaterialResource->GetGPUVirtualAddress());
+	// isntancceCountttが1以上のときに描画処理を行う
+	if (instanceCount_ > 0) {
+		// 頂点バッファをセット
+		mDxCommon->commandList->IASetVertexBuffers(0, 1, &mVertexBufferView);
+		// 形状を三角形に設定
+		mDxCommon->commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		// マテリアルのCBufferの場所を指定
+		mDxCommon->commandList->SetGraphicsRootConstantBufferView(0, mMaterialResource->GetGPUVirtualAddress());
 
-	mDxCommon->commandList->SetGraphicsRootDescriptorTable(1, mDxCommon->srv_->instancingSrvHandleGPU);
-	// テクスチャをセット
-	mDxCommon->commandList->SetGraphicsRootDescriptorTable(2, mDxCommon->srv_->textureData_.at(mDxCommon->srv_->defaultTexId_).textureSrvHandleGPU);
-	// ドローコール
-	mDxCommon->commandList->DrawInstanced(6, instanceCount_, 0, 0);
+		mDxCommon->commandList->SetGraphicsRootDescriptorTable(1, mDxCommon->srv_->instancingSrvHandleGPU);
+		// テクスチャをセット
+		mDxCommon->commandList->SetGraphicsRootDescriptorTable(2, mDxCommon->srv_->textureData_.at(mDxCommon->srv_->defaultTexId_).textureSrvHandleGPU);
+		// ドローコール
+		mDxCommon->commandList->DrawInstanced(6, instanceCount_, 0, 0);
+	}
 }
 
 
-Particle DiffusionToCircleParticle::Create(std::mt19937& randomEngine)
-{
+Particle DiffusionToCircleParticle::Create(const Vector3& translate, std::mt19937& randomEngine){
+
 	// 返り値
 	Particle particle{};
 	// 乱数の最小・最大値
@@ -154,7 +159,8 @@ Particle DiffusionToCircleParticle::Create(std::mt19937& randomEngine)
 	// SRT・移動量・色の設定
 	particle.worldTransform.scale = { 1.0f,1.0f,1.0f };
 	particle.worldTransform.rotation = { 0.0f,0.0f,0.0f };
-	particle.worldTransform.translation = { distribution(randomEngine),distribution(randomEngine),distribution(randomEngine) };
+	Vector3 randomTranslate = { distribution(randomEngine),distribution(randomEngine),distribution(randomEngine) };
+	particle.worldTransform.translation = translate + randomTranslate;
 	particle.vel = { distribution(randomEngine),distribution(randomEngine),distribution(randomEngine) };
 	particle.color = { distribution(randomEngine),distribution(randomEngine),distribution(randomEngine),0.5f };
 
@@ -173,7 +179,7 @@ std::list<Particle> DiffusionToCircleParticle::Emit(const Emitter& emtter, std::
 	std::list<Particle> particles;
 	for (uint32_t count = 0; count < emtter.count; count++) {
 		// 新規パーティクルを生成
-		particles.push_back(Create(randomEngine));
+		particles.push_back(Create(mEmitter.worldTransform.translation,randomEngine));
 	}
 	// 生成したリストを返す
 	return particles;
@@ -221,6 +227,7 @@ void DiffusionToCircleParticle::CreateVertex() {
 
 void DiffusionToCircleParticle::CreateIndex()
 {
+
 }
 
 void DiffusionToCircleParticle::CreateMaterial() {

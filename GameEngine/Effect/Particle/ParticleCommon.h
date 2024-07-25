@@ -36,7 +36,7 @@ public: // -- 公開 メンバ変数 -- //
 	virtual void Init() = 0;
 	virtual void Update() = 0;
 	virtual void Draw() = 0;
-	virtual Particle Create(std::mt19937& randomEngine) = 0;
+	virtual Particle Create(const Vector3& translate, std::mt19937& randomEngine) = 0;
 	virtual std::list<Particle> Emit(const Emitter& emtter,std::mt19937& randomEngine) = 0;
 
 protected: // -- 限定公開 メンバ関数 -- //

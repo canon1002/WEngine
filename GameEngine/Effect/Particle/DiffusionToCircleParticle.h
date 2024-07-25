@@ -9,7 +9,7 @@ public: // -- 公開 メンバ変数 -- //
 	virtual void Init() override;
 	virtual void Update() override;
 	virtual void Draw() override;
-	virtual Particle Create(std::mt19937& randomEngine)override;
+	virtual Particle Create(const Vector3& translate,std::mt19937& randomEngine)override;
 	virtual std::list<Particle> Emit(const Emitter& emtter, std::mt19937& randomEngine) override;
 
 private: // -- 非公開 メンバ関数 -- //

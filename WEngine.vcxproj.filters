@@ -277,6 +277,7 @@
     <ClCompile Include="GameEngine\Editor\LevelEditor.cpp" />
     <ClCompile Include="GameEngine\Effect\Particle\ParticleCommon.cpp" />
     <ClCompile Include="GameEngine\Effect\Particle\DiffusionToCircleParticle.cpp" />
+    <ClCompile Include="Framerate.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameEngine\Base\System.h">
@@ -474,6 +475,7 @@
     <ClInclude Include="GameEngine\Editor\LevelEditor.h" />
     <ClInclude Include="GameEngine\Effect\Particle\ParticleCommon.h" />
     <ClInclude Include="GameEngine\Effect\Particle\DiffusionToCircleParticle.h" />
+    <ClInclude Include="Framerate.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt">

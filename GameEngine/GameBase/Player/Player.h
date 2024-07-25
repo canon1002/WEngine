@@ -13,7 +13,7 @@ enum class Behavior {
 	kAttack, // 攻撃中
 	kJump,	 // ジャンプ中
 	kCharge, // 溜め動作中
-
+	kAvoid,  // 回避行動
 };
 
 class Player {
