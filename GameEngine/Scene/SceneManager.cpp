@@ -3,6 +3,11 @@
 #include "GameEngine/Editor/LevelEditor.h"
 #include "GameEngine/GameBase/Reaction/DamageReaction.h"
 
+#include <thread>
+#include <queue>
+#include <condition_variable>
+#include <mutex>
+
 // コンストラクタ
 SceneManager::SceneManager() {}
 // デストラクタ
@@ -72,6 +77,27 @@ int SceneManager::Run() {
 	audio_->Initialize();
 	//mainCamera_->mWorldTransform->translation = { 0.0f,0.0f,-6.0f };
 
+	// 非同期処理
+	//std::mutex mutex;
+	//std::condition_variable condition; // 条件変数
+	//std::queue<int> q;
+	//bool exit = false;
+
+	// バックグラウンドループ
+	//std::thread th([&]() {
+	//	while (!exit){
+	//		std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+
+	//		// 以下 排他処理範囲を示す
+	//		{
+	//			std::unique_lock<std::mutex> uniqueLock(mutex);
+	//			// qに何かしらのデータが入っていればq.popを実行する
+	//			condition.wait(uniqueLock, [&]() {return !q.empty(); });
+	//			q.pop();
+	//		}
+	//	}
+
+	//	});
 
 	// Windowsのメッセージ処理があればゲームループを抜ける
 	while (!winApp_->ProcessMessage())	{
@@ -88,16 +114,9 @@ int SceneManager::Run() {
 		// シーンのチェック
 		currentSceneNo_ = sceneArr_[currentSceneNo_]->GetSceneNo();
 		// シーン変更チェック
-		if (prevSceneNo_ != currentSceneNo_) {
-			sceneArr_[currentSceneNo_]->Init();
-		}
+		if (prevSceneNo_ != currentSceneNo_) { sceneArr_[currentSceneNo_]->Init(); }
 		// 前回のシーン番号を上書き
 		prevSceneNo_ = currentSceneNo_;
-
-		// カメラの更新
-		//mainCamera_->Update();
-		// 入力結果をImGuiで表示する
-		//inputManager_->DrawGUI();
 
 		///
 		/// 更新処理(推定)
@@ -107,19 +126,34 @@ int SceneManager::Run() {
 		sceneArr_[currentSceneNo_]->Update();
 		mPostEffectManager->Update();
 		copyImage_->Update();
-		#ifdef _DEBUG
+
 		// 開発用UIの表示
-		//ImGui::ShowDemoWindow();
+#ifdef _DEBUG
+
+		// 画面上部にメインメニューバーを追加
 		ImGui::BeginMainMenuBar();
 		// フレームレートの表示
 		//ImGui::Text("FPS : %.2f", ImGui::GetIO().Framerate);
+		// レベルエディタ
 		if(ImGui::Button("LoadLevelEditor")) {
+			// ボタンを押すとファイルの再読み込みを行う
 			LevelEditor::GetInstance()->CheckLevelEditorFile();
 		}
+
+		// バックグラウンド処理
+		//if (ImGui::Button("Q")) {
+		//	// ボタンを押すとバックグラウンド処理を行う
+		//	std::unique_lock<std::mutex> uniquelock(mutex);
+		//	q.push(1);
+		//	// 通知を送る
+		//	condition.notify_all();
+		//}
+
 		ImGui::EndMainMenuBar();
 		imGuiManager_->End();
-		#endif // _DEBUG
+#endif // _DEBUG
 
+		// ダメージ表記の更新
 		DamageReaction::GetInstance()->UpdateSprite();
 
 		///
@@ -128,27 +162,20 @@ int SceneManager::Run() {
 
 		// 描画前処理 -- RenderTexture --
 		mDxCommon->PreDrawForRenderTarget();
-
 		/// 描画処理
 		sceneArr_[currentSceneNo_]->Draw();
-		
 		// 描画後処理 -- RenderTexture --
 		mDxCommon->PostDrawForRenderTarget();
-
 		// 描画前処理
 		mDxCommon->PreDraw();
-
 		mPostEffectManager->Draw();
-
-		//DamageReaction::GetInstance()->RenderText(winApp_->ConvertString("124"), 200, 200);
+		// ダメージ画像の表記
 		DamageReaction::GetInstance()->DrawSprite();
 
 #ifdef _DEBUG
 		// ImGuiの描画
 		imGuiManager_->Draw();
 #endif // _DEBUG
-
-		
 
 		// 描画後処理
 		mDxCommon->PostDraw();
@@ -159,6 +186,10 @@ int SceneManager::Run() {
 		}
 
 	}
+
+	// ゲームを抜けたらスレッドの占有を止める
+	/*exit = true;
+	th.join();*/
 
 	// Comの終了処理
 	CoUninitialize();

@@ -3,7 +3,7 @@
 #include "GameEngine/Object/ObjectAdministrator.h"
 #include "GameEngine/Base/Debug/ImGuiManager.h"
 #include "GameEngine/Object/Camera/MainCamera.h"
-
+#include "GameEngine/Append/Collider/SphereCollider.h"
 #include "GameEngine/Append/Collider/AABBCollider.h"
 #include "GameEngine/Append/Collider/CollisionManager.h"
 
@@ -39,8 +39,10 @@ void Player::Init() {
 	mJumpCount = kJumpCountMax;
 
 	// コライダーの宣言
-	mObject->mCollider = new AABBCollider(mObject->mWorldTransform, Vector3(0.5f, 0.5f, 0.5f));
+	mObject->mCollider = new SphereCollider(mObject->mWorldTransform, 0.5f);
 	mObject->mCollider->Init();
+	mObject->mCollider->SetCollisionAttribute(kCollisionAttributePlayer);
+	mObject->mCollider->SetCollisionAttribute(kCollisionAttributeEnemyBullet);
 
 	// レティクルの初期化
 	mReticle = std::make_unique<Reticle3D>();

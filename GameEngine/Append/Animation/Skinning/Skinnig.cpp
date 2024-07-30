@@ -18,6 +18,9 @@ void Skinnig::Init(const std::string& directorypath, const std::string& filepath
 	// スキンクラスター生成
 	mSkinCluster = SkinCluster::Create(mDxCommon->device_, mSkeleton, modelData);
 
+	mIsPauseAnimation = false;
+	mIsLoop = true;
+	mAnimationTime = 0.0f;
 }
 
 void Skinnig::Update()
@@ -27,13 +30,17 @@ void Skinnig::Update()
 		mAnimationTime += 1.0f / 60.0f;
 	}
 	// 最後まで行ったら最初からリピート再生する(しなくてもいいし、フラグで変更しても良さそう)
-	mAnimationTime = std::fmod(mAnimationTime, mAnimation.duration);
+	if (mIsLoop == true) {
+		mAnimationTime = std::fmod(mAnimationTime, mAnimation.duration);
+	}
 	// アニメーションの更新を行い、骨ごとのLocal情報を更新する
 	ApplyAniation();
 	// スケルトン更新
 	mSkeleton.Update();
 	// スキンクラスター 更新
 	mSkinCluster.Update(mSkeleton);
+
+
 }
 
 void Skinnig::ApplyAniation() {

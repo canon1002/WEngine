@@ -83,7 +83,9 @@ Vector3 AABBCollider::GetMin()const {
 	// AABBの最小値を計算する
 	Vector3 min = {};
 	// ワールド座標 - 各ベクトルの半径
-	min = pWorldTransform->translation - mRadius;
+	min.x = pWorldTransform->translation.x - mRadius.x;
+	min.y = pWorldTransform->translation.y; // スキニングの関係で足元を最低値にする
+	min.z = pWorldTransform->translation.z - mRadius.z;
 	return min;
 }
 
@@ -91,7 +93,9 @@ Vector3 AABBCollider::GetMax()const {
 	// AABBの最大値を計算する
 	Vector3 max = {};
 	// ワールド座標 + 各ベクトルの半径
-	max = pWorldTransform->translation + mRadius;
+	max.x = pWorldTransform->translation.x + mRadius.x;
+	max.y = pWorldTransform->translation.y + (mRadius.y * 2.0f);
+	max.z = pWorldTransform->translation.x + mRadius.x;
 	return max;
 }
 
@@ -125,12 +129,12 @@ void AABBCollider::Update(){
 	// AABBなので回転をなくしたワールド行列を作る
 	WorldTransform world = *pWorldTransform;
 	// ridiusに合わせて拡大縮小を行う
-	world.scale = { mRadius.x * 2.0f,mRadius.y * 2.0f,mRadius.z * 2.0f };
+	world.scale = mRadius;
 	world.rotation = { 0.0f,0.0f,0.0f };
-	Matrix4x4 worldM = world.GetWorldMatrix();
+	world.translation.y += mRadius.y;
 	// 矩形のワールド行列とWVP行列を掛け合わした行列を代入
-	mWvpData->WVP = Multiply(worldM, wvpM);
-	mWvpData->World = worldM;
+	mWvpData->WVP = Multiply(world.GetWorldMatrix(), wvpM);
+	mWvpData->World = world.GetWorldMatrix();
 
 	// 更新
 	mModel->Update();

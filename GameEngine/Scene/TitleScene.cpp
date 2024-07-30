@@ -28,6 +28,7 @@ void TitleScene::Init() {
 	ModelManager::GetInstance()->LoadModel("Bow", "BowBody.gltf");
 	ModelManager::GetInstance()->LoadModel("Bow", "Bow.obj");
 	ModelManager::GetInstance()->LoadModel("Arrow", "Arrow.gltf");
+	ModelManager::GetInstance()->LoadModel("boss", "boss.gltf");
 
 	// SkyBox 読み込み
 	DirectXCommon::GetInstance()->srv_->LoadTexture("skybox/rostock_laage_airport_4k.dds");
@@ -128,7 +129,7 @@ void TitleScene::Draw(){
 
 	mPlayer->GetReticle3D()->Draw2DReticle();
 
-	ParticleManager::GetInstance()->PreDraw();
-	mDTCParticle->Draw();
+	//ParticleManager::GetInstance()->PreDraw();
+	//mDTCParticle->Draw();
 
 }

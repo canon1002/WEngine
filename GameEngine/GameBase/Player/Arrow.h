@@ -16,7 +16,10 @@ public: // -- 公開 メンバ関数 -- //
 	void DebugDraw() { mObject->DrawGUI(); }
 
 	Vector3 GetWorldPos() { return mObject->GetWorldTransform()->translation; };
-	void SetCubeMap(const int32_t& textureHandle) { mObject->GetModel()->SetCubeTexture(textureHandle); }
+	void SetCubeMap(const int32_t& textureHandle) {
+		mObject->GetModel()->SetCubeTexture(textureHandle); 
+		mObject->mCollider->GetModel()->mTextureHandleCubeMap = textureHandle;
+	}
 	void SetRotate(const Vector3& rot) { mObject->mWorldTransform->rotation = rot; }
 
 	bool GetIsActive()const { return mIsActive; }

@@ -3,12 +3,14 @@
 #include "GameEngine/Object/ObjectAdministrator.h"
 #include "GameEngine/Base/Debug/ImGuiManager.h"
 #include "GameEngine/Append/Collider/AABBCollider.h"
-#include "GameEngine/Append/Collider/RayCollider.h"
+#include "GameEngine/Append/Collider/SphereCollider.h"
 #include <numbers>
 #include "GameEngine/GameBase/Reaction/DamageReaction.h"
 
 Arrow::Arrow() {}
-Arrow::~Arrow() {}
+Arrow::~Arrow() {
+
+}
 
 
 void Arrow::Init(Vector3 pos, Vector3 vel)
@@ -37,7 +39,7 @@ void Arrow::Init(Vector3 pos, Vector3 vel)
 
 	//コライダーの宣言
 	// コライダーの宣言
-	mObject->mCollider = new AABBCollider(mObject->mWorldTransform, { 0.1f,0.1f,0.1f });
+	mObject->mCollider = new SphereCollider(mObject->mWorldTransform, 0.05f);
 	mObject->mCollider->Init();
 	mObject->mCollider->SetCollisionAttribute(kCollisionAttributePlayerBullet);
 	mObject->mCollider->SetCollisionMask(kCollisionAttributeEnemy);
@@ -54,12 +56,12 @@ void Arrow::Update()
 	// 移動させる
 	mObject->mWorldTransform->translation += mMoveVel;
 
-	if (mObject->GetWorldTransform()->translation.x >= 50.0f ||
-		mObject->GetWorldTransform()->translation.x <= -50.0f ||
-		mObject->GetWorldTransform()->translation.y >= 50.0f ||
-		mObject->GetWorldTransform()->translation.y <= -50.0f ||
-		mObject->GetWorldTransform()->translation.z >= 50.0f ||
-		mObject->GetWorldTransform()->translation.z <= -50.0f) {
+	if (mObject->GetWorldTransform()->translation.x >= 250.0f ||
+		mObject->GetWorldTransform()->translation.x <= -250.0f ||
+		mObject->GetWorldTransform()->translation.y >= 250.0f ||
+		mObject->GetWorldTransform()->translation.y <= -250.0f ||
+		mObject->GetWorldTransform()->translation.z >= 250.0f ||
+		mObject->GetWorldTransform()->translation.z <= -250.0f) {
 		mIsActive = false;
 	}
 

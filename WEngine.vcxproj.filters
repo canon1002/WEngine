@@ -241,8 +241,6 @@
     <ClCompile Include="GameEngine\Effect\PostEffect\LuminanceOutline.cpp" />
     <ClCompile Include="GameEngine\Effect\PostEffect\PostEffectManager.cpp" />
     <ClCompile Include="GameEngine\Effect\PostEffect\Vignette.cpp" />
-    <ClCompile Include="GameEngine\GameBase\AI\BehaviorTree\SequenceNode.cpp" />
-    <ClCompile Include="GameEngine\GameBase\AI\BehaviorTree\SelectorNode.cpp" />
     <ClCompile Include="GameEngine\GameBase\Command\ICommand.cpp" />
     <ClCompile Include="GameEngine\GameBase\AI\State\IBossState.cpp" />
     <ClCompile Include="GameEngine\GameBase\AI\State\VitalityBossState.cpp" />
@@ -278,6 +276,11 @@
     <ClCompile Include="GameEngine\Effect\Particle\ParticleCommon.cpp" />
     <ClCompile Include="GameEngine\Effect\Particle\DiffusionToCircleParticle.cpp" />
     <ClCompile Include="Framerate.cpp" />
+    <ClCompile Include="GameEngine\Scene\LoadingScene.cpp" />
+    <ClCompile Include="GameEngine\GameBase\Enemy\Action\Action.cpp" />
+    <ClCompile Include="GameEngine\GameBase\AI\BehaviorTree\BTMoveAction.cpp" />
+    <ClCompile Include="GameEngine\GameBase\AI\BehaviorTree\BTAttackAction.cpp" />
+    <ClCompile Include="GameEngine\GameBase\Enemy\Action\AttackAction.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameEngine\Base\System.h">
@@ -438,8 +441,6 @@
     <ClInclude Include="GameEngine\Effect\PostEffect\LuminanceOutline.h" />
     <ClInclude Include="GameEngine\Effect\PostEffect\PostEffectManager.h" />
     <ClInclude Include="GameEngine\GameBase\AI\BehaviorTree\IBehavior.h" />
-    <ClInclude Include="GameEngine\GameBase\AI\BehaviorTree\SequenceNode.h" />
-    <ClInclude Include="GameEngine\GameBase\AI\BehaviorTree\SelectorNode.h" />
     <ClInclude Include="GameEngine\GameBase\Command\ICommand.h" />
     <ClInclude Include="GameEngine\GameBase\Command\MoveCommand.h" />
     <ClInclude Include="GameEngine\GameBase\AI\State\IBossState.h" />
@@ -476,6 +477,10 @@
     <ClInclude Include="GameEngine\Effect\Particle\ParticleCommon.h" />
     <ClInclude Include="GameEngine\Effect\Particle\DiffusionToCircleParticle.h" />
     <ClInclude Include="Framerate.h" />
+    <ClInclude Include="GameEngine\Scene\LoadingScene.h" />
+    <ClInclude Include="GameEngine\GameBase\Enemy\Action\Action.h" />
+    <ClInclude Include="GameEngine\GameBase\AI\BehaviorTree\BTMoveAction.h" />
+    <ClInclude Include="GameEngine\GameBase\AI\BehaviorTree\BTAttackAction.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt">

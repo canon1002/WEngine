@@ -34,6 +34,16 @@ public: // -- 公開 メンバ関数 -- //
 	// アニメーションを再生する(一時停止やアニメーション停止も解除する)
 	void Play() { mIsPauseAnimation = false; }
 
+	// ループするかの設定(trueだとループする)
+	void SetLoopMode(bool isLoop) { mIsLoop = isLoop; }
+	void ResetTime() { mAnimationTime = 0.0f; }
+	bool IsAnimationFinished()const  {
+		if (mAnimationTime >= (mAnimation.duration/2.0f)) {
+			return true;
+		}
+		return false;
+	}
+
 private: // -- 非公開 メンバ変数 -- //
 
 	// 外部ポインタ
@@ -51,5 +61,8 @@ private: // -- 非公開 メンバ変数 -- //
 
 	// アニメーション 一時停止
 	bool mIsPauseAnimation;
+
+	// アニメーションのループ設定
+	bool mIsLoop = true;
 
 };

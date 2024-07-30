@@ -2,6 +2,8 @@
 #include "GameEngine/Object/3d/Object3d.h"
 #include "GameEngine/GameBase/AI/State/IBossState.h"
 #include "GameEngine/GameBase/AI/State/VitalityBossState.h"
+#include "GameEngine/GameBase/AI/BehaviorTree/IBehavior.h"
+#include "GameEngine/GameBase/Enemy/Action/Action.h"
 
 // 前方宣言
 class Player;
@@ -17,6 +19,8 @@ public: // -- 公開 メンバ関数 -- //
 	void Init();
 	// 初期化 -- ビヘイビアツリー --
 	void InitBehavior();
+	// 初期化 -- 行動クラス --
+	void InitActions();
 	// 更新
 	void Update();
 	// 描画
@@ -38,6 +42,33 @@ public: // -- 公開 メンバ関数 -- //
 
 #pragma region コマンド・ステート関連
 
+	// 行動制御
+	void SetNextAction(const std::string& key);
+	// 行動状況取得
+	ACT::Condition GetActionCondition(const std::string& key);
+	// 行動クラスのポインタの取得
+	ACT::IAction* GetActionClass(const std::string& key);
+
+	// 各行動 
+	
+	// 攻撃行動
+	// 命名規則 (行動分類 + 距離 + 追加効果 ) ※変更する可能性あり
+	// (例: Attack(攻撃) + Long(遠距離) + InstantDeath(即死) )
+
+	// 遠距離攻撃
+	void AttackLong();
+	// 近距離攻撃
+	void AttackClose();
+
+	// 移動関連行動
+	// 命名規則 (行動分類  + 方向or対象 )
+
+	// プレイヤーに接近する
+	void MoveToPlayer();
+	// プレイヤーから逃げる
+	void EscapeToPlayer();
+
+
 	inline void MoveForward() { mObject->mWorldTransform->translation.z += mVelocity.z; }
 	inline void BackStep(){ mObject->mWorldTransform->translation.z -= mVelocity.z; }
 
@@ -48,18 +79,20 @@ public: // -- 公開 メンバ関数 -- //
 	// 回転量を任意の値に変更する
 	void SetRotation(Vector3 rotation) { mObject->mWorldTransform->rotation = rotation; }
 
+
+
 	// -- 取得関数 -- //
 
-	Vector3 GetWorldPos() { return mObject->GetWorldTransform()->translation; }
+	Vector3 GetWorldPos();
 	Vector3 GetWorldPosForTarget();
 
 	// -- ActionNodeの実行条件を設定する関数 -- //
 
 	// 距離が近い場合に実行
-	bool invokeNearDistance();
+	bool InvokeNearDistance();
 
 	// 距離が遠い場合に実行
-	bool invokeFarDistance();
+	bool InvokeFarDistance();
 
 #pragma endregion
 
@@ -93,4 +126,14 @@ private: // -- 非公開 メンバ変数 -- //
 	std::array<std::unique_ptr<IBossState>, 1> mStateArr;
 	int mCurrentStateNo;
 	int mPrevStateNo;
+
+	// ビヘイビアツリー
+	std::unique_ptr<BT::Sequence> mRoot;
+	// ビヘイビアツリーの駆動状態
+	BT::NodeStatus mBTStatus;
+
+	// 行動マップデータ
+	std::map<std::string,ACT::IAction*> mActions;
+	// 現在の行動
+	ACT::IAction* mActiveAction;
 };

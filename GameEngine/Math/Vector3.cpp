@@ -347,3 +347,19 @@ Vector3 ExponentialInterpolation(Vector3 a, Vector3 b, float t, float k) {
 	//return a + ((b - a) * (1.0f - std::expf(-k * t)));
 
 }
+
+float clamp(float num, float max, float min)
+{
+	if (num > max)
+	{
+		return max;
+	}
+	else if (num < min)
+	{
+		return max;
+	}
+	else
+	{
+		return num;
+	}
+}

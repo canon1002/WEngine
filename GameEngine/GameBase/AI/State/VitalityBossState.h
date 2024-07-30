@@ -1,8 +1,7 @@
 #pragma once
 #include "IBossState.h"
 #include <memory>
-#include "GameEngine/GameBase/AI/BehaviorTree/SelectorNode.h"
-#include "GameEngine/GameBase/AI/BehaviorTree/SequenceNode.h"
+
 
 class VitalityBossState : public IBossState
 {
@@ -22,10 +21,10 @@ private: // -- 非公開 メンバ変数 -- //
     int32_t mBehaviorRunCount;
 
     // ビヘイビアツリー
-    std::unique_ptr<SelectorNode> mRoot;
+    //std::unique_ptr<SelectorNode> mRoot;
 
     // メンバ関数ポインタ
-    std::function<void()> mBehaviorUpdate;
+    //std::function<void()> mBehaviorUpdate;
 
 
 };
