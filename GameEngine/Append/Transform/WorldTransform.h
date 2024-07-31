@@ -33,6 +33,8 @@ public: // -- public メンバ関数 -- //
 	/// </summary>
 	void SetParent(const Matrix4x4& parent);
 
+	const Matrix4x4* GetParent() { return parent_; }
+
 public: // -- public メンバ変数 -- //
 
 	// 拡大

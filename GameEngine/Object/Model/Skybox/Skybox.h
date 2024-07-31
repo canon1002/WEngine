@@ -5,6 +5,8 @@ class Skybox{
 
 public:	// -- public メンバ関数 -- //
 
+	static Skybox* GetInstance();
+
 	~Skybox();
 	void Init(const std::string& directrypath, const std::string& filename);
 	void Update();
@@ -41,6 +43,9 @@ private: // -- private メンバ関数 -- //
 	void CreateGraphicsPipeline();
 
 public: // -- public メンバ変数 -- //
+
+	// インスタンス
+	static Skybox* instance;
 
 	// ModelCommonのポインタ
 	//ModelCommon* modelCommon_ = nullptr;

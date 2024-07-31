@@ -3,8 +3,9 @@
 #include "GameEngine/Math/Math.h"
 #include "GameEngine/Object/3d/Object3d.h"
 
-// ボスクラス 前方宣言
+// 前方宣言
 class BossEnemy;
+class CollisionManager;
 
 // 行動
 namespace ACT {
@@ -32,6 +33,8 @@ namespace ACT {
 		virtual void Init(BossEnemy* boss) = 0;
 		// 更新処理
 		virtual void Update() = 0;
+		// 描画処理
+		virtual void Draw() =0;
 
 		// 開始処理
 		virtual void Start() = 0;
@@ -42,6 +45,9 @@ namespace ACT {
 
 		// 駆動状態取得関数
 		virtual ACT::Condition GetCondition()const { return mCondition; }
+
+		// コライダーをリストに追加する
+		virtual void SetCollider(CollisionManager* cManager) = 0;
 
 	protected: // -- 限定公開 メンバ変数 -- // 
 
@@ -67,6 +73,8 @@ namespace ACT {
 		virtual void Init(BossEnemy* boss) override;
 		// 更新処理
 		virtual void Update() override;
+		// 描画処理
+		virtual void Draw() override;
 
 		// 開始処理
 		virtual void Start() override;
@@ -77,6 +85,9 @@ namespace ACT {
 
 		// 駆動状態取得関数
 		virtual ACT::Condition GetCondition()const override { return mCondition; }
+
+		// コライダーをリストに追加する
+		virtual void SetCollider(CollisionManager* cManager)override;
 
 	private:
 
@@ -109,6 +120,8 @@ namespace ACT {
 		virtual void Init(BossEnemy* boss) override;
 		// 更新処理
 		virtual void Update() override;
+		// 描画処理
+		virtual void Draw() override;
 
 		// 開始処理
 		virtual void Start() override;
@@ -120,9 +133,14 @@ namespace ACT {
 		// 駆動状態取得関数
 		virtual ACT::Condition GetCondition()const override { return mCondition; }
 
+		// コライダーをリストに追加する
+		virtual void SetCollider(CollisionManager* cManager)override;
+
 	private:
 		std::unique_ptr<Object3d> mWeapon;
-
+		std::vector<Collider*> mColliders;
+		float mActiveColliderCount;
+		const Vector2 kActiveColliderCount = { 0.8f,1.4f };
 	};
 
 }

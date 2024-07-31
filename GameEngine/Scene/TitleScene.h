@@ -31,7 +31,7 @@ private:
 	// 入力を取得
 	InputManager* mInput;
 
-	std::unique_ptr<Skybox> skybox_;
+	Skybox* skybox_;
 	std::unique_ptr<Grid3D> grid_;
 
 	std::unique_ptr<Player> mPlayer;

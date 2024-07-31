@@ -35,7 +35,7 @@ void TitleScene::Init() {
 	
 
 	// skyboxの宣言
-	skybox_ = std::make_unique<Skybox>();
+	skybox_ = Skybox::GetInstance();
 	skybox_->Init("skybox","rostock_laage_airport_4k.dds");
 
 	mPlayer = std::make_unique<Player>();
@@ -90,6 +90,7 @@ void TitleScene::Update() {
 	mCollisionManager->SetCollider(mPlayer->GetObject3D()->mCollider);
 	mCollisionManager->SetCollider(mBoss->GetObject3D()->mCollider);
 	mPlayer->SetColliderListForArrow(mCollisionManager.get());
+	mBoss->SetCollider(mCollisionManager.get());
 
 	// 衝突判定を行う
 	mCollisionManager->Update();

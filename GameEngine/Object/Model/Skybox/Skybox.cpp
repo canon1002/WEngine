@@ -3,6 +3,15 @@
 #include "GameEngine/Object//Camera/MainCamera.h"
 #include "GameEngine/Base/Debug/ImGuiManager.h"
 
+Skybox* Skybox::instance = nullptr;
+
+Skybox* Skybox::GetInstance() {
+	if (instance == nullptr) {
+		instance = new Skybox();
+	}
+	return instance;
+}
+
 Skybox::~Skybox() {
 	mVertexResource.Reset();
 	CameraResource.Reset();

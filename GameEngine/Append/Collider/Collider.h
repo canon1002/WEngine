@@ -67,12 +67,19 @@ public: // -- 公開 メンバ関数 -- //
 	// 衝突フラグ取得
 	virtual bool GetOnCollisionFlag()const { return mIsOnCollision; }
 
+	void SetWorld(WorldTransform* world) { pWorldTransform = world; }
+	void SetAddtranslation(Vector3 translation) { mAddtranslation = translation; }
+	
+
 protected: // -- 限定公開 メンバ変数 -- //
 
 	// 衝突属性 自分
 	uint32_t mCollisionAttribute = 0xffffffff;
 	// 衝突属性 相手
 	uint32_t mCollisionMask = 0xffffffff;
+
+	// 追加平行移動量
+	Vector3 mAddtranslation;
 
 	// -- ここから下はデバッグ用の変数 -- //
 

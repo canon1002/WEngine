@@ -9,6 +9,8 @@ SphereCollider::SphereCollider(WorldTransform* worldtransform, float radius){
 	pWorldTransform = worldtransform;
 	// 半径を代入
 	mRadius = radius;
+	// 追加平行移動の初期化
+	mAddtranslation = { 0.0f, 0.0f, 0.0f };
 }
 
 
@@ -19,6 +21,11 @@ void SphereCollider::Init() {
 	// モデルを検索してセット
 	mModel = ModelManager::GetInstance()->FindModel("wireSphere.gltf");
 	CreateTransformation();
+	mModel->materialData_->environmentCoefficient = 0.0f;
+	// 衝突フラグ保持時間
+	mOnCollisionCount = 0;
+	// フラグをfalseに
+	mIsOnCollision = false;
 }
 
 void SphereCollider::Update() {
@@ -33,6 +40,8 @@ void SphereCollider::Update() {
 	world->translation = pWorldTransform->GetWorldPosition();
 	// ridiusに合わせて拡大縮小を行う
 	world->scale = { mRadius,mRadius,mRadius};
+	// 追加移動量の適用
+	world->translation += mAddtranslation;
 	// 矩形のワールド行列とWVP行列を掛け合わした行列を代入
 	mWvpData->WVP = Multiply(world->GetWorldMatrix(), wvpM);
 	mWvpData->World = world->GetWorldMatrix();

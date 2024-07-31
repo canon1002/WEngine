@@ -21,8 +21,8 @@ void BossEnemy::Init() {
 	mObject->GetModel()->materialData_->color = { 1.0f,0.7f,0.7f,1.0f };
 	
 	// ワールドトランスフォーム
-	mObject->mWorldTransform->scale= { 2.5f,2.5f,2.5f};
-	mObject->mWorldTransform->translation= { 0.0f,0.0f,20.0f};
+	mObject->mWorldTransform->scale= { 1.5f,1.5f,1.5f};
+	mObject->mWorldTransform->translation = { 0.0f,0.0f,20.0f };
 
 	// 移動量を初期化
 	mVelocity = { 0.0f,0.0f ,0.002f };
@@ -39,6 +39,7 @@ void BossEnemy::Init() {
 	// コライダーの宣言
 	mObject->mCollider = new SphereCollider(mObject->mWorldTransform, mObject->GetWorldTransform()->scale.x);
 	mObject->mCollider->Init();
+	mObject->mCollider->SetAddtranslation(Vector3(0.0f, mObject->GetWorldTransform()->scale.y, 0.0f));
 	mObject->mCollider->SetCollisionAttribute(kCollisionAttributeEnemy);
 	mObject->mCollider->SetCollisionMask(kCollisionAttributePlayerBullet);
 
@@ -106,7 +107,7 @@ void BossEnemy::Update() {
 	mBTStatus = mRoot->Tick();
 	if (mBTStatus == BT::NodeStatus::SUCCESS || mBTStatus == BT::NodeStatus::FAILURE) {
 		// 結果が帰ってきたら初期化処理
-		//mRoot->Reset();
+		mRoot->Reset();
 
 		// 各アクションの初期化もしておく
 		for (auto& action : mActions) {
@@ -145,6 +146,12 @@ void BossEnemy::DrawGUI() {
 	mObject->DrawGuiTree();
 	ImGui::End();
 #endif // _DEBUG
+}
+
+void BossEnemy::SetCollider(CollisionManager* cManager)
+{
+	mActions["AttackClose"]->SetCollider(cManager);
+
 }
 
 void BossEnemy::UpdateState() {
@@ -253,5 +260,8 @@ bool BossEnemy::InvokeFarDistance(){
 }
 
 void BossEnemy::ColliderDraw() {
+	if (mActiveAction != nullptr) {
+		mActiveAction->Draw();
+	}
 	mObject->mCollider->Draw();
 }

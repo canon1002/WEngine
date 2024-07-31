@@ -34,6 +34,8 @@ public: // -- 公開 メンバ関数 -- //
 	Model* GetModel() { return mObject->mModel; }
 	Collider* GetCollider() { return mObject->mCollider; }
 
+	void SetCollider(CollisionManager* cManager);
+
 	// プレイヤーのポインタをセットする
 	void SetPlayer(Player* player) { pPlayer = player; }
 

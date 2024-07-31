@@ -39,10 +39,11 @@ void Player::Init() {
 	mJumpCount = kJumpCountMax;
 
 	// コライダーの宣言
-	mObject->mCollider = new SphereCollider(mObject->mWorldTransform, 0.5f);
+	mObject->mCollider = new SphereCollider(mObject->mWorldTransform, 1.0f);
 	mObject->mCollider->Init();
+	mObject->mCollider->SetAddtranslation(Vector3(0.0f, 0.55f, 0.0f));
 	mObject->mCollider->SetCollisionAttribute(kCollisionAttributePlayer);
-	mObject->mCollider->SetCollisionAttribute(kCollisionAttributeEnemyBullet);
+	mObject->mCollider->SetCollisionMask(kCollisionAttributeEnemyBullet);
 
 	// レティクルの初期化
 	mReticle = std::make_unique<Reticle3D>();

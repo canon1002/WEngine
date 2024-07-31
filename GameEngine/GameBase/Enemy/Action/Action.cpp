@@ -72,6 +72,10 @@ void ACT::MoveToPlayer::Update()
 	}
 }
 
+void ACT::MoveToPlayer::Draw()
+{
+}
+
 void ACT::MoveToPlayer::Start()
 {
 	// パラメータの初期化
@@ -126,4 +130,9 @@ void ACT::MoveToPlayer::Reset()
 	mMoveSpeed = (1.0f / 60.0f) * 2.0f;
 	// 移動量の設定
 	mVelocity = Scalar(mMoveSpeed, mDirection);
+}
+
+void ACT::MoveToPlayer::SetCollider(CollisionManager* cManager)
+{
+	cManager;
 }

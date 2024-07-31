@@ -34,6 +34,8 @@ public:
     // 半径の設定
     float GetRadius()const { return mRadius; }
 
+   
+
 private: // -- 非公開 メンバ関数 -- //
 
     void CreateTransformation()override;
@@ -46,5 +48,6 @@ protected:
 
     // 球体の半径
     float mRadius;
+ 
 
 };
