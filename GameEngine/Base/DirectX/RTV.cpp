@@ -35,7 +35,7 @@ void RTV::CreateFinalRenderTargets() {
 	// -- ３つ目 RenderTexture -- //
 
 	// ResnderTextureを生成する
-	renderTextureResource = Resource::CreateRenderTextureResource(
+	mRenderTextureResource = Resource::CreateRenderTextureResource(
 		mDxCommon->device_,
 		mDxCommon->win_->kClientWidth,
 		mDxCommon->win_->kClientHeight,
@@ -46,6 +46,6 @@ void RTV::CreateFinalRenderTargets() {
 	rtvHandles[2].ptr = rtvHandles[1].ptr + mDxCommon->device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 	
 	mDxCommon->device_->CreateRenderTargetView(
-		renderTextureResource.Get(), &rtvDesc, rtvHandles[2]);
+		mRenderTextureResource.Get(), &rtvDesc, rtvHandles[2]);
 
 }

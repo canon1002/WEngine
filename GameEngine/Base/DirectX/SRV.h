@@ -65,7 +65,7 @@ public: // -- public メンバ変数 -- //
 
 	// -- RenderTexture用 -- //
 
-	Microsoft::WRL::ComPtr<ID3D12Resource> renderTextureResource = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12Resource> mRenderTextureResource = nullptr;
 
 private: // -- private メンバ変数 -- // 
 

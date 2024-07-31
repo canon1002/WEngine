@@ -27,8 +27,8 @@ void ParticleManager::Update(){
 void ParticleManager::PreDraw(){
 
 	// RootSignatureを設定。PSOに設定しているが、別途設定が必要
-	mDxCommon->commandList->SetGraphicsRootSignature(mRootSignature.Get());
-	mDxCommon->commandList->SetPipelineState(mGraphicsPipelineState.Get());
+	mDxCommon->mCommandList->SetGraphicsRootSignature(mRootSignature.Get());
+	mDxCommon->mCommandList->SetPipelineState(mGraphicsPipelineState.Get());
 
 }
 

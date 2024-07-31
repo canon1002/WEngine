@@ -34,5 +34,8 @@ protected: // -- 限定公開 メンバ変数 -- //
 	Microsoft::WRL::ComPtr<ID3D12Resource> mEffectResource;
 	// 調整項目
 	int32_t* mEnableEffect;
+	
+	int32_t mDepthStencilHandle;
+
 };
 

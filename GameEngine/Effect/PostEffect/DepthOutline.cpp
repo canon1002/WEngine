@@ -19,7 +19,11 @@ void DepthOutline::Init(){
 	CreateEffectResource();
 
 	// レンダーターゲットの格納番号を受け取る
-	textureHandle_ = mDxCommon->srv_->CreateRenderTextureSRV(mDxCommon->rtv_->renderTextureResource.Get());
+	textureHandle_ = mDxCommon->srv_->CreateRenderTextureSRV(mDxCommon->rtv_->mRenderTextureResource.Get());
+
+	// Depthの格納番号を受け取る
+	mDepthStencilHandle = mDxCommon->srv_->CreateDepthSRV(mDxCommon->dsv_->mDepthStencilTextureResource.Get());
+
 }
 
 void DepthOutline::Update(){
@@ -44,22 +48,23 @@ void DepthOutline::DrawGUI()
 
 void DepthOutline::PreDraw(){
 	// RootSignatureを設定。PSOに設定しているが、別途設定が必要
-	mDxCommon->commandList->SetGraphicsRootSignature(mRootSignature.Get());
-	mDxCommon->commandList->SetPipelineState(mGraphicsPipelineState.Get());
+	mDxCommon->mCommandList->SetGraphicsRootSignature(mRootSignature.Get());
+	mDxCommon->mCommandList->SetPipelineState(mGraphicsPipelineState.Get());
 }
 
 void DepthOutline::Draw(){
 
 	// 頂点バッファビューをセット
-	mDxCommon->commandList->IASetVertexBuffers(0, 1, &mVertexBufferView);
+	mDxCommon->mCommandList->IASetVertexBuffers(0, 1, &mVertexBufferView);
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけばいい
-	mDxCommon->commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	mDxCommon->mCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	// ポストエフェクトのパラメータのCBufferの場所を指定
-	mDxCommon->commandList->SetGraphicsRootConstantBufferView(0, mEffectResource->GetGPUVirtualAddress());
+	mDxCommon->mCommandList->SetGraphicsRootConstantBufferView(0, mEffectResource->GetGPUVirtualAddress());
 	// SRVのDescriptorTableの先頭を設定
-	mDxCommon->commandList->SetGraphicsRootDescriptorTable(1, mDxCommon->srv_->textureData_.at(textureHandle_).textureSrvHandleGPU);
+	mDxCommon->mCommandList->SetGraphicsRootDescriptorTable(1, mDxCommon->srv_->textureData_.at(textureHandle_).textureSrvHandleGPU);
+	mDxCommon->mCommandList->SetGraphicsRootDescriptorTable(1, mDxCommon->srv_->textureData_.at(mDepthStencilHandle).textureSrvHandleGPU);
 	// インスタンス生成
-	mDxCommon->commandList->DrawInstanced(3, 1, 0, 0);
+	mDxCommon->mCommandList->DrawInstanced(3, 1, 0, 0);
 }
 
 void DepthOutline::PostDraw(){
@@ -169,7 +174,7 @@ void DepthOutline::CreateRootSignature(){
 	descriptorRangeDepth[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;// offset自動計算
 
 	// RootParamenter作成
-	D3D12_ROOT_PARAMETER rootParameters[2] = {};
+	D3D12_ROOT_PARAMETER rootParameters[3] = {};
 	rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; // CBVを使う // b0のbと一致
 	rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
 	rootParameters[0].Descriptor.ShaderRegister = 0; // レジスタ番号とバインド // b0のと一致
@@ -178,7 +183,13 @@ void DepthOutline::CreateRootSignature(){
 	rootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
 	rootParameters[1].DescriptorTable.pDescriptorRanges = descriptorRange;
 	rootParameters[1].DescriptorTable.NumDescriptorRanges = _countof(descriptorRange);
+	// DepthStencilResource用
+	rootParameters[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE; // DescriptorTable
+	rootParameters[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
+	rootParameters[2].DescriptorTable.pDescriptorRanges = descriptorRangeDepth;
+	rootParameters[2].DescriptorTable.NumDescriptorRanges = _countof(descriptorRangeDepth);// 
 
+	
 	// RootSignatureを生成する
 	D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature{};
 	descriptionRootSignature.Flags = D3D12_ROOT_SIGNATURE_FLAG_NONE;
@@ -186,7 +197,7 @@ void DepthOutline::CreateRootSignature(){
 	descriptionRootSignature.NumParameters = _countof(rootParameters); // 配列の長さ
 
 	// Samplerの設定
-	D3D12_STATIC_SAMPLER_DESC staticSamplers[1] = {};
+	D3D12_STATIC_SAMPLER_DESC staticSamplers[2] = {};
 	staticSamplers[0].Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;// バイナリフィルタ
 	staticSamplers[0].AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;//0~1の範囲外をリピート
 	staticSamplers[0].AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
@@ -195,6 +206,16 @@ void DepthOutline::CreateRootSignature(){
 	staticSamplers[0].MaxLOD = D3D12_FLOAT32_MAX;	// ありったけのMipMapを使う
 	staticSamplers[0].ShaderRegister = 0;// レジスタ番号0を使う
 	staticSamplers[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;// PixelShaderで使う
+
+	// PointFillter用
+	staticSamplers[1].Filter = D3D12_FILTER_MIN_MAG_MIP_POINT;// ポイントフィルタ
+	staticSamplers[1].AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;//0~1の範囲外をリピート
+	staticSamplers[1].AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+	staticSamplers[1].AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+	staticSamplers[1].ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER;// 比較しない
+	staticSamplers[1].MaxLOD = D3D12_FLOAT32_MAX;	// ありったけのMipMapを使う
+	staticSamplers[1].ShaderRegister = 1;// レジスタ番号0を使う
+	staticSamplers[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;// PixelShaderで使う
 
 	descriptionRootSignature.pStaticSamplers = staticSamplers;
 	descriptionRootSignature.NumStaticSamplers = _countof(staticSamplers);

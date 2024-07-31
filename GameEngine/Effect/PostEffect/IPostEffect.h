@@ -22,12 +22,20 @@ public:// -- 公開 メンバ関数 -- //
 	virtual void CreateGraphicsPipeline() = 0;
 	virtual void CreateRootSignature() = 0;
 	
+	// 中間テクスチャの入力
+	inline void SetInputTexture(Microsoft::WRL::ComPtr<ID3D12Resource> inputTexture) {
+		mInputTexture = inputTexture;
+	}
+
+	// 中間テクスチャの出力
+	inline Microsoft::WRL::ComPtr<ID3D12Resource> GetOutputTexture() const {
+		return mOutputTexture;
+	}
 
 protected: // -- 限定公開 メンバ関数 -- // // -- 以下 派生クラスの共通部分 -- //
 
 	// 頂点リソース生成
 	void CreateVertexResource();
-
 
 protected: // -- 限定公開 メンバ変数 -- //
 	
@@ -35,8 +43,13 @@ protected: // -- 限定公開 メンバ変数 -- //
 	CameraCommon* mCamera = nullptr;
 	DirectXCommon* mDxCommon = nullptr;
 
-	// テクスチャハンドル //
+	// テクスチャハンドル 
 	int32_t textureHandle_;
+
+	// 中間テクスチャ(入力)
+	Microsoft::WRL::ComPtr<ID3D12Resource> mInputTexture = nullptr;
+	// 中間テクスチャ(出力)
+	Microsoft::WRL::ComPtr<ID3D12Resource> mOutputTexture = nullptr;
 
 	// グラフィックパイプライン
 	Microsoft::WRL::ComPtr <ID3D12PipelineState> mGraphicsPipelineState;

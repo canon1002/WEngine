@@ -39,11 +39,6 @@ void SceneManager::Init(WinAPI* winApp, DirectXCommon* dxCommon){
 	// モデル管理クラス
 	ModelManager::GetInstance()->Initialize(dxCommon, mainCamera_.get());
 
-
-	// ポストエフェクト管理者クラス
-	mPostEffectManager = std::make_unique<PostEffectManager>();
-	mPostEffectManager->Init();
-
 	// グローバル変数読み込み
 	GlobalVariables::GetInstance()->LoadFiles();
 	// レベルデータ読み込み
@@ -124,7 +119,10 @@ int SceneManager::Run() {
 
 		/// 更新処理
 		sceneArr_[currentSceneNo_]->Update();
-		mPostEffectManager->Update();
+		
+		//mPostEffectManager->Update();
+		
+		// ポストエフェクト
 		copyImage_->Update();
 
 		// 開発用UIの表示
@@ -164,13 +162,16 @@ int SceneManager::Run() {
 		mDxCommon->PreDrawForRenderTarget();
 		/// 描画処理
 		sceneArr_[currentSceneNo_]->Draw();
+
 		// 描画後処理 -- RenderTexture --
 		mDxCommon->PostDrawForRenderTarget();
 		// 描画前処理
 		mDxCommon->PreDraw();
-		mPostEffectManager->Draw();
 		// ダメージ画像の表記
 		DamageReaction::GetInstance()->DrawSprite();
+
+		copyImage_->PreDraw();
+		copyImage_->Draw();
 
 #ifdef _DEBUG
 		// ImGuiの描画

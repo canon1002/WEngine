@@ -67,7 +67,7 @@ void Object3d::Draw() {
 	}
 
 	//wvp用のCBufferの場所を指定
-	mDxCommon->commandList->SetGraphicsRootConstantBufferView(1, mWvpResource->GetGPUVirtualAddress());
+	mDxCommon->mCommandList->SetGraphicsRootConstantBufferView(1, mWvpResource->GetGPUVirtualAddress());
 	// 頂点をセット
 
 	D3D12_VERTEX_BUFFER_VIEW vbvs[2]{};
@@ -77,13 +77,13 @@ void Object3d::Draw() {
 		vbvs[1] = mSkinning->GetSkinCluster().influenceBufferView_; // influenceのVBV
 
 		// 配列を渡す(開始スロット番号、使用スロット数、VBV配列へのポインタ)
-		mDxCommon->commandList->IASetVertexBuffers(0, 2, vbvs);
-		mDxCommon->commandList->SetGraphicsRootDescriptorTable(6,
+		mDxCommon->mCommandList->IASetVertexBuffers(0, 2, vbvs);
+		mDxCommon->mCommandList->SetGraphicsRootDescriptorTable(6,
 			mSkinning->GetSkinCluster().paletteSrvHandle_.second);
 	}
 	else {
 		// 配列を渡す(開始スロット番号、使用スロット数、VBV配列へのポインタ)
-		mDxCommon->commandList->IASetVertexBuffers(0, 1, &vbvs[0]);
+		mDxCommon->mCommandList->IASetVertexBuffers(0, 1, &vbvs[0]);
 	}
 
 	mModel->Draw();
@@ -238,7 +238,7 @@ void Object3d::DrawGuiTree()
 			}
 		}
 	}
-	
+
 	ImGui::EndMenu();
 
 

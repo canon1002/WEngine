@@ -98,16 +98,16 @@ std::shared_ptr<Model> ModelManager::Create(const std::string& filepath, const s
 void ModelManager::PreDraw(){
 
 	// RootSignatureを設定。PSOに設定しているが、別途設定が必要
-	mDxCommon->commandList->SetGraphicsRootSignature(rootSignature.Get());
-	mDxCommon->commandList->SetPipelineState(graphicsPipelineState.Get());
+	mDxCommon->mCommandList->SetGraphicsRootSignature(rootSignature.Get());
+	mDxCommon->mCommandList->SetPipelineState(graphicsPipelineState.Get());
 
 }
 
 void ModelManager::PreDrawForSkinning()
 {
 	// RootSignatureを設定。PSOに設定しているが、別途設定が必要
-	mDxCommon->commandList->SetGraphicsRootSignature(rootSignatureForSkinning.Get());
-	mDxCommon->commandList->SetPipelineState(graphicsPipelineStateForSkinning.Get());
+	mDxCommon->mCommandList->SetGraphicsRootSignature(rootSignatureForSkinning.Get());
+	mDxCommon->mCommandList->SetPipelineState(graphicsPipelineStateForSkinning.Get());
 }
 
 void ModelManager::CreateRootSignature(){

@@ -50,21 +50,21 @@ void MultiModel::Draw()
 		const MultiMaterial& material = modelData.materials[mesh.materialIndex];
 
 		// 配列を渡す(開始スロット番号、使用スロット数、VBV配列へのポインタ)
-		mDxCommon->commandList->IASetVertexBuffers(0, 1, &mesh.vertexBufferView);
+		mDxCommon->mCommandList->IASetVertexBuffers(0, 1, &mesh.vertexBufferView);
 		// IndexBufferViewをセット
-		mDxCommon->commandList->IASetIndexBuffer(&mesh.indexBufferView);
+		mDxCommon->mCommandList->IASetIndexBuffer(&mesh.indexBufferView);
 		// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけばいい
-		mDxCommon->commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		mDxCommon->mCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 		// マテリアルのCBufferの場所を指定
-		mDxCommon->commandList->SetGraphicsRootConstantBufferView(0, material.materialResource->GetGPUVirtualAddress());
-		mDxCommon->commandList->SetGraphicsRootConstantBufferView(3, directionalLightResource->GetGPUVirtualAddress());
-		mDxCommon->commandList->SetGraphicsRootConstantBufferView(4, CameraResource->GetGPUVirtualAddress());
+		mDxCommon->mCommandList->SetGraphicsRootConstantBufferView(0, material.materialResource->GetGPUVirtualAddress());
+		mDxCommon->mCommandList->SetGraphicsRootConstantBufferView(3, directionalLightResource->GetGPUVirtualAddress());
+		mDxCommon->mCommandList->SetGraphicsRootConstantBufferView(4, CameraResource->GetGPUVirtualAddress());
 
 		// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である
-		mDxCommon->commandList->SetGraphicsRootDescriptorTable(2, mDxCommon->srv_->textureData_.at(mDxCommon->srv_->defaultTexId_).textureSrvHandleGPU);
+		mDxCommon->mCommandList->SetGraphicsRootDescriptorTable(2, mDxCommon->srv_->textureData_.at(mDxCommon->srv_->defaultTexId_).textureSrvHandleGPU);
 		// インデックスを使用してドローコール
-		mDxCommon->commandList->DrawIndexedInstanced(UINT(modelData.meshes[0].indices.size()), 1, 0, 0, 0);
+		mDxCommon->mCommandList->DrawIndexedInstanced(UINT(modelData.meshes[0].indices.size()), 1, 0, 0, 0);
 	}
 }
 

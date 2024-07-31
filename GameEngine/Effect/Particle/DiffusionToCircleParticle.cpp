@@ -134,17 +134,17 @@ void DiffusionToCircleParticle::Draw() {
 	// isntancceCountttが1以上のときに描画処理を行う
 	if (instanceCount_ > 0) {
 		// 頂点バッファをセット
-		mDxCommon->commandList->IASetVertexBuffers(0, 1, &mVertexBufferView);
+		mDxCommon->mCommandList->IASetVertexBuffers(0, 1, &mVertexBufferView);
 		// 形状を三角形に設定
-		mDxCommon->commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		mDxCommon->mCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		// マテリアルのCBufferの場所を指定
-		mDxCommon->commandList->SetGraphicsRootConstantBufferView(0, mMaterialResource->GetGPUVirtualAddress());
+		mDxCommon->mCommandList->SetGraphicsRootConstantBufferView(0, mMaterialResource->GetGPUVirtualAddress());
 
-		mDxCommon->commandList->SetGraphicsRootDescriptorTable(1, mDxCommon->srv_->instancingSrvHandleGPU);
+		mDxCommon->mCommandList->SetGraphicsRootDescriptorTable(1, mDxCommon->srv_->instancingSrvHandleGPU);
 		// テクスチャをセット
-		mDxCommon->commandList->SetGraphicsRootDescriptorTable(2, mDxCommon->srv_->textureData_.at(mDxCommon->srv_->defaultTexId_).textureSrvHandleGPU);
+		mDxCommon->mCommandList->SetGraphicsRootDescriptorTable(2, mDxCommon->srv_->textureData_.at(mDxCommon->srv_->defaultTexId_).textureSrvHandleGPU);
 		// ドローコール
-		mDxCommon->commandList->DrawInstanced(6, instanceCount_, 0, 0);
+		mDxCommon->mCommandList->DrawInstanced(6, instanceCount_, 0, 0);
 	}
 }
 

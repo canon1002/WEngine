@@ -26,7 +26,7 @@ void RenderCopyImage::Initialize(DirectXCommon* dxCommon, CameraCommon* camera) 
 	CreateBufferView();
 
 	mTextureHandle = mDxCommon->srv_->LoadTexture("uvChecker.png");
-	mTextureHandle = mDxCommon->srv_->CreateRenderTextureSRV(mDxCommon->rtv_->renderTextureResource.Get());
+	mTextureHandle = mDxCommon->srv_->CreateRenderTextureSRV(mDxCommon->rtv_->mRenderTextureResource.Get());
 
 	mDepthStencilHandle = mDxCommon->srv_->CreateDepthSRV(mDxCommon->dsv_->mDepthStencilTextureResource.Get());
 }
@@ -43,15 +43,15 @@ void RenderCopyImage::Update() {
 
 	ImGui::Begin("RenderTexture");
 
-	//画面全体のカラー変更
-	ImGui::Checkbox("ScreenColor Flag", &effectFlags.isEnableScreenColor);
-	fullScreenData->enableScreenColor = effectFlags.isEnableScreenColor;
+	//画面全体のカラー変更 // とりあえずグレースケールに設定
+	ImGui::Checkbox("GrayScale Flag", &effectFlags.isEnableScreenColor);
+	fullScreenData->enableGrayScele = effectFlags.isEnableScreenColor;
 	if (effectFlags.isEnableScreenColor) {
 		// 色を変更
-		Color newColor = { fullScreenData->screenColor.x,fullScreenData->screenColor.y,
+		/*Color newColor = { fullScreenData->screenColor.x,fullScreenData->screenColor.y,
 			fullScreenData->screenColor.z,fullScreenData->screenColor.w};
 		ImGui::ColorEdit4("SctreenColor", &newColor.r);
-		fullScreenData->screenColor = Vector4(newColor.r,newColor.g,newColor.b,newColor.a);
+		fullScreenData->screenColor = Vector4(newColor.r,newColor.g,newColor.b,newColor.a);*/
 	}
 	// ビネット
 	ImGui::Checkbox("Viggetting Flag", &effectFlags.isEnableViggetting);
@@ -63,7 +63,7 @@ void RenderCopyImage::Update() {
 
 	// ぼかし(BoxFilter/GuaseFilter)
 	ImGui::Checkbox("Smooting Flag", &effectFlags.isEnableSmooting);
-	fullScreenData->enableScreenColor = effectFlags.isEnableScreenColor;
+	fullScreenData->enableSmooting = effectFlags.isEnableSmooting;
 	if (effectFlags.isEnableSmooting) {
 
 		// GuaseFilter
@@ -100,19 +100,6 @@ void RenderCopyImage::Update() {
 		ImGui::DragFloat("Multipliier", &fullScreenData->outlineMultipliier);
 	}
 
-	// Outline 深度検出
-	ImGui::Checkbox("DepthOutline Flag", &effectFlags.isEnableDepthOutline);
-	fullScreenData->enableDepthOutline = effectFlags.isEnableDepthOutline;
-	if (effectFlags.isEnableDepthOutline) {
-		if (ImGui::TreeNode("Projection Inverse")) {
-			for (int i = 0; i < 4; ++i) {
-				// Floatの4x4行列内の数値を表示
-				ImGui::DragFloat4(("Row " + std::to_string(i)).c_str(), fullScreenData->projectionInverse.m[i]);
-			}
-			ImGui::TreePop();
-		}
-	}
-
 	ImGui::End();
 
 #endif // _DEBUG
@@ -134,30 +121,30 @@ void RenderCopyImage::Update() {
 
 void RenderCopyImage::PreDraw(){
 	// RootSignatureを設定。PSOに設定しているが、別途設定が必要
-	mDxCommon->commandList->SetGraphicsRootSignature(rootSignature.Get());
-	mDxCommon->commandList->SetPipelineState(graphicsPipelineState.Get());
+	mDxCommon->mCommandList->SetGraphicsRootSignature(rootSignature.Get());
+	mDxCommon->mCommandList->SetPipelineState(graphicsPipelineState.Get());
 }
 
 void RenderCopyImage::Draw() {
 
 	
-	mDxCommon->commandList->IASetVertexBuffers(0, 1, &mVertexBufferView);
+	mDxCommon->mCommandList->IASetVertexBuffers(0, 1, &mVertexBufferView);
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけばいい
-	mDxCommon->commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	mDxCommon->mCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	/// CBV設定
 
 	// マテリアルのCBufferの場所を指定
-	mDxCommon->commandList->SetGraphicsRootConstantBufferView(0, fullScreenResource->GetGPUVirtualAddress());
+	mDxCommon->mCommandList->SetGraphicsRootConstantBufferView(0, fullScreenResource->GetGPUVirtualAddress());
 	//wvp用のCBufferの場所を指定
-	mDxCommon->commandList->SetGraphicsRootConstantBufferView(1, mWvpResource->GetGPUVirtualAddress());
+	mDxCommon->mCommandList->SetGraphicsRootConstantBufferView(1, mWvpResource->GetGPUVirtualAddress());
 	// テクスチャをセット
-	mDxCommon->commandList->SetGraphicsRootDescriptorTable(2, mDxCommon->srv_->textureData_.at(mTextureHandle).textureSrvHandleGPU);
+	mDxCommon->mCommandList->SetGraphicsRootDescriptorTable(2, mDxCommon->srv_->textureData_.at(mTextureHandle).textureSrvHandleGPU);
 	// DepthTextureを設定
-	mDxCommon->commandList->SetGraphicsRootDescriptorTable(3, mDxCommon->srv_->textureData_.at(mDepthStencilHandle).textureSrvHandleGPU);
+	mDxCommon->mCommandList->SetGraphicsRootDescriptorTable(3, mDxCommon->srv_->textureData_.at(mDepthStencilHandle).textureSrvHandleGPU);
 
 	// インスタンス生成
-	mDxCommon->commandList->DrawInstanced(3, 1, 0, 0);
+	mDxCommon->mCommandList->DrawInstanced(3, 1, 0, 0);
 
 }
 
@@ -348,11 +335,11 @@ void RenderCopyImage::CreateVertexResource() {
 	fullScreenData->enableSmooting = 0;
 	fullScreenData->enableBoxFilter = 0;
 	fullScreenData->enableGaussianFilter = 0;
-	fullScreenData->kernelSize = 11;
+	fullScreenData->kernelSize = 5;
 	fullScreenData->GaussianSigma = 2.0f;
 	fullScreenData->enableLuminanceOutline = 1;
 	fullScreenData->outlineMultipliier = 6.0f;
-	fullScreenData->enableDepthOutline = 1;
+	fullScreenData->enableDepthOutline = 0;
 	fullScreenData->projectionInverse = Inverse(MainCamera::GetInstance()->GetProjectionMatrix());
 }
 

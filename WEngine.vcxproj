@@ -139,7 +139,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="GameEngine\Effect\PostEffect\GrayScale.cpp" />
     <ClCompile Include="GameEngine\Effect\PostEffect\IPostEffect.cpp" />
     <ClCompile Include="GameEngine\Effect\PostEffect\LuminanceOutline.cpp" />
-    <ClCompile Include="GameEngine\Effect\PostEffect\PostEffectManager.cpp" />
     <ClCompile Include="GameEngine\Effect\PostEffect\Vignette.cpp" />
     <ClCompile Include="GameEngine\GameBase\AI\BehaviorTree\ActionNode\ActionNode.cpp" />
     <ClCompile Include="GameEngine\Object\Model\MultiModel.cpp" />
@@ -200,7 +199,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="GameEngine\Object\ObjectAdministrator.cpp" />
     <ClCompile Include="GameEngine\Base\DirectX\RTV.cpp" />
     <ClCompile Include="GameEngine\Object\Model\Skybox\Skybox.cpp" />
-    <ClCompile Include="GameEngine\Object\Screen\RenderTextureAdmin.cpp" />
     <ClCompile Include="GameEngine\Resource\ResourceCommon.cpp" />
     <ClCompile Include="GameEngine\Append\Animation\Skinning\Skeleton.cpp" />
     <ClCompile Include="GameEngine\Append\Animation\Skinning\SkinCluster.cpp" />
@@ -233,7 +231,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="GameEngine\Effect\PostEffect\GrayScale.h" />
     <ClInclude Include="GameEngine\Effect\PostEffect\IPostEffect.h" />
     <ClInclude Include="GameEngine\Effect\PostEffect\LuminanceOutline.h" />
-    <ClInclude Include="GameEngine\Effect\PostEffect\PostEffectManager.h" />
     <ClInclude Include="GameEngine\Effect\PostEffect\Vignette.h" />
     <ClInclude Include="GameEngine\GameBase\AI\BehaviorTree\ActionNode\ActionNode.h" />
     <ClInclude Include="GameEngine\GameBase\Command\MoveCommand.h" />
@@ -291,7 +288,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="GameEngine\Object\ObjectAdministrator.h" />
     <ClInclude Include="GameEngine\Base\DirectX\RTV.h" />
     <ClInclude Include="GameEngine\Object\Model\Skybox\Skybox.h" />
-    <ClInclude Include="GameEngine\Object\Screen\RenderTextureAdmin.h" />
     <ClInclude Include="GameEngine\Resource\ResourceCommon.h" />
     <ClInclude Include="GameEngine\Object\Model\Line.h" />
     <ClInclude Include="GameEngine\Append\Animation\Skinning\Skeleton.h" />
@@ -317,6 +313,9 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <Text Include="Externals\imgui\LICENSE.txt" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Shaders\ColorConvert.hlsli">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </None>
     <None Include="Shaders\CopyImage.hlsli">
       <FileType>Document</FileType>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>

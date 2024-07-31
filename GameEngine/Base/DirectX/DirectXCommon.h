@@ -31,32 +31,67 @@ class DirectXCommon
 {
 public:
 	
-	// 外部からの呼び出し禁止
 	DirectXCommon() = default;
 	~DirectXCommon() = default;
 
 	// シングルトン インスタンス取得
 	static DirectXCommon* GetInstance();
 
-
 	// FPS固定初期化
 	void InitFixFPS();
 	// FPS固定更新
 	void UpdateFixFPS();
 
-private: // ** 静的メンバ関数 ** //
+private: // -- 静的メンバ関数 -- //
 
 	// コピーコンストラクタと演算子オーバーロードの禁止
 	DirectXCommon(const DirectXCommon& obj) = delete;
 	DirectXCommon& operator=(const DirectXCommon& obj) = delete;
 
-public: // ** メンバ関数 ** //
+public: // -- 公開 メンバ関数 -- //
 
 	/// 初期化
 	void Initialize(WinAPI* win);
 
 	/// 終了処理
 	void Finalize();
+
+	/// 
+	/// </summary>
+	void InitializeViewPort();
+	
+	void PreDrawForRenderTarget();
+	void PostDrawForRenderTarget();
+	void PreDraw();
+
+	/// <summary>
+	/// 
+	/// </summary>
+	void PostDraw();
+
+	inline D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDescriptorHandle(Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap,
+		uint32_t descriptorSize, uint32_t index) {
+		D3D12_CPU_DESCRIPTOR_HANDLE handleCPU = descriptorHeap->GetCPUDescriptorHandleForHeapStart();
+		handleCPU.ptr += (descriptorSize * index);
+		return handleCPU;
+	}
+
+	inline D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap,
+		uint32_t descriptorSize, uint32_t index) {
+		D3D12_GPU_DESCRIPTOR_HANDLE handleGPU = descriptorHeap->GetGPUDescriptorHandleForHeapStart();
+		handleGPU.ptr += (descriptorSize * index);
+		return handleGPU;
+	}
+
+	/// バッファリソースの生成
+	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(ID3D12Device* device, size_t sizeInBytes);
+
+	/// ディスクリプタヒープの生成
+	Microsoft::WRL::ComPtr <ID3D12DescriptorHeap> CreateDescriptorHeap(
+		Microsoft::WRL::ComPtr <ID3D12Device> device, D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors, bool shaderVisible);
+
+
+private: // --非公開 メンバ関数 -- //
 
 	/// <summary>
 	/// DXGIデバイス初期化
@@ -78,36 +113,33 @@ public: // ** メンバ関数 ** //
 	/// </summary>
 	void CreateFence();
 
+	/// <summary>
+	/// 
+	/// </summary>
 	void InitializeDXC();
-	void InitializeViewPort();
-	
-	void PreDrawForRenderTarget();
-	void PostDrawForRenderTarget();
-	void PreDraw();
-	void PostDraw();
 
+	void SetResourceBarrier(
+		ID3D12GraphicsCommandList* commandList,
+		ID3D12Resource* resource,
+		D3D12_RESOURCE_STATES stateBefore,
+		D3D12_RESOURCE_STATES stateAfter);
 
-
-	D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDescriptorHandle(Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap,
-		uint32_t descriptorSize,uint32_t index){
-		D3D12_CPU_DESCRIPTOR_HANDLE handleCPU = descriptorHeap->GetCPUDescriptorHandleForHeapStart();
-		handleCPU.ptr += (descriptorSize * index);
-		return handleCPU;
+	void ClearRenderTargetView(ID3D12GraphicsCommandList* commandList, D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle, const float clearColor[4]) {
+		commandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
 	}
 
-	D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap,
-		uint32_t descriptorSize,uint32_t index){
-		D3D12_GPU_DESCRIPTOR_HANDLE handleGPU = descriptorHeap->GetGPUDescriptorHandleForHeapStart();
-		handleGPU.ptr += (descriptorSize * index);
-		return handleGPU;
+	void ClearDepthStencilView(ID3D12GraphicsCommandList* commandList, D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle, float depth, UINT8 stencil) {
+		commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, depth, stencil, 0, nullptr);
 	}
 
-	/// バッファリソースの生成
-	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(ID3D12Device* device, size_t sizeInBytes);
+	void SetRenderTargets(ID3D12GraphicsCommandList* commandList, UINT numRenderTargets, const D3D12_CPU_DESCRIPTOR_HANDLE* rtvHandles, D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle) {
+		commandList->OMSetRenderTargets(numRenderTargets, rtvHandles, FALSE, &dsvHandle);
+	}
 
-	/// ディスクリプタヒープの生成
-	Microsoft::WRL::ComPtr <ID3D12DescriptorHeap> CreateDescriptorHeap(
-		Microsoft::WRL::ComPtr <ID3D12Device> device, D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors, bool shaderVisible);
+	void SetDescriptorHeaps(ID3D12GraphicsCommandList* commandList, UINT numDescriptorHeaps, ID3D12DescriptorHeap* const* descriptorHeaps) {
+		commandList->SetDescriptorHeaps(numDescriptorHeaps, descriptorHeaps);
+	}
+
 
 public: // ** メンバ変数 ** //
 	
@@ -126,7 +158,7 @@ public: // ** メンバ変数 ** //
 	// コマンドキュー
 	Microsoft::WRL::ComPtr < ID3D12CommandQueue> commandQueue = nullptr;
 	// コマンドリスト
-	Microsoft::WRL::ComPtr < ID3D12GraphicsCommandList> commandList = nullptr;
+	Microsoft::WRL::ComPtr < ID3D12GraphicsCommandList> mCommandList = nullptr;
 	// スワップチェイン
 	Microsoft::WRL::ComPtr < IDXGISwapChain4> swapChain = nullptr;
 	// スワップチェーンデスク
@@ -134,8 +166,10 @@ public: // ** メンバ変数 ** //
 	// SwapChainResource
 	Microsoft::WRL::ComPtr < ID3D12Resource> swapChainResources[2] = { nullptr };
 
-	// TransitionBarrierの設定
-	D3D12_RESOURCE_BARRIER barrier{};
+	// TransitionBarrier
+	D3D12_RESOURCE_BARRIER mBarrier{};
+	// 現在のBarrierState
+	D3D12_RESOURCE_STATES mCurrentBarrierState;
 
 	// ビューポート
 	D3D12_VIEWPORT viewport = {};
@@ -144,12 +178,6 @@ public: // ** メンバ変数 ** //
 
 	// 返す用の変数を宣言
 	Microsoft::WRL::ComPtr<ID3D12Resource> result_ = nullptr;
-
-
-	// グラフィックパイプライン
-	Microsoft::WRL::ComPtr <ID3D12PipelineState> pGraphicsPipelineState = nullptr;
-	// ルートシグネチャー
-	Microsoft::WRL::ComPtr < ID3D12RootSignature> particleRootSignature = nullptr;
 
 	// dxCompilerを初期化
 	Microsoft::WRL::ComPtr < IDxcUtils> dxcUtils = nullptr;
@@ -174,6 +202,7 @@ private:
 
 	
 	//ID3D12Debug1* mDebugController;
+	ID3D12Debug1* mDebugController;
 
 #endif // _DEBUG
 
