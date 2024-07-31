@@ -154,7 +154,7 @@ void Player::Update() {
 	// 補間数値
 	static float t = 0.0f;
 	// 勾配
-	static float k = 0.5f;
+	static float k = 2.0f;
 	// 始点と終点
 	static Vector3 s = { 0.0f,0.0f,0.0f };
 	static Vector3 e = { 2.0f,0.0f,4.0f };
@@ -168,7 +168,7 @@ void Player::Update() {
 	}
 	if (mIsAimMode) {
 		if (t < 1.0f) {
-			t += 1.0f / 60.0f;
+			t += 3.0f / 60.0f;
 		}
 		else if (t > 1.0f) {
 			t = 1.0f;
@@ -176,7 +176,7 @@ void Player::Update() {
 	}
 	else {
 		if (t > 0.0f) {
-			t -= 1.0f / 60.0f;
+			t -= 3.0f / 60.0f;
 		}
 		else if (t < 0.0f) {
 			t = 0.0f;
@@ -194,7 +194,7 @@ void Player::Update() {
 	ImGui::End();
 
 	// メインカメラに追加の平行移動値を与える
-	MainCamera::GetInstance()->SetAddTranslation(cVel);
+	MainCamera::GetInstance()->SetAddTranslation(TransformNomal(cVel,MainCamera::GetInstance()->mWorldTransform->GetWorldMatrix()));
 
 	// RBボタン長押しでため動作を行う
 	if (mInput->GetLongPush(Gamepad::Button::RIGHT_SHOULDER)) {
@@ -312,16 +312,15 @@ Arrow* Player::CreateArrow(Vector3 startPos, Vector3 endPos)
 	// 回転
 	Vector3 rotate = { 0.0f,0.0f,0.0f };
 	const float PI = 3.14f;
+	// y軸回りの回転
 	rotate.y = std::atan2f(directionForArrow.x, directionForArrow.z);
-	rotate.y = std::fmodf(rotate.y, 2.0f * PI);
-	// 回転量が超過していたり、下限を下回っていたら補正する
-	if (rotate.y > PI) { rotate.y -= 2.0f * PI; }
-	if (rotate.y < -PI) { rotate.y += 2.0f * PI; }
+
+	// x軸回りの回転
 	rotate.x = -std::atan2f(directionForArrow.y, directionForArrow.z);
-	rotate.x = std::fmodf(rotate.x, 2.0f * PI);
-	// 回転量が超過していたり、下限を下回っていたら補正する
-	if (rotate.x > PI) { rotate.y -= 2.0f * PI; }
-	if (rotate.x < -PI) { rotate.y += 2.0f * PI; }
+
+	// 回転量が -PI から PI の範囲に収まるように補正
+	rotate.y = std::fmod(rotate.y + PI, 2.0f * PI) - PI;
+	rotate.x = std::fmod(rotate.x + PI, 2.0f * PI) - PI;
 
 	// アロークラスの宣言と初期化を行う(上記で求めた移動方向と始点の座標を代入)
 	Arrow* arrow = new Arrow();

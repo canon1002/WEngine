@@ -137,7 +137,7 @@ int SceneManager::Run() {
 			// ボタンを押すとファイルの再読み込みを行う
 			LevelEditor::GetInstance()->CheckLevelEditorFile();
 		}
-
+		
 		// バックグラウンド処理
 		//if (ImGui::Button("Q")) {
 		//	// ボタンを押すとバックグラウンド処理を行う

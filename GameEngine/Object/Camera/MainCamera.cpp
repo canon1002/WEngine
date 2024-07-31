@@ -50,7 +50,7 @@ void MainCamera::Update()
 	// フォロー対象がいれば追従を行う
 	if (mTarget) {
 		// 追従対象からカメラまでの距離
-		Vector3 offset = { 0.0f,1.0f,-15.0f };
+		Vector3 offset = { 0.0f,1.0f,-10.0f };
 		// オフセットをカメラの回転に合わせて回転させる
 		offset = TransformNomal(offset, mWorldTransform->GetWorldMatrix());
 		// オフセット分ずらす

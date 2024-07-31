@@ -49,9 +49,7 @@ void ACT::AttackClose::Update()
 
 		mWeapon->Update();
 		mWeapon->mCollider->Update();
-
-		ImGui::DragFloat("ActiveCount", &mActiveColliderCount);
-		mWeapon->DrawGUI();
+		//mWeapon->DrawGUI();
 
 		if (mWeapon->mCollider->GetOnCollisionFlag() == true) {
 			mActiveColliderCount += 2.0f;

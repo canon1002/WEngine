@@ -273,7 +273,7 @@
     <ClCompile Include="GameEngine\Editor\LevelEditor.cpp" />
     <ClCompile Include="GameEngine\Effect\Particle\ParticleCommon.cpp" />
     <ClCompile Include="GameEngine\Effect\Particle\DiffusionToCircleParticle.cpp" />
-    <ClCompile Include="Framerate.cpp" />
+    <ClCompile Include="GameEngine\GameMaster\Framerate.cpp" />
     <ClCompile Include="GameEngine\Scene\LoadingScene.cpp" />
     <ClCompile Include="GameEngine\GameBase\Enemy\Action\Action.cpp" />
     <ClCompile Include="GameEngine\GameBase\AI\BehaviorTree\BTMoveAction.cpp" />
@@ -472,7 +472,7 @@
     <ClInclude Include="GameEngine\Editor\LevelEditor.h" />
     <ClInclude Include="GameEngine\Effect\Particle\ParticleCommon.h" />
     <ClInclude Include="GameEngine\Effect\Particle\DiffusionToCircleParticle.h" />
-    <ClInclude Include="Framerate.h" />
+    <ClInclude Include="GameEngine\GameMaster\Framerate.h" />
     <ClInclude Include="GameEngine\Scene\LoadingScene.h" />
     <ClInclude Include="GameEngine\GameBase\Enemy\Action\Action.h" />
     <ClInclude Include="GameEngine\GameBase\AI\BehaviorTree\BTMoveAction.h" />

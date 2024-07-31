@@ -119,7 +119,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   <ItemGroup>
     <ClCompile Include="GameEngine\GameBase\AI\BehaviorTree\BTAttackAction.cpp" />
     <ClCompile Include="GameEngine\GameBase\AI\BehaviorTree\BTMoveAction.cpp" />
-    <ClCompile Include="Framerate.cpp" />
+    <ClCompile Include="GameEngine\GameMaster\Framerate.cpp" />
     <ClCompile Include="GameEngine\Effect\Particle\DiffusionToCircleParticle.cpp" />
     <ClCompile Include="GameEngine\GameBase\Enemy\Action\Action.cpp" />
     <ClCompile Include="GameEngine\GameBase\Enemy\Action\AttackAction.cpp" />
@@ -212,7 +212,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   <ItemGroup>
     <ClInclude Include="GameEngine\GameBase\AI\BehaviorTree\BTAttackAction.h" />
     <ClInclude Include="GameEngine\GameBase\AI\BehaviorTree\BTMoveAction.h" />
-    <ClInclude Include="Framerate.h" />
+    <ClInclude Include="GameEngine\GameMaster\Framerate.h" />
     <ClInclude Include="GameEngine\Effect\Particle\DiffusionToCircleParticle.h" />
     <ClInclude Include="GameEngine\GameBase\Enemy\Action\Action.h" />
     <ClInclude Include="GameEngine\GameBase\Reaction\DamageReaction.h" />
