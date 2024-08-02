@@ -332,10 +332,10 @@ void RenderCopyImage::CreateVertexResource() {
 	fullScreenData->enableVignetting = 1;
 	fullScreenData->vigneMultipliier = 0.2f;
 	fullScreenData->vigneIndex = 0.1f;
-	fullScreenData->enableSmooting = 0;
+	fullScreenData->enableSmooting = 1;
 	fullScreenData->enableBoxFilter = 0;
-	fullScreenData->enableGaussianFilter = 0;
-	fullScreenData->kernelSize = 5;
+	fullScreenData->enableGaussianFilter = 1;
+	fullScreenData->kernelSize = 3;
 	fullScreenData->GaussianSigma = 2.0f;
 	fullScreenData->enableLuminanceOutline = 0;
 	fullScreenData->outlineMultipliier = 6.0f;

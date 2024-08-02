@@ -89,10 +89,5 @@ public:
 	// UVTransform用の変数
 	UVTransform uvTransform_;
 
-	// -- Animation 関連 -- //
-
-	// スキニング アニメーション
-	//Skinnig* mSkinning = nullptr;
-
 };
 

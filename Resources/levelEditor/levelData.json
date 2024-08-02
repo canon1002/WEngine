@@ -3,56 +3,12 @@
     "objects": [
         {
             "type": "MESH",
-            "name": "Cylinder.001",
-            "transform": {
-                "translation": [
-                    19.076669692993164,
-                    12.036495208740234,
-                    0.0
-                ],
-                "rotate": [
-                    0.0,
-                    -0.0,
-                    0.0
-                ],
-                "scaling": [
-                    2.0,
-                    2.0,
-                    6.0
-                ]
-            },
-            "file_name": "Cylinder"
-        },
-        {
-            "type": "MESH",
-            "name": "Cylinder",
-            "transform": {
-                "translation": [
-                    18.412113189697266,
-                    -7.105368614196777,
-                    0.0
-                ],
-                "rotate": [
-                    0.0,
-                    -0.0,
-                    0.0
-                ],
-                "scaling": [
-                    2.0,
-                    2.0,
-                    6.0
-                ]
-            },
-            "file_name": "Cylinder"
-        },
-        {
-            "type": "MESH",
             "name": "Plane",
             "transform": {
                 "translation": [
                     0.0,
                     0.0,
-                    -0.5
+                    0.0
                 ],
                 "rotate": [
                     0.0,
@@ -79,138 +35,6 @@
                     0.0
                 ]
             }
-        },
-        {
-            "type": "MESH",
-            "name": "Cylinder.002",
-            "transform": {
-                "translation": [
-                    6.847982406616211,
-                    16.592039108276367,
-                    0.0
-                ],
-                "rotate": [
-                    0.0,
-                    -0.0,
-                    0.0
-                ],
-                "scaling": [
-                    2.0,
-                    2.0,
-                    6.0
-                ]
-            },
-            "file_name": "Cylinder"
-        },
-        {
-            "type": "MESH",
-            "name": "Cylinder.003",
-            "transform": {
-                "translation": [
-                    -11.424172401428223,
-                    19.024045944213867,
-                    0.0
-                ],
-                "rotate": [
-                    0.0,
-                    -0.0,
-                    0.0
-                ],
-                "scaling": [
-                    2.0,
-                    2.0,
-                    6.0
-                ]
-            },
-            "file_name": "Cylinder"
-        },
-        {
-            "type": "MESH",
-            "name": "Cylinder.004",
-            "transform": {
-                "translation": [
-                    -18.99216651916504,
-                    0.7998018264770508,
-                    0.0
-                ],
-                "rotate": [
-                    0.0,
-                    -0.0,
-                    0.0
-                ],
-                "scaling": [
-                    2.0,
-                    2.0,
-                    6.0
-                ]
-            },
-            "file_name": "Cylinder"
-        },
-        {
-            "type": "MESH",
-            "name": "Cylinder.005",
-            "transform": {
-                "translation": [
-                    -22.59212875366211,
-                    14.288095474243164,
-                    0.0
-                ],
-                "rotate": [
-                    0.0,
-                    -0.0,
-                    0.0
-                ],
-                "scaling": [
-                    2.0,
-                    2.0,
-                    6.0
-                ]
-            },
-            "file_name": "Cylinder"
-        },
-        {
-            "type": "MESH",
-            "name": "Cylinder.006",
-            "transform": {
-                "translation": [
-                    -23.696237564086914,
-                    -10.864374160766602,
-                    0.0
-                ],
-                "rotate": [
-                    0.0,
-                    -0.0,
-                    0.0
-                ],
-                "scaling": [
-                    2.0,
-                    2.0,
-                    6.0
-                ]
-            },
-            "file_name": "Cylinder"
-        },
-        {
-            "type": "MESH",
-            "name": "Cylinder.007",
-            "transform": {
-                "translation": [
-                    9.712268829345703,
-                    -18.640491485595703,
-                    0.0
-                ],
-                "rotate": [
-                    0.0,
-                    -0.0,
-                    0.0
-                ],
-                "scaling": [
-                    2.0,
-                    2.0,
-                    6.0
-                ]
-            },
-            "file_name": "Cylinder"
         }
     ]
 }

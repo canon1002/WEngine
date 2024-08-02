@@ -48,7 +48,7 @@ void SceneManager::Init(WinAPI* winApp, DirectXCommon* dxCommon){
 	// 各シーンの配列
 	sceneArr_[TITLE] = std::make_unique<TitleScene>();
 	sceneArr_[STAGE] = std::make_unique<GameScene>();
-	sceneArr_[CLEAR] = std::make_unique<ResultScene>();
+	sceneArr_[RESULT] = std::make_unique<ResultScene>();
 	//sceneArr_[OVER] = std::make_unique<ResultScene>();
 
 	// 初期シーン
@@ -199,10 +199,10 @@ int SceneManager::Run() {
 	// 解放処理
 	sceneArr_[TITLE]->Finalize();
 	sceneArr_[STAGE]->Finalize();
-	sceneArr_[CLEAR]->Finalize();
+	sceneArr_[RESULT]->Finalize();
 	sceneArr_[TITLE].reset();
 	sceneArr_[STAGE].reset();
-	sceneArr_[CLEAR].reset();
+	sceneArr_[RESULT].reset();
 	
 	inputManager_->Finalize();
 	audio_->Finalize();

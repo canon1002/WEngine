@@ -170,8 +170,6 @@ void BossEnemy::UpdateState() {
 	// ステート 更新処理
 	mStateArr[mCurrentStateNo]->Update();
 
-
-
 }
 
 //

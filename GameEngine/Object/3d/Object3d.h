@@ -59,6 +59,9 @@ public: // メンバ変数
 	TransformationMatrix* mWvpData = nullptr;
 	WorldTransform* mWorldTransform;
 
+	// マテリアル
+	Material material;
+
 	// スキニング アニメーション
 	Skinnig* mSkinning = nullptr;
 	// スケルトン

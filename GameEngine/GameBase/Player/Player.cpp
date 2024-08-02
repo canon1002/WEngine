@@ -183,7 +183,7 @@ void Player::Update() {
 		}
 	}
 	// 補間後の数値を計算
-	Vector3 cVel = ExponentialInterpolation({ 0.0f,0.0f,0.0f }, { 1.0f, 0.0f,2.0f }, t, k);
+	Vector3 cVel = ExponentialInterpolation(s, e, t, k);
 #ifdef _DEBUG
 
 	ImGui::Begin("AddCamera");
