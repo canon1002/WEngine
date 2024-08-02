@@ -263,5 +263,7 @@ void BossEnemy::ColliderDraw() {
 	if (mActiveAction != nullptr) {
 		mActiveAction->Draw();
 	}
+#ifdef _DEBUG
 	mObject->mCollider->Draw();
+#endif // _DEBUG
 }

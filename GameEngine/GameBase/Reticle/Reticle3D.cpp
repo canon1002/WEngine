@@ -79,6 +79,7 @@ void Reticle3D::Update()
 	// スクリーン座標を代入
 	mPostionReticle2D = Vector2(screenPos.x, screenPos.y);
 
+#ifdef _DEBUG
 
 	ImGui::Begin("Reticle");
 	ImGui::DragFloat2("Reticle2D", &mPostionReticle2D.x, 1.0f, -1280.0f, 1280.0f);
@@ -88,6 +89,9 @@ void Reticle3D::Update()
 	ImGui::DragFloat3("Reticle3D R", &mWorldReticle3D->rotation.x);
 	ImGui::DragFloat3("Reticle3D T", &mWorldReticle3D->translation.x);
 	ImGui::End();
+
+
+#endif // _DEBUG
 
 	Vector3 pos = mWorldReticle3D->GetWorldPosition();
 	mObject->SetTranslate(pos);

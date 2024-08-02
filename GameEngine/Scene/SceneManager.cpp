@@ -167,11 +167,12 @@ int SceneManager::Run() {
 		mDxCommon->PostDrawForRenderTarget();
 		// 描画前処理
 		mDxCommon->PreDraw();
-		// ダメージ画像の表記
-		DamageReaction::GetInstance()->DrawSprite();
-
+		
 		copyImage_->PreDraw();
 		copyImage_->Draw();
+
+		// ダメージ画像の表記
+		DamageReaction::GetInstance()->DrawSprite();
 
 #ifdef _DEBUG
 		// ImGuiの描画

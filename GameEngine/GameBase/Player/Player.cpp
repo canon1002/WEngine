@@ -184,6 +184,7 @@ void Player::Update() {
 	}
 	// 補間後の数値を計算
 	Vector3 cVel = ExponentialInterpolation({ 0.0f,0.0f,0.0f }, { 1.0f, 0.0f,2.0f }, t, k);
+#ifdef _DEBUG
 
 	ImGui::Begin("AddCamera");
 	ImGui::DragFloat3("Start", &s.x);
@@ -192,6 +193,8 @@ void Player::Update() {
 	ImGui::DragFloat("k", &k);
 	ImGui::DragFloat3("cVel", &cVel.x);
 	ImGui::End();
+
+#endif // _DEBUG
 
 	// メインカメラに追加の平行移動値を与える
 	MainCamera::GetInstance()->SetAddTranslation(TransformNomal(cVel,MainCamera::GetInstance()->mWorldTransform->GetWorldMatrix()));
@@ -244,7 +247,9 @@ void Player::DrawGUI() {
 }
 
 void Player::ColliderDraw() {
+#ifdef _DEBUG
 	mObject->mCollider->Draw();
+#endif // _DEBUG
 	mReticle->Draw3DReticle();
 
 	for (const auto& arrow : mArrows) {
