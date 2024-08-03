@@ -279,6 +279,8 @@
     <ClCompile Include="GameEngine\GameBase\AI\BehaviorTree\BTMoveAction.cpp" />
     <ClCompile Include="GameEngine\GameBase\AI\BehaviorTree\BTAttackAction.cpp" />
     <ClCompile Include="GameEngine\GameBase\Enemy\Action\AttackAction.cpp" />
+    <ClCompile Include="GameEngine\Object\ShadowObject.cpp" />
+    <ClCompile Include="ShadowMap.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameEngine\Base\System.h">
@@ -477,6 +479,8 @@
     <ClInclude Include="GameEngine\GameBase\Enemy\Action\Action.h" />
     <ClInclude Include="GameEngine\GameBase\AI\BehaviorTree\BTMoveAction.h" />
     <ClInclude Include="GameEngine\GameBase\AI\BehaviorTree\BTAttackAction.h" />
+    <ClInclude Include="GameEngine\Object\ShadowObject.h" />
+    <ClInclude Include="ShadowMap.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt">

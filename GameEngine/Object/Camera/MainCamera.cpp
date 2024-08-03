@@ -13,13 +13,13 @@ MainCamera* MainCamera::GetInstance(){
 	return instance;
 }
 
-void MainCamera::Initialize(WinAPI* winApp){
-	winApp_ = winApp;
+void MainCamera::Initialize(){
+	winApp_ = WinAPI::GetInstance();
 	// 入力を取得する
 	mInput = InputManager::GetInstance();
 	mWorldTransform = new WorldTransform();
 	verticalFOV_ = 0.45f;
-	aspectRatio_ = (float(winApp->kClientWidth) / float(winApp->kClientHeight));
+	aspectRatio_ = (float(winApp_->kClientWidth) / float(winApp_->kClientHeight));
 	nearClip_ = 0.01f;
 	farClip_ = 1000.0f;
 	viewMatrix_ = Inverse(mWorldTransform->GetWorldMatrix());
@@ -34,17 +34,17 @@ void MainCamera::Initialize(WinAPI* winApp){
 void MainCamera::Update()
 {
 #ifdef _DEBUG
-
-	ImGui::Begin("MainCamera");
-	ImGui::SliderAngle("RotateX", &mWorldTransform->rotation.x);
-	ImGui::SliderAngle("RotateY", &mWorldTransform->rotation.y);
-	ImGui::SliderAngle("RotateZ", &mWorldTransform->rotation.z);
-	ImGui::DragFloat3("Rotate", &mWorldTransform->rotation.x, 0.1f, -1000.0f, 1000.0f);
-	ImGui::DragFloat3("Transform", &mWorldTransform->translation.x, 0.1f, -1000.0f, 1000.0f);
-	ImGui::DragFloat("NearClip", &nearClip_, 0.01f, 0.0f, 100.0f);
-	ImGui::DragFloat("FarClip", &farClip_, 0.1f, 1.0f, 1000.0f);
-	ImGui::End();
-
+	if (mWorldTransform != nullptr) {
+		ImGui::Begin("MainCamera");
+		ImGui::SliderAngle("RotateX", &mWorldTransform->rotation.x);
+		ImGui::SliderAngle("RotateY", &mWorldTransform->rotation.y);
+		ImGui::SliderAngle("RotateZ", &mWorldTransform->rotation.z);
+		ImGui::DragFloat3("Rotate", &mWorldTransform->rotation.x, 0.1f, -1000.0f, 1000.0f);
+		ImGui::DragFloat3("Transform", &mWorldTransform->translation.x, 0.1f, -1000.0f, 1000.0f);
+		ImGui::DragFloat("NearClip", &nearClip_, 0.01f, 0.0f, 100.0f);
+		ImGui::DragFloat("FarClip", &farClip_, 0.1f, 1.0f, 1000.0f);
+		ImGui::End();
+	}
 #endif // DEBUG
 
 	// フォロー対象がいれば追従を行う

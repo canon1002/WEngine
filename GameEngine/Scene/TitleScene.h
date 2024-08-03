@@ -4,6 +4,9 @@
 #include "GameEngine/Object/Camera/MainCamera.h"
 #include "GameEngine/Object/Model/Skybox/Skybox.h"
 
+// テスト用
+#include "GameEngine/Object/ShadowObject.h"
+
 // ゲーム用
 #include "GameEngine/GameBase/Player/Player.h"
 #include "GameEngine/GameBase/Enemy/BossEnemy.h"
@@ -31,5 +34,10 @@ private:
 	// 入力マネージャー
 	InputManager* mInput;
 	
+	// -- シャドウテスト -- //
+
+	// オブジェクト
+	std::unique_ptr<ShadowObject> mObject;
+
 };
 

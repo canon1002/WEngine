@@ -1,6 +1,15 @@
 #include "WinAPI.h"
 #include "GameEngine/Base/Debug/ImGuiManager.h"
 
+WinAPI* WinAPI::instance = nullptr;
+
+WinAPI* WinAPI::GetInstance() {
+	if (instance == nullptr) {
+		instance = new WinAPI();
+	}
+	return instance;
+}
+
 // 初期化
 void WinAPI::Initialize() {
 
@@ -50,6 +59,9 @@ void WinAPI::Initialize() {
 void WinAPI::Finalize() {
 	// ウィンドウを消去
 	CloseWindow(hwnd);
+	// インスタンス消去
+	delete instance;
+	instance = nullptr;
 }
 
 

@@ -30,7 +30,7 @@ void SceneManager::Init(WinAPI* winApp, DirectXCommon* dxCommon){
 	audio_ = Audio::GetInstance();
 	// メインカメラ
 	mainCamera_ = std::make_unique<MainCamera>();
-	mainCamera_->Initialize(winApp_);
+	mainCamera_->Initialize();
 
 	// オブジェクト管理者クラス
 	objectAdmin_ = ObjectAdministrator::GetInstance();

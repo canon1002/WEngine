@@ -8,6 +8,9 @@
 #include <chrono>
 #include <thread>
 
+// シャドウで使う
+#include <DirectXMath.h>
+
 // 前方宣言
 struct Vector4;
 struct ModelData;
@@ -139,6 +142,10 @@ private: // --非公開 メンバ関数 -- //
 	void SetDescriptorHeaps(ID3D12GraphicsCommandList* commandList, UINT numDescriptorHeaps, ID3D12DescriptorHeap* const* descriptorHeaps) {
 		commandList->SetDescriptorHeaps(numDescriptorHeaps, descriptorHeaps);
 	}
+
+
+	void CreateRenderTargetForShadow();
+
 
 
 public: // ** メンバ変数 ** //

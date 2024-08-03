@@ -33,6 +33,8 @@ private: // ** メンバ関数 ** //
 
 public: // ** 静的メンバ関数 ** //
 
+	static WinAPI* GetInstance();
+
 public: // ** メンバ関数 ** //
 
 	WinAPI() = default;
@@ -93,6 +95,12 @@ public:
 
 	// メッセージ
 	MSG msg{};
+
+private: 
+
+	// インスタンス
+	static WinAPI* instance;
+
 };
 
 

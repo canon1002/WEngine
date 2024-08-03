@@ -30,6 +30,7 @@ void Model::Initialize(const std::string& directrypath, const std::string& filen
 	mDxCommon = DirectXCommon::GetInstance();
 	mCamera = MainCamera::GetInstance();
 	
+	mTextureHandleCubeMap = 0;
 
 	// モデル読み込み
 	modelData = Resource::LoadModelFile(directrypath, filename);
@@ -61,7 +62,9 @@ void Model::Draw()
 	// テクスチャをセット
 	mDxCommon->mCommandList->SetGraphicsRootDescriptorTable(2, mDxCommon->srv_->textureData_.at(mTextureHandle).textureSrvHandleGPU);
 	// CueMapのテクスチャをセット
-	mDxCommon->mCommandList->SetGraphicsRootDescriptorTable(5, mDxCommon->srv_->textureData_.at(mTextureHandleCubeMap).textureSrvHandleGPU);
+	if (mTextureHandleCubeMap != 0) {
+		mDxCommon->mCommandList->SetGraphicsRootDescriptorTable(5, mDxCommon->srv_->textureData_.at(mTextureHandleCubeMap).textureSrvHandleGPU);
+	}
 
 	// インデックスを使用してドローコール
 	mDxCommon->mCommandList->DrawIndexedInstanced(UINT(modelData.indices.size()), 1, 0, 0, 0);

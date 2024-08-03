@@ -20,7 +20,7 @@ public: // -- public メンバ関数 -- //
 	/// <summary>
 	/// 初期化処理
 	/// </summary>
-	void Initialize(WinAPI* winApp);
+	void Initialize();
 
 	/// <summary>
 	/// 更新処理

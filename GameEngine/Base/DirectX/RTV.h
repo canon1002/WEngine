@@ -36,7 +36,7 @@ public: // -- public メンバ変数 -- //
 	// RTV用ディスクリプタヒープ
 	Microsoft::WRL::ComPtr <ID3D12DescriptorHeap> rtvDescriptorHeap = nullptr;
 	// RenderTextureで初期化する際の色
-	const float kRenderTargetColor[4] = { 1.0f,0.0f,0.0f,1.0f };
+	const float kRenderTargetColor[4] = { 0.2f,0.2f,0.2f,1.0f };
 
 	Microsoft::WRL::ComPtr <ID3D12Resource> mRenderTextureResource = nullptr;
 	Microsoft::WRL::ComPtr <ID3D12Resource> mIntermediateRenderTextureh = nullptr;

@@ -170,7 +170,7 @@ ConstantBuffer<Camera> gCamera : register(b2);
 
 // テクスチャ
 Texture2D<float32_t4> gTexture : register(t0);
-
+// 環境マップテクスチャ
 TextureCube<float32_t4> gEnvironmentTexture : register(t1);
 
 // サンプラー

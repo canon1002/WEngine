@@ -252,7 +252,7 @@ void DirectXCommon::SetResourceBarrier(
 	// 遷移後のResourceState
 	barrier.Transition.StateAfter = stateAfter;
 	
-	//
+	// サブリソース
 	barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
 	
 	// リソースバリアを張る
@@ -328,7 +328,15 @@ void DirectXCommon::PreDrawForRenderTarget() {
 
 	// クリア処理
 	ClearRenderTargetView(mCommandList.Get(), rtv_->rtvHandles[2], rtv_->kRenderTargetColor);
+
+	// 深度情報のクリア
 	ClearDepthStencilView(mCommandList.Get(), dsv_->mDsvHandle, 1.0f, 0);
+	
+	//mCommandList->OMSetRenderTargets(
+	//	0, nullptr, FALSE,
+	//	&dsv_->mDsvHandle);
+	// デプスの描画先をセット
+
 
 	// ディスクリプタヒープの設定
 	ID3D12DescriptorHeap* descriptorHeaps[] = { srv_->srvDescriptorHeap.Get() };

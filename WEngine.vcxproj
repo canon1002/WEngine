@@ -208,6 +208,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="GameEngine\GameBase\AI\State\VitalityBossState.cpp" />
     <ClCompile Include="GameEngine\GameBase\AI\BehaviorTree\ActionNode\MoveToTarget.cpp" />
     <ClCompile Include="GameEngine\GameBase\Reticle\Reticle3D.cpp" />
+    <ClCompile Include="GameEngine\Object\ShadowObject.cpp" />
+    <ClCompile Include="ShadowMap.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameEngine\GameBase\AI\BehaviorTree\BTAttackAction.h" />
@@ -308,6 +310,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="GameEngine\Editor\LevelEditor.h" />
     <ClInclude Include="GameEngine\Effect\Particle\ParticleCommon.h" />
     <ClInclude Include="GameEngine\Scene\LoadingScene.h" />
+    <ClInclude Include="GameEngine\Object\ShadowObject.h" />
+    <ClInclude Include="ShadowMap.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt" />

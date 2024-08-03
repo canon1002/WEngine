@@ -162,6 +162,11 @@ int32_t SRV::CreateDepthSRV(Microsoft::WRL::ComPtr<ID3D12Resource> depthStencilR
 	depthTextureSrvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
 	depthTextureSrvDesc.Texture2D.MipLevels = 1;
 
+	//D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc{};
+	//dsvDesc.Format = DXGI_FORMAT_D32_FLOAT;
+	//dsvDesc.Format = DXGI_FORMAT_D32_FLOAT;
+	//dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
+
 	// デスクリプタサイズを取得
 	const uint32_t descriptorSizeSRV = mDxCommon->device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	//const uint32_t descriptorSizeRTV = dx_->device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);

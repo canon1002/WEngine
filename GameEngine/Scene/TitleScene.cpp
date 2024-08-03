@@ -12,6 +12,16 @@ void TitleScene::Finalize(){}
 void TitleScene::Init() {
 	// 入力を取得する
 	mInput = InputManager::GetInstance();
+
+	mObject = std::make_unique<ShadowObject>();
+	mObject->Init("ShadowObject");
+	ModelManager::GetInstance()->LoadModel("box", "box.gltf");
+	mObject->SetModel("box.gltf");
+	mObject->mWorldTransform->rotation = { 0.5f,0.2f,0.0f };
+
+	MainCamera::GetInstance()->Initialize();
+	MainCamera::GetInstance()->mWorldTransform->translation.z -= 10;
+
 }
 
 void TitleScene::Update() {
@@ -22,8 +32,15 @@ void TitleScene::Update() {
 		sceneNo = SCENE::STAGE;
 	}
 
+
+	MainCamera::GetInstance()->Update();
+	mObject->Update();
+	mObject->DrawGUI();
+
 }
 
 void TitleScene::Draw(){
 
+	ModelManager::GetInstance()->PreDrawForShadow();
+	mObject->Draw();
 }
