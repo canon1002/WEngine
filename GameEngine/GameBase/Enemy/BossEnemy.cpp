@@ -251,7 +251,7 @@ bool BossEnemy::InvokeFarDistance(){
 		GetWorldPos().x - GetWorldPosForTarget().x,
 		GetWorldPos().y - GetWorldPosForTarget().y,
 		GetWorldPos().z - GetWorldPosForTarget().z))
-		>= 1.0f) {
+		>= 5.0f) {
 		return true;
 	}
 	return false;

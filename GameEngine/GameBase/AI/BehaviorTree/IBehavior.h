@@ -205,12 +205,24 @@ namespace BT {
 		// 実行 // ⚠RUNNINGを返してはならない⚠
 		virtual BT::NodeStatus Tick()override
 		{
-			// 条件用の関数ポインタの結果がtureの場合は成功を返す
-			if (func) {
-				return BT::NodeStatus::SUCCESS;
+			// 実行終了状態であれば早期リターンする
+			if (this->mCondition == NodeCondition::FINISHED) {
+				return mResultStatus;
 			}
-			// falseの場合は失敗を返す
-			return BT::NodeStatus::FAILURE;
+
+			// 条件用の関数ポインタの結果がtureの場合は成功を返す
+			if (func()) {
+				// 終了状態にする
+				this->mCondition = NodeCondition::FINISHED;
+				// 成功
+				mResultStatus = BT::NodeStatus::SUCCESS;
+				return mResultStatus;
+			}
+			// 終了状態にする
+			this->mCondition = NodeCondition::FINISHED;
+			// 失敗
+			mResultStatus = BT::NodeStatus::FAILURE;
+			return mResultStatus;
 		}
 
 		// 再起動
@@ -224,6 +236,9 @@ namespace BT {
 		// 条件用 関数ポインタ
 		std::function<bool()> func;
 
+		// 実行結果を保持する
+		BT::NodeStatus mResultStatus;
+
 	};
 
 	// --------------------------------------------
@@ -235,6 +250,8 @@ namespace BT {
 		// 
 		virtual BT::NodeStatus Tick()override {
 
+			// 終了状態にする
+			this->mCondition = NodeCondition::FINISHED;
 			return BT::NodeStatus::SUCCESS;
 		}
 
