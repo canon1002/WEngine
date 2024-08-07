@@ -8,6 +8,7 @@
 #include "GameEngine/Append/Collider/SphereCollider.h"
 #include "GameEngine/GameBase/AI/BehaviorTree/BTMoveAction.h"
 #include "GameEngine/GameBase/AI/BehaviorTree/BTAttackAction.h"
+#include "GameEngine/Object/Model/Skybox/Skybox.h"
 
 void BossEnemy::Init() {
 	mObject = std::make_unique<Object3d>();
@@ -43,6 +44,22 @@ void BossEnemy::Init() {
 	mObject->mCollider->SetCollisionAttribute(kCollisionAttributeEnemy);
 	mObject->mCollider->SetCollisionMask(kCollisionAttributePlayerBullet);
 
+	mRightHandWorldMat= MakeAffineMatrix(Vector3{0.0f,0.0f,0.0f}, Vector3{0.0f,0.0f,0.0f}, Vector3{0.0f,0.0f,0.0f});
+
+	mWeapon = std::make_unique<Object3d>();
+	mWeapon->Init("Weapon");
+	mWeapon->SetModel("sword.gltf");
+	mWeapon->GetModel()->SetCubeTexture(Skybox::GetInstance()->mTextureHandle);
+	// 拡大率を変更
+	mWeapon->mWorldTransform->scale = { 4.0f,4.0f,16.0f };
+
+	// コライダーの宣言
+	mWeapon->mCollider = new SphereCollider(mWeapon->mWorldTransform, 0.5f);
+	mWeapon->mCollider->Init();
+	mWeapon->mCollider->SetCollisionAttribute(kCollisionAttributeEnemyBullet);
+	mWeapon->mCollider->SetCollisionMask(kCollisionAttributePlayer);
+	mWeapon->mWorldTransform->SetParent(mRightHandWorldMat);
+
 }
 
 void BossEnemy::InitBehavior() {
@@ -54,9 +71,15 @@ void BossEnemy::InitBehavior() {
 
 	// Behavior Treeを構築する 
 	mRoot = std::make_unique<BT::Sequence>();
-	mRoot->SetChild(new BT::Condition(std::bind(&BossEnemy::InvokeFarDistance,this)));
-	mRoot->SetChild(new BT::MoveToPlayer(this));
-	mRoot->SetChild(new BT::AttackClose(this));
+	// 接近 -> 近接攻撃
+	BT::Sequence* newSequence = new BT::Sequence();
+	newSequence->SetChild(new BT::Condition(std::bind(&BossEnemy::InvokeFarDistance,this)));
+	newSequence->SetChild(new BT::MoveToPlayer(this));
+	newSequence->SetChild(new BT::AttackClose(this));
+	mRoot->SetChild(newSequence);
+	
+	// 後退
+	mRoot->SetChild(new BT::BackStep(this));
 	
 }
 
@@ -67,9 +90,15 @@ void BossEnemy::InitActions()
 	// 接近
 	mActions["MoveToPlayer"] = new ACT::MoveToPlayer();
 	mActions["MoveToPlayer"]->Init(this);
+	
+	// 後退
+	mActions["BackStep"] = new ACT::BackStep();
+	mActions["BackStep"]->Init(this);
+	
 	// 近接攻撃
 	mActions["AttackClose"] = new ACT::AttackClose();
 	mActions["AttackClose"]->Init(this);
+	
 	// 初期は行動しない
 	mActiveAction = nullptr;
 
@@ -84,6 +113,17 @@ void (BossEnemy::* BossEnemy::CommandTable[])() = {
 
 void BossEnemy::Update() {
 
+	// 右手のワールド行列を更新
+	mRightHandWorldMat=Multiply(
+		GetObject3D()->mSkinning->GetSkeleton().joints[GetObject3D()->mSkinning->GetSkeleton().jointMap["mixamorig:RightHandThumb1"]
+		].skeletonSpaceMatrix, GetObject3D()->GetWorldTransform()->GetWorldMatrix());
+
+	mWeapon->Update();
+	mWeapon->mCollider->Update();
+
+	
+
+
 	// テーブルから関数を呼び出す
 	//(this->*CommandTable[0])();
 
@@ -92,7 +132,7 @@ void BossEnemy::Update() {
 	if (mObject->mWorldTransform->translation.y > 0.0f) {
 		// 移動量を加算
 		mObject->mWorldTransform->translation.y += mVelocity.y;
-		mVelocity.y -= 9.8f * (1.0f / 360.0f);
+		mVelocity.y -= 9.8f * (1.0f / 720.0f);
 	}
 	else if (mObject->mWorldTransform->translation.y < 0.0f) {
 		mObject->mWorldTransform->translation.y = 0.0f;
@@ -141,9 +181,48 @@ void BossEnemy::DrawGUI() {
 	};
 	int32_t currentItem = (int32_t)mBTStatus;
 
+	// 武器のワールド行列を取得
+	Matrix4x4 matrix = mWeapon->GetWorldTransform()->GetWorldMatrix();
+
+	// スケールを抽出
+	Vector3 col0(matrix.m[0][0], matrix.m[1][0], matrix.m[2][0]);
+	Vector3 col1(matrix.m[0][1], matrix.m[1][1], matrix.m[2][1]);
+	Vector3 col2(matrix.m[0][2], matrix.m[1][2], matrix.m[2][2]);
+
+	Vector3 scale = { 1.0f,1.0f,1.0f };
+	scale.x = Length(col0);
+	scale.y = Length(col1);
+	scale.z = Length(col2);
+
+	// スケール成分を取り除いて回転行列を正規化
+	col0 = Normalize(col0);
+	col1 = Normalize(col1);
+	col2 = Normalize(col2);
+
+	// 回転行列からEuler角を計算
+	Vector3 rotation = { 0.0f,0.0f,0.0f };
+	rotation.y = std::asin(-col0.z);
+	if (std::cos(rotation.y) != 0) {
+		rotation.x = std::atan2(col1.z, col2.z);
+		rotation.z = std::atan2(col0.y, col0.x);
+	}
+	else {
+		rotation.x = std::atan2(-col2.x, col1.y);
+		rotation.z = 0;
+	}
+
 	ImGui::Begin("BossEnemy");
 	ImGui::ListBox("State", &currentItem, behaviorState, IM_ARRAYSIZE(behaviorState), 3);
 	mObject->DrawGuiTree();
+	mWeapon->DrawGuiTree();
+	ImGui::DragFloat3("Scale", &scale.x);
+	ImGui::DragFloat3("Rotation", &rotation.x);
+	for (int i = 0; i < 4; ++i) {
+		// Floatの4x4行列内の数値を表示
+		ImGui::DragFloat4(("Row " + std::to_string(i)).c_str(), mWeapon->GetWorldTransform()->GetWorldMatrix().m[i]);
+	}
+
+
 	ImGui::End();
 #endif // _DEBUG
 }
@@ -224,6 +303,19 @@ void BossEnemy::EscapeToPlayer()
 
 }
 
+void BossEnemy::BackStep()
+{
+	// 現行アクションを設定
+	mActiveAction = mActions["BackStep"];
+	mActiveAction->Start();
+}
+
+void BossEnemy::Jump(float JumpPower)
+{
+	// 移動量を加算
+	mObject->mWorldTransform->translation.y += JumpPower;
+}
+
 Vector3 BossEnemy::GetWorldPos()
 {
 	return mObject->GetWorldTransform()->translation;
@@ -251,13 +343,15 @@ bool BossEnemy::InvokeFarDistance(){
 		GetWorldPos().x - GetWorldPosForTarget().x,
 		GetWorldPos().y - GetWorldPosForTarget().y,
 		GetWorldPos().z - GetWorldPosForTarget().z))
-		>= 5.0f) {
+		>= 10.0f) {
 		return true;
 	}
 	return false;
 }
 
 void BossEnemy::ColliderDraw() {
+	mWeapon->Draw();
+
 	if (mActiveAction != nullptr) {
 		mActiveAction->Draw();
 	}

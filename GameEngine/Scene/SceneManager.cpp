@@ -8,6 +8,8 @@
 #include <condition_variable>
 #include <mutex>
 
+#include "GameEngine/GameMaster/Framerate.h"
+
 // コンストラクタ
 SceneManager::SceneManager() {}
 // デストラクタ
@@ -117,13 +119,24 @@ int SceneManager::Run() {
 		/// 更新処理(推定)
 		///
 
-		/// 更新処理
-		sceneArr_[currentSceneNo_]->Update();
+
+		// コマ送り時に設定した経過フレームになっていない場合、
+		// 更新処理をスキップする
+		Framerate::GetInstance()->DrawGui();
+		if (Framerate::GetInstance()->GetIsFrameAdvance()&&
+			!Framerate::GetInstance()->IsActiveFrame()) {
 		
-		//mPostEffectManager->Update();
-		
-		// ポストエフェクト
-		copyImage_->Update();
+		}
+		else {
+			/// 更新処理
+			sceneArr_[currentSceneNo_]->Update();
+			// ポストエフェクト
+			copyImage_->Update();
+			// ダメージ表記の更新
+			DamageReaction::GetInstance()->UpdateSprite();
+
+		}
+		Framerate::GetInstance()->Update();
 
 		// 開発用UIの表示
 #ifdef _DEBUG
@@ -151,8 +164,7 @@ int SceneManager::Run() {
 		imGuiManager_->End();
 #endif // _DEBUG
 
-		// ダメージ表記の更新
-		DamageReaction::GetInstance()->UpdateSprite();
+		
 
 		///
 		/// 描画処理(推定) 

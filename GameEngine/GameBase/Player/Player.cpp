@@ -157,7 +157,7 @@ void Player::Update() {
 	static float k = 2.0f;
 	// 始点と終点
 	static Vector3 s = { 0.0f,0.0f,0.0f };
-	static Vector3 e = { 2.0f,0.0f,4.0f };
+	static Vector3 e = { 0.0f,1.0f,-4.0f };
 	
 	// 狙えるようにカメラの移動 
 	if (mInput->GetLongPush(Gamepad::Button::LEFT_SHOULDER)) {

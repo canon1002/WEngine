@@ -31,6 +31,7 @@ void GameScene::Init(){
 	ModelManager::GetInstance()->LoadModel("Bow", "Bow.obj");
 	ModelManager::GetInstance()->LoadModel("Arrow", "Arrow.gltf");
 	ModelManager::GetInstance()->LoadModel("boss", "boss.gltf");
+	ModelManager::GetInstance()->LoadModel("Weapons", "sword.gltf");
 
 	// SkyBox 読み込み
 	DirectXCommon::GetInstance()->srv_->LoadTexture("skybox/rostock_laage_airport_4k.dds");
@@ -122,7 +123,7 @@ void GameScene::Draw() {
 	ModelManager::GetInstance()->PreDraw();
 
 	mPlayer->ColliderDraw();
-	//mBoss->ColliderDraw();
+	mBoss->ColliderDraw();
 
 	// Object3D(Skinning)の描画前処理
 	ModelManager::GetInstance()->PreDrawForSkinning();

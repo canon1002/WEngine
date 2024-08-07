@@ -69,10 +69,13 @@ public: // -- 公開 メンバ関数 -- //
 	void MoveToPlayer();
 	// プレイヤーから逃げる
 	void EscapeToPlayer();
-
+	// 後退
+	void BackStep();
+	// ジャンプ
+	void Jump(float JumpPower);
 
 	inline void MoveForward() { mObject->mWorldTransform->translation.z += mVelocity.z; }
-	inline void BackStep(){ mObject->mWorldTransform->translation.z -= mVelocity.z; }
+	
 
 	// -- 変更用関数 -- //
 
@@ -97,6 +100,13 @@ public: // -- 公開 メンバ関数 -- //
 	bool InvokeFarDistance();
 
 #pragma endregion
+
+	// 右手のワールド座標
+	Matrix4x4 mRightHandWorldMat;
+
+
+	std::unique_ptr<Object3d> mWeapon;
+
 
 private: // -- 非公開 メンバ変数 -- //
 
@@ -138,4 +148,5 @@ private: // -- 非公開 メンバ変数 -- //
 	std::map<std::string,ACT::IAction*> mActions;
 	// 現在の行動
 	ACT::IAction* mActiveAction;
+
 };

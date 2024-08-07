@@ -119,6 +119,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   <ItemGroup>
     <ClCompile Include="GameEngine\GameBase\AI\BehaviorTree\BTAttackAction.cpp" />
     <ClCompile Include="GameEngine\GameBase\AI\BehaviorTree\BTMoveAction.cpp" />
+    <ClCompile Include="GameEngine\GameBase\Status\StatusManager.cpp" />
     <ClCompile Include="GameEngine\GameMaster\Framerate.cpp" />
     <ClCompile Include="GameEngine\Effect\Particle\DiffusionToCircleParticle.cpp" />
     <ClCompile Include="GameEngine\GameBase\Enemy\Action\Action.cpp" />
@@ -131,7 +132,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="GameEngine\Append\Collider\RayCollider.cpp" />
     <ClCompile Include="GameEngine\Append\Collider\SphereCollider.cpp" />
     <ClCompile Include="GameEngine\Append\Collider\TriangleCollider.cpp" />
-    <ClCompile Include="GameEngine\GameBase\AI\BehaviorTree\ActionNode\BackStep.cpp" />
     <ClCompile Include="GameEngine\GameBase\Enemy\BossEnemy.cpp" />
     <ClCompile Include="GameEngine\Effect\PostEffect\BoxFilter.cpp" />
     <ClCompile Include="GameEngine\Effect\PostEffect\DepthOutline.cpp" />
@@ -140,7 +140,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="GameEngine\Effect\PostEffect\IPostEffect.cpp" />
     <ClCompile Include="GameEngine\Effect\PostEffect\LuminanceOutline.cpp" />
     <ClCompile Include="GameEngine\Effect\PostEffect\Vignette.cpp" />
-    <ClCompile Include="GameEngine\GameBase\AI\BehaviorTree\ActionNode\ActionNode.cpp" />
     <ClCompile Include="GameEngine\Object\Model\MultiModel.cpp" />
     <ClCompile Include="GameEngine\Object\Screen\RenderCopyImage.cpp" />
     <ClCompile Include="GameEngine\Base\DirectX\DSV.cpp" />
@@ -206,7 +205,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="GameEngine\Append\Animation\Node\NodeAnimation.cpp" />
     <ClCompile Include="GameEngine\GameBase\Player\Player.cpp" />
     <ClCompile Include="GameEngine\GameBase\AI\State\VitalityBossState.cpp" />
-    <ClCompile Include="GameEngine\GameBase\AI\BehaviorTree\ActionNode\MoveToTarget.cpp" />
     <ClCompile Include="GameEngine\GameBase\Reticle\Reticle3D.cpp" />
     <ClCompile Include="GameEngine\Object\ShadowObject.cpp" />
     <ClCompile Include="ShadowMap.cpp" />
@@ -214,6 +212,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   <ItemGroup>
     <ClInclude Include="GameEngine\GameBase\AI\BehaviorTree\BTAttackAction.h" />
     <ClInclude Include="GameEngine\GameBase\AI\BehaviorTree\BTMoveAction.h" />
+    <ClInclude Include="GameEngine\GameBase\Status\StatusManager.h" />
     <ClInclude Include="GameEngine\GameMaster\Framerate.h" />
     <ClInclude Include="GameEngine\Effect\Particle\DiffusionToCircleParticle.h" />
     <ClInclude Include="GameEngine\GameBase\Enemy\Action\Action.h" />
@@ -225,7 +224,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="GameEngine\Append\Collider\RayCollider.h" />
     <ClInclude Include="GameEngine\Append\Collider\SphereCollider.h" />
     <ClInclude Include="GameEngine\Append\Collider\TriangleCollider.h" />
-    <ClInclude Include="GameEngine\GameBase\AI\BehaviorTree\ActionNode\BackStep.h" />
     <ClInclude Include="GameEngine\GameBase\Enemy\BossEnemy.h" />
     <ClInclude Include="GameEngine\Effect\PostEffect\BoxFilter.h" />
     <ClInclude Include="GameEngine\Effect\PostEffect\DepthOutline.h" />
@@ -234,7 +232,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="GameEngine\Effect\PostEffect\IPostEffect.h" />
     <ClInclude Include="GameEngine\Effect\PostEffect\LuminanceOutline.h" />
     <ClInclude Include="GameEngine\Effect\PostEffect\Vignette.h" />
-    <ClInclude Include="GameEngine\GameBase\AI\BehaviorTree\ActionNode\ActionNode.h" />
     <ClInclude Include="GameEngine\GameBase\Command\MoveCommand.h" />
     <ClInclude Include="GameEngine\Object\Model\MultiModel.h" />
     <ClInclude Include="GameEngine\Object\Screen\RenderCopyImage.h" />
@@ -304,7 +301,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="GameEngine\GameBase\AI\State\IBossState.h" />
     <ClInclude Include="GameEngine\GameBase\AI\State\VitalityBossState.h" />
     <ClInclude Include="GameEngine\GameBase\IObjectBase.h" />
-    <ClInclude Include="GameEngine\GameBase\AI\BehaviorTree\ActionNode\MoveToTarget.h" />
     <ClInclude Include="GameEngine\GameBase\Reticle\Reticle3D.h" />
     <ClInclude Include="GameEngine\Editor\GlobalVariables.h" />
     <ClInclude Include="GameEngine\Editor\LevelEditor.h" />

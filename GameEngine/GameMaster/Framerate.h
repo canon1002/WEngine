@@ -1,4 +1,6 @@
 #pragma once
+//#include "GameEngine/Base/DirectX/DirectXCommon.h"
+#include <stdint.h>
 
 /// <summary>
 /// フレームレート管理クラス
@@ -12,13 +14,16 @@ public: // -- 公開 メンバ関数 -- //
 
 	void Init();
 	void Update();
-	void Draw();
+	void Draw() {};
+	void DrawGui();
 
 	// デルタタイム (直前のフレームと今のフレーム間で経過した時間) 取得
 	float GetDeltaTime();
 
-	// コマ送り時にフレームを動かしているか取得する
+	// コマ送り時に設定したフレーム数動いたのか取得
 	bool IsActiveFrame();
+	// コマ送り中であるか
+	bool GetIsFrameAdvance() { return mIsFrameAdvance; }
 
 	// コマ送りにする
 	void SetFrameAdvance() { mIsFrameAdvance = true; }
@@ -32,5 +37,9 @@ private: // -- 非公開 メンバ変数 -- //
 
 	// コマ送りするか 
 	bool mIsFrameAdvance;
+	// コマ送りフレーム数
+	int32_t mStepFlameCount;
+	// 現在の経過フレーム
+	int32_t mStepFlame;
 };
 

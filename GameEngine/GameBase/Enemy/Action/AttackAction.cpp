@@ -12,25 +12,7 @@ void ACT::AttackClose::Init(BossEnemy* boss)
 	// 初期化する
 	mCondition = Condition::IDOL;
 
-	mWeapon = std::make_unique<Object3d>();
-	mWeapon->Init("Weapon");
-	mWeapon->SetModel("Arrow.gltf");
-	mWeapon->GetModel()->SetCubeTexture(Skybox::GetInstance()->mTextureHandle);
-	// 拡大率を変更
-	mWeapon->mWorldTransform->scale = { 1.0f,1.0f,1.0f }; 
-
-	// Bossの正面に攻撃判定を表示
-	Vector3 offset = { 0.0f,1.0f,1.2f };
-	// オフセットをBossの回転に合わせて回転させる
-	offset = TransformNomal(offset, mBoss->GetObject3D()->mWorldTransform->GetWorldMatrix());
-	// オフセット分ずらす
-	mWeapon->mWorldTransform->translation = mBoss->GetObject3D()->mWorldTransform->translation + offset;
-
-	// コライダーの宣言
-	mWeapon->mCollider = new SphereCollider(mWeapon->mWorldTransform, 1.0f);
-	mWeapon->mCollider->Init();
-	mWeapon->mCollider->SetCollisionAttribute(kCollisionAttributeEnemyBullet);
-	mWeapon->mCollider->SetCollisionMask(kCollisionAttributePlayer);
+	
 
 	/*mColliders.push_back(new SphereCollider(mWeapon->mWorldTransform, 0.25f));
 	mColliders.push_back(new SphereCollider(mWeapon->mWorldTransform, 0.25f));
@@ -38,20 +20,20 @@ void ACT::AttackClose::Init(BossEnemy* boss)
 
 	mActiveColliderCount = 0.0f;
 
+	
+
 }
 
 void ACT::AttackClose::Update()
 {
 	// 実行時のみ処理を行う
 	if (mCondition == Condition::RUNNING) {
-		
+
 		mActiveColliderCount += 2.0f / 60.0f;
 
-		mWeapon->Update();
-		mWeapon->mCollider->Update();
-		//mWeapon->DrawGUI();
+	
 
-		if (mWeapon->mCollider->GetOnCollisionFlag() == true) {
+		if (mBoss->mWeapon->mCollider->GetOnCollisionFlag() == true) {
 			mActiveColliderCount += 2.0f;
 		}
 
@@ -63,13 +45,14 @@ void ACT::AttackClose::Update()
 	}
 }
 
-void ACT::AttackClose::Draw(){
+void ACT::AttackClose::Draw() {
+
 	if (kActiveColliderCount.x < mActiveColliderCount &&
 		mActiveColliderCount < kActiveColliderCount.y) {
-		//mWeapon->Draw();
-		mWeapon->mCollider->Draw();
+
+		mBoss->mWeapon->mCollider->Draw();
 	}
-	
+
 }
 
 void ACT::AttackClose::Start()
@@ -82,15 +65,15 @@ void ACT::AttackClose::Start()
 	mBoss->GetObject3D()->mSkinning->ResetTime();
 	mBoss->GetObject3D()->mSkinning->SetLoopMode(false);
 
-	// Bossの正面に攻撃判定を表示
-	Vector3 offset = { 0.0f,0.5f,1.0f };
-	// オフセットをBossの回転に合わせて回転させる
-	offset = TransformNomal(offset, mBoss->GetObject3D()->mWorldTransform->GetWorldMatrix());
-	// オフセット分ずらす
-	mWeapon->mWorldTransform->translation = mBoss->GetObject3D()->mWorldTransform->translation + offset;
-		
-	mWeapon->mCollider->Init();
-	mWeapon->mCollider->SetWorld(mWeapon->mWorldTransform);
+	//// Bossの正面に攻撃判定を表示
+	//Vector3 offset = { 0.0f,0.5f,1.0f };
+	//// オフセットをBossの回転に合わせて回転させる
+	//offset = TransformNomal(offset, mBoss->GetObject3D()->mWorldTransform->GetWorldMatrix());
+	//// オフセット分ずらす
+	//mWeapon->mWorldTransform->translation = mBoss->GetObject3D()->mWorldTransform->translation + offset;
+
+	mBoss->mWeapon->mCollider->Init();
+	mBoss->mWeapon->mCollider->SetWorld(mBoss->mWeapon->mWorldTransform);
 
 	mActiveColliderCount = 0.0f;
 
@@ -119,8 +102,8 @@ void ACT::AttackClose::SetCollider(CollisionManager* cManager)
 	if (kActiveColliderCount.x < mActiveColliderCount &&
 		mActiveColliderCount < kActiveColliderCount.y) {
 
-		if (mWeapon->mCollider->GetOnCollisionFlag() == false) {
-			cManager->SetCollider(mWeapon->mCollider);
+		if (mBoss->mWeapon->mCollider->GetOnCollisionFlag() == false) {
+			cManager->SetCollider(mBoss->mWeapon->mCollider);
 		}
 	}
 }
