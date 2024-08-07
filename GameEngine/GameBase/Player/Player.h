@@ -42,6 +42,8 @@ public: // -- 公開 メンバ関数 -- //
 
 	void SetColliderListForArrow(CollisionManager* cManager);
 
+	// 回避
+	void Avoid();
 	// 攻撃処理
 	void Attack();
 	// 溜め処理
@@ -65,7 +67,6 @@ private: // -- 非公開 メンバ変数 -- //
 
 	// 移動量
 	Vector3 mVelocity;
-
 	// 重力の影響を受けるか
 	bool mIsGravity;
 	// 残りジャンプ回数
@@ -78,18 +79,32 @@ private: // -- 非公開 メンバ変数 -- //
 	// 最大コンボ回数
 	const int32_t kComboCountMax = 3;
 
+
 	// 3D照準クラス
 	std::unique_ptr<Reticle3D> mReticle;
-
 	// ため動作継続時間
 	int32_t mChargeCount;
-
+	// 狙い撃ちの構えをしているか
+	bool mIsAimMode;
 	// アロークラス
 	std::list<Arrow*> mArrows;
 
-	// 狙い撃ちの構えをしているか
-	bool mIsAimMode;
 
-	 
+	// 回避行動リクエスト
+	bool mIsAvoidRequest;
+	// 回避中か
+	bool mIsAvoid;
+	// 回避時の無敵状態であるか
+	bool mIsAvoidInvincible;
+	// 回避距離
+	float mAvoidRange;
+	// 回避速度
+	float mAvoidSpeed;
+	// 回避経過時間( 0.0f ~ 1.0f )
+	float mAvoidTime;
+	// 回避開始地点
+	Vector3 mAvoidMoveStartPos;
+	// 回避終了地点
+	Vector3 mAvoidMoveEndPos;
 };
 

@@ -52,40 +52,29 @@ void Player::Init() {
 	// 構え
 	mIsAimMode = false;
 
+	// 回避行動リクエスト
+	mIsAvoidRequest = false;
+	// 回避中か
+	mIsAvoid = false;
+	// 回避時の無敵状態であるか
+	mIsAvoidInvincible = false;
+	// 回避距離
+	mAvoidRange = 10.0f;
+	// 回避速度
+	mAvoidSpeed = 0.0f;
+	// 回避経過時間( 0.0f ~ 1.0f )
+	mAvoidTime = 0.0f;
+	// 回避開始地点
+	mAvoidMoveStartPos = { 0.0f,0.0f,0.0f };
+	// 回避終了地点
+	mAvoidMoveEndPos = { 0.0f,0.0f,0.0f };
+
 }
 
 void Player::Update() {
 
-
-	// ジャンプ
-	if (mJumpCount > 0) {
-		if (mInput->GetPused(Gamepad::Button::Y)) {
-			// 残りジャンプ回数を減らす
-			--mJumpCount;
-			// 初速度を加算
-			mVelocity.y = kJumpFirstSpeed;
-			// 状態をジャンプ中に変更
-			mBehavior = Behavior::kJump;
-		}
-	}
-
-	// ジャンプ中
-	if (mBehavior == Behavior::kJump) {
-
-		// 移動量を加算
-		mObject->mWorldTransform->translation.y += mVelocity.y;
-
-		// 地面を y==0 として地面にめり込んだら地面の上まで戻す
-		if (mObject->mWorldTransform->translation.y < 0.0f) {
-			mObject->mWorldTransform->translation.y = 0.0f;
-			// 移動量も修正しておく 
-			mVelocity.y = 0.0f;
-			// ジャンプ回数のリセット
-			mJumpCount = kJumpCountMax;
-			// 通常状態に変更
-			mBehavior = Behavior::kRoot;
-		}
-	}
+	// 回避行動
+	Avoid();
 
 	// 一旦ここに落下処理をつくる
 	if (mObject->mWorldTransform->translation.y > 0.0f) {
@@ -102,50 +91,81 @@ void Player::Update() {
 		mJumpCount = kJumpCountMax;
 	}
 
-	// スティック入力の量
-	const static int stickValue = 6000;
-	// いずれかの数値が、以上(以下)であれば移動処理を行う
-	if (mInput->GetStick(Gamepad::Stick::LEFT_X) < -stickValue || // 左 
-		mInput->GetStick(Gamepad::Stick::LEFT_X) > stickValue || // 右
-		mInput->GetStick(Gamepad::Stick::LEFT_Y) < -stickValue || // 上
-		mInput->GetStick(Gamepad::Stick::LEFT_Y) > stickValue	  // 下
-		) {
 
-		// Xの移動量とYの移動量を設定する
-		Vector3 direction = {
-			(float)mInput->GetStick(Gamepad::Stick::LEFT_X) ,
-			0.0f,
-			(float)mInput->GetStick(Gamepad::Stick::LEFT_Y)
-		};
-		// 念のために正規化
-		direction = Normalize(direction);
+	if (mBehavior != Behavior::kAvoid) {
 
-		// 移動速度を設定
-		float moveSpeed = 0.15f;
-		// RB入力時、移動速度を下げる
-		if (mInput->GetLongPush(Gamepad::Button::RIGHT_SHOULDER)) {
-			moveSpeed *= 0.4f;
+		// ジャンプ
+		if (mJumpCount > 0) {
+			if (mInput->GetPused(Gamepad::Button::Y)) {
+				// 残りジャンプ回数を減らす
+				--mJumpCount;
+				// 初速度を加算
+				mVelocity.y = kJumpFirstSpeed;
+				// 状態をジャンプ中に変更
+				mBehavior = Behavior::kJump;
+			}
 		}
 
-		// カメラの回転量を反映
-		direction = TransformNomal(direction, MainCamera::GetInstance()->mWorldTransform->GetWorldMatrix());
-		// y座標は移動しない
-		direction.y = 0.0f;
+		// ジャンプ中
+		if (mBehavior == Behavior::kJump) {
 
-		// 平行移動を行う
-		mObject->mWorldTransform->translation += direction * moveSpeed;
+			// 移動量を加算
+			mObject->mWorldTransform->translation.y += mVelocity.y;
 
-		// ここから回転処理
-		const float PI = 3.14f;
-		float rotateY = std::atan2f(direction.x, direction.z);
-		rotateY = std::fmodf(rotateY, 2.0f * PI);
-		if (rotateY > PI) {
-			rotateY -= 2.0f * PI;
+			// 地面を y==0 として地面にめり込んだら地面の上まで戻す
+			if (mObject->mWorldTransform->translation.y < 0.0f) {
+				mObject->mWorldTransform->translation.y = 0.0f;
+				// 移動量も修正しておく 
+				mVelocity.y = 0.0f;
+				// ジャンプ回数のリセット
+				mJumpCount = kJumpCountMax;
+				// 通常状態に変更
+				mBehavior = Behavior::kRoot;
+			}
 		}
-		if (rotateY < -PI) {
-			rotateY += 2.0f * PI;
+
+		// スティック入力の量
+		const static int stickValue = 6000;
+		// いずれかの数値が、以上(以下)であれば移動処理を行う
+		if (mInput->GetStick(Gamepad::Stick::LEFT_X) < -stickValue || // 左 
+			mInput->GetStick(Gamepad::Stick::LEFT_X) > stickValue || // 右
+			mInput->GetStick(Gamepad::Stick::LEFT_Y) < -stickValue || // 上
+			mInput->GetStick(Gamepad::Stick::LEFT_Y) > stickValue	  // 下
+			) {
+
+			// Xの移動量とYの移動量を設定する
+			Vector3 direction = {
+				(float)mInput->GetStick(Gamepad::Stick::LEFT_X) ,
+				0.0f,
+				(float)mInput->GetStick(Gamepad::Stick::LEFT_Y)
+			};
+			// 正規化
+			direction = Normalize(direction);
+
+			// 移動速度を設定
+			float moveSpeed = 0.15f;
+
+			// カメラの回転量を反映
+			direction = TransformNomal(direction, MainCamera::GetInstance()->mWorldTransform->GetWorldMatrix());
+			// y座標は移動しない
+			direction.y = 0.0f;
+
+			// 平行移動を行う
+			mObject->mWorldTransform->translation += direction * moveSpeed;
+
+			// ここから回転処理
+			const float PI = 3.14f;
+			float rotateY = std::atan2f(direction.x, direction.z);
+			rotateY = std::fmodf(rotateY, 2.0f * PI);
+			if (rotateY > PI) {
+				rotateY -= 2.0f * PI;
+			}
+			if (rotateY < -PI) {
+				rotateY += 2.0f * PI;
+			}
+			mObject->mWorldTransform->rotation.y = rotateY;
 		}
-		mObject->mWorldTransform->rotation.y = rotateY;
+
 	}
 
 	// レティクル 更新
@@ -154,11 +174,11 @@ void Player::Update() {
 	// 補間数値
 	static float t = 0.0f;
 	// 勾配
-	static float k = 2.0f;
+	static float k = 1.0f;
 	// 始点と終点
 	static Vector3 s = { 0.0f,0.0f,0.0f };
-	static Vector3 e = { 0.0f,1.0f,-4.0f };
-	
+	static Vector3 e = { 0.0f,0.5f,-8.0f };
+
 	// 狙えるようにカメラの移動 
 	if (mInput->GetLongPush(Gamepad::Button::LEFT_SHOULDER)) {
 		mIsAimMode = true;
@@ -197,7 +217,7 @@ void Player::Update() {
 #endif // _DEBUG
 
 	// メインカメラに追加の平行移動値を与える
-	MainCamera::GetInstance()->SetAddTranslation(TransformNomal(cVel,MainCamera::GetInstance()->mWorldTransform->GetWorldMatrix()));
+	MainCamera::GetInstance()->SetAddTranslation(TransformNomal(cVel, MainCamera::GetInstance()->mWorldTransform->GetWorldMatrix()));
 
 	// RBボタン長押しでため動作を行う
 	if (mInput->GetLongPush(Gamepad::Button::RIGHT_SHOULDER)) {
@@ -243,7 +263,19 @@ void Player::Draw() {
 }
 
 void Player::DrawGUI() {
-	mObject->DrawGUI();
+#ifdef _DEBUG
+	ImGui::Begin("Player");
+	ImGui::DragFloat("AvoidRange",&mAvoidRange);
+	ImGui::DragFloat("AvoidSpeed",&mAvoidSpeed);
+	ImGui::DragFloat("AvoidTime",&mAvoidTime);
+	ImGui::DragFloat3("Avoid Start",&mAvoidMoveStartPos.x);
+	ImGui::DragFloat3("Avoid End",&mAvoidMoveEndPos.x);
+	mObject->DrawGuiTree();
+	ImGui::End();
+
+#endif // _DEBUG
+
+	
 }
 
 void Player::ColliderDraw() {
@@ -266,6 +298,92 @@ void Player::SetColliderListForArrow(CollisionManager* cManager)
 		cManager->SetCollider(arrow->GetCollider());
 		++arrowIt;  // イテレータを次に進める
 	}
+
+}
+
+void Player::Avoid()
+{
+	//  非回避状態で Aボタンで回避
+	if (mBehavior != Behavior::kAvoid &&
+		mInput->GetLongPush(Gamepad::Button::A)) {
+
+		// パラメータの補正
+
+		// 回避距離
+		mAvoidRange = 10.0f;
+		// 回避速度
+		mAvoidSpeed = 2.0f;
+		// 回避経過時間( 0.0f ~ 1.0f )
+		mAvoidTime = 0.0f;
+		// 回避開始地点に現在の座標を代入
+		mAvoidMoveStartPos = mObject->GetWorldTransform()->translation;
+
+
+		// スティック入力の量
+		const static int stickValue = 6000;
+		// いずれかの数値が、指定した値以上(以下)であれば移動回避を行う
+		if (mInput->GetStick(Gamepad::Stick::LEFT_X) < -stickValue || // 左 
+			mInput->GetStick(Gamepad::Stick::LEFT_X) > stickValue || // 右
+			mInput->GetStick(Gamepad::Stick::LEFT_Y) < -stickValue || // 上
+			mInput->GetStick(Gamepad::Stick::LEFT_Y) > stickValue	  // 下
+			) {
+
+			// スティックの入力方向を計算
+			Vector3 direction = {
+				(float)mInput->GetStick(Gamepad::Stick::LEFT_X) ,
+				0.0f,
+				(float)mInput->GetStick(Gamepad::Stick::LEFT_Y)
+			};
+			// 正規化
+			direction = Normalize(direction);
+			// カメラの回転量を反映
+			direction = TransformNomal(direction, MainCamera::GetInstance()->mWorldTransform->GetWorldMatrix());
+			// y座標は移動しない
+			direction.y = 0.0f;
+
+			mAvoidMoveEndPos = mObject->mWorldTransform->translation + Scalar(mAvoidRange, direction);
+
+			// 回避状態に変更
+			mBehavior = Behavior::kAvoid;
+
+		}
+		// スティック入力がなければバックステップを行う
+		else {
+
+			Vector3 direction = TransformNomal(Vector3(0.0f,0.0f,-1.0f), MainCamera::GetInstance()->mWorldTransform->GetWorldMatrix());
+			// y座標は移動しない
+			direction.y = 0.0f;
+			mAvoidMoveEndPos = mObject->mWorldTransform->translation + Scalar(mAvoidRange, direction);
+			// 回避状態に変更
+			mBehavior = Behavior::kAvoid;
+
+		}
+	
+	}
+
+	// 回避中の処理
+	if (mBehavior == Behavior::kAvoid) {
+
+		// 線形補間を利用して座標を移動させる
+		if (mAvoidTime < 1.0f) {
+			// 回避時の移動速度/フレームレートで加算する
+			mAvoidTime += mAvoidSpeed / 60.0f;
+		}
+		else if(mAvoidTime >= 1.0f) {
+			// タイムを補正
+			mAvoidTime = 1.0f;
+			
+			// 移動終了
+			mBehavior = Behavior::kRoot;
+		}
+
+		// 移動
+		mObject->mWorldTransform->translation.x = (1.0f - mAvoidTime) * mAvoidMoveStartPos.x + mAvoidTime * mAvoidMoveEndPos.x;
+		mObject->mWorldTransform->translation.z = (1.0f - mAvoidTime) * mAvoidMoveStartPos.z + mAvoidTime * mAvoidMoveEndPos.z;
+
+
+	}
+
 
 }
 
