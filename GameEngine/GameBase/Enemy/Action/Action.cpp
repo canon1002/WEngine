@@ -97,7 +97,7 @@ void ACT::MoveToPlayer::Start()
 	mSearchTime = 0.0f;
 
 	// アニメーションの変更
-	mBoss->GetObject3D()->mSkinning->Init("boss", "Idle.gltf",
+	mBoss->GetObject3D()->mSkinning->Init("boss", "Run.gltf",
 		mBoss->GetObject3D()->GetModel()->modelData);
 
 	// 実行する
@@ -106,6 +106,11 @@ void ACT::MoveToPlayer::Start()
 
 void ACT::MoveToPlayer::End()
 {
+
+	// アニメーションの変更
+	mBoss->GetObject3D()->mSkinning->Init("boss", "Idle.gltf",
+		mBoss->GetObject3D()->GetModel()->modelData);
+
 	// 行動を終了させる
 	mCondition = Condition::FINISHED;
 }
