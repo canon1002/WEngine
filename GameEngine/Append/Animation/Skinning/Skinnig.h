@@ -44,6 +44,9 @@ public: // -- 公開 メンバ関数 -- //
 		return false;
 	}
 
+	bool GetIsActive() { return mIsActive; }
+	void IsInactive() { mIsActive = false; }
+
 private: // -- 非公開 メンバ変数 -- //
 
 	// 外部ポインタ
@@ -64,5 +67,8 @@ private: // -- 非公開 メンバ変数 -- //
 
 	// アニメーションのループ設定
 	bool mIsLoop = true;
+
+	// アニメーションを有効にするか(骨のみ使う場合はfalse)
+	bool mIsActive;
 
 };

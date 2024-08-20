@@ -44,7 +44,7 @@ private: // -- 非公開 メンバ関数 -- //
 protected:
 
     // ワールド座標系のポインタ
-    WorldTransform* pWorldTransform;
+    //WorldTransform* pWorldTransform;
 
     // 球体の半径
     float mRadius;

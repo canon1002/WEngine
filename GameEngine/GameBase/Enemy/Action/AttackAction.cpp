@@ -12,7 +12,7 @@ void ACT::AttackClose::Init(BossEnemy* boss)
 	// 初期化する
 	mCondition = Condition::IDOL;
 
-	
+
 
 	/*mColliders.push_back(new SphereCollider(mWeapon->mWorldTransform, 0.25f));
 	mColliders.push_back(new SphereCollider(mWeapon->mWorldTransform, 0.25f));
@@ -20,7 +20,7 @@ void ACT::AttackClose::Init(BossEnemy* boss)
 
 	mActiveColliderCount = 0.0f;
 
-	
+
 
 }
 
@@ -29,12 +29,22 @@ void ACT::AttackClose::Update()
 	// 実行時のみ処理を行う
 	if (mCondition == Condition::RUNNING) {
 
+		// 衝突判定を出す時刻を進める
 		mActiveColliderCount += 2.0f / 60.0f;
 
-	
-
 		if (mBoss->mWeapon->mCollider->GetOnCollisionFlag() == true) {
+			mBoss->ReciveDamageTolayer(1.0f);
 			mActiveColliderCount += 2.0f;
+		}
+
+		// 各コライダーの衝突判定を確認
+		for (Collider* collider : mBoss->mWeaponColliders) {
+			if (collider->GetOnCollisionFlag() == true) {
+				mBoss->ReciveDamageTolayer(1.0f);
+				mActiveColliderCount += 2.0f;
+				// どれか１つでも命中したらループを抜ける
+				break;
+			}
 		}
 
 		// 終了処理
@@ -50,7 +60,12 @@ void ACT::AttackClose::Draw() {
 	if (kActiveColliderCount.x < mActiveColliderCount &&
 		mActiveColliderCount < kActiveColliderCount.y) {
 
-		mBoss->mWeapon->mCollider->Draw();
+		//mBoss->mWeapon->mCollider->Draw();
+
+		// 武器のコライダー 描画
+		for (Collider* collider : mBoss->mWeaponColliders) {
+			collider->Draw();
+		}
 	}
 
 }
@@ -102,8 +117,12 @@ void ACT::AttackClose::SetCollider(CollisionManager* cManager)
 	if (kActiveColliderCount.x < mActiveColliderCount &&
 		mActiveColliderCount < kActiveColliderCount.y) {
 
+		// 未ヒット時にのみコライダーセット
 		if (mBoss->mWeapon->mCollider->GetOnCollisionFlag() == false) {
-			cManager->SetCollider(mBoss->mWeapon->mCollider);
+			//cManager->SetCollider(mBoss->mWeapon->mCollider);
+			for (Collider* collider : mBoss->mWeaponColliders) {
+				cManager->SetCollider(collider);
+			}
 		}
 	}
 }

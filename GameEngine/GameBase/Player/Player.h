@@ -3,9 +3,11 @@
 #include "GameEngine/Input/InputManager.h"
 #include "GameEngine/GameBase/Reticle/Reticle3D.h"
 #include "GameEngine/GameBase/Player/Arrow.h"
+#include "GameEngine/GameBase/Status/StatusManager.h"
 
 // 前方宣言
 class CollisionManager;
+class BossEnemy;
 
 // 振る舞い
 enum class Behavior {
@@ -54,10 +56,21 @@ public: // -- 公開 メンバ関数 -- //
 	// アロー生成関数
 	Arrow* CreateArrow(Vector3 startPos,Vector3 endPos);
 
+	// ボスクラスのポインタをセットする
+	void SetBoss(BossEnemy* boss) { mBoss = boss; }
+	// ボスにダメージを与える
+	void ReciveDamageToBoss(float power);
+	// 能力値取得関数
+	Status* GetStatus() { return mStatus; }
+
+	// ボスクラスのポインタ
+	BossEnemy* mBoss;
+
 private: // -- 非公開 メンバ変数 -- //
 
 	// 入力を取得
 	InputManager* mInput;
+	
 
 	// オブジェクトクラス
 	std::unique_ptr<Object3d> mObject;
@@ -106,5 +119,9 @@ private: // -- 非公開 メンバ変数 -- //
 	Vector3 mAvoidMoveStartPos;
 	// 回避終了地点
 	Vector3 mAvoidMoveEndPos;
+
+	// 能力値
+	Status* mStatus;
+
 };
 

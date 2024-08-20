@@ -6,6 +6,9 @@
 #include "GameEngine/Append/Collider/SphereCollider.h"
 #include <numbers>
 #include "GameEngine/GameBase/Reaction/DamageReaction.h"
+#include "GameEngine/GameBase/Status/StatusManager.h"
+#include "GameEngine/GameBase/Player/Player.h"
+#include "GameEngine/GameBase/Enemy/BossEnemy.h"
 
 Arrow::Arrow() {}
 Arrow::~Arrow() {
@@ -13,8 +16,10 @@ Arrow::~Arrow() {
 }
 
 
-void Arrow::Init(Vector3 pos, Vector3 vel)
+void Arrow::Init(Player* player,Vector3 pos, Vector3 vel)
 {
+	mPlayer = player;
+
 	mObject = std::make_unique<Object3d>();
 	mObject->Init("Arrow");
 	mObject->SetModel("Arrow.gltf");
@@ -70,8 +75,11 @@ void Arrow::Update()
 		// 次のフレームで消す
 		mIsActive = false;
 
+		// 敵にダメージを与える
+		mPlayer->ReciveDamageToBoss(1.0f);
+
 		// ダメージ表示
-		int32_t damage = rand() % 200;
+		int32_t damage = static_cast<int32_t>(static_cast<int32_t>(mPlayer->GetStatus()->STR / 2.0f) * 1.0f) - static_cast<int32_t>(mPlayer->mBoss->GetStatus()->VIT / 4.0f);;
 		DamageReaction::GetInstance()->Reaction(this->GetWorldPos(), damage, MainCamera::GetInstance());
 	}
 

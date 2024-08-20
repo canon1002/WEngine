@@ -4,6 +4,7 @@
 #include "GameEngine/GameBase/AI/State/VitalityBossState.h"
 #include "GameEngine/GameBase/AI/BehaviorTree/IBehavior.h"
 #include "GameEngine/GameBase/Enemy/Action/Action.h"
+#include "GameEngine/GameBase/Status/StatusManager.h"
 
 // 前方宣言
 class Player;
@@ -50,6 +51,12 @@ public: // -- 公開 メンバ関数 -- //
 	ACT::Condition GetActionCondition(const std::string& key);
 	// 行動クラスのポインタの取得
 	ACT::IAction* GetActionClass(const std::string& key);
+
+	// 自身の攻撃命中時に呼び出す関数
+	void ReciveDamageTolayer(float power);
+	// 能力値取得関数
+	Status* GetStatus() { return mStatus; }
+
 
 	// 各行動 
 	
@@ -104,9 +111,11 @@ public: // -- 公開 メンバ関数 -- //
 	// 右手のワールド座標
 	Matrix4x4 mRightHandWorldMat;
 
-
+	// 武器
 	std::unique_ptr<Object3d> mWeapon;
 
+	// 武器の衝突判定
+	std::vector<Collider*> mWeaponColliders;
 
 private: // -- 非公開 メンバ変数 -- //
 
@@ -148,5 +157,12 @@ private: // -- 非公開 メンバ変数 -- //
 	std::map<std::string,ACT::IAction*> mActions;
 	// 現在の行動
 	ACT::IAction* mActiveAction;
+
+	// 能力値
+	Status* mStatus;
+
+	// 武器の各パーツの座標
+	std::array<Matrix4x4, 5> mWeaponWorldMat;
+
 
 };

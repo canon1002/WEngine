@@ -186,9 +186,8 @@ int32_t GlobalVariables::GetIntValue(const std::string& groupName, const std::st
 	assert(itKey != group.items.end());
 	// 項目の参照を取得
 	Item& item = itKey->second;
-
 	// int32_t型の値を返す
-	return std::get<int32_t>(item.value);
+	return (int32_t)std::get<int32_t>(item.value);
 }
 
 float GlobalVariables::GetFloatValue(const std::string& groupName, const std::string& key)

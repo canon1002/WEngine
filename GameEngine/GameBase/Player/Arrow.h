@@ -3,6 +3,8 @@
 #include "GameEngine/Math/Math.h"
 #include "GameEngine/Object/3d/Object3d.h"
 
+class Player;
+
 class Arrow
 {
 public: // -- 公開 メンバ関数 -- //
@@ -10,7 +12,7 @@ public: // -- 公開 メンバ関数 -- //
 	Arrow();
 	~Arrow();
 
-	void Init(Vector3 pos,Vector3 vel);
+	void Init(Player* player,Vector3 pos,Vector3 vel);
 	void Update();
 	void Draw();
 	void DebugDraw() { mObject->DrawGUI(); }
@@ -26,6 +28,9 @@ public: // -- 公開 メンバ関数 -- //
 	Collider* GetCollider() { return mObject->mCollider; }
 
 private: // -- 非公開 メンバ変数 -- //
+
+	// プレイヤーのポインタ
+	Player* mPlayer;
 
 	// オブジェクトクラス
 	std::unique_ptr<Object3d> mObject;

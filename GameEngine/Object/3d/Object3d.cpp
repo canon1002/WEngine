@@ -72,7 +72,7 @@ void Object3d::Draw() {
 
 	D3D12_VERTEX_BUFFER_VIEW vbvs[2]{};
 	vbvs[0] = mModel->mVertexBufferView;// VertexDataのVBV
-	if (mSkinning != nullptr) {
+	if (mSkinning != nullptr && mSkinning->GetIsActive()) {
 
 		vbvs[1] = mSkinning->GetSkinCluster().influenceBufferView_; // influenceのVBV
 

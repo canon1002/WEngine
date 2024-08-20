@@ -8,6 +8,7 @@
 #include "GameEngine/Editor/LevelEditor.h"
 #include "GameEngine/GameBase/Reaction/DamageReaction.h"
 #include "GameEngine/Effect/Particle/ParticleManager.h"
+#include "GameEngine/GameBase/Status/StatusManager.h"
 
 void GameScene::Finalize(){}
 
@@ -18,6 +19,8 @@ void GameScene::Init(){
 	// 衝突判定マネージャ
 	mCollisionManager = std::make_unique<CollisionManager>();
 
+	// ステータスマネージャ
+	StatusManager::GetInstance()->Init();
 
 	// モデル 読み込み
 	ModelManager::GetInstance()->LoadModel("plane", "plane.gltf");
@@ -36,16 +39,19 @@ void GameScene::Init(){
 	// SkyBox 読み込み
 	DirectXCommon::GetInstance()->srv_->LoadTexture("skybox/rostock_laage_airport_4k.dds");
 
-
 	// skyboxの宣言
 	skybox_ = Skybox::GetInstance();
 	skybox_->Init("skybox", "rostock_laage_airport_4k.dds");
 
+	// プレイヤー
 	mPlayer = std::make_unique<Player>();
 	mPlayer->Init();
-
+	// ボス
 	mBoss = std::make_unique<BossEnemy>();
 	mBoss->Init();
+
+	// 互いのポインタを渡す
+	mPlayer->SetBoss(mBoss.get());
 	mBoss->SetPlayer(mPlayer.get());
 
 	// オブジェクトにCubeMapのテクスチャ番号を渡す
@@ -75,6 +81,12 @@ void GameScene::Update(){
 		}
 	}
 
+	if (mBoss->GetStatus()->HP <= 0.0f || mPlayer->GetStatus()->HP <= 0.0f) {
+		sceneNo = SCENE::RESULT;
+	}
+
+	// ステータスマネージャ
+	StatusManager::GetInstance()->Update();
 
 	// コライダーリストのクリア
 	mCollisionManager->ClearColliders();

@@ -20,9 +20,9 @@ void BossEnemy::Init() {
 	mObject->mSkeleton = Skeleton::Create(mObject->GetModel()->modelData.rootNode);
 	mObject->SetTranslate({ 3.0f,1.0f,7.0f });
 	mObject->GetModel()->materialData_->color = { 1.0f,0.7f,0.7f,1.0f };
-	
+
 	// ワールドトランスフォーム
-	mObject->mWorldTransform->scale= { 1.5f,1.5f,1.5f};
+	mObject->mWorldTransform->scale = { 1.2f,1.2f,1.2f };
 	mObject->mWorldTransform->translation = { 0.0f,0.0f,20.0f };
 
 	// 移動量を初期化
@@ -37,6 +37,9 @@ void BossEnemy::Init() {
 	// 各行動クラスの初期化
 	this->InitActions();
 
+	// ステータス取得
+	mStatus = StatusManager::GetInstance()->GetBossStatus();
+
 	// コライダーの宣言
 	mObject->mCollider = new SphereCollider(mObject->mWorldTransform, mObject->GetWorldTransform()->scale.x);
 	mObject->mCollider->Init();
@@ -44,21 +47,44 @@ void BossEnemy::Init() {
 	mObject->mCollider->SetCollisionAttribute(kCollisionAttributeEnemy);
 	mObject->mCollider->SetCollisionMask(kCollisionAttributePlayerBullet);
 
-	mRightHandWorldMat= MakeAffineMatrix(Vector3{0.0f,0.0f,0.0f}, Vector3{0.0f,0.0f,0.0f}, Vector3{0.0f,0.0f,0.0f});
+	mRightHandWorldMat = MakeAffineMatrix(Vector3{ 0.0f,0.0f,0.0f }, Vector3{ 0.0f,0.0f,0.0f }, Vector3{ 0.0f,0.0f,0.0f });
 
 	mWeapon = std::make_unique<Object3d>();
 	mWeapon->Init("Weapon");
 	mWeapon->SetModel("sword.gltf");
+	mWeapon->mSkinning = new Skinnig();
 	mWeapon->GetModel()->SetCubeTexture(Skybox::GetInstance()->mTextureHandle);
+	mWeapon->mSkinning->Init("Weapons", "sword.gltf",
+		mWeapon->GetModel()->modelData);
+	mWeapon->mSkinning->IsInactive();
+	mWeapon->mSkeleton = Skeleton::Create(mWeapon->GetModel()->modelData.rootNode);
 	// 拡大率を変更
 	mWeapon->mWorldTransform->scale = { 4.0f,4.0f,16.0f };
 
 	// コライダーの宣言
-	mWeapon->mCollider = new SphereCollider(mWeapon->mWorldTransform, 0.5f);
+	mWeapon->mCollider = new SphereCollider(mWeapon->mWorldTransform, 1.5f);
 	mWeapon->mCollider->Init();
 	mWeapon->mCollider->SetCollisionAttribute(kCollisionAttributeEnemyBullet);
 	mWeapon->mCollider->SetCollisionMask(kCollisionAttributePlayer);
 	mWeapon->mWorldTransform->SetParent(mRightHandWorldMat);
+
+	// 武器にコライダーをセットする
+	for (int32_t i = 0; i < 5; i++) {
+		mWeaponWorldMat[i] = MakeAffineMatrix(Vector3{ 0.0f,0.0f,0.0f }, Vector3{ 0.0f,0.0f,0.0f }, Vector3{ 0.0f,0.0f,0.0f });
+		// コライダー 宣言
+		SphereCollider* newCollider = new SphereCollider(new WorldTransform(), 0.5f);
+		// 初期化
+		newCollider->Init();
+		newCollider->SetCollisionAttribute(kCollisionAttributeEnemyBullet);
+		newCollider->SetCollisionMask(kCollisionAttributePlayer);
+		// 武器に設定したボーンのワールド座標をセット
+		newCollider->
+			GetWorld()->SetParent(mWeaponWorldMat[i]);
+		//// 配列にプッシュする
+		mWeaponColliders.push_back(newCollider);
+	}
+
+	
 
 }
 
@@ -73,32 +99,32 @@ void BossEnemy::InitBehavior() {
 	mRoot = std::make_unique<BT::Sequence>();
 	// 接近 -> 近接攻撃
 	BT::Sequence* newSequence = new BT::Sequence();
-	newSequence->SetChild(new BT::Condition(std::bind(&BossEnemy::InvokeFarDistance,this)));
+	newSequence->SetChild(new BT::Condition(std::bind(&BossEnemy::InvokeFarDistance, this)));
 	newSequence->SetChild(new BT::MoveToPlayer(this));
 	newSequence->SetChild(new BT::AttackClose(this));
 	mRoot->SetChild(newSequence);
-	
+
 	// 後退
 	mRoot->SetChild(new BT::BackStep(this));
-	
+
 }
 
 void BossEnemy::InitActions()
 {
 	// 各行動をmap配列に追加していく
-	
+
 	// 接近
 	mActions["MoveToPlayer"] = new ACT::MoveToPlayer();
 	mActions["MoveToPlayer"]->Init(this);
-	
+
 	// 後退
 	mActions["BackStep"] = new ACT::BackStep();
 	mActions["BackStep"]->Init(this);
-	
+
 	// 近接攻撃
 	mActions["AttackClose"] = new ACT::AttackClose();
 	mActions["AttackClose"]->Init(this);
-	
+
 	// 初期は行動しない
 	mActiveAction = nullptr;
 
@@ -114,19 +140,37 @@ void (BossEnemy::* BossEnemy::CommandTable[])() = {
 void BossEnemy::Update() {
 
 	// 右手のワールド行列を更新
-	mRightHandWorldMat=Multiply(
+	mRightHandWorldMat = Multiply(
 		GetObject3D()->mSkinning->GetSkeleton().joints[GetObject3D()->mSkinning->GetSkeleton().jointMap["mixamorig:RightHandThumb1"]
 		].skeletonSpaceMatrix, GetObject3D()->GetWorldTransform()->GetWorldMatrix());
 
 	mWeapon->Update();
 	mWeapon->mCollider->Update();
 
-	
+	// ワールド座標更新
+	mWeaponWorldMat[0] = Multiply(
+			mWeapon->mSkinning->GetSkeleton().joints[mWeapon->mSkinning->GetSkeleton().jointMap["Blade0"]
+			].skeletonSpaceMatrix, mWeapon->GetWorldTransform()->GetWorldMatrix());
+	mWeaponWorldMat[1] = Multiply(
+			mWeapon->mSkinning->GetSkeleton().joints[mWeapon->mSkinning->GetSkeleton().jointMap["Blade1"]
+			].skeletonSpaceMatrix, mWeapon->GetWorldTransform()->GetWorldMatrix());
+	mWeaponWorldMat[2] = Multiply(
+			mWeapon->mSkinning->GetSkeleton().joints[mWeapon->mSkinning->GetSkeleton().jointMap["Blade2"]
+			].skeletonSpaceMatrix, mWeapon->GetWorldTransform()->GetWorldMatrix());
+	mWeaponWorldMat[3] = Multiply(
+			mWeapon->mSkinning->GetSkeleton().joints[mWeapon->mSkinning->GetSkeleton().jointMap["Blade3"]
+			].skeletonSpaceMatrix, mWeapon->GetWorldTransform()->GetWorldMatrix());
+	mWeaponWorldMat[4] = Multiply(
+			mWeapon->mSkinning->GetSkeleton().joints[mWeapon->mSkinning->GetSkeleton().jointMap["Blade4"]
+			].skeletonSpaceMatrix, mWeapon->GetWorldTransform()->GetWorldMatrix());
 
+	// 武器のコライダー 更新
+	for (Collider* collider : mWeaponColliders) {
+		collider->Update();
+	}
 
 	// テーブルから関数を呼び出す
 	//(this->*CommandTable[0])();
-
 
 	// 一旦ここに落下処理をつくる
 	if (mObject->mWorldTransform->translation.y > 0.0f) {
@@ -140,30 +184,33 @@ void BossEnemy::Update() {
 		mVelocity.y = 0.0f;
 	}
 
-	// ステートの更新処理を行う
-	this->UpdateState();
+	if (mStatus->HP > 0.0f) {
 
-	// BehaviorTreeの更新処理を行う
-	mBTStatus = mRoot->Tick();
-	if (mBTStatus == BT::NodeStatus::SUCCESS || mBTStatus == BT::NodeStatus::FAILURE) {
-		// 結果が帰ってきたら初期化処理
-		mRoot->Reset();
+		// ステートの更新処理を行う
+		this->UpdateState();
 
-		// 各アクションの初期化もしておく
-		for (auto& action : mActions) {
-			action.second->End();
-			action.second->Reset();
+		// BehaviorTreeの更新処理を行う
+		mBTStatus = mRoot->Tick();
+		if (mBTStatus == BT::NodeStatus::SUCCESS || mBTStatus == BT::NodeStatus::FAILURE) {
+			// 結果が帰ってきたら初期化処理
+			mRoot->Reset();
+
+			// 各アクションの初期化もしておく
+			for (auto& action : mActions) {
+				action.second->End();
+				action.second->Reset();
+			}
+			// nullを代入しておく
+			mActiveAction = nullptr;
 		}
-		// nullを代入しておく
-		mActiveAction = nullptr;
-	}
 
-	// オブジェクト更新
-	mObject->Update();
-	mObject->mCollider->Update();
+		// オブジェクト更新
+		mObject->Update();
+		mObject->mCollider->Update();
 
-	if (mActiveAction != nullptr) {
-		mActiveAction->Update();
+		if (mActiveAction != nullptr) {
+			mActiveAction->Update();
+		}
 	}
 
 }
@@ -174,7 +221,7 @@ void BossEnemy::Draw() {
 
 void BossEnemy::DrawGUI() {
 #ifdef _DEBUG
-	const char* behaviorState[] = { 
+	const char* behaviorState[] = {
 		"SUCCESS", // 成功
 		"FAILURE", // 失敗
 		"RUNNING", // 実行中 
@@ -213,6 +260,10 @@ void BossEnemy::DrawGUI() {
 
 	ImGui::Begin("BossEnemy");
 	ImGui::ListBox("State", &currentItem, behaviorState, IM_ARRAYSIZE(behaviorState), 3);
+	ImGui::DragFloat("HP", &mStatus->HP, 1.0f, 0.0, 100.0f);
+	ImGui::DragFloat("STR", &mStatus->STR, 1.0f, 0.0, 100.0f);
+	ImGui::DragFloat("VIT", &mStatus->VIT, 1.0f, 0.0, 100.0f);
+	ImGui::DragFloat("AGI", &mStatus->AGI, 1.0f, 0.0, 100.0f);
 	mObject->DrawGuiTree();
 	mWeapon->DrawGuiTree();
 	ImGui::DragFloat3("Scale", &scale.x);
@@ -230,7 +281,6 @@ void BossEnemy::DrawGUI() {
 void BossEnemy::SetCollider(CollisionManager* cManager)
 {
 	mActions["AttackClose"]->SetCollider(cManager);
-
 }
 
 void BossEnemy::UpdateState() {
@@ -265,9 +315,15 @@ ACT::Condition BossEnemy::GetActionCondition(const std::string& key)
 
 }
 
-ACT::IAction* BossEnemy::GetActionClass(const std::string& key){
+ACT::IAction* BossEnemy::GetActionClass(const std::string& key) {
 	// 引数で指定した行動クラスの状態を取得する
 	return mActions[key];
+}
+
+void BossEnemy::ReciveDamageTolayer(float power)
+{
+	// プレイヤーにダメージを与える
+	StatusManager::GetInstance()->ReceiveDamage(mStatus, power, pPlayer->GetStatus());
 }
 
 void BossEnemy::AttackLong()
@@ -331,13 +387,13 @@ bool BossEnemy::InvokeNearDistance() {
 		GetWorldPos().x - GetWorldPosForTarget().x,
 		GetWorldPos().y - GetWorldPosForTarget().y,
 		GetWorldPos().z - GetWorldPosForTarget().z))
-		<= (mObject->mWorldTransform->scale.x + mObject->mWorldTransform->scale.z) / 1.0f) {
+		<= (mObject->mWorldTransform->scale.x + mObject->mWorldTransform->scale.z) / 1.2f) {
 		return true;
 	}
 	return false;
 }
 
-bool BossEnemy::InvokeFarDistance(){
+bool BossEnemy::InvokeFarDistance() {
 	//	距離が遠い場合のみ実行
 	if (Length(Vector3(
 		GetWorldPos().x - GetWorldPosForTarget().x,
@@ -357,5 +413,9 @@ void BossEnemy::ColliderDraw() {
 	}
 #ifdef _DEBUG
 	mObject->mCollider->Draw();
+	// 武器のコライダー 描画
+	for (Collider* collider : mWeaponColliders) {
+		collider->Draw();
+	}
 #endif // _DEBUG
 }

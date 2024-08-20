@@ -21,6 +21,9 @@ void Skinnig::Init(const std::string& directorypath, const std::string& filepath
 	mIsPauseAnimation = false;
 	mIsLoop = true;
 	mAnimationTime = 0.0f;
+
+	// アニメーションを有効にするか(骨のみ使う場合はfalse)
+	mIsActive = true;
 }
 
 void Skinnig::Update()
