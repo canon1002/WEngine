@@ -44,7 +44,7 @@ void Player::Init() {
 	// コライダーの宣言
 	mObject->mCollider = new SphereCollider(mObject->mWorldTransform, 1.0f);
 	mObject->mCollider->Init();
-	mObject->mCollider->SetAddtranslation(Vector3(0.0f, 0.55f, 0.0f));
+	mObject->mCollider->SetAddtranslation(Vector3(0.0f, 0.55f, -0.1f));
 	mObject->mCollider->SetCollisionAttribute(kCollisionAttributePlayer);
 	mObject->mCollider->SetCollisionMask(kCollisionAttributeEnemyBullet);
 
@@ -259,6 +259,10 @@ void Player::Update() {
 	mObject->Update();
 	mObject->mSkinning->GetSkeleton().joints;
 	mObject->mCollider->Update();
+
+	// UI更新
+	mStatus->Update();
+
 }
 
 void Player::Draw() {

@@ -59,13 +59,9 @@ void BossEnemy::Init() {
 	mWeapon->mSkinning->IsInactive();
 	mWeapon->mSkeleton = Skeleton::Create(mWeapon->GetModel()->modelData.rootNode);
 	// 拡大率を変更
-	mWeapon->mWorldTransform->scale = { 4.0f,4.0f,16.0f };
+	mWeapon->mWorldTransform->scale = { 4.0f,4.0f,20.0f };
 
-	// コライダーの宣言
-	mWeapon->mCollider = new SphereCollider(mWeapon->mWorldTransform, 1.5f);
-	mWeapon->mCollider->Init();
-	mWeapon->mCollider->SetCollisionAttribute(kCollisionAttributeEnemyBullet);
-	mWeapon->mCollider->SetCollisionMask(kCollisionAttributePlayer);
+	// ペアレント
 	mWeapon->mWorldTransform->SetParent(mRightHandWorldMat);
 
 	// 武器にコライダーをセットする
@@ -152,7 +148,7 @@ void BossEnemy::Update() {
 		].skeletonSpaceMatrix, GetObject3D()->GetWorldTransform()->GetWorldMatrix());
 
 	mWeapon->Update();
-	mWeapon->mCollider->Update();
+	
 
 	// ワールド座標更新
 	mWeaponWorldMat[0] = Multiply(
@@ -214,6 +210,9 @@ void BossEnemy::Update() {
 		// オブジェクト更新
 		mObject->Update();
 		mObject->mCollider->Update();
+
+		// UI更新
+		mStatus->Update(mObject->GetWorldTransform());
 
 		if (mActiveAction != nullptr) {
 			mActiveAction->Update();
@@ -401,7 +400,7 @@ bool BossEnemy::InvokeNearDistance() {
 		GetWorldPos().x - GetWorldPosForTarget().x,
 		GetWorldPos().y - GetWorldPosForTarget().y,
 		GetWorldPos().z - GetWorldPosForTarget().z))
-		<= (mObject->mWorldTransform->scale.x + mObject->mWorldTransform->scale.z) / 1.2f) {
+		<= (mObject->mWorldTransform->scale.x + mObject->mWorldTransform->scale.z) / 0.8f) {
 		return true;
 	}
 	return false;

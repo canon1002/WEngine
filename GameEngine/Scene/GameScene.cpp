@@ -148,4 +148,12 @@ void GameScene::Draw() {
 	//ParticleManager::GetInstance()->PreDraw();
 	//mDTCParticle->Draw();
 
+	// 2DSprite(画像)の描画前処理
+	SpriteAdministrator::GetInstance()->PreDraw();
+	mPlayer->GetStatus()->Draw();
+	mBoss->GetStatus()->Draw();
+
+	// ダメージ画像の表記
+	DamageReaction::GetInstance()->DrawSprite();
+
 }

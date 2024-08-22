@@ -16,18 +16,12 @@ void StatusManager::Init()
 {
 	// インスタンス取得
 	mGlobalVariables = GlobalVariables::GetInstance();
+
 	mPlayerStatus = new Status();
-	mPlayerStatus->HP = 10;
-	mPlayerStatus->STR = 10;
-	mPlayerStatus->VIT = 10;
-	mPlayerStatus->AGI = 10;
+	mPlayerStatus->Init();
 	
 	mBossStatus = new Status();
-	mBossStatus->HP = 10;
-	mBossStatus->STR = 10;
-	mBossStatus->VIT = 10;
-	mBossStatus->AGI = 10;
-	
+	mBossStatus->Init();
 
 	mGlobalVariables->CreateGroup("PlayerData");
 	mGlobalVariables->AddItem("PlayerData", "HP", mPlayerStatus->HP);
@@ -37,6 +31,7 @@ void StatusManager::Init()
 
 	// 登録済みのデータから数値を取得
 	mPlayerStatus->HP = int32_t(mGlobalVariables->GetFloatValue("PlayerData", "HP"));
+	mPlayerStatus->MAXHP = int32_t(mGlobalVariables->GetFloatValue("PlayerData", "HP"));
 	mPlayerStatus->STR = int32_t(mGlobalVariables->GetFloatValue("PlayerData", "STR"));
 	mPlayerStatus->VIT = int32_t(mGlobalVariables->GetFloatValue("PlayerData", "VIT"));
 	mPlayerStatus->AGI = int32_t(mGlobalVariables->GetFloatValue("PlayerData", "AGI"));
@@ -49,6 +44,7 @@ void StatusManager::Init()
 
 	// 登録済みのデータから数値を取得
 	mBossStatus->HP = int32_t(mGlobalVariables->GetFloatValue("BossData", "HP"));
+	mBossStatus->MAXHP = int32_t(mGlobalVariables->GetFloatValue("BossData", "HP"));
 	mBossStatus->STR = int32_t(mGlobalVariables->GetFloatValue("BossData", "STR"));
 	mBossStatus->VIT = int32_t(mGlobalVariables->GetFloatValue("BossData", "VIT"));
 	mBossStatus->AGI = int32_t(mGlobalVariables->GetFloatValue("BossData", "AGI"));

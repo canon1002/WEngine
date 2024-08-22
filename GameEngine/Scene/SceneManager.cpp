@@ -183,9 +183,6 @@ int SceneManager::Run() {
 		copyImage_->PreDraw();
 		copyImage_->Draw();
 
-		// ダメージ画像の表記
-		DamageReaction::GetInstance()->DrawSprite();
-
 #ifdef _DEBUG
 		// ImGuiの描画
 		imGuiManager_->Draw();
