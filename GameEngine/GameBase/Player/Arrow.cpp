@@ -76,7 +76,7 @@ void Arrow::Update()
 		mIsActive = false;
 
 		// 敵にダメージを与える
-		mPlayer->ReciveDamageToBoss(1.0f);
+		mPlayer->ReciveDamageToBoss(1.2f);
 
 		// ダメージ表示
 		int32_t damage = static_cast<int32_t>(static_cast<int32_t>(mPlayer->GetStatus()->STR / 2.0f) * 1.0f) - static_cast<int32_t>(mPlayer->mBoss->GetStatus()->VIT / 4.0f);;

@@ -222,7 +222,7 @@ namespace ACT {
 
 		std::vector<Collider*> mColliders;
 		float mActiveColliderCount;
-		const Vector2 kActiveColliderCount = { 0.8f,1.4f };
+		const Vector2 kActiveColliderCount = { 0.4f,2.4f };
 	};
 
 }

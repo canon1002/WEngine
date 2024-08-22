@@ -32,18 +32,17 @@ void ACT::AttackClose::Update()
 		// 衝突判定を出す時刻を進める
 		mActiveColliderCount += 2.0f / 60.0f;
 
-		if (mBoss->mWeapon->mCollider->GetOnCollisionFlag() == true) {
-			mBoss->ReciveDamageTolayer(1.0f);
-			mActiveColliderCount += 2.0f;
-		}
-
+		
 		// 各コライダーの衝突判定を確認
-		for (Collider* collider : mBoss->mWeaponColliders) {
-			if (collider->GetOnCollisionFlag() == true) {
-				mBoss->ReciveDamageTolayer(1.0f);
-				mActiveColliderCount += 2.0f;
-				// どれか１つでも命中したらループを抜ける
-				break;
+		if (kActiveColliderCount.x < mActiveColliderCount &&
+			mActiveColliderCount < kActiveColliderCount.y) {
+			for (Collider* collider : mBoss->mWeaponColliders) {
+				if (collider->GetOnCollisionFlag() == true) {
+					mBoss->ReciveDamageTolayer(1.0f);
+					mActiveColliderCount += 2.0f;
+					// どれか１つでも命中したらループを抜ける
+					break;
+				}
 			}
 		}
 
@@ -200,17 +199,6 @@ void ACT::AttackThrust::Start()
 		mBoss->GetObject3D()->GetModel()->modelData);
 	mBoss->GetObject3D()->mSkinning->ResetTime();
 	mBoss->GetObject3D()->mSkinning->SetLoopMode(false);
-
-	//// Bossの正面に攻撃判定を表示
-	//Vector3 offset = { 0.0f,0.5f,1.0f };
-	//// オフセットをBossの回転に合わせて回転させる
-	//offset = TransformNomal(offset, mBoss->GetObject3D()->mWorldTransform->GetWorldMatrix());
-	//// オフセット分ずらす
-	//mWeapon->mWorldTransform->translation = mBoss->GetObject3D()->mWorldTransform->translation + offset;
-
-	mBoss->mWeapon->mCollider->Init();
-	mBoss->mWeapon->mCollider->SetWorld(mBoss->mWeapon->mWorldTransform);
-
 	mActiveColliderCount = 0.0f;
 
 	// 実行する

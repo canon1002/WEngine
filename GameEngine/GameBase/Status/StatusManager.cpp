@@ -53,30 +53,10 @@ void StatusManager::Init()
 	mBossStatus->VIT = int32_t(mGlobalVariables->GetFloatValue("BossData", "VIT"));
 	mBossStatus->AGI = int32_t(mGlobalVariables->GetFloatValue("BossData", "AGI"));
 	
-	//mGlobalVariables->SaveFile("PlayerData");
-	//mGlobalVariables->SaveFile("BossData");
-
 }
 
 void StatusManager::Update()
 {
-
-	//ImGui::Begin("StatusManager");
-	//if (ImGui::TreeNode("Player")) {
-	//	ImGui::DragFloat("HP", &mPlayerStatus->.HP, 1.0f, 0.0, 100.0f);
-	//	ImGui::DragFloat("STR", &mPlayerStatus->.STR, 1.0f, 0.0, 100.0f);
-	//	ImGui::DragFloat("VIT", &mPlayerStatus->.VIT, 1.0f, 0.0, 100.0f);
-	//	ImGui::DragFloat("AGI", &mPlayerStatus->.AGI, 1.0f, 0.0, 100.0f);
-	//	ImGui::TreePop();
-	//}
-	//if (ImGui::TreeNode("Boss")) {
-	//	ImGui::DragFloat("HP", &mBossStatus->HP, 1.0f, 0.0, 100.0f);
-	//	ImGui::DragFloat("STR", &mBossStatus->STR, 1.0f, 0.0, 100.0f);
-	//	ImGui::DragFloat("VIT", &mBossStatus->VIT, 1.0f, 0.0, 100.0f);
-	//	ImGui::DragFloat("AGI", &mBossStatus->AGI, 1.0f, 0.0, 100.0f);
-	//	ImGui::TreePop();
-	//}
-	//ImGui::End();
 
 }
 

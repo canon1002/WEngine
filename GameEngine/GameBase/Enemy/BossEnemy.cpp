@@ -427,9 +427,6 @@ void BossEnemy::ColliderDraw() {
 	}
 #ifdef _DEBUG
 	mObject->mCollider->Draw();
-	// 武器のコライダー 描画
-	for (Collider* collider : mWeaponColliders) {
-		collider->Draw();
-	}
+	
 #endif // _DEBUG
 }
