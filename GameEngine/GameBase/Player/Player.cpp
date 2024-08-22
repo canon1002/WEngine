@@ -273,10 +273,10 @@ void Player::Draw() {
 void Player::DrawGUI() {
 #ifdef _DEBUG
 	ImGui::Begin("Player");
-	ImGui::DragFloat("HP", &mStatus->HP, 1.0f, 0.0, 100.0f);
-	ImGui::DragFloat("STR", &mStatus->STR, 1.0f, 0.0, 100.0f);
-	ImGui::DragFloat("VIT", &mStatus->VIT, 1.0f, 0.0, 100.0f);
-	ImGui::DragFloat("AGI", &mStatus->AGI, 1.0f, 0.0, 100.0f);
+	ImGui::DragInt("HP", &mStatus->HP, 1.0f, 0, 100);
+	ImGui::DragInt("STR", &mStatus->STR, 1.0f, 0, 100);
+	ImGui::DragInt("VIT", &mStatus->VIT, 1.0f, 0, 100);
+	ImGui::DragInt("AGI", &mStatus->AGI, 1.0f, 0, 100);
 	ImGui::DragFloat("AvoidRange", &mAvoidRange);
 	ImGui::DragFloat("AvoidSpeed", &mAvoidSpeed);
 	ImGui::DragFloat("AvoidTime", &mAvoidTime);

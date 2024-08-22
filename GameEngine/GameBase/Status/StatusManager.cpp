@@ -36,10 +36,10 @@ void StatusManager::Init()
 	mGlobalVariables->AddItem("PlayerData", "AGI", mPlayerStatus->AGI);
 
 	// 登録済みのデータから数値を取得
-	mPlayerStatus->HP = (mGlobalVariables->GetFloatValue("PlayerData", "HP"));
-	mPlayerStatus->STR = (mGlobalVariables->GetFloatValue("PlayerData", "STR"));
-	mPlayerStatus->VIT = (mGlobalVariables->GetFloatValue("PlayerData", "VIT"));
-	mPlayerStatus->AGI = (mGlobalVariables->GetFloatValue("PlayerData", "AGI"));
+	mPlayerStatus->HP = int32_t(mGlobalVariables->GetFloatValue("PlayerData", "HP"));
+	mPlayerStatus->STR = int32_t(mGlobalVariables->GetFloatValue("PlayerData", "STR"));
+	mPlayerStatus->VIT = int32_t(mGlobalVariables->GetFloatValue("PlayerData", "VIT"));
+	mPlayerStatus->AGI = int32_t(mGlobalVariables->GetFloatValue("PlayerData", "AGI"));
 
 	mGlobalVariables->CreateGroup("BossData");
 	mGlobalVariables->AddItem("BossData", "HP", mBossStatus->HP);
@@ -48,10 +48,10 @@ void StatusManager::Init()
 	mGlobalVariables->AddItem("BossData", "AGI", mBossStatus->AGI);
 
 	// 登録済みのデータから数値を取得
-	mBossStatus->HP = (mGlobalVariables->GetFloatValue("BossData", "HP"));
-	mBossStatus->STR = (mGlobalVariables->GetFloatValue("BossData", "STR"));
-	mBossStatus->VIT = (mGlobalVariables->GetFloatValue("BossData", "VIT"));
-	mBossStatus->AGI = (mGlobalVariables->GetFloatValue("BossData", "AGI"));
+	mBossStatus->HP = int32_t(mGlobalVariables->GetFloatValue("BossData", "HP"));
+	mBossStatus->STR = int32_t(mGlobalVariables->GetFloatValue("BossData", "STR"));
+	mBossStatus->VIT = int32_t(mGlobalVariables->GetFloatValue("BossData", "VIT"));
+	mBossStatus->AGI = int32_t(mGlobalVariables->GetFloatValue("BossData", "AGI"));
 	
 	//mGlobalVariables->SaveFile("PlayerData");
 	//mGlobalVariables->SaveFile("BossData");
@@ -83,11 +83,11 @@ void StatusManager::Update()
 void StatusManager::ReceiveDamage(Status* attacker,float power, Status* deffence)
 {
 	//  [(攻撃力/2) * 攻撃倍率] - [防御力/4] でダメージを計算する
-	float damage = ((attacker->STR / 2.0f) * power) - (deffence->VIT / 4.0f);
+	int32_t damage = int32_t((attacker->STR / 2.0f) * power) - int32_t(deffence->VIT / 4.0f);
 
 	// ダメージが負の値である場合、0に修正すること
 	// そのうちダメージ最低保証などがあればここらへんも修正する
-	if (damage < 0.0f) { damage = 0.0f; }
+	if (damage < 0.0f) { damage = 0; }
 
 	// ヒットポイントを減少させる
 	deffence->HP -= damage;

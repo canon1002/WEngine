@@ -68,6 +68,8 @@ public: // -- 公開 メンバ関数 -- //
 	void AttackLong();
 	// 近距離攻撃
 	void AttackClose();
+	// 刺突攻撃
+	void AttackThrust();
 
 	// 移動関連行動
 	// 命名規則 (行動分類  + 方向or対象 )

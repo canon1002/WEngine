@@ -126,3 +126,125 @@ void ACT::AttackClose::SetCollider(CollisionManager* cManager)
 		}
 	}
 }
+
+
+
+void ACT::AttackThrust::Init(BossEnemy* boss)
+{
+	// ボスのポインタを取得
+	mBoss = boss;
+	// 初期化する
+	mCondition = Condition::IDOL;
+
+
+
+	/*mColliders.push_back(new SphereCollider(mWeapon->mWorldTransform, 0.25f));
+	mColliders.push_back(new SphereCollider(mWeapon->mWorldTransform, 0.25f));
+	mColliders.push_back(new SphereCollider(mWeapon->mWorldTransform, 0.25f));*/
+
+	mActiveColliderCount = 0.0f;
+}
+
+void ACT::AttackThrust::Update()
+{
+	// 実行時のみ処理を行う
+	if (mCondition == Condition::RUNNING) {
+
+		// 衝突判定を出す時刻を進める
+		mActiveColliderCount += 2.0f / 60.0f;
+
+		if (mBoss->mWeapon->mCollider->GetOnCollisionFlag() == true) {
+			mBoss->ReciveDamageTolayer(1.0f);
+			mActiveColliderCount += 2.0f;
+		}
+
+		// 各コライダーの衝突判定を確認
+		for (Collider* collider : mBoss->mWeaponColliders) {
+			if (collider->GetOnCollisionFlag() == true) {
+				mBoss->ReciveDamageTolayer(1.0f);
+				mActiveColliderCount += 2.0f;
+				// どれか１つでも命中したらループを抜ける
+				break;
+			}
+		}
+
+		// 終了処理
+		if (mBoss->GetObject3D()->mSkinning->IsAnimationFinished() == true) {
+			mCondition = Condition::FINISHED;
+		}
+
+	}
+}
+
+void ACT::AttackThrust::Draw() {
+
+	if (kActiveColliderCount.x < mActiveColliderCount &&
+		mActiveColliderCount < kActiveColliderCount.y) {
+
+		//mBoss->mWeapon->mCollider->Draw();
+
+		// 武器のコライダー 描画
+		for (Collider* collider : mBoss->mWeaponColliders) {
+			collider->Draw();
+		}
+	}
+
+}
+
+void ACT::AttackThrust::Start()
+{
+	// パラメータの初期化
+
+	// アニメーションの変更
+	mBoss->GetObject3D()->mSkinning->Init("boss", "Thrust.gltf",
+		mBoss->GetObject3D()->GetModel()->modelData);
+	mBoss->GetObject3D()->mSkinning->ResetTime();
+	mBoss->GetObject3D()->mSkinning->SetLoopMode(false);
+
+	//// Bossの正面に攻撃判定を表示
+	//Vector3 offset = { 0.0f,0.5f,1.0f };
+	//// オフセットをBossの回転に合わせて回転させる
+	//offset = TransformNomal(offset, mBoss->GetObject3D()->mWorldTransform->GetWorldMatrix());
+	//// オフセット分ずらす
+	//mWeapon->mWorldTransform->translation = mBoss->GetObject3D()->mWorldTransform->translation + offset;
+
+	mBoss->mWeapon->mCollider->Init();
+	mBoss->mWeapon->mCollider->SetWorld(mBoss->mWeapon->mWorldTransform);
+
+	mActiveColliderCount = 0.0f;
+
+	// 実行する
+	mCondition = Condition::RUNNING;
+}
+
+void ACT::AttackThrust::End()
+{
+	// 行動を終了させる
+	mCondition = Condition::FINISHED;
+
+	// アニメーションの変更
+	mBoss->GetObject3D()->mSkinning->Init("boss", "Idle.gltf",
+		mBoss->GetObject3D()->GetModel()->modelData);
+}
+
+void ACT::AttackThrust::Reset()
+{
+	// 初期化する
+	mCondition = Condition::IDOL;
+}
+
+void ACT::AttackThrust::SetCollider(CollisionManager* cManager)
+{
+	if (kActiveColliderCount.x < mActiveColliderCount &&
+		mActiveColliderCount < kActiveColliderCount.y) {
+
+		// 未ヒット時にのみコライダーセット
+		if (mBoss->mWeapon->mCollider->GetOnCollisionFlag() == false) {
+			//cManager->SetCollider(mBoss->mWeapon->mCollider);
+			for (Collider* collider : mBoss->mWeaponColliders) {
+				cManager->SetCollider(collider);
+			}
+		}
+	}
+}
+

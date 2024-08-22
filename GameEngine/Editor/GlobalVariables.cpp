@@ -181,13 +181,11 @@ int32_t GlobalVariables::GetIntValue(const std::string& groupName, const std::st
 	Group& group = itGroup->second;
 
 	//キーを検索
-	std::map<std::string, Item>::iterator itKey = group.items.find(key);
+	std::map<std::string, Item>::const_iterator itKey = group.items.find(key);
 	// 未登録チェック
 	assert(itKey != group.items.end());
-	// 項目の参照を取得
-	Item& item = itKey->second;
 	// int32_t型の値を返す
-	return (int32_t)std::get<int32_t>(item.value);
+	return std::get<int32_t>(itKey->second.value);
 }
 
 float GlobalVariables::GetFloatValue(const std::string& groupName, const std::string& key)

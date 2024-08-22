@@ -104,8 +104,11 @@ void BossEnemy::InitBehavior() {
 	newSequence->SetChild(new BT::AttackClose(this));
 	mRoot->SetChild(newSequence);
 
-	// 後退
-	mRoot->SetChild(new BT::BackStep(this));
+	// 接近状態だったら
+	BT::Sequence* startNear = new BT::Sequence();
+	startNear->SetChild(new BT::AttackThrust(this));	// 刺突
+	startNear->SetChild(new BT::BackStep(this));		// 後退
+	mRoot->SetChild(startNear);
 
 }
 
@@ -124,6 +127,10 @@ void BossEnemy::InitActions()
 	// 近接攻撃
 	mActions["AttackClose"] = new ACT::AttackClose();
 	mActions["AttackClose"]->Init(this);
+
+	// 刺突攻撃
+	mActions["AttackThrust"] = new ACT::AttackThrust();
+	mActions["AttackThrust"]->Init(this);
 
 	// 初期は行動しない
 	mActiveAction = nullptr;
@@ -260,10 +267,10 @@ void BossEnemy::DrawGUI() {
 
 	ImGui::Begin("BossEnemy");
 	ImGui::ListBox("State", &currentItem, behaviorState, IM_ARRAYSIZE(behaviorState), 3);
-	ImGui::DragFloat("HP", &mStatus->HP, 1.0f, 0.0, 100.0f);
-	ImGui::DragFloat("STR", &mStatus->STR, 1.0f, 0.0, 100.0f);
-	ImGui::DragFloat("VIT", &mStatus->VIT, 1.0f, 0.0, 100.0f);
-	ImGui::DragFloat("AGI", &mStatus->AGI, 1.0f, 0.0, 100.0f);
+	ImGui::DragInt("HP", &mStatus->HP, 1.0f, 0, 100);
+	ImGui::DragInt("STR", &mStatus->STR, 1.0f, 0, 100);
+	ImGui::DragInt("VIT", &mStatus->VIT, 1.0f, 0, 100);
+	ImGui::DragInt("AGI", &mStatus->AGI, 1.0f, 0, 100);
 	mObject->DrawGuiTree();
 	mWeapon->DrawGuiTree();
 	ImGui::DragFloat3("Scale", &scale.x);
@@ -339,6 +346,13 @@ void BossEnemy::AttackClose()
 	//}
 	// 現行アクションを設定
 	mActiveAction = mActions["AttackClose"];
+	mActiveAction->Start();
+}
+
+void BossEnemy::AttackThrust()
+{
+	// 現行アクションを設定
+	mActiveAction = mActions["AttackThrust"];
 	mActiveAction->Start();
 }
 

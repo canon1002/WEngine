@@ -24,6 +24,26 @@ namespace BT {
 		}
 	};
 
+	/// --------------------------------------------------
+	/// 刺突攻撃
+	/// --------------------------------------------------
+	class AttackThrust : public Action
+	{
+	public:
+
+		AttackThrust(BossEnemy* boss);
+		virtual ~AttackThrust() = default;
+
+		// 実行
+		virtual BT::NodeStatus Tick()override;
+
+		// 再起動
+		virtual void Reset() override {
+			// 待機状態にする
+			this->mCondition = NodeCondition::IDOL;
+		}
+	};
+
 }
 
 
