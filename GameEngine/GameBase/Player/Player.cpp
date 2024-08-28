@@ -56,46 +56,62 @@ void Player::Init() {
 	mIsAimMode = false;
 
 	// 回避行動リクエスト
-	mIsAvoidRequest = false;
+	mAvoidStatus.mIsAvoidRequest = false;
 	// 回避中か
-	mIsAvoid = false;
+	mAvoidStatus.mIsAvoid = false;
 	// 回避時の無敵状態であるか
-	mIsAvoidInvincible = false;
+	mAvoidStatus.mIsAvoidInvincible = false;
 	// 回避距離
-	mAvoidRange = 10.0f;
+	mAvoidStatus.mAvoidRange = 10.0f;
 	// 回避速度
-	mAvoidSpeed = 0.0f;
+	mAvoidStatus.mAvoidSpeed = 0.0f;
 	// 回避経過時間( 0.0f ~ 1.0f )
-	mAvoidTime = 0.0f;
+	mAvoidStatus.mAvoidTime = 0.0f;
 	// 回避開始地点
-	mAvoidMoveStartPos = { 0.0f,0.0f,0.0f };
+	mAvoidStatus.mAvoidMoveStartPos = { 0.0f,0.0f,0.0f };
 	// 回避終了地点
-	mAvoidMoveEndPos = { 0.0f,0.0f,0.0f };
+	mAvoidStatus.mAvoidMoveEndPos = { 0.0f,0.0f,0.0f };
 
-	// シールド
+	// 攻撃関連パラメータ
+	mAttackStatus.sword = std::make_unique<Object3d>();
+	mAttackStatus.sword->Init("sword");
+	mAttackStatus.sword->SetModel("sword.gltf");
+	mAttackStatus.sword->mWorldTransform->scale = { 0.1f,0.1f,0.1f };
+	mAttackStatus.sword->mWorldTransform->rotation = { 1.7f,-0.3f,0.0f };
+	mAttackStatus.sword->mWorldTransform->translation = mObject->GetWorldTransform()->translation;
+	mAttackStatus.pos = { 1000.0f,900.0f,0.0f };// 初期位置
+	mAttackStatus.normalRot = { 1.7f,-0.3f,-0.2f };// 初期回転量
+	mAttackStatus.endRot = { 3.8f,-0.3f,1.0f };// 最終回転量
+
+	// 防御関連パラメータ
 	mGuardStatus.shield = std::make_unique<Object3d>();
 	mGuardStatus.shield->Init("shield");
 	mGuardStatus.shield->SetModel("Shield.gltf");
-	mGuardStatus.shield->mWorldTransform->scale = {0.4f,0.4f,0.4f};
-	mGuardStatus.shield->mWorldTransform->rotation = {1.5f,0.0f,0.0f};
+	mGuardStatus.shield->mWorldTransform->scale = { 0.4f,0.4f,0.4f };
+	mGuardStatus.shield->mWorldTransform->rotation = { 1.5f,0.0f,0.0f };
 	mGuardStatus.shield->mWorldTransform->translation = mObject->GetWorldTransform()->translation;
 	mGuardStatus.normalPos = { -150.0f,900.0f,0.0f };// 初期位置
 	mGuardStatus.guardPos = { 170.0f,720.0f,0.0f };// 構え位置
-	
+
 	// ステータス取得
 	mStatus = new Status();
 	StatusManager::GetInstance()->GetPlayerStatus(*mStatus);
-	
+
 }
 
 void Player::Update() {
 
 	if (mStatus->HP > 0.0f) {
 
-		// 回避行動
+		// 回避関連処理
 		Avoid();
-		// ガード
+
+		// 防御関連処理
 		Guard();
+
+		// 攻撃関連処理
+		Attack();
+
 
 		// 一旦ここに落下処理をつくる
 		if (mObject->mWorldTransform->translation.y > 0.0f) {
@@ -262,6 +278,8 @@ void Player::Update() {
 	mObject->Update();
 	mObject->mSkinning->GetSkeleton().joints;
 	mObject->mCollider->Update();
+	// 剣
+	mAttackStatus.sword->Update();
 	// シールド
 	mGuardStatus.shield->Update();
 
@@ -281,25 +299,55 @@ void Player::Draw() {
 
 void Player::DrawGUI() {
 #ifdef _DEBUG
-	ImGui::Begin("Player");
-	ImGui::DragInt("HP", &mStatus->HP, 1.0f, 0, 100);
-	ImGui::DragInt("STR", &mStatus->STR, 1.0f, 0, 100);
-	ImGui::DragInt("VIT", &mStatus->VIT, 1.0f, 0, 100);
-	ImGui::DragInt("AGI", &mStatus->AGI, 1.0f, 0, 100);
-	ImGui::DragFloat("AvoidRange", &mAvoidRange);
-	ImGui::DragFloat("AvoidSpeed", &mAvoidSpeed);
-	ImGui::DragFloat("AvoidTime", &mAvoidTime);
-	ImGui::DragFloat3("Avoid Start", &mAvoidMoveStartPos.x);
-	ImGui::DragFloat3("Avoid End", &mAvoidMoveEndPos.x);
-	mObject->DrawGuiTree();
-	if (ImGui::TreeNode("Gurad")) {
-		ImGui::DragFloat3("NormalPos", &mGuardStatus.normalPos.x, 1.0f, -1000.0f, 1000.0f);
-		ImGui::DragFloat3("GuradPos", &mGuardStatus.guardPos.x, 1.0f, -1000.0f, 1000.0f);
-		ImGui::DragFloat3("Pos", &mGuardStatus.pos.x, 0.05f, -10.0f, 10.0f);
-		mGuardStatus.shield->DrawGuiTree();
-		ImGui::TreePop();
+
+	// メニューバーを表示する
+	ImGui::Begin("Player",nullptr, ImGuiWindowFlags_MenuBar);
+	if (ImGui::BeginMenuBar()) {
+
+		//mObject->DrawGuiTree();
+		// プレイヤー ステータス
+		if (ImGui::BeginMenu("Status")) {
+			ImGui::DragInt("HP", &mStatus->HP, 1.0f, 0, 100);
+			ImGui::DragInt("STR", &mStatus->STR, 1.0f, 0, 100);
+			ImGui::DragInt("VIT", &mStatus->VIT, 1.0f, 0, 100);
+			ImGui::DragInt("AGI", &mStatus->AGI, 1.0f, 0, 100);
+			ImGui::EndMenu();
+		}
+
+		// 回避パラメータ
+		if (ImGui::BeginMenu("Avoid")) {
+			ImGui::DragFloat("AvoidRange", &mAvoidStatus.mAvoidRange);
+			ImGui::DragFloat("AvoidSpeed", &mAvoidStatus.mAvoidSpeed);
+			ImGui::DragFloat("AvoidTime", &mAvoidStatus.mAvoidTime);
+			ImGui::DragFloat3("Avoid Start", &mAvoidStatus.mAvoidMoveStartPos.x);
+			ImGui::DragFloat3("Avoid End", &mAvoidStatus.mAvoidMoveEndPos.x);
+			ImGui::EndMenu();
+		}
+
+		// 防御パラメータ
+		if (ImGui::BeginMenu("Guard")) {
+			ImGui::DragFloat3("NormalPos", &mGuardStatus.normalPos.x, 1.0f, -1000.0f, 1000.0f);
+			ImGui::DragFloat3("GuradPos", &mGuardStatus.guardPos.x, 1.0f, -1000.0f, 1000.0f);
+			ImGui::DragFloat3("Pos", &mGuardStatus.pos.x, 0.05f, -10.0f, 10.0f);
+			mGuardStatus.shield->DrawGuiTree();
+			ImGui::EndMenu();
+		}
+
+		// 攻撃パラメータ
+		if (ImGui::BeginMenu("Attack")) {
+			ImGui::DragFloat("t", &mAttackStatus.t, 1.0f, -1000.0f, 1000.0f);
+			ImGui::DragFloat3("Pos", &mAttackStatus.pos.x, 1.0f, -1000.0f, 1000.0f);
+			ImGui::DragFloat3("normalRot", &mAttackStatus.normalRot.x, 0.01f, -6.28f, 6.28f);
+			ImGui::DragFloat3("EndRot", &mAttackStatus.endRot.x, 0.01f, -6.28f, 6.28f);
+			mAttackStatus.sword->DrawGuiTree();
+			ImGui::EndMenu();
+		}
+
+		ImGui::EndMenuBar();
 	}
 	ImGui::End();
+
+
 
 #endif // _DEBUG
 
@@ -312,6 +360,8 @@ void Player::ColliderDraw() {
 #endif // _DEBUG
 	mReticle->Draw3DReticle();
 
+	// 剣
+	mAttackStatus.sword->Draw();
 	// シールド
 	mGuardStatus.shield->Draw();
 
@@ -341,13 +391,13 @@ void Player::Avoid()
 		// パラメータの補正
 
 		// 回避距離
-		mAvoidRange = 10.0f;
+		mAvoidStatus.mAvoidRange = 10.0f;
 		// 回避速度
-		mAvoidSpeed = 2.0f;
+		mAvoidStatus.mAvoidSpeed = 2.0f;
 		// 回避経過時間( 0.0f ~ 1.0f )
-		mAvoidTime = 0.0f;
+		mAvoidStatus.mAvoidTime = 0.0f;
 		// 回避開始地点に現在の座標を代入
-		mAvoidMoveStartPos = mObject->GetWorldTransform()->translation;
+		mAvoidStatus.mAvoidMoveStartPos = mObject->GetWorldTransform()->translation;
 
 
 		// スティック入力の量
@@ -372,7 +422,7 @@ void Player::Avoid()
 			// y座標は移動しない
 			direction.y = 0.0f;
 
-			mAvoidMoveEndPos = mObject->mWorldTransform->translation + Scalar(mAvoidRange, direction);
+			mAvoidStatus.mAvoidMoveEndPos = mObject->mWorldTransform->translation + Scalar(mAvoidStatus.mAvoidRange, direction);
 
 			// 回避状態に変更
 			mBehavior = Behavior::kAvoid;
@@ -384,7 +434,7 @@ void Player::Avoid()
 			Vector3 direction = TransformNomal(Vector3(0.0f, 0.0f, -1.0f), MainCamera::GetInstance()->mWorldTransform->GetWorldMatrix());
 			// y座標は移動しない
 			direction.y = 0.0f;
-			mAvoidMoveEndPos = mObject->mWorldTransform->translation + Scalar(mAvoidRange, direction);
+			mAvoidStatus.mAvoidMoveEndPos = mObject->mWorldTransform->translation + Scalar(mAvoidStatus.mAvoidRange, direction);
 			// 回避状態に変更
 			mBehavior = Behavior::kAvoid;
 
@@ -396,21 +446,21 @@ void Player::Avoid()
 	if (mBehavior == Behavior::kAvoid) {
 
 		// 線形補間を利用して座標を移動させる
-		if (mAvoidTime < 1.0f) {
+		if (mAvoidStatus.mAvoidTime < 1.0f) {
 			// 回避時の移動速度/フレームレートで加算する
-			mAvoidTime += mAvoidSpeed / 60.0f;
+			mAvoidStatus.mAvoidTime += mAvoidStatus.mAvoidSpeed / 60.0f;
 		}
-		else if (mAvoidTime >= 1.0f) {
+		else if (mAvoidStatus.mAvoidTime >= 1.0f) {
 			// タイムを補正
-			mAvoidTime = 1.0f;
+			mAvoidStatus.mAvoidTime = 1.0f;
 
 			// 移動終了
 			mBehavior = Behavior::kRoot;
 		}
 
 		// 移動
-		mObject->mWorldTransform->translation.x = (1.0f - mAvoidTime) * mAvoidMoveStartPos.x + mAvoidTime * mAvoidMoveEndPos.x;
-		mObject->mWorldTransform->translation.z = (1.0f - mAvoidTime) * mAvoidMoveStartPos.z + mAvoidTime * mAvoidMoveEndPos.z;
+		mObject->mWorldTransform->translation.x = (1.0f - mAvoidStatus.mAvoidTime) * mAvoidStatus.mAvoidMoveStartPos.x + mAvoidStatus.mAvoidTime * mAvoidStatus.mAvoidMoveEndPos.x;
+		mObject->mWorldTransform->translation.z = (1.0f - mAvoidStatus.mAvoidTime) * mAvoidStatus.mAvoidMoveStartPos.z + mAvoidStatus.mAvoidTime * mAvoidStatus.mAvoidMoveEndPos.z;
 
 	}
 
@@ -435,28 +485,28 @@ void Player::Guard()
 	}
 	// キー入力がなければtを減少
 	else {
-	if (mGuardStatus.t > 0.0f) {
-		mGuardStatus.t -= 5.0f / 60.0f;
-	}
-	else if (mGuardStatus.t < 0.0f) {
-		mGuardStatus.t = 0.0f;
-	}
+		if (mGuardStatus.t > 0.0f) {
+			mGuardStatus.t -= 5.0f / 60.0f;
+		}
+		else if (mGuardStatus.t < 0.0f) {
+			mGuardStatus.t = 0.0f;
+		}
 	}
 
 	// 補間後の数値を計算
 	mGuardStatus.pos = ExponentialInterpolation(mGuardStatus.normalPos, mGuardStatus.guardPos, mGuardStatus.t, 1.0f);
 
 	// シールドの位置を更新(2D配置→ワールド座標に変換)
-	mGuardStatus.shield->mWorldTransform->translation = DamageReaction::GetWorldPosForScreen(Vector2(mGuardStatus.pos.x, mGuardStatus.pos.y),1.0f, MainCamera::GetInstance());
+	mGuardStatus.shield->mWorldTransform->translation = DamageReaction::GetWorldPosForScreen(Vector2(mGuardStatus.pos.x, mGuardStatus.pos.y), 1.0f, MainCamera::GetInstance());
 	// 回転量をカメラから取得
 	mGuardStatus.shield->mWorldTransform->rotation.y = MainCamera::GetInstance()->GetRotate().y;
-	
+
 
 	// tの値に応じてflagをon/offする
 	if (mGuardStatus.t > 0.9f) {
 		mGuardStatus.flag = true;
 		mBehavior = Behavior::kGuard;
-		
+
 	}
 	else {
 		mGuardStatus.flag = false;
@@ -475,8 +525,61 @@ void Player::Guard()
 
 void Player::Attack()
 {
+	// 動作中でない場合のみキー入力を行う
+	if (mAttackStatus.isUp == false &&
+		mAttackStatus.isDown == false &&
+		mAttackStatus.isOperating == false) {
+	
+		// Bボタン Triggerで攻撃
+		if (mInput->GetPused(Gamepad::Button::B)) {
+			mAttackStatus.isUp = true;
+		}
 
+	}
 
+	// 数値上昇中の場合
+	if (mAttackStatus.isUp) {
+		// tを増加させる
+		if (mAttackStatus.t < 1.0f) {
+			mAttackStatus.t += 5.0f / 60.0f;
+
+			// 攻撃が命中していない かつ tが0.7f以上であれば攻撃フラグをtrueにする
+			if (mAttackStatus.t >= 0.7f && mAttackStatus.isHit && !mAttackStatus.isOperating) {
+				mAttackStatus.isOperating = true;
+			}
+			// tが最大値の1.0fを超過したら今度は減少させる
+			if (mAttackStatus.t >= 1.0f) {
+				mAttackStatus.isUp = false;
+				mAttackStatus.isDown = true;
+			}
+		}
+	}
+
+	// 数値減少中の場合
+	if (mAttackStatus.isDown) {
+		// tを減少させる
+		if (mAttackStatus.t > 0.0f) {
+			mAttackStatus.t -= 4.0f / 60.0f;
+
+			// 攻撃が命中していない かつ tが0.9f未満であれば攻撃フラグをfalseにする
+			if (mAttackStatus.t <= 0.9f && mAttackStatus.isOperating) {
+				mAttackStatus.isOperating = false;
+			}
+			// tが最小値の0.0f以下になったらフラグを解除
+			if (mAttackStatus.t <= 0.0f) {
+				mAttackStatus.isUp = false;
+				mAttackStatus.isDown = false;
+				mAttackStatus.isHit = false;
+			}
+		}
+	}
+
+	// 剣の位置を更新(2D配置→ワールド座標に変換)
+	mAttackStatus.sword->mWorldTransform->translation = DamageReaction::GetWorldPosForScreen(Vector2(mAttackStatus.pos.x, mAttackStatus.pos.y), 1.0f, MainCamera::GetInstance());
+
+	// 回転量をtの数値に応じて設定する
+	mAttackStatus.sword->mWorldTransform->rotation = ExponentialInterpolation(mAttackStatus.normalRot, mAttackStatus.endRot, mAttackStatus.t, 1.0f);
+	mAttackStatus.sword->mWorldTransform->rotation.y += MainCamera::GetInstance()->GetRotate().y;
 }
 
 void Player::Charge()

@@ -19,6 +19,19 @@ enum class Behavior {
 	kGuard,  // 防御行動
 };
 
+
+struct AttackStatus {
+	std::unique_ptr<Object3d> sword; // オブジェクト
+	bool isUp;			// 数値が上昇しているか
+	bool isDown;		// 数値が減少しているか
+	bool isOperating;	// 動作中であるか(攻撃判定フラグとしても扱う)
+	bool isHit;			// 攻撃が命中したか
+	float t;			// 動作の時間
+	Vector3 pos;		// 座標
+	Vector3 normalRot;	// 通常時の回転
+	Vector3 endRot;		// 回転の最終値
+};
+
 struct GuardStatus {
 	std::unique_ptr<Object3d> shield;
 	bool flag;
@@ -26,6 +39,25 @@ struct GuardStatus {
 	Vector3 pos;
 	Vector3 normalPos;
 	Vector3 guardPos;
+};
+
+struct AvoidStatus {
+	// 回避行動リクエスト
+	bool mIsAvoidRequest;
+	// 回避中か
+	bool mIsAvoid;
+	// 回避時の無敵状態であるか
+	bool mIsAvoidInvincible;
+	// 回避距離
+	float mAvoidRange;
+	// 回避速度
+	float mAvoidSpeed;
+	// 回避経過時間( 0.0f ~ 1.0f )
+	float mAvoidTime;
+	// 回避開始地点
+	Vector3 mAvoidMoveStartPos;
+	// 回避終了地点
+	Vector3 mAvoidMoveEndPos;
 };
 
 class Player {
@@ -115,28 +147,14 @@ private: // -- 非公開 メンバ変数 -- //
 	// アロークラス
 	std::list<Arrow*> mArrows;
 
-
-	// 回避行動リクエスト
-	bool mIsAvoidRequest;
-	// 回避中か
-	bool mIsAvoid;
-	// 回避時の無敵状態であるか
-	bool mIsAvoidInvincible;
-	// 回避距離
-	float mAvoidRange;
-	// 回避速度
-	float mAvoidSpeed;
-	// 回避経過時間( 0.0f ~ 1.0f )
-	float mAvoidTime;
-	// 回避開始地点
-	Vector3 mAvoidMoveStartPos;
-	// 回避終了地点
-	Vector3 mAvoidMoveEndPos;
-
 	// 能力値
 	Status* mStatus;
-	// ガード時の数値
+	// 攻撃関連パラメータ
+	AttackStatus mAttackStatus;
+	// 防御関連パラメータ
 	GuardStatus mGuardStatus;
+	// 防御関連パラメータ
+	AvoidStatus mAvoidStatus;
 
 
 };

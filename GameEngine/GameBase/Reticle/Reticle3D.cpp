@@ -25,7 +25,7 @@ void Reticle3D::Init()
 
 	mSprite = std::make_unique<Sprite>();
 	mSprite->Init();
-	mSprite->SetTexture("uvChecker.png");
+	mSprite->SetTexture("Reticle2D.png");
 	mSprite->SetAnchorPoint(Vector2(0.5f, 0.5f));
 	mSprite->SetSpriteSize(Vector2(32.0f, 32.0f));
 
@@ -41,7 +41,7 @@ void Reticle3D::Init()
 void Reticle3D::Update()
 {
 	// 自機から3Dレティクルへの距離
-	const float kDistancePlayerTo3DReticle = 50.0f;
+	const float kDistancePlayerTo3DReticle = 20.0f;
 
 	// カメラの回転量から3Dレティクルの位置を計算する
 	float pitch = pCamera->GetRotate().x;
@@ -61,7 +61,7 @@ void Reticle3D::Update()
 	// レティクルの位置を計算 // Y座標をやや高めの位置に
 	mWorldReticle3D->translation = {
 		pCamera->GetTranslate().x + cameraDirection.x * kDistancePlayerTo3DReticle,
-		pCamera->GetTranslate().y + cameraDirection.y * kDistancePlayerTo3DReticle + 5.0f,
+		pCamera->GetTranslate().y + cameraDirection.y * kDistancePlayerTo3DReticle,
 		pCamera->GetTranslate().z + cameraDirection.z * kDistancePlayerTo3DReticle
 	};
 
@@ -111,5 +111,5 @@ void Reticle3D::Draw3DReticle()
 void Reticle3D::Draw2DReticle(){
 
 	SpriteAdministrator::GetInstance()->PreDraw();
-	//mSprite->Draw();
+	mSprite->Draw();
 }

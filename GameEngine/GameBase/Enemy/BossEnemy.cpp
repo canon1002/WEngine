@@ -193,19 +193,19 @@ void BossEnemy::Update() {
 		this->UpdateState();
 
 		// BehaviorTreeの更新処理を行う
-		mBTStatus = mRoot->Tick();
-		if (mBTStatus == BT::NodeStatus::SUCCESS || mBTStatus == BT::NodeStatus::FAILURE) {
-			// 結果が帰ってきたら初期化処理
-			mRoot->Reset();
+		//mBTStatus = mRoot->Tick();
+		//if (mBTStatus == BT::NodeStatus::SUCCESS || mBTStatus == BT::NodeStatus::FAILURE) {
+		//	// 結果が帰ってきたら初期化処理
+		//	mRoot->Reset();
 
-			// 各アクションの初期化もしておく
-			for (auto& action : mActions) {
-				action.second->End();
-				action.second->Reset();
-			}
-			// nullを代入しておく
-			mActiveAction = nullptr;
-		}
+		//	// 各アクションの初期化もしておく
+		//	for (auto& action : mActions) {
+		//		action.second->End();
+		//		action.second->Reset();
+		//	}
+		//	// nullを代入しておく
+		//	mActiveAction = nullptr;
+		//}
 
 		// オブジェクト更新
 		mObject->Update();
