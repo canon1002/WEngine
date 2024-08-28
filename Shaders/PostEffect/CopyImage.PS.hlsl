@@ -13,14 +13,19 @@ struct FullScereenEffect
     int32_t enableGrayScele;    // Graysceleの有無
     
     float32_t4 screenColor;     // 上記の際に使うfloat[4](RGB+A型)
+    
+    float32_t4 vignettingColor; // ビネット処理で使うfloat[4](RGB+A型)
+    
     int32_t enableVignetting;   // ビネット処理の有無(画面端を暗くする)
     float32_t vigneMultipliier; // ビネット処理の際に使用する乗数
     float32_t vigneIndex;       // ビネット処理の際に使用する指数
     int32_t enableSmooting;     // Smooting(ぼかし)の有無 (ぼかしの種類は以下の変数で決める)
+    
     int32_t enableBoxFilter;    // ぼかしの際にBoxFillterを使用するのか
     int32_t enableGaussianFilter;    // ぼかしをガウスぼかしにするのか
     int32_t kernelSize; // カーネルの大きさ
     float32_t GaussianSigma;    // GaussianFilterの際に使う標準偏差
+    
     int32_t enableLuminanceOutline; // 輝度で検出したアウトラインの有無
     float32_t outlineMultipliier;   // アウトライン生成時の差を大きくするための数値  
     int32_t enableDepthOutline; // 深度(Depth)で検出したアウトラインの有無
@@ -171,7 +176,10 @@ PixelShaderOutput main(VertexShaderOutput input)
         // n乗してみる nはgEffectのvignetIndex
         vignette = saturate(pow(vignette, gEffects.vigneIndex));
         // 係数として乗算
-        output.color.rgb *= vignette;
+        output.color.r = output.color.r * (vignette - gEffects.vignettingColor.r);
+        output.color.g = output.color.g * (vignette - gEffects.vignettingColor.g);
+        output.color.b = output.color.b * (vignette - gEffects.vignettingColor.b);
+        
     }
     // 輝度で検出したアウトラインの有無
     if (gEffects.enableLuminanceOutline)

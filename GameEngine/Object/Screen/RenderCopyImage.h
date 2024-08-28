@@ -15,6 +15,8 @@ struct FullScereenEffect {
 
 	Vector4 screenColor;     // 上記の際に使うVector4(RGB+A型)
 
+	Vector4 vignettingColor;		// 画面端の色を設定する
+
 	int32_t enableVignetting;   // ビネット処理の有無(画面端を暗くする)
 	float vigneMultipliier; // ビネット処理の際に使用する乗数
 	float vigneIndex;       // ビネット処理の際に使用する指数
@@ -114,6 +116,8 @@ public:
 	const D3D12_VERTEX_BUFFER_VIEW& GetVBV() const { return mVertexBufferView; }
 	auto* GetMaterial() { return  fullScreenResource.Get(); }
 	auto* GetWVP() { return mWvpResource.Get(); }
+
+
 
 private:
 

@@ -16,6 +16,16 @@ enum class Behavior {
 	kJump,	 // ジャンプ中
 	kCharge, // 溜め動作中
 	kAvoid,  // 回避行動
+	kGuard,  // 防御行動
+};
+
+struct GuardStatus {
+	std::unique_ptr<Object3d> shield;
+	bool flag;
+	float t;
+	Vector3 pos;
+	Vector3 normalPos;
+	Vector3 guardPos;
 };
 
 class Player {
@@ -46,6 +56,9 @@ public: // -- 公開 メンバ関数 -- //
 
 	// 回避
 	void Avoid();
+	// 防御
+	void Guard();
+
 	// 攻撃処理
 	void Attack();
 	// 溜め処理
@@ -122,6 +135,9 @@ private: // -- 非公開 メンバ変数 -- //
 
 	// 能力値
 	Status* mStatus;
+	// ガード時の数値
+	GuardStatus mGuardStatus;
+
 
 };
 

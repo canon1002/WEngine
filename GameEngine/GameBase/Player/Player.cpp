@@ -72,8 +72,20 @@ void Player::Init() {
 	// 回避終了地点
 	mAvoidMoveEndPos = { 0.0f,0.0f,0.0f };
 
+	// シールド
+	mGuardStatus.shield = std::make_unique<Object3d>();
+	mGuardStatus.shield->Init("shield");
+	mGuardStatus.shield->SetModel("Shield.gltf");
+	mGuardStatus.shield->mWorldTransform->scale = {0.4f,0.4f,0.4f};
+	mGuardStatus.shield->mWorldTransform->rotation = {1.5f,0.0f,0.0f};
+	mGuardStatus.shield->mWorldTransform->translation = mObject->GetWorldTransform()->translation;
+	mGuardStatus.normalPos = { -150.0f,900.0f,0.0f };// 初期位置
+	mGuardStatus.guardPos = { 170.0f,720.0f,0.0f };// 構え位置
+	
 	// ステータス取得
-	mStatus = StatusManager::GetInstance()->GetPlayerStatus();
+	mStatus = new Status();
+	StatusManager::GetInstance()->GetPlayerStatus(*mStatus);
+	
 }
 
 void Player::Update() {
@@ -82,6 +94,8 @@ void Player::Update() {
 
 		// 回避行動
 		Avoid();
+		// ガード
+		Guard();
 
 		// 一旦ここに落下処理をつくる
 		if (mObject->mWorldTransform->translation.y > 0.0f) {
@@ -211,27 +225,16 @@ void Player::Update() {
 		}
 		// 補間後の数値を計算
 		Vector3 cVel = ExponentialInterpolation(s, e, t, k);
-#ifdef _DEBUG
-
-		ImGui::Begin("AddCamera");
-		ImGui::DragFloat3("Start", &s.x);
-		ImGui::DragFloat3("End", &e.x);
-		ImGui::DragFloat("t", &t);
-		ImGui::DragFloat("k", &k);
-		ImGui::DragFloat3("cVel", &cVel.x);
-		ImGui::End();
-
-#endif // _DEBUG
 
 		// メインカメラに追加の平行移動値を与える
 		MainCamera::GetInstance()->SetAddTranslation(TransformNomal(cVel, MainCamera::GetInstance()->mWorldTransform->GetWorldMatrix()));
 
-		// RBボタン長押しでため動作を行う
-		if (mInput->GetLongPush(Gamepad::Button::RIGHT_SHOULDER)) {
+		// Bボタン長押しでため動作を行う
+		if (mInput->GetLongPush(Gamepad::Button::B)) {
 			Charge();
 		}
 		// ボタンを離したら攻撃する
-		if (mInput->GetReleased(Gamepad::Button::RIGHT_SHOULDER)) {
+		if (mInput->GetReleased(Gamepad::Button::B)) {
 			ChengeChageToAttack();
 		}
 		if (mBehavior == Behavior::kAttack) {
@@ -259,6 +262,8 @@ void Player::Update() {
 	mObject->Update();
 	mObject->mSkinning->GetSkeleton().joints;
 	mObject->mCollider->Update();
+	// シールド
+	mGuardStatus.shield->Update();
 
 	// UI更新
 	mStatus->Update();
@@ -287,6 +292,13 @@ void Player::DrawGUI() {
 	ImGui::DragFloat3("Avoid Start", &mAvoidMoveStartPos.x);
 	ImGui::DragFloat3("Avoid End", &mAvoidMoveEndPos.x);
 	mObject->DrawGuiTree();
+	if (ImGui::TreeNode("Gurad")) {
+		ImGui::DragFloat3("NormalPos", &mGuardStatus.normalPos.x, 1.0f, -1000.0f, 1000.0f);
+		ImGui::DragFloat3("GuradPos", &mGuardStatus.guardPos.x, 1.0f, -1000.0f, 1000.0f);
+		ImGui::DragFloat3("Pos", &mGuardStatus.pos.x, 0.05f, -10.0f, 10.0f);
+		mGuardStatus.shield->DrawGuiTree();
+		ImGui::TreePop();
+	}
 	ImGui::End();
 
 #endif // _DEBUG
@@ -296,9 +308,12 @@ void Player::DrawGUI() {
 
 void Player::ColliderDraw() {
 #ifdef _DEBUG
-	mObject->mCollider->Draw();
+	//mObject->mCollider->Draw();
 #endif // _DEBUG
 	mReticle->Draw3DReticle();
+
+	// シールド
+	mGuardStatus.shield->Draw();
 
 	for (const auto& arrow : mArrows) {
 		arrow->GetCollider()->Draw();
@@ -397,10 +412,65 @@ void Player::Avoid()
 		mObject->mWorldTransform->translation.x = (1.0f - mAvoidTime) * mAvoidMoveStartPos.x + mAvoidTime * mAvoidMoveEndPos.x;
 		mObject->mWorldTransform->translation.z = (1.0f - mAvoidTime) * mAvoidMoveStartPos.z + mAvoidTime * mAvoidMoveEndPos.z;
 
-
 	}
 
 
+}
+
+void Player::Guard()
+{
+	// キー入力取得
+	if (mInput->GetLongPush(Gamepad::Button::RIGHT_SHOULDER)) {
+
+		// 入力中 ガードへ移行
+
+		// tを増加させ、座標を移動
+		if (mGuardStatus.t < 1.0f) {
+			mGuardStatus.t += 5.0f / 60.0f;
+		}
+		else if (mGuardStatus.t > 1.0f) {
+			mGuardStatus.t = 1.0f;
+		}
+
+	}
+	// キー入力がなければtを減少
+	else {
+	if (mGuardStatus.t > 0.0f) {
+		mGuardStatus.t -= 5.0f / 60.0f;
+	}
+	else if (mGuardStatus.t < 0.0f) {
+		mGuardStatus.t = 0.0f;
+	}
+	}
+
+	// 補間後の数値を計算
+	mGuardStatus.pos = ExponentialInterpolation(mGuardStatus.normalPos, mGuardStatus.guardPos, mGuardStatus.t, 1.0f);
+
+	// シールドの位置を更新(2D配置→ワールド座標に変換)
+	mGuardStatus.shield->mWorldTransform->translation = DamageReaction::GetWorldPosForScreen(Vector2(mGuardStatus.pos.x, mGuardStatus.pos.y),1.0f, MainCamera::GetInstance());
+	// 回転量をカメラから取得
+	mGuardStatus.shield->mWorldTransform->rotation.y = MainCamera::GetInstance()->GetRotate().y;
+	
+
+	// tの値に応じてflagをon/offする
+	if (mGuardStatus.t > 0.9f) {
+		mGuardStatus.flag = true;
+		mBehavior = Behavior::kGuard;
+		
+	}
+	else {
+		mGuardStatus.flag = false;
+		mBehavior = Behavior::kRoot;
+	}
+
+	// flagがtrueのとき、ダメージ時軽減を行う
+	if (mGuardStatus.flag) {
+		// 防御中は守備力を倍にする
+		mStatus->VIT = StatusManager::GetInstance()->GetPlayerStatus()->VIT * 2;
+	}
+	else {
+		mStatus->VIT = StatusManager::GetInstance()->GetPlayerStatus()->VIT;
+	}
 }
 
 void Player::Attack()

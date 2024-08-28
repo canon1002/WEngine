@@ -57,8 +57,9 @@ void RenderCopyImage::Update() {
 	ImGui::Checkbox("Viggetting Flag", &effectFlags.isEnableViggetting);
 	fullScreenData->enableVignetting = effectFlags.isEnableViggetting;
 	if (effectFlags.isEnableViggetting) {
-		ImGui::DragFloat("Multipliier", &fullScreenData->vigneMultipliier);
-		ImGui::DragFloat("Index", &fullScreenData->vigneIndex);
+		ImGui::DragFloat4("Color", &fullScreenData->vignettingColor.x, 0.01f, 0.0f, 1.0f);
+		ImGui::DragFloat("Multipliier", &fullScreenData->vigneMultipliier,0.01f,0.0f,100.0f);
+		ImGui::DragFloat("Index", &fullScreenData->vigneIndex,0.01f,0.0f,10.0f);
 	}
 
 	// ぼかし(BoxFilter/GuaseFilter)
@@ -329,10 +330,11 @@ void RenderCopyImage::CreateVertexResource() {
 	fullScreenData->enableScreenColor = 0;
 	fullScreenData->enableGrayScele = 0;
 	fullScreenData->screenColor = { 1.0f,1.0f,1.0f,1.0f };
+	fullScreenData->vignettingColor = { 0.0f,0.4f,0.4f,1.0f };
 	fullScreenData->enableVignetting = 1;
 	fullScreenData->vigneMultipliier = 0.2f;
 	fullScreenData->vigneIndex = 0.1f;
-	fullScreenData->enableSmooting = 1;
+	fullScreenData->enableSmooting = 0;
 	fullScreenData->enableBoxFilter = 0;
 	fullScreenData->enableGaussianFilter = 1;
 	fullScreenData->kernelSize = 3;

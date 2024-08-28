@@ -48,6 +48,8 @@ public: // -- 公開 メンバ関数 -- //
 
 	// ワールド座標をスクリーン座標に変換する
 	static Vector2 GetScreenPos(const Vector3 pos,const MainCamera* camera);
+	// スクリーン->ワールド変換
+	static Vector3 GetWorldPosForScreen(const Vector2 pos,const float distance,const MainCamera* camera);
 
 	// int型の桁数を計算する関数
 	int32_t GetDigits(int32_t num);

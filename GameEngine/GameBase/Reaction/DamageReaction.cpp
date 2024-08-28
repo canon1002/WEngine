@@ -166,6 +166,39 @@ Vector2 DamageReaction::GetScreenPos(const Vector3 pos, const MainCamera* camera
 	return Vector2(screenPos.x,screenPos.y);
 }
 
+Vector3 DamageReaction::GetWorldPosForScreen(const Vector2 pos, const float distance, const MainCamera* camera)
+{
+    // 2Dから3Dへの変換を行う
+
+    // viewPort計算
+    const static Matrix4x4 viewPort = MakeViewportMatrix(0, 0,
+        camera->GetWindowSize().x, camera->GetWindowSize().y, 0.0f, 1.0f);
+    // VP行列をviewPort行列を合成
+    Matrix4x4 VPV = Multiply(Multiply(camera->GetViewMatrix(), camera->GetProjectionMatrix()), viewPort);
+    // VPV行列を逆行列にする
+    Matrix4x4 inVPV = Inverse(VPV);
+
+    // 近く
+    Vector3 posNear = {pos.x,pos.y, 0.0f };
+    posNear = Transform(posNear, inVPV);
+    // 遠く
+    Vector3 posFar = { pos.x, pos.y, 1.0f };
+    posFar = Transform(posFar, inVPV);
+
+    // 方向を計算
+    Vector3 direction = Subtract(posFar, posNear);
+
+    // ベクトルの長さを整える
+    direction = Normalize(direction);
+    direction.x *= distance;
+    direction.y *= distance;
+    direction.z *= distance;
+
+    // ワールド座標を設定
+    Vector3 worldPos = Add(posNear, direction);
+    return worldPos;
+}
+
 int32_t DamageReaction::GetDigits(int32_t num){
     
     // 桁数

@@ -76,6 +76,14 @@ public:
 	void Update();
 
 	Status* GetPlayerStatus() { return mPlayerStatus; }
+	void GetPlayerStatus(Status& st) { 
+		st.HP = mPlayerStatus->HP;
+		st.MAXHP = mPlayerStatus->MAXHP;
+		st.STR = mPlayerStatus->STR;
+		st.VIT = mPlayerStatus->VIT;
+		st.AGI = mPlayerStatus->AGI;
+		st.mSprite = std::move(mPlayerStatus->mSprite);
+	}
 	Status* GetBossStatus() { return mBossStatus; }
 	
 	void ReceiveDamage(Status* attacker, float power, Status* deffence);

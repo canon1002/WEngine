@@ -35,6 +35,7 @@ void GameScene::Init(){
 	ModelManager::GetInstance()->LoadModel("Arrow", "Arrow.gltf");
 	ModelManager::GetInstance()->LoadModel("boss", "boss.gltf");
 	ModelManager::GetInstance()->LoadModel("Weapons", "sword.gltf");
+	ModelManager::GetInstance()->LoadModel("Shield", "Shield.gltf");
 
 	// SkyBox 読み込み
 	DirectXCommon::GetInstance()->srv_->LoadTexture("skybox/rostock_laage_airport_4k.dds");
@@ -126,7 +127,7 @@ void GameScene::Draw() {
 
 	// Skyboxの描画前処理
 	skybox_->PreDraw();
-	skybox_->Draw();
+	//skybox_->Draw();
 
 	// レベルデータ読み込み
 	LevelEditor::GetInstance()->Draw();
