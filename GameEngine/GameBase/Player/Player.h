@@ -85,14 +85,21 @@ public: // -- 公開 メンバ関数 -- //
 	Reticle3D* GetReticle3D() { return mReticle.get(); }
 
 	void SetColliderListForArrow(CollisionManager* cManager);
+	void SetColliderList(CollisionManager* cManager);
 
 	// 回避
 	void Avoid();
 	// 防御
 	void Guard();
-
 	// 攻撃処理
 	void Attack();
+	// 移動処理
+	void Move();
+	// 落下処理
+	void Fall();
+	// Debag用
+	void DebagCtr();
+
 	// 溜め処理
 	void Charge();
 	// 溜め->攻撃 移行処理

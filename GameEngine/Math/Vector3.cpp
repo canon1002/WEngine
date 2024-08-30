@@ -343,8 +343,13 @@ Vector3 ExponentialInterpolation(Vector3 a, Vector3 b, float t, float k) {
 	result.y = a.y + ((b.y - a.y) * k * t);
 	result.z = a.z + ((b.z - a.z) * k * t);
 	return result;
-	//return a + ((b - a) * (1.0f - std::expf(-k * t)));
+}
 
+float ExponentialInterpolation(float a, float b, float t, float k) {
+	float result = 0.0f;
+	result = a + ((b - a) * k * t);
+	
+	return result;
 }
 
 float clamp(float num, float max, float min)

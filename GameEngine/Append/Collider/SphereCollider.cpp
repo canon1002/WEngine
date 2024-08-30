@@ -35,7 +35,7 @@ void SphereCollider::Update() {
 	viewM = camera->GetViewMatrix();
 	// WVPにまとめる
 	wvpM = camera->GetViewProjectionMatrix();
-	// AABBなので回転をなくしたワールド行列を作る
+	// ワールド行列を作る
 	WorldTransform* world = new WorldTransform();
 	world->translation = pWorldTransform->GetWorldPosition();
 	// ridiusに合わせて拡大縮小を行う

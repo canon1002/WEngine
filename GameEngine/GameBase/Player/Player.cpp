@@ -103,6 +103,12 @@ void Player::Update() {
 
 	if (mStatus->HP > 0.0f) {
 
+		// 落下処理
+		Fall();
+
+		// 移動処理
+		Move();
+
 		// 回避関連処理
 		Avoid();
 
@@ -112,151 +118,12 @@ void Player::Update() {
 		// 攻撃関連処理
 		Attack();
 
-
-		// 一旦ここに落下処理をつくる
-		if (mObject->mWorldTransform->translation.y > 0.0f) {
-			// 移動量を加算
-			mObject->mWorldTransform->translation.y += mVelocity.y;
-			mVelocity.y -= 9.8f * (1.0f / 360.0f);
-		}
-		else if (mObject->mWorldTransform->translation.y < 0.0f) {
-			mObject->mWorldTransform->translation.y = 0.0f;
-			// 移動量修正
-			mVelocity.y = 0.0f;
-
-			// ジャンプ回数のリセット
-			mJumpCount = kJumpCountMax;
-		}
-
-
-		if (mBehavior != Behavior::kAvoid) {
-
-			// ジャンプ
-			if (mJumpCount > 0) {
-				if (mInput->GetPused(Gamepad::Button::Y)) {
-					// 残りジャンプ回数を減らす
-					--mJumpCount;
-					// 初速度を加算
-					mVelocity.y = kJumpFirstSpeed;
-					// 状態をジャンプ中に変更
-					mBehavior = Behavior::kJump;
-				}
-			}
-
-			// ジャンプ中
-			if (mBehavior == Behavior::kJump) {
-
-				// 移動量を加算
-				mObject->mWorldTransform->translation.y += mVelocity.y;
-
-				// 地面を y==0 として地面にめり込んだら地面の上まで戻す
-				if (mObject->mWorldTransform->translation.y < 0.0f) {
-					mObject->mWorldTransform->translation.y = 0.0f;
-					// 移動量も修正しておく 
-					mVelocity.y = 0.0f;
-					// ジャンプ回数のリセット
-					mJumpCount = kJumpCountMax;
-					// 通常状態に変更
-					mBehavior = Behavior::kRoot;
-				}
-			}
-
-			// スティック入力の量
-			const static int stickValue = 6000;
-			// いずれかの数値が、以上(以下)であれば移動処理を行う
-			if (mInput->GetStick(Gamepad::Stick::LEFT_X) < -stickValue || // 左 
-				mInput->GetStick(Gamepad::Stick::LEFT_X) > stickValue || // 右
-				mInput->GetStick(Gamepad::Stick::LEFT_Y) < -stickValue || // 上
-				mInput->GetStick(Gamepad::Stick::LEFT_Y) > stickValue	  // 下
-				) {
-
-				// Xの移動量とYの移動量を設定する
-				Vector3 direction = {
-					(float)mInput->GetStick(Gamepad::Stick::LEFT_X) ,
-					0.0f,
-					(float)mInput->GetStick(Gamepad::Stick::LEFT_Y)
-				};
-				// 正規化
-				direction = Normalize(direction);
-
-				// 移動速度を設定
-				float moveSpeed = 0.15f;
-
-				// カメラの回転量を反映
-				direction = TransformNomal(direction, MainCamera::GetInstance()->mWorldTransform->GetWorldMatrix());
-				// y座標は移動しない
-				direction.y = 0.0f;
-
-				// 平行移動を行う
-				mObject->mWorldTransform->translation += direction * moveSpeed;
-
-				// ここから回転処理
-				const float PI = 3.14f;
-				float rotateY = std::atan2f(direction.x, direction.z);
-				rotateY = std::fmodf(rotateY, 2.0f * PI);
-				if (rotateY > PI) {
-					rotateY -= 2.0f * PI;
-				}
-				if (rotateY < -PI) {
-					rotateY += 2.0f * PI;
-				}
-				mObject->mWorldTransform->rotation.y = rotateY;
-			}
-
-		}
+		// デバッグ操作
+		DebagCtr();
 
 		// レティクル 更新
 		mReticle->Update();
 
-		// 補間数値
-		static float t = 0.0f;
-		// 勾配
-		static float k = 1.0f;
-		// 始点と終点
-		static Vector3 s = { 0.0f,0.0f,0.0f };
-		static Vector3 e = { 0.0f,0.5f,-8.0f };
-
-		// 狙えるようにカメラの移動 
-		if (mInput->GetLongPush(Gamepad::Button::LEFT_SHOULDER)) {
-			mIsAimMode = true;
-		}
-		else {
-			mIsAimMode = false;
-		}
-		if (mIsAimMode) {
-			if (t < 1.0f) {
-				t += 3.0f / 60.0f;
-			}
-			else if (t > 1.0f) {
-				t = 1.0f;
-			}
-		}
-		else {
-			if (t > 0.0f) {
-				t -= 3.0f / 60.0f;
-			}
-			else if (t < 0.0f) {
-				t = 0.0f;
-			}
-		}
-		// 補間後の数値を計算
-		Vector3 cVel = ExponentialInterpolation(s, e, t, k);
-
-		// メインカメラに追加の平行移動値を与える
-		MainCamera::GetInstance()->SetAddTranslation(TransformNomal(cVel, MainCamera::GetInstance()->mWorldTransform->GetWorldMatrix()));
-
-		// Bボタン長押しでため動作を行う
-		if (mInput->GetLongPush(Gamepad::Button::B)) {
-			Charge();
-		}
-		// ボタンを離したら攻撃する
-		if (mInput->GetReleased(Gamepad::Button::B)) {
-			ChengeChageToAttack();
-		}
-		if (mBehavior == Behavior::kAttack) {
-			Attack();
-			mBehavior = Behavior::kRoot;
-		}
 	}
 	// プレイヤーの弾 -- 更新 --
 	auto arrowIt = mArrows.begin();  // イテレータを初期化
@@ -289,7 +156,7 @@ void Player::Update() {
 }
 
 void Player::Draw() {
-	mObject->Draw();
+	//mObject->Draw();
 
 	for (const auto& arrow : mArrows) {
 		arrow->Draw();
@@ -380,6 +247,16 @@ void Player::SetColliderListForArrow(CollisionManager* cManager)
 		++arrowIt;  // イテレータを次に進める
 	}
 
+}
+
+void Player::SetColliderList(CollisionManager* cManager)
+{
+
+	// 攻撃中かつ命中前であればコライダーをリストに追加する
+	if (!mAttackStatus.isHit && mAttackStatus.isOperating) {
+
+		cManager->SetCollider(mReticle->GetReticleCollider());
+	}
 }
 
 void Player::Avoid()
@@ -543,8 +420,8 @@ void Player::Attack()
 		if (mAttackStatus.t < 1.0f) {
 			mAttackStatus.t += 5.0f / 60.0f;
 
-			// 攻撃が命中していない かつ tが0.7f以上であれば攻撃フラグをtrueにする
-			if (mAttackStatus.t >= 0.7f && mAttackStatus.isHit && !mAttackStatus.isOperating) {
+			// 攻撃が命中していない かつ tが0.1f以上であれば攻撃フラグをtrueにする
+			if (mAttackStatus.t >= 0.1f && !mAttackStatus.isHit && !mAttackStatus.isOperating) {
 				mAttackStatus.isOperating = true;
 			}
 			// tが最大値の1.0fを超過したら今度は減少させる
@@ -561,14 +438,15 @@ void Player::Attack()
 		if (mAttackStatus.t > 0.0f) {
 			mAttackStatus.t -= 4.0f / 60.0f;
 
-			// 攻撃が命中していない かつ tが0.9f未満であれば攻撃フラグをfalseにする
-			if (mAttackStatus.t <= 0.9f && mAttackStatus.isOperating) {
+			// 攻撃が命中していない かつ tが0.7f未満であれば攻撃フラグをfalseにする
+			if (mAttackStatus.t <= 0.7f && mAttackStatus.isOperating) {
 				mAttackStatus.isOperating = false;
 			}
 			// tが最小値の0.0f以下になったらフラグを解除
 			if (mAttackStatus.t <= 0.0f) {
 				mAttackStatus.isUp = false;
 				mAttackStatus.isDown = false;
+				mAttackStatus.isOperating = false;
 				mAttackStatus.isHit = false;
 			}
 		}
@@ -580,6 +458,144 @@ void Player::Attack()
 	// 回転量をtの数値に応じて設定する
 	mAttackStatus.sword->mWorldTransform->rotation = ExponentialInterpolation(mAttackStatus.normalRot, mAttackStatus.endRot, mAttackStatus.t, 1.0f);
 	mAttackStatus.sword->mWorldTransform->rotation.y += MainCamera::GetInstance()->GetRotate().y;
+
+	// レティクルの位置(コライダー)をtの値に応じて移動させる
+	mReticle->SetReticleDistance(ExponentialInterpolation(0.5f,10.0f, mAttackStatus.t, 1.0f));
+
+	// 衝突時の処理
+	if (mReticle->GetReticleCollider()->GetOnCollisionFlag()) {
+		if (mAttackStatus.isOperating == true && mAttackStatus.isHit == false) {
+			// 次のフレームで消す
+			mAttackStatus.isHit = true;
+
+			// 敵にダメージを与える
+			ReciveDamageToBoss(1.2f);
+
+			// ダメージ表示
+			int32_t damage = static_cast<int32_t>(static_cast<int32_t>(mStatus->STR / 2.0f) * 1.0f) - static_cast<int32_t>(mBoss->GetStatus()->VIT / 4.0f);;
+			DamageReaction::GetInstance()->Reaction(mReticle->GetWorld3D(), damage, MainCamera::GetInstance());
+		}
+	}
+
+}
+
+void Player::Move()
+{
+	// 通常/防御時に有効
+	if (mBehavior == Behavior::kRoot || mBehavior == Behavior::kGuard) {
+
+		// スティック入力の量
+		const static int stickValue = 6000;
+		// いずれかの数値が、以上(以下)であれば移動処理を行う
+		if (mInput->GetStick(Gamepad::Stick::LEFT_X) < -stickValue || // 左 
+			mInput->GetStick(Gamepad::Stick::LEFT_X) > stickValue || // 右
+			mInput->GetStick(Gamepad::Stick::LEFT_Y) < -stickValue || // 上
+			mInput->GetStick(Gamepad::Stick::LEFT_Y) > stickValue	  // 下
+			) {
+
+			// Xの移動量とYの移動量を設定する
+			Vector3 direction = {
+				(float)mInput->GetStick(Gamepad::Stick::LEFT_X) ,
+				0.0f,
+				(float)mInput->GetStick(Gamepad::Stick::LEFT_Y)
+			};
+			// 正規化
+			direction = Normalize(direction);
+
+			// 移動速度を設定
+			float moveSpeed = 0.10f;
+			// ガード中は移動速度を減少
+			if (mBehavior == Behavior::kGuard) {
+				moveSpeed = 0.03f;
+			}
+
+			// カメラの回転量を反映
+			direction = TransformNomal(direction, MainCamera::GetInstance()->mWorldTransform->GetWorldMatrix());
+			// y座標は移動しない
+			direction.y = 0.0f;
+
+			// 平行移動を行う
+			mObject->mWorldTransform->translation += direction * moveSpeed;
+
+			// ここから回転処理
+			const float PI = 3.14f;
+			float rotateY = std::atan2f(direction.x, direction.z);
+			rotateY = std::fmodf(rotateY, 2.0f * PI);
+			if (rotateY > PI) {
+				rotateY -= 2.0f * PI;
+			}
+			if (rotateY < -PI) {
+				rotateY += 2.0f * PI;
+			}
+			mObject->mWorldTransform->rotation.y = rotateY;
+		}
+
+	}
+
+}
+
+void Player::Fall()
+{
+	// 落下処理
+	if (mObject->mWorldTransform->translation.y > 0.0f) {
+		
+		// 移動量を加算
+		mObject->mWorldTransform->translation.y += mVelocity.y;
+		mVelocity.y -= 9.8f * (1.0f / 360.0f);
+	}
+	// 地面に到達したら
+	else if (mObject->mWorldTransform->translation.y < 0.0f) {
+		
+		// 地面に固定
+		mObject->mWorldTransform->translation.y = 0.0f;
+		
+		// 移動量修正
+		mVelocity.y = 0.0f;
+
+		// ジャンプ回数のリセット
+		mJumpCount = kJumpCountMax;
+	}
+}
+
+void Player::DebagCtr()
+{
+	// 補間数値
+	static float t = 0.0f;
+	// 勾配
+	static float k = 1.0f;
+	// 始点と終点
+	static Vector3 s = { 0.0f,0.0f,0.0f };
+	static Vector3 e = { 0.0f,0.5f,-8.0f };
+
+	// 狙えるようにカメラの移動 
+	if (mInput->GetLongPush(Gamepad::Button::LEFT_SHOULDER)) {
+		mIsAimMode = true;
+	}
+	else {
+		mIsAimMode = false;
+	}
+	if (mIsAimMode) {
+		if (t < 1.0f) {
+			t += 3.0f / 60.0f;
+		}
+		else if (t > 1.0f) {
+			t = 1.0f;
+		}
+	}
+	else {
+		if (t > 0.0f) {
+			t -= 3.0f / 60.0f;
+		}
+		else if (t < 0.0f) {
+			t = 0.0f;
+		}
+	}
+	// 補間後の数値を計算
+	Vector3 cVel = ExponentialInterpolation(s, e, t, k);
+
+	// メインカメラに追加の平行移動値を与える
+	MainCamera::GetInstance()->SetAddTranslation(TransformNomal(cVel, MainCamera::GetInstance()->mWorldTransform->GetWorldMatrix()));
+
 }
 
 void Player::Charge()

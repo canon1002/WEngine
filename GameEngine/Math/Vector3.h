@@ -109,5 +109,6 @@ Vector3 Min(const Vector3& a, const Vector3& b);
 Vector3 Max(const Vector3& a, const Vector3& b);
 
 Vector3 ExponentialInterpolation(Vector3 a, Vector3 b, float t,float k);
+float ExponentialInterpolation(float a, float b, float t,float k);
 
 float clamp(float num, float max, float min);

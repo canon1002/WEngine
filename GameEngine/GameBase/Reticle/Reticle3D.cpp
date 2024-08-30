@@ -3,6 +3,7 @@
 #include "GameEngine/Object/Sprite/SpriteAdministrator.h"
 #include "GameEngine/Object/Camera/MainCamera.h"
 #include "GameEngine/Base/Debug/ImGuiManager.h"
+#include "GameEngine/Append/Collider/CollisionManager.h"
 
 Reticle3D::Reticle3D()
 {
@@ -17,11 +18,19 @@ void Reticle3D::Init()
 	pInput = InputManager::GetInstance();
 	pCamera = MainCamera::GetInstance();
 
-
+	// 3Dレティクル
 	mObject = std::make_unique<Object3d>();
 	mObject->Init("Retcle3D");
 	mObject->SetModel("box.gltf");
-	//mObject->mWorldTransform->SetParent(pCamera->mWorldTransform->GetWorldMatrix());
+
+	// 3Dレティクルのコライダー
+	mObject->mCollider = new SphereCollider(mObject->mWorldTransform, 0.5f);
+	mObject->mCollider->Init();
+	mObject->mCollider->SetCollisionAttribute(kCollisionAttributePlayerBullet);
+	mObject->mCollider->SetCollisionMask(kCollisionAttributeEnemy);
+
+	// 自機から3Dレティクルへの距離
+	mReticleDistance = 0.5f;
 
 	mSprite = std::make_unique<Sprite>();
 	mSprite->Init();
@@ -29,10 +38,6 @@ void Reticle3D::Init()
 	mSprite->SetAnchorPoint(Vector2(0.5f, 0.5f));
 	mSprite->SetSpriteSize(Vector2(32.0f, 32.0f));
 
-	// 3Dレティクルのワールド座標
-	mWorldReticle3D = new WorldTransform();
-	mWorldReticle3D->Init();
-	//mWorldReticle3D->SetParent(pCamera->mWorldTransform->GetWorldMatrix());
 	// 2Dレティクルの座標
 	mPostionReticle2D = Vector2(0.0f, 0.0f);
 
@@ -40,8 +45,6 @@ void Reticle3D::Init()
 
 void Reticle3D::Update()
 {
-	// 自機から3Dレティクルへの距離
-	const float kDistancePlayerTo3DReticle = 20.0f;
 
 	// カメラの回転量から3Dレティクルの位置を計算する
 	float pitch = pCamera->GetRotate().x;
@@ -59,10 +62,10 @@ void Reticle3D::Update()
 	Vector3 cameraDirection = RotateVector(RotateVector(RotateVector(forward,qRoll), qPitch), qYaw);
 
 	// レティクルの位置を計算 // Y座標をやや高めの位置に
-	mWorldReticle3D->translation = {
-		pCamera->GetTranslate().x + cameraDirection.x * kDistancePlayerTo3DReticle,
-		pCamera->GetTranslate().y + cameraDirection.y * kDistancePlayerTo3DReticle,
-		pCamera->GetTranslate().z + cameraDirection.z * kDistancePlayerTo3DReticle
+	mObject->mWorldTransform->translation = {
+		pCamera->GetTranslate().x + cameraDirection.x * mReticleDistance,
+		pCamera->GetTranslate().y + cameraDirection.y * mReticleDistance,
+		pCamera->GetTranslate().z + cameraDirection.z * mReticleDistance
 	};
 
 	// 3Dから2Dへの変換を行う
@@ -75,28 +78,27 @@ void Reticle3D::Update()
 	Matrix4x4 VPV = Multiply(Multiply(V,P), viewPort);
 
 	// スクリーン座標に変換する
-	Vector3 screenPos = Transform(mWorldReticle3D->GetWorldPosition(), VPV);
+	Vector3 screenPos = Transform(mObject->mWorldTransform->GetWorldPosition(), VPV);
 	// スクリーン座標を代入
 	mPostionReticle2D = Vector2(screenPos.x, screenPos.y);
 
 #ifdef _DEBUG
 
 	ImGui::Begin("Reticle");
+	ImGui::DragFloat("Distance", &mReticleDistance, 1.0f, -100.0f, 100.0f);
 	ImGui::DragFloat2("Reticle2D", &mPostionReticle2D.x, 1.0f, -1280.0f, 1280.0f);
 	ImGui::DragFloat3("posNear", &mPosNear.x, 1.0f, -1280.0f, 1280.0f);
 	ImGui::DragFloat3("posFar", &mPosFar.x, 1.0f, -1280.0f, 1280.0f);
-	ImGui::DragFloat3("Reticle3D S", &mWorldReticle3D->scale.x);
-	ImGui::DragFloat3("Reticle3D R", &mWorldReticle3D->rotation.x);
-	ImGui::DragFloat3("Reticle3D T", &mWorldReticle3D->translation.x);
+	ImGui::DragFloat3("Reticle3D S", &mObject->mWorldTransform->scale.x);
+	ImGui::DragFloat3("Reticle3D R", &mObject->mWorldTransform->rotation.x);
+	ImGui::DragFloat3("Reticle3D T", &mObject->mWorldTransform->translation.x);
 	ImGui::End();
 
 
 #endif // _DEBUG
 
-	Vector3 pos = mWorldReticle3D->GetWorldPosition();
-	mObject->SetTranslate(pos);
-
 	mObject->Update();
+	mObject->mCollider->Update();
 	mObject->DrawGUI();
 
 	mSprite->SetPos(mPostionReticle2D);
@@ -106,6 +108,7 @@ void Reticle3D::Update()
 void Reticle3D::Draw3DReticle()
 {
 	mObject->Draw();
+	mObject->mCollider->Draw();
 }
 
 void Reticle3D::Draw2DReticle(){

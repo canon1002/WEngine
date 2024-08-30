@@ -19,9 +19,12 @@ public: // -- 公開 メンバ関数 -- //
 	void Draw2DReticle();
 
 	// 3Dレティクルのワールド座標を取得する
-	Vector3 GetWorld3D() { return mWorldReticle3D->GetWorldPosition(); }
+	Vector3 GetWorld3D() { return mObject->GetWorldTransform()->translation; }
 	void SetCubeMap(const int32_t& textureHandle) { mObject->GetModel()->SetCubeTexture(textureHandle); }
 
+	void SetReticleDistance(float distance) { mReticleDistance = distance; }
+
+	Collider* GetReticleCollider() { return mObject->mCollider; }
 
 private: // -- 非公開 メンバ変数 -- //
 
@@ -30,15 +33,16 @@ private: // -- 非公開 メンバ変数 -- //
 	// カメラのポインタ
 	CameraCommon* pCamera;
 
-	// 3Dレティクルのワールド座標
-	WorldTransform* mWorldReticle3D;
-	// 2Dレティクルの座標
-	Vector2 mPostionReticle2D;
-
 	// 3Dレティクルオブジェクト
 	std::unique_ptr<Object3d> mObject;
+
+	// 2Dレティクルの座標
+	Vector2 mPostionReticle2D;
 	// 2Dレティクルスプライト
 	std::unique_ptr<Sprite> mSprite;
+
+	// プレイヤーから3Dレティクルへの距離
+	float mReticleDistance;
 
 	Vector3 mPosNear;
 	Vector3 mPosFar;
