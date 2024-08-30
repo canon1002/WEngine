@@ -168,7 +168,7 @@ void Player::DrawGUI() {
 #ifdef _DEBUG
 
 	// メニューバーを表示する
-	ImGui::Begin("Player",nullptr, ImGuiWindowFlags_MenuBar);
+	ImGui::Begin("Player", nullptr, ImGuiWindowFlags_MenuBar);
 	if (ImGui::BeginMenuBar()) {
 
 		//mObject->DrawGuiTree();
@@ -406,7 +406,7 @@ void Player::Attack()
 	if (mAttackStatus.isUp == false &&
 		mAttackStatus.isDown == false &&
 		mAttackStatus.isOperating == false) {
-	
+
 		// Bボタン Triggerで攻撃
 		if (mInput->GetPused(Gamepad::Button::B)) {
 			mAttackStatus.isUp = true;
@@ -460,7 +460,7 @@ void Player::Attack()
 	mAttackStatus.sword->mWorldTransform->rotation.y += MainCamera::GetInstance()->GetRotate().y;
 
 	// レティクルの位置(コライダー)をtの値に応じて移動させる
-	mReticle->SetReticleDistance(ExponentialInterpolation(0.5f,10.0f, mAttackStatus.t, 1.0f));
+	mReticle->SetReticleDistance(ExponentialInterpolation(0.5f, 10.0f, mAttackStatus.t, 1.0f));
 
 	// 衝突時の処理
 	if (mReticle->GetReticleCollider()->GetOnCollisionFlag()) {
@@ -484,6 +484,27 @@ void Player::Move()
 	// 通常/防御時に有効
 	if (mBehavior == Behavior::kRoot || mBehavior == Behavior::kGuard) {
 
+		if (mInput == nullptr) { 
+			mInput = InputManager::GetInstance();
+		}
+
+		// 移動量
+		Vector3 direction{};
+		// 上下移動の可否
+		if (mInput->GetPushKey(DIK_W)) { 
+			direction.z += 1.0f;
+		}
+		if (mInput->GetPushKey(DIK_S)) { 
+			direction.z -= 1.0f;
+		}
+		// 左右移動の可否
+		if (mInput->GetPushKey(DIK_A)) { 
+			direction.x -= 1.0f;
+		}
+		if (mInput->GetPushKey(DIK_D)) { 
+			direction.x += 1.0f;
+		}
+
 		// スティック入力の量
 		const static int stickValue = 6000;
 		// いずれかの数値が、以上(以下)であれば移動処理を行う
@@ -494,42 +515,45 @@ void Player::Move()
 			) {
 
 			// Xの移動量とYの移動量を設定する
-			Vector3 direction = {
+			direction = {
 				(float)mInput->GetStick(Gamepad::Stick::LEFT_X) ,
 				0.0f,
 				(float)mInput->GetStick(Gamepad::Stick::LEFT_Y)
 			};
-			// 正規化
-			direction = Normalize(direction);
 
-			// 移動速度を設定
-			float moveSpeed = 0.10f;
-			// ガード中は移動速度を減少
-			if (mBehavior == Behavior::kGuard) {
-				moveSpeed = 0.03f;
-			}
-
-			// カメラの回転量を反映
-			direction = TransformNomal(direction, MainCamera::GetInstance()->mWorldTransform->GetWorldMatrix());
-			// y座標は移動しない
-			direction.y = 0.0f;
-
-			// 平行移動を行う
-			mObject->mWorldTransform->translation += direction * moveSpeed;
-
-			// ここから回転処理
-			const float PI = 3.14f;
-			float rotateY = std::atan2f(direction.x, direction.z);
-			rotateY = std::fmodf(rotateY, 2.0f * PI);
-			if (rotateY > PI) {
-				rotateY -= 2.0f * PI;
-			}
-			if (rotateY < -PI) {
-				rotateY += 2.0f * PI;
-			}
-			mObject->mWorldTransform->rotation.y = rotateY;
 		}
 
+		// 正規化
+		if (Length(direction) != 0.0f) {
+			direction = Normalize(direction);
+		}
+
+		// 移動速度を設定
+		float moveSpeed = 0.10f;
+		// ガード中は移動速度を減少
+		if (mBehavior == Behavior::kGuard) {
+			moveSpeed = 0.03f;
+		}
+
+		// カメラの回転量を反映
+		direction = TransformNomal(direction, MainCamera::GetInstance()->mWorldTransform->GetWorldMatrix());
+		// y座標は移動しない
+		direction.y = 0.0f;
+
+		// 平行移動を行う
+		mObject->mWorldTransform->translation += direction * moveSpeed;
+
+		// ここから回転処理
+		const float PI = 3.14f;
+		float rotateY = std::atan2f(direction.x, direction.z);
+		rotateY = std::fmodf(rotateY, 2.0f * PI);
+		if (rotateY > PI) {
+			rotateY -= 2.0f * PI;
+		}
+		if (rotateY < -PI) {
+			rotateY += 2.0f * PI;
+		}
+		mObject->mWorldTransform->rotation.y = rotateY;
 	}
 
 }
@@ -538,17 +562,17 @@ void Player::Fall()
 {
 	// 落下処理
 	if (mObject->mWorldTransform->translation.y > 0.0f) {
-		
+
 		// 移動量を加算
 		mObject->mWorldTransform->translation.y += mVelocity.y;
 		mVelocity.y -= 9.8f * (1.0f / 360.0f);
 	}
 	// 地面に到達したら
 	else if (mObject->mWorldTransform->translation.y < 0.0f) {
-		
+
 		// 地面に固定
 		mObject->mWorldTransform->translation.y = 0.0f;
-		
+
 		// 移動量修正
 		mVelocity.y = 0.0f;
 

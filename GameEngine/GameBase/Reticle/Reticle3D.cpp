@@ -107,8 +107,8 @@ void Reticle3D::Update()
 
 void Reticle3D::Draw3DReticle()
 {
-	mObject->Draw();
-	mObject->mCollider->Draw();
+	//mObject->Draw();
+	//mObject->mCollider->Draw();
 }
 
 void Reticle3D::Draw2DReticle(){
