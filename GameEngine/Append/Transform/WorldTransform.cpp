@@ -51,6 +51,7 @@ Vector3 WorldTransform::GetWorldPosition(){
 
 void WorldTransform::SetParent(const Matrix4x4& parent){
 	// 親のポインタをセット
+	parent_ = nullptr;
 	parent_ = &parent;
 }
 

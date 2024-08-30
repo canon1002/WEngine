@@ -186,6 +186,28 @@ void ACT::AttackThrust::Start()
 	mBoss->GetObject3D()->mSkinning->SetLoopMode(false);
 	mActiveColliderCount = 0.0f;
 
+	// プレイヤーの方を向く
+	
+	// ここから回転処理
+	// 方向の設定
+	Vector3 direction = Normalize(mBoss->GetWorldPosForTarget() - mBoss->GetWorldPos());
+	direction.y = 0.0f;
+	const float PI = 3.14f;
+	float rotateY = std::atan2f(direction.x, direction.z);
+	rotateY = std::fmodf(rotateY, 2.0f * PI);
+	if (rotateY > PI) {
+		rotateY -= 2.0f * PI;
+	}
+	if (rotateY < -PI) {
+		rotateY += 2.0f * PI;
+	}
+
+	// 計算結果をBossクラスに渡す
+	mBoss->SetRotation(Vector3(0.0f, rotateY, 0.0f));
+
+	// 刺突のときは武器を 右手 にペアレントする
+	mBoss->mWeapon->mWorldTransform->SetParent(mBoss->mRightHandsWorldMat);
+
 	// 実行する
 	mCondition = Condition::RUNNING;
 }
@@ -198,6 +220,10 @@ void ACT::AttackThrust::End()
 	// アニメーションの変更
 	mBoss->GetObject3D()->mSkinning->Init("boss", "Idle.gltf",
 		mBoss->GetObject3D()->GetModel()->modelData);
+
+	// 終わったら戻す
+	mBoss->mWeapon->mWorldTransform->SetParent(mBoss->mRightHandWorldMat);
+
 }
 
 void ACT::AttackThrust::Reset()

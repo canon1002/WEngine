@@ -48,6 +48,7 @@ void BossEnemy::Init() {
 	mObject->mCollider->SetCollisionMask(kCollisionAttributePlayerBullet);
 
 	mRightHandWorldMat = MakeAffineMatrix(Vector3{ 0.0f,0.0f,0.0f }, Vector3{ 0.0f,0.0f,0.0f }, Vector3{ 0.0f,0.0f,0.0f });
+	mRightHandsWorldMat = MakeAffineMatrix(Vector3{ 0.0f,0.0f,0.0f }, Vector3{ 0.0f,0.0f,0.0f }, Vector3{ 0.0f,0.0f,0.0f });
 
 	mWeapon = std::make_unique<Object3d>();
 	mWeapon->Init("Weapon");
@@ -146,6 +147,10 @@ void BossEnemy::Update() {
 	mRightHandWorldMat = Multiply(
 		GetObject3D()->mSkinning->GetSkeleton().joints[GetObject3D()->mSkinning->GetSkeleton().jointMap["mixamorig:RightHandThumb1"]
 		].skeletonSpaceMatrix, GetObject3D()->GetWorldTransform()->GetWorldMatrix());
+	
+	mRightHandsWorldMat = Multiply(
+		GetObject3D()->mSkinning->GetSkeleton().joints[GetObject3D()->mSkinning->GetSkeleton().jointMap["mixamorig:RightHandMiddle1"]
+		].skeletonSpaceMatrix, GetObject3D()->GetWorldTransform()->GetWorldMatrix());
 
 	mWeapon->Update();
 	
@@ -193,19 +198,19 @@ void BossEnemy::Update() {
 		this->UpdateState();
 
 		// BehaviorTreeの更新処理を行う
-		//mBTStatus = mRoot->Tick();
-		//if (mBTStatus == BT::NodeStatus::SUCCESS || mBTStatus == BT::NodeStatus::FAILURE) {
-		//	// 結果が帰ってきたら初期化処理
-		//	mRoot->Reset();
+		mBTStatus = mRoot->Tick();
+		if (mBTStatus == BT::NodeStatus::SUCCESS || mBTStatus == BT::NodeStatus::FAILURE) {
+			// 結果が帰ってきたら初期化処理
+			mRoot->Reset();
 
-		//	// 各アクションの初期化もしておく
-		//	for (auto& action : mActions) {
-		//		action.second->End();
-		//		action.second->Reset();
-		//	}
-		//	// nullを代入しておく
-		//	mActiveAction = nullptr;
-		//}
+			// 各アクションの初期化もしておく
+			for (auto& action : mActions) {
+				action.second->End();
+				action.second->Reset();
+			}
+			// nullを代入しておく
+			mActiveAction = nullptr;
+		}
 
 		// オブジェクト更新
 		mObject->Update();

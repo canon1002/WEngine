@@ -112,6 +112,8 @@ public: // -- 公開 メンバ関数 -- //
 
 	// 右手のワールド座標
 	Matrix4x4 mRightHandWorldMat;
+	//
+	Matrix4x4 mRightHandsWorldMat;
 
 	// 武器
 	std::unique_ptr<Object3d> mWeapon;
