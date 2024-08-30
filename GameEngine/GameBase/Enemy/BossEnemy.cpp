@@ -96,16 +96,21 @@ void BossEnemy::InitBehavior() {
 	mRoot = std::make_unique<BT::Sequence>();
 	// 接近 -> 近接攻撃
 	BT::Sequence* newSequence = new BT::Sequence();
+	BT::Selector* ReafOneSelector = new BT::Selector();
+
 	newSequence->SetChild(new BT::Condition(std::bind(&BossEnemy::InvokeFarDistance, this)));
 	newSequence->SetChild(new BT::MoveToPlayer(this));
 	newSequence->SetChild(new BT::AttackClose(this));
-	mRoot->SetChild(newSequence);
+	ReafOneSelector->SetChild(newSequence);
 
 	// 接近状態だったら
 	BT::Sequence* startNear = new BT::Sequence();
 	startNear->SetChild(new BT::AttackThrust(this));	// 刺突
 	startNear->SetChild(new BT::BackStep(this));		// 後退
-	mRoot->SetChild(startNear);
+	ReafOneSelector->SetChild(startNear);
+
+
+	mRoot->SetChild(ReafOneSelector);
 
 }
 
@@ -198,18 +203,22 @@ void BossEnemy::Update() {
 		this->UpdateState();
 
 		// BehaviorTreeの更新処理を行う
-		mBTStatus = mRoot->Tick();
-		if (mBTStatus == BT::NodeStatus::SUCCESS || mBTStatus == BT::NodeStatus::FAILURE) {
-			// 結果が帰ってきたら初期化処理
-			mRoot->Reset();
+		mReloadBTCount += (1.0f / 5.0f);
+		if (mReloadBTCount > 1.0f) {
+			mReloadBTCount = 0.0f;
+			mBTStatus = mRoot->Tick();
+			if (mBTStatus == BT::NodeStatus::SUCCESS || mBTStatus == BT::NodeStatus::FAILURE) {
+				// 結果が帰ってきたら初期化処理
+				mRoot->Reset();
 
-			// 各アクションの初期化もしておく
-			for (auto& action : mActions) {
-				action.second->End();
-				action.second->Reset();
+				// 各アクションの初期化もしておく
+				for (auto& action : mActions) {
+					action.second->End();
+					action.second->Reset();
+				}
+				// nullを代入しておく
+				mActiveAction = nullptr;
 			}
-			// nullを代入しておく
-			mActiveAction = nullptr;
 		}
 
 		// オブジェクト更新
@@ -292,6 +301,7 @@ void BossEnemy::DrawGUI() {
 void BossEnemy::SetCollider(CollisionManager* cManager)
 {
 	mActions["AttackClose"]->SetCollider(cManager);
+	mActions["AttackThrust"]->SetCollider(cManager);
 }
 
 void BossEnemy::UpdateState() {

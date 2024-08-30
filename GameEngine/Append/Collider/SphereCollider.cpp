@@ -108,12 +108,14 @@ bool SphereCollider::IsCollision(SphereCollider* c) {
 	Vector3 collisionDistance = Subtract(this->GetWorldPos(), c->GetWorldPos());
 
 	//距離を計算
-	float distance = sqrtf((collisionDistance.x * collisionDistance.x) +
+	float distance = sqrtf(
+		(collisionDistance.x * collisionDistance.x) +
 		(collisionDistance.y * collisionDistance.y) +
 		(collisionDistance.z * collisionDistance.z));
 
 	// 半径の合計よりも短ければ衝突
-	if (distance <= (this->GetRadius() + c->GetRadius()))
+	float radius = (this->GetRadius() + c->GetRadius()) * (this->GetRadius() + c->GetRadius());
+	if (distance <= radius)
 	{
 		return true;
 	}

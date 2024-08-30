@@ -157,6 +157,9 @@ private: // -- 非公開 メンバ変数 -- //
 	// ビヘイビアツリーの駆動状態
 	BT::NodeStatus mBTStatus;
 
+	// ビヘイビアツリーの再実行カウント
+	float mReloadBTCount;
+
 	// 行動マップデータ
 	std::map<std::string,ACT::IAction*> mActions;
 	// 現在の行動
