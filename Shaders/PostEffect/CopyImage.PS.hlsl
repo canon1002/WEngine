@@ -227,46 +227,46 @@ PixelShaderOutput main(VertexShaderOutput input)
         output.color.rgb = (1.0f - weight) * gTexture.Sample(gSampler, input.texcoord).rgb;
         output.color.a = 1.0f;
     }
-     // 深度(Depth)で検出したアウトラインの有無
-    if (gEffects.enableDepthOutline)
-    {
-        // uvStepSizeの算出
-        uint32_t width, height;
-        gTexture.GetDimensions(width, height);
-        float32_t2 uvStepSize = float32_t2(rcp(width), rcp(height));
+    // // 深度(Depth)で検出したアウトラインの有無
+    //if (gEffects.enableDepthOutline)
+    //{
+    //    // uvStepSizeの算出
+    //    uint32_t width, height;
+    //    gTexture.GetDimensions(width, height);
+    //    float32_t2 uvStepSize = float32_t2(rcp(width), rcp(height));
         
-        // 縦横それぞれの畳み込みの結果を格納する
-        float32_t2 difference = float32_t2(0.0f, 0.0f);
+    //    // 縦横それぞれの畳み込みの結果を格納する
+    //    float32_t2 difference = float32_t2(0.0f, 0.0f);
 
-        // 重み
-        float32_t weight = 0.0f;
+    //    // 重み
+    //    float32_t weight = 0.0f;
         
-        // 色を輝度に変換して、畳み込みを行っていく。微分Filter用のKernelになっているので、
-        // やること自体は今までの畳み込みと同じ
+    //    // 色を輝度に変換して、畳み込みを行っていく。微分Filter用のKernelになっているので、
+    //    // やること自体は今までの畳み込みと同じ
         
-        // ループを回す
-        for (int32_t x = 0; x < 3; ++x)
-        {
-            for (int32_t y = 0; y < 3; ++y)
-            {
-                // texcoordを算出
-                float32_t2 resultTexcoord = input.texcoord + float32_t2(x - (3 * rcp(2.0f)), y - (3 * rcp(2.0f))) * uvStepSize;
+    //    // ループを回す
+    //    for (int32_t x = 0; x < 3; ++x)
+    //    {
+    //        for (int32_t y = 0; y < 3; ++y)
+    //        {
+    //            // texcoordを算出
+    //            float32_t2 resultTexcoord = input.texcoord + float32_t2(x - (3 * rcp(2.0f)), y - (3 * rcp(2.0f))) * uvStepSize;
               
-                float32_t ndcDepth = gDepthTexture.Sample(gSamplerPoint, resultTexcoord);
-                // NDC -> View P^{-1}においてxとyはzwに影響を与えないため、わざわざ行列を渡さんでもいい
-                // gMaterial.projectionInverseはCBufferを使って渡す
-                float32_t4 viewSpace = mul(float32_t4(0.0f, 0.0f, ndcDepth, 1.0f), gEffects.projectionInverse);
-                float32_t viewZ = viewSpace.z * rcp(viewSpace.w);// 同次座標系からデカルト座標系に変換
-                difference.x += viewZ * kPrewittHorizontalKernel[x][y];
-                difference.y += viewZ * kPrewittVerticalKernel[x][y];
+    //            float32_t ndcDepth = gDepthTexture.Sample(gSamplerPoint, resultTexcoord);
+    //            // NDC -> View P^{-1}においてxとyはzwに影響を与えないため、わざわざ行列を渡さんでもいい
+    //            // gMaterial.projectionInverseはCBufferを使って渡す
+    //            float32_t4 viewSpace = mul(float32_t4(0.0f, 0.0f, ndcDepth, 1.0f), gEffects.projectionInverse);
+    //            float32_t viewZ = viewSpace.z * rcp(viewSpace.w);// 同次座標系からデカルト座標系に変換
+    //            difference.x += viewZ * kPrewittHorizontalKernel[x][y];
+    //            difference.y += viewZ * kPrewittVerticalKernel[x][y];
                 
-            }
-        }
+    //        }
+    //    }
         
-        // 変化の長さをウェイトとして合成 
-        weight = saturate(length(difference));
-        output.color.rgb = (1.0f - weight) * gTexture.Sample(gSampler, input.texcoord).rgb;
-        output.color.a = 1.0f;
-    }
+    //    // 変化の長さをウェイトとして合成 
+    //    weight = saturate(length(difference));
+    //    output.color.rgb = (1.0f - weight) * gTexture.Sample(gSampler, input.texcoord).rgb;
+    //    output.color.a = 1.0f;
+    //}
         return output;
 }

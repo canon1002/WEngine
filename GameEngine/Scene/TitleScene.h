@@ -16,12 +16,6 @@
 #include "GameEngine/Append/Collider/CollisionManager.h"
 #include "GameEngine/Input/InputManager.h"
 
-// 3次元ベクトル補間
-struct EasingVector3 {
-	Vector3 s;	// 始点
-	Vector3 e;	// 終点
-	float t;	// 時間
-};
 
 class TitleScene :
     public IScene
@@ -35,6 +29,7 @@ public:
 	void Init() override;
 	void Update() override;
 	void Draw() override;
+	void DrawUI() override;
 
 private:
 
@@ -61,7 +56,9 @@ private:
 	EasingVector3 mCameraTrYZ;// カメラ移動
 	EasingVector3 mCameraTrZ;// カメラ移動
 	
-
+	UISet mTitleOne;
+	UISet mTitleLogo;
+	UISet mTitleSelect;
 
 	// -- シャドウテスト -- //
 

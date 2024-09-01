@@ -31,7 +31,7 @@ void TitleScene::Init() {
 	mGroundObj->Init("Title Ground");
 	ModelManager::GetInstance()->LoadModel("MapObjects", "Plane.gltf");
 	mGroundObj->SetModel("Plane.gltf");
-	mGroundObj->SetScale(Vector3(64.0f, 1.0f, 64.0f));
+	mGroundObj->SetScale(Vector3(1024.0f, 1.0f, 1024.0f));
 
 	// 建物
 	mBuildingObj = std::make_unique<Object3d>();
@@ -67,6 +67,37 @@ void TitleScene::Init() {
 	render->SetViggnetIndex(0.0f);
 	render->SetViggnetMultiplier(10.0f);
 
+	// 以下 UI
+	mTitleOne.sprite = std::make_unique<Sprite>();
+	mTitleOne.sprite->Init();
+	mTitleOne.sprite->SetTexture("UI/UI2.png");
+	mTitleOne.sprite->SetPos({ 640.0f,500.0f});
+	mTitleOne.sprite->SetAnchorPoint({ 0.5f,0.5f });
+	mTitleOne.t = 0.0f;
+	mTitleOne.displayCount = 0.0f;
+	mTitleOne.isActive = true;
+	
+	// ゲームタイトル
+	mTitleLogo.sprite = std::make_unique<Sprite>();
+	mTitleLogo.sprite->Init();
+	mTitleLogo.sprite->SetTexture("UI/Title.png");
+	mTitleLogo.sprite->SetPos({ 640.0f,100.0f});
+	mTitleLogo.sprite->SetAnchorPoint({ 0.5f,0.5f });
+	mTitleLogo.t = 0.0f;
+	mTitleLogo.displayCount = 0.0f;
+	mTitleLogo.isActive = true;
+	
+	// 以下 UI
+	mTitleSelect.sprite = std::make_unique<Sprite>();
+	mTitleSelect.sprite->Init();
+	mTitleSelect.sprite->SetTexture("UI/UI3.png");
+	mTitleSelect.sprite->SetPos({ 640.0f,500.0f});
+	mTitleSelect.sprite->SetAnchorPoint({ 0.5f,0.5f });
+	mTitleSelect.t = 0.0f;
+	mTitleSelect.displayCount = 0.0f;
+	mTitleSelect.isActive = true;
+
+
 }
 
 void TitleScene::Update() {
@@ -77,6 +108,10 @@ void TitleScene::Update() {
 	mGroundObj->Update();
 	mBuildingObj->Update();
 
+	// UI 更新
+	mTitleOne.sprite->Update();
+	mTitleLogo.sprite->Update();
+	mTitleSelect.sprite->Update();
 
 	// カメラやシーン遷移をしていない場合に入力を受け付ける
 	if (!mIsActiveTransition) {
@@ -177,4 +212,24 @@ void TitleScene::Draw() {
 	mObject->Draw();
 	mGroundObj->Draw();
 	mBuildingObj->Draw();
+}
+
+void TitleScene::DrawUI()
+{
+
+	// 画像 描画前処理
+	SpriteAdministrator::GetInstance()->PreDraw();
+
+	// カメラやシーン遷移をしていない場合にのみUIを表示
+	if (!mIsActiveTransition) {
+		if (!mIsTransitionTitleSelect) {
+			mTitleOne.sprite->Draw();
+		}
+
+		else if (!mIsTransitionGameScene) {
+			mTitleLogo.sprite->Draw();
+			mTitleSelect.sprite->Draw();
+		}
+	}
+
 }

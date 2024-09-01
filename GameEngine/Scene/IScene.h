@@ -1,4 +1,7 @@
 #pragma once
+#include "GameEngine/Math/Math.h"
+#include "GameEngine/Object/Sprite/Sprite.h"
+#include <memory>
 
 enum SCENE { TITLE, STAGE,RESULT,OVER };
 
@@ -17,6 +20,7 @@ public:
 	virtual void Init() = 0;
 	virtual void Update() = 0;
 	virtual void Draw() = 0;
+	virtual void DrawUI() = 0;
 
 	// 仮想デストラクタがないと警告される
 	virtual ~IScene();
@@ -26,3 +30,19 @@ public:
 
 };
 
+// とりあえずここに仮で配置
+
+// 3次元ベクトル補間
+struct EasingVector3 {
+	Vector3 s;	// 始点
+	Vector3 e;	// 終点
+	float t;	// 時間
+};
+
+// UI
+struct UISet {
+	std::unique_ptr<Sprite> sprite;
+	float t;
+	float displayCount;
+	bool isActive;
+};

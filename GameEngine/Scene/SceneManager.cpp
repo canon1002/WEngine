@@ -183,6 +183,9 @@ int SceneManager::Run() {
 		copyImage_->PreDraw();
 		copyImage_->Draw();
 
+		// UI描画
+		sceneArr_[currentSceneNo_]->DrawUI();
+
 #ifdef _DEBUG
 		// ImGuiの描画
 		imGuiManager_->Draw();

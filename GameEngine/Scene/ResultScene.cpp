@@ -22,3 +22,7 @@ void ResultScene::Update() {
 void ResultScene::Draw() {
 	
 }
+
+void ResultScene::DrawUI()
+{
+}

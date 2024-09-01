@@ -75,9 +75,35 @@ void GameScene::Init(){
 	// 開始前のビネット
 	viggnetTime = 0.0f;
 
+	// 以下 UI
+	mActionUI.sprite = std::make_unique<Sprite>();
+	mActionUI.sprite->Init();
+	mActionUI.sprite->SetTexture("UI/UI0.png");
+	mActionUI.sprite->SetScale({ 0.5f,0.5f });
+	mActionUI.sprite->SetPos({ 640.0f,600.0f });
+	mActionUI.sprite->SetAnchorPoint({ 0.5f,0.5f });
+	mActionUI.t = 0.0f;
+	mActionUI.displayCount = 0.0f;
+	mActionUI.isActive = true;
+
+	// 以下 UI
+	mMoveUI.sprite = std::make_unique<Sprite>();
+	mMoveUI.sprite->Init();
+	mMoveUI.sprite->SetTexture("UI/UI1.png");
+	mMoveUI.sprite->SetScale({ 0.5f,0.5f });
+	mMoveUI.sprite->SetPos({ 640.0f,500.0f });
+	mMoveUI.sprite->SetAnchorPoint({ 0.5f,0.5f });
+	mMoveUI.t = 0.0f;
+	mMoveUI.displayCount = 0.0f;
+	mMoveUI.isActive = true;
+
+
 }
 
 void GameScene::Update(){
+
+	mMoveUI.sprite->Update();
+	mActionUI.sprite->Update();
 
 	// シーン切り替え
 	// 1キーを押したうえで
@@ -233,10 +259,17 @@ void GameScene::Draw() {
 	//ParticleManager::GetInstance()->PreDraw();
 	//mDTCParticle->Draw();
 
+}
+
+void GameScene::DrawUI()
+{
 	// 2DSprite(画像)の描画前処理
 	SpriteAdministrator::GetInstance()->PreDraw();
 	mPlayer->GetStatus()->Draw();
 	mBoss->GetStatus()->Draw();
+
+	mMoveUI.sprite->Draw();
+	mActionUI.sprite->Draw();
 
 	// ダメージ画像の表記
 	DamageReaction::GetInstance()->DrawSprite();

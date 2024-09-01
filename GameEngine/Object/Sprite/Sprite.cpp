@@ -1,5 +1,6 @@
 #include "Sprite.h"
 #include "GameEngine/Base/Debug/ImGuiManager.h"
+#include "GameEngine/Object/Camera/MainCamera.h"
 
 void Sprite::Init() {
 
@@ -19,20 +20,21 @@ void Sprite::Update() {
 
 #ifdef _DEBUG
 
-	/*ImGui::Begin("Sprite");
-	ImGui::DragFloat3("Scale", &mWorldTransform.scale.x, 0.1f, 0.1f, 2.0f);
-	ImGui::DragFloat3("Rotate", &mWorldTransform.rotate.x);
-	ImGui::DragFloat3("Tranlate", &mWorldTransform.translate.x);
-	ImGui::Spacing();
-	ImGui::DragFloat2("UVScale", &uvTransform_.scale.x, 0.01f, -10.0f, 10.0f);
-	ImGui::DragFloat2("UVTranlate", &uvTransform_.translate.x, 0.01f, -10.0f, 10.0f);
-	ImGui::SliderAngle("UVRotate", &uvTransform_.rotate.z);
-	ImGui::ColorEdit4("Color", &materialData->color.r);
-	ImGui::End();*/
+	//ImGui::Begin("Sprite");
+	//ImGui::DragFloat3("Scale", &mWorldTransform.scale.x, 0.1f, 0.1f, 2.0f);
+	//ImGui::DragFloat3("Rotate", &mWorldTransform.rotation.x);
+	//ImGui::DragFloat3("Tranlate", &mWorldTransform.translation.x);
+	//ImGui::Spacing();
+	//ImGui::DragFloat2("UVScale", &uvTransform_.scale.x, 0.01f, -10.0f, 10.0f);
+	//ImGui::DragFloat2("UVTranlate", &uvTransform_.translation.x, 0.01f, -10.0f, 10.0f);
+	//ImGui::SliderAngle("UVRotate", &uvTransform_.rotation.z);
+	//ImGui::ColorEdit4("Color", &materialData->color.r);
+	//ImGui::End();
 
 #endif // _DEBUG
 
-	//mWorldTransform.rotate.z += 0.05f;
+	mWorldTransform.translation.z = 0.1f;
+
 
 	// カメラのワールド行列
 	cameraM = MakeAffineMatrix(Vector3(1.0f,1.0f,1.0f),Vector3(0.0f,0.0f,0.0f),Vector3(0.0f,0.0f,0.0f));
@@ -61,10 +63,10 @@ void Sprite::Update() {
 	float top = (0.0f - anchorPoint.y) * spriteSize.y;
 	float bottom = (1.0f - anchorPoint.y) * spriteSize.y;
 
-	mVertexData[0].position = { left,top,0.0f,1.0f };
-	mVertexData[1].position = { right,top,0.0f,1.0f };
-	mVertexData[2].position = { left,bottom,0.0f,1.0f };
-	mVertexData[3].position = { right,bottom,0.0f,1.0f };
+	mVertexData[0].position = { left,top,1.0f,1.0f };
+	mVertexData[1].position = { right,top,1.0f,1.0f };
+	mVertexData[2].position = { left,bottom,1.0f,1.0f };
+	mVertexData[3].position = { right,bottom,1.0f,1.0f };
 
 	
 
@@ -165,16 +167,16 @@ void Sprite::CreateBufferView() {
 	
 	/// 1枚目
 	//　左上
-	mVertexData[0].position = { 0.0f,0.0f,0.0f,1.0f };
+	mVertexData[0].position = { 0.0f,0.0f,0.1f,1.0f };
 	mVertexData[0].texcoord = { 0.0f,0.0f };
 	//　右上
-	mVertexData[1].position = { 360.0f,0.0f,0.0f,1.0f };
+	mVertexData[1].position = { 360.0f,0.0f,0.1f,1.0f };
 	mVertexData[1].texcoord = { 1.0f,0.0f };
 	// 左下
-	mVertexData[2].position = { 0.0f,360.0f,0.0f,1.0f };
+	mVertexData[2].position = { 0.0f,360.0f,0.1f,1.0f };
 	mVertexData[2].texcoord = { 0.0f,1.0f };
 	// 右下
-	mVertexData[3].position = { 360.0f,360.0f,0.0f,1.0f };
+	mVertexData[3].position = { 360.0f,360.0f,0.1f,1.0f };
 	mVertexData[3].texcoord = { 1.0f,1.0f };
 
 	indexResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(uint32_t) * 6);

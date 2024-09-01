@@ -34,6 +34,7 @@ public:
 	void Init() override;
 	void Update() override;
 	void Draw() override;
+	void DrawUI() override;
 
 private:
 
@@ -58,7 +59,9 @@ private:
 	// 開始前のビネット
 	float viggnetTime;
 
-
+	// UI
+	UISet mMoveUI;
+	UISet mActionUI;
 
 };
 
