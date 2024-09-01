@@ -9,6 +9,7 @@
 #include "GameEngine/GameBase/Reaction/DamageReaction.h"
 #include "GameEngine/Effect/Particle/ParticleManager.h"
 #include "GameEngine/GameBase/Status/StatusManager.h"
+#include "GameEngine/Object/Screen/RenderCopyImage.h"
 
 void GameScene::Finalize(){}
 
@@ -69,6 +70,11 @@ void GameScene::Init(){
 	mDTCParticle = std::make_unique<DiffusionToCircleParticle>();
 	mDTCParticle->Init();
 
+	// ゲームシーンの段階
+	mPhase = Phase::BEGIN;
+	// 開始前のビネット
+	viggnetTime = 0.0f;
+
 }
 
 void GameScene::Update(){
@@ -82,40 +88,118 @@ void GameScene::Update(){
 		}
 	}
 
-	if (mBoss->GetStatus()->HP <= 0.0f || mPlayer->GetStatus()->HP <= 0.0f) {
-		sceneNo = SCENE::RESULT;
+	switch (mPhase)
+	{
+	case Phase::BEGIN:
+	
+		if (viggnetTime < 1.0f) {
+			viggnetTime += 1.0f / 60.0f;
+		}
+		else if (viggnetTime >= 1.0f) {
+			viggnetTime = 1.0f;
+		}
+
+		// ビネットでフェードインする
+		RenderCopyImage::GetInstance()->SetViggnetIndex(ExponentialInterpolation(10.0f, 0.0f, viggnetTime, 1.0f));
+
+		// フェードインが終わったら戦闘開始
+		if (viggnetTime == 1.0f) {
+			
+			// フェーズ移行
+			mPhase = Phase::BATTLE;
+		
+		}
+
+		break;
+	case Phase::BATTLE:
+		
+		// プレイヤーのHPが0になったら
+		if (mPlayer->GetStatus()->HP <= 0.0f) {
+			mPhase = Phase::LOSE;
+			viggnetTime = 0.0f;
+		}
+		// ボスのHPが0になったら
+		if (mBoss->GetStatus()->HP <= 0.0f) {
+			mPhase = Phase::WIN;
+			viggnetTime = 0.0f;
+		}
+
+		// コライダーリストへの追加処理
+		mCollisionManager->SetCollider(mPlayer->GetObject3D()->mCollider);
+		mCollisionManager->SetCollider(mBoss->GetObject3D()->mCollider);
+		mPlayer->SetColliderList(mCollisionManager.get());
+		mBoss->SetCollider(mCollisionManager.get());
+
+		// 衝突判定を行う
+		mCollisionManager->Update();
+
+		// コライダーリストのクリア
+		mCollisionManager->ClearColliders();
+		
+		break;
+	case Phase::LOSE:
+
+		if (viggnetTime < 1.0f) {
+			viggnetTime += 1.0f / 60.0f;
+		}
+		else if (viggnetTime >= 1.0f) {
+			viggnetTime = 1.0f;
+		}
+
+		// ビネットでフェードインする
+		RenderCopyImage::GetInstance()->SetViggnetIndex(ExponentialInterpolation(00.0f, 10.0f, viggnetTime, 1.0f));
+
+		// フェードインが終わったら戦闘開始
+		if (viggnetTime == 1.0f) {
+			sceneNo = SCENE::RESULT;
+		}
+
+		break;
+	case Phase::WIN:
+
+		if (viggnetTime < 1.0f) {
+			viggnetTime += 1.0f / 60.0f;
+		}
+		else if (viggnetTime >= 1.0f) {
+			viggnetTime = 1.0f;
+		}
+
+		// ビネットでフェードインする
+		RenderCopyImage::GetInstance()->SetViggnetIndex(ExponentialInterpolation(0.0f, 10.0f, viggnetTime, 1.0f));
+
+		// フェードインが終わったら戦闘開始
+		if (viggnetTime == 1.0f) {
+			sceneNo = SCENE::RESULT;
+		}
+
+		break;
+	default:
+		break;
 	}
 
-	// ステータスマネージャ
-	StatusManager::GetInstance()->Update();
-
-	// コライダーリストのクリア
-	mCollisionManager->ClearColliders();
-
+	
 #ifdef _DEBUG
 	skybox_->DrawGUI("Skybox");
 	mPlayer->DrawGUI();
 	mBoss->DrawGUI();
 #endif // _DEBUG
+
+	// カメラ
 	MainCamera::GetInstance()->Update();
 
 	// スカイボックス
 	skybox_->Update();
+	
+	// ステータスマネージャ
+	StatusManager::GetInstance()->Update();
 
+	// プレイヤー
 	mPlayer->Update();
+	// ボス
 	mBoss->Update();
 
 	// レベルエディタ更新
 	LevelEditor::GetInstance()->Update();
-
-	// コライダーリストへの追加処理
-	mCollisionManager->SetCollider(mPlayer->GetObject3D()->mCollider);
-	mCollisionManager->SetCollider(mBoss->GetObject3D()->mCollider);
-	mPlayer->SetColliderList(mCollisionManager.get());
-	mBoss->SetCollider(mCollisionManager.get());
-
-	// 衝突判定を行う
-	mCollisionManager->Update();
 
 	// パーティクル
 	ParticleManager::GetInstance()->Update();

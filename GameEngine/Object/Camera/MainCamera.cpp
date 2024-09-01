@@ -20,7 +20,7 @@ void MainCamera::Initialize(){
 	mWorldTransform = new WorldTransform();
 	verticalFOV_ = 0.45f;
 	aspectRatio_ = (float(winApp_->kClientWidth) / float(winApp_->kClientHeight));
-	nearClip_ = 0.01f;
+	nearClip_ = 0.1f;
 	farClip_ = 1000.0f;
 	viewMatrix_ = Inverse(mWorldTransform->GetWorldMatrix());
 	projectionMatrix_ = MakePerspectiveMatrix(verticalFOV_, aspectRatio_, nearClip_, farClip_);
@@ -85,6 +85,16 @@ void MainCamera::Update()
 			// 回転の速度 // メンバ変数にしても良さそう
 			float rotateSpeed = 0.01f;
 			mWorldTransform->rotation += direction * rotateSpeed;
+
+			// x軸の回転は制限する
+			if (mWorldTransform->rotation.x < -0.2f) {
+				mWorldTransform->rotation.x = -0.2f;
+			}
+			if (mWorldTransform->rotation.x > 0.2f) {
+				mWorldTransform->rotation.x = 0.2f;
+			}
+
+
 		}
 
 	}

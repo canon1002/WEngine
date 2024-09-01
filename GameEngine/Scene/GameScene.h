@@ -13,6 +13,16 @@
 #include "GameEngine/Append/Collider/CollisionManager.h"
 #include "GameEngine/Input/InputManager.h"
 
+// 段階
+enum class Phase {
+	BEGIN,	// 開始前
+	BATTLE,	// 戦闘中
+	LOSE,	// プレイヤー敗北
+	WIN,	// プレイヤー勝利
+};
+
+
+
 class GameScene :
 	public IScene
 {
@@ -41,6 +51,14 @@ private:
 
 	// 円形拡散パーティクル
 	std::unique_ptr<DiffusionToCircleParticle> mDTCParticle;
+
+	// ゲームシーンの段階
+	Phase mPhase;
+
+	// 開始前のビネット
+	float viggnetTime;
+
+
 
 };
 

@@ -175,11 +175,19 @@ PixelShaderOutput main(VertexShaderOutput input)
         float vignette = correct.x * correct.y * gEffects.vigneMultipliier;
         // n乗してみる nはgEffectのvignetIndex
         vignette = saturate(pow(vignette, gEffects.vigneIndex));
-        // 係数として乗算
-        output.color.r = output.color.r * (vignette - gEffects.vignettingColor.r);
-        output.color.g = output.color.g * (vignette - gEffects.vignettingColor.g);
-        output.color.b = output.color.b * (vignette - gEffects.vignettingColor.b);
+        //// 係数として乗算
+        //output.color.r = output.color.r * (vignette - gEffects.vignettingColor.r);
+        //output.color.g = output.color.g * (vignette - gEffects.vignettingColor.g);
+        //output.color.b = output.color.b * (vignette - gEffects.vignettingColor.b);
         
+        // 赤色を加算するために、ビネット効果の反対色を計算
+        float3 vignetteColor = float3(vignette - gEffects.vignettingColor.r, vignette - gEffects.vignettingColor.g, vignette - gEffects.vignettingColor.b);
+
+        // 係数として乗算（ビネット効果に赤を加える）
+        output.color.r = output.color.r * vignetteColor.r;
+        output.color.g = output.color.g * vignetteColor.g;
+        output.color.b = output.color.b * vignetteColor.b;
+
     }
     // 輝度で検出したアウトラインの有無
     if (gEffects.enableLuminanceOutline)

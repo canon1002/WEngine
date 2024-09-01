@@ -38,9 +38,15 @@ public: // -- 公開 メンバ関数 -- //
 
 		mSprite->Update();
 	}	
+
 	void Update() {
+		
 		// 座標を設定
 		mSprite->SetPos(Vector2{10.0f,30.0f});
+		// スケール更新
+		float hpUIScale = ((float)HP / (float)MAXHP);
+		mSprite->SetScale({ hpUIScale,1.0f });
+		// 更新
 		mSprite->Update();
 	}
 

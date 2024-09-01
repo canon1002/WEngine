@@ -20,7 +20,7 @@ public: // -- public メンバ関数 -- //
 	/// <summary>
 	/// 初期化処理
 	/// </summary>
-	void Initialize();
+	void Initialize()override;
 
 	/// <summary>
 	/// 更新処理

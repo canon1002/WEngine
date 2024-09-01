@@ -57,7 +57,7 @@ void SceneManager::Init(WinAPI* winApp, DirectXCommon* dxCommon){
 	currentSceneNo_ = STAGE;
 
 	//
-	copyImage_ = std::make_unique<RenderCopyImage>();
+	copyImage_ = RenderCopyImage::GetInstance();
 	copyImage_->Initialize(DirectXCommon::GetInstance(), MainCamera::GetInstance());
 }
 
@@ -215,6 +215,7 @@ int SceneManager::Run() {
 	
 	inputManager_->Finalize();
 	audio_->Finalize();
+	copyImage_->Finalize();
 
 	return 0;
 }

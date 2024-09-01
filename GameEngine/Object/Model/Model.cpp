@@ -175,7 +175,7 @@ void Model::CreateMaterialResource()
 	CameraResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(CameraForGPU));
 	// データを書き込む
 	CameraResource->Map(0, nullptr, reinterpret_cast<void**>(&cameraData));
-	mCamera->Initialize(mDxCommon->win_);
+	mCamera->Initialize();
 	cameraData->worldPosition = mCamera->GetTranslate();
 
 }

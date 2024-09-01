@@ -13,6 +13,22 @@ RenderCopyImage::~RenderCopyImage()
 	//delete materialData;
 }
 
+RenderCopyImage* RenderCopyImage::instance = nullptr;
+
+RenderCopyImage* RenderCopyImage::GetInstance()
+{
+	if (instance == nullptr) {
+		instance = new RenderCopyImage();
+	}
+	return instance;
+}
+
+void RenderCopyImage::Finalize()
+{
+	delete instance;
+	instance = nullptr;
+}
+
 void RenderCopyImage::Initialize(DirectXCommon* dxCommon, CameraCommon* camera) {
 
 	mDxCommon = dxCommon;
@@ -44,9 +60,8 @@ void RenderCopyImage::Update() {
 	ImGui::Begin("RenderTexture");
 
 	//画面全体のカラー変更 // とりあえずグレースケールに設定
-	ImGui::Checkbox("GrayScale Flag", &effectFlags.isEnableScreenColor);
-	fullScreenData->enableGrayScele = effectFlags.isEnableScreenColor;
-	if (effectFlags.isEnableScreenColor) {
+	ImGui::SliderInt("GaryScale Flag", &fullScreenData->enableGrayScele, 0, 1);
+	if (fullScreenData->enableGrayScele == 1) {
 		// 色を変更
 		/*Color newColor = { fullScreenData->screenColor.x,fullScreenData->screenColor.y,
 			fullScreenData->screenColor.z,fullScreenData->screenColor.w};
@@ -54,39 +69,33 @@ void RenderCopyImage::Update() {
 		fullScreenData->screenColor = Vector4(newColor.r,newColor.g,newColor.b,newColor.a);*/
 	}
 	// ビネット
-	ImGui::Checkbox("Viggetting Flag", &effectFlags.isEnableViggetting);
-	fullScreenData->enableVignetting = effectFlags.isEnableViggetting;
-	if (effectFlags.isEnableViggetting) {
+	ImGui::SliderInt("Viggetting Flag", &fullScreenData->enableVignetting, 0, 1);
+	if (fullScreenData->enableVignetting == 1) {
 		ImGui::DragFloat4("Color", &fullScreenData->vignettingColor.x, 0.01f, 0.0f, 1.0f);
-		ImGui::DragFloat("Multipliier", &fullScreenData->vigneMultipliier,0.01f,0.0f,100.0f);
-		ImGui::DragFloat("Index", &fullScreenData->vigneIndex,0.01f,0.0f,10.0f);
+		ImGui::DragFloat("Multipliier", &fullScreenData->vigneMultipliier, 0.01f, 0.0f, 100.0f);
+		ImGui::DragFloat("Index", &fullScreenData->vigneIndex, 0.01f, 0.0f, 10.0f);
 	}
 
 	// ぼかし(BoxFilter/GuaseFilter)
-	ImGui::Checkbox("Smooting Flag", &effectFlags.isEnableSmooting);
-	fullScreenData->enableSmooting = effectFlags.isEnableSmooting;
-	if (effectFlags.isEnableSmooting) {
+	ImGui::SliderInt("Smooting Flag", &fullScreenData->enableSmooting, 0, 1);
+	if (fullScreenData->enableSmooting==1) {
 
 		// GuaseFilter
-		ImGui::Checkbox("GaussianFilter Flag", &effectFlags.isEnableGaussianFilter);
-		fullScreenData->enableGaussianFilter = effectFlags.isEnableGaussianFilter;
-		if (effectFlags.isEnableGaussianFilter) {
+		ImGui::SliderInt("GaussianFilter Flag", &fullScreenData->enableGaussianFilter, 0, 1);
+		if (fullScreenData->enableGaussianFilter == 1) {
 			// GuaseFilter実行時、BoxFilterは実行しないようにする
-			effectFlags.isEnableBoxFilter = false;
-			fullScreenData->enableBoxFilter = effectFlags.isEnableBoxFilter;
+			fullScreenData->enableBoxFilter = 0;
 
-			ImGui::DragInt("KernelSize", &fullScreenData->kernelSize,1,1,21);
+			ImGui::DragInt("KernelSize", &fullScreenData->kernelSize, 1, 1, 21);
 			ImGui::DragFloat("Sigma", &fullScreenData->GaussianSigma);
 
 		}
 
 		// BoxFilter
-		ImGui::Checkbox("BoxFilter Flag", &effectFlags.isEnableBoxFilter);
-		fullScreenData->enableBoxFilter = effectFlags.isEnableBoxFilter;
-		if (effectFlags.isEnableBoxFilter) {
+		ImGui::SliderInt("BoxFilter Flag", &fullScreenData->enableBoxFilter, 0, 1);
+		if (fullScreenData->enableBoxFilter == 1) {
 			// BoxFilter実行時、GuaseFilterは実行しないようにする
-			effectFlags.isEnableGaussianFilter = false;
-			fullScreenData->enableGaussianFilter = effectFlags.isEnableGaussianFilter;
+			fullScreenData->enableGaussianFilter = 0;
 
 			ImGui::DragInt("kernelSize", &fullScreenData->kernelSize,1,1,21);
 		}
@@ -95,9 +104,8 @@ void RenderCopyImage::Update() {
 	}
 
 	// Outline 輝度検出
-	ImGui::Checkbox("LuminanceOutline Flag", &effectFlags.isEnebleLuminanceOutline);
-	fullScreenData->enableLuminanceOutline = effectFlags.isEnebleLuminanceOutline;
-	if (effectFlags.isEnebleLuminanceOutline) {
+	ImGui::SliderInt("LuminanceOutline Flag", &fullScreenData->enableLuminanceOutline, 0, 1);
+	if (fullScreenData->enableLuminanceOutline == 1) {
 		ImGui::DragFloat("Multipliier", &fullScreenData->outlineMultipliier);
 	}
 

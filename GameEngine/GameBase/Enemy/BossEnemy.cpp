@@ -81,7 +81,7 @@ void BossEnemy::Init() {
 		mWeaponColliders.push_back(newCollider);
 	}
 
-	
+	mReloadBTCount = 10.0f;
 
 }
 
@@ -203,9 +203,9 @@ void BossEnemy::Update() {
 		this->UpdateState();
 
 		// BehaviorTreeの更新処理を行う
-		mReloadBTCount += (1.0f / 5.0f);
-		if (mReloadBTCount > 1.0f) {
-			mReloadBTCount = 0.0f;
+		mReloadBTCount -= (1.0f / 5.0f);
+		if (mReloadBTCount <= 0.0f) {
+			mReloadBTCount = 1.0f;
 			mBTStatus = mRoot->Tick();
 			if (mBTStatus == BT::NodeStatus::SUCCESS || mBTStatus == BT::NodeStatus::FAILURE) {
 				// 結果が帰ってきたら初期化処理

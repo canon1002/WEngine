@@ -10,7 +10,7 @@ public: // -- public メンバ関数 -- //
 	CameraCommon() = default;
 	~CameraCommon() = default;
 
-	void Initialize(WinAPI* winApp);
+	virtual void Initialize();
 	
 	virtual void Update();
 

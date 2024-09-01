@@ -35,28 +35,29 @@ struct FullScereenEffect {
 	Matrix4x4 projectionInverse; // NDCをViewに変換するために使う逆行列    
 };
 
-struct EffectFlags {
-	bool isEnableScreenColor;
-	bool isEnableViggetting;
-	bool isEnableSmooting;
-	bool isEnableBoxFilter;
-	bool isEnableGaussianFilter;
-	bool isEnebleLuminanceOutline;
-	bool isEnableDepthOutline;
-};
-
 class RenderCopyImage{
 
-public:
+private:
+
 	RenderCopyImage();
 	~RenderCopyImage();
+
+public:
+	
+	static RenderCopyImage* GetInstance();
+	void Finalize();
 
 	void Initialize(DirectXCommon* dxCommon, CameraCommon* camera);
 	void Update();
 	void PreDraw();
 	void Draw();
 
-
+	// ビネットの色を変更
+	void SetViggnetColor(Vector4 color) { fullScreenData->vignettingColor = color; }
+	// ビネットの
+	void SetViggnetMultiplier(float multiplier) { fullScreenData->vigneMultipliier = multiplier; }
+	// ビネットの乗数を変更
+	void SetViggnetIndex(float index) { fullScreenData->vigneIndex = index; }
 
 private:	// -- private メンバ関数 -- //
 
@@ -151,12 +152,14 @@ private:
 	Color* materialData = nullptr;
 	// PostEffectデータ
 	FullScereenEffect* fullScreenData = nullptr; 
-	// フラグ(これはHLSL関連に送らない)
-	EffectFlags effectFlags;
+	
 	// テクスチャハンドル
 	int32_t mTextureHandle;
 	// depStencilResourceの登録番号とリソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> mDepthStencilResource;
 	int32_t mDepthStencilHandle;
+
+	// インスタンス
+	static RenderCopyImage* instance;
 };
 

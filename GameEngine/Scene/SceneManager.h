@@ -54,6 +54,9 @@ private:
 	// オブジェクト管理者クラス
 	ObjectAdministrator* objectAdmin_;
 
+	// ポストエフェクト
+	RenderCopyImage* copyImage_;
+
 public:
 
 	SceneManager();
@@ -62,7 +65,7 @@ public:
 	void Init(WinAPI* winApp, DirectXCommon* dxCommon);
 	int Run();//　この関数でゲームループを呼び出す
 
-	std::unique_ptr<RenderCopyImage> copyImage_;
+	
 
 
 };
