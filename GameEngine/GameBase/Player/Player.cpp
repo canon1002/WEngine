@@ -119,7 +119,10 @@ void Player::Update() {
 		Attack();
 
 		// デバッグ操作
+		#ifdef _DEBUG
 		DebagCtr();
+		#endif // _DEBUG
+
 
 		// レティクル 更新
 		mReticle->Update();

@@ -74,7 +74,7 @@ void TitleScene::Init() {
 	mTitleOne.sprite->SetPos({ 640.0f,500.0f});
 	mTitleOne.sprite->SetAnchorPoint({ 0.5f,0.5f });
 	mTitleOne.t = 0.0f;
-	mTitleOne.displayCount = 0.0f;
+	mTitleOne.displayCount = 0.5f;
 	mTitleOne.isActive = true;
 	
 	// ゲームタイトル
@@ -94,7 +94,7 @@ void TitleScene::Init() {
 	mTitleSelect.sprite->SetPos({ 640.0f,500.0f});
 	mTitleSelect.sprite->SetAnchorPoint({ 0.5f,0.5f });
 	mTitleSelect.t = 0.0f;
-	mTitleSelect.displayCount = 0.0f;
+	mTitleSelect.displayCount = 0.5f;
 	mTitleSelect.isActive = true;
 
 
@@ -112,6 +112,15 @@ void TitleScene::Update() {
 	mTitleOne.sprite->Update();
 	mTitleLogo.sprite->Update();
 	mTitleSelect.sprite->Update();
+
+	mTitleOne.t += 1.0f / 60.0f;
+	if (mTitleOne.t >= 1.0f) {
+		mTitleOne.t = 0.0f;
+	}
+	mTitleSelect.t += 1.0f / 60.0f;
+	if (mTitleSelect.t >= 1.0f) {
+		mTitleSelect.t = 0.0f;
+	}
 
 	// カメラやシーン遷移をしていない場合に入力を受け付ける
 	if (!mIsActiveTransition) {
@@ -132,10 +141,6 @@ void TitleScene::Update() {
 
 				// 遷移のスタート地点設定
 				mCameraTrZ.s = mCamera->mWorldTransform->translation;
-				
-				// ビネットで画面全体を暗くする
-				RenderCopyImage::GetInstance()->SetViggnetColor(Vector4(0.0f, 0.0f, 0.0f, 1.0f));
-
 			}
 
 		}
@@ -223,12 +228,16 @@ void TitleScene::DrawUI()
 	// カメラやシーン遷移をしていない場合にのみUIを表示
 	if (!mIsActiveTransition) {
 		if (!mIsTransitionTitleSelect) {
-			mTitleOne.sprite->Draw();
+			if (mTitleOne.t <= mTitleOne.displayCount) {
+				mTitleOne.sprite->Draw();
+			}
 		}
 
 		else if (!mIsTransitionGameScene) {
 			mTitleLogo.sprite->Draw();
-			mTitleSelect.sprite->Draw();
+			if (mTitleSelect.t <= mTitleSelect.displayCount) {
+				mTitleSelect.sprite->Draw();
+			}
 		}
 	}
 

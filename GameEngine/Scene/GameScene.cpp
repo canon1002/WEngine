@@ -254,8 +254,6 @@ void GameScene::Draw() {
 	mPlayer->Draw();
 	mBoss->Draw();
 
-	mPlayer->GetReticle3D()->Draw2DReticle();
-
 	//ParticleManager::GetInstance()->PreDraw();
 	//mDTCParticle->Draw();
 
@@ -268,8 +266,11 @@ void GameScene::DrawUI()
 	mPlayer->GetStatus()->Draw();
 	mBoss->GetStatus()->Draw();
 
+	// UI表示
 	mMoveUI.sprite->Draw();
 	mActionUI.sprite->Draw();
+	// レティクル表示
+	mPlayer->GetReticle3D()->Draw2DReticle();
 
 	// ダメージ画像の表記
 	DamageReaction::GetInstance()->DrawSprite();
