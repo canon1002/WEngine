@@ -1471,7 +1471,7 @@ X3DAUDIO_HANDLE& AudioEngine::Get3DHandle() const noexcept
 
 
 // Static methods.
-#if (defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_APP)) || defined(USING_XAUDIO2_8)
+#if (defined(WinApp_FAMILY) && (WinApp_FAMILY == WinApp_FAMILY_APP)) || defined(USING_XAUDIO2_8)
 //--- Use Windows Runtime device enumeration ---
 
 // Note that this form of enumeration would also be needed for XAudio2.9 prior to Windows 10 (18362).
@@ -1506,7 +1506,7 @@ namespace
 
     class PropertyIterator : public Microsoft::WRL::RuntimeClass<ABI::Windows::Foundation::Collections::IIterator<HSTRING>>
     {
-    #if !defined(WINAPI_FAMILY) || (WINAPI_FAMILY == WINAPI_FAMILY_DESKTOP_APP)
+    #if !defined(WinApp_FAMILY) || (WinApp_FAMILY == WinApp_FAMILY_DESKTOP_APP)
         InspectableClass(L"AudioEngine.PropertyIterator", FullTrust)
     #else
         InspectableClass(L"AudioEngine.PropertyIterator", BaseTrust)
@@ -1556,7 +1556,7 @@ namespace
 
     class PropertyList : public Microsoft::WRL::RuntimeClass<ABI::Windows::Foundation::Collections::IIterable<HSTRING>>
     {
-    #if !defined(WINAPI_FAMILY) || (WINAPI_FAMILY == WINAPI_FAMILY_DESKTOP_APP)
+    #if !defined(WinApp_FAMILY) || (WinApp_FAMILY == WinApp_FAMILY_DESKTOP_APP)
         InspectableClass(L"AudioEngine.PropertyList", FullTrust)
     #else
         InspectableClass(L"AudioEngine.PropertyList", BaseTrust)
@@ -1585,7 +1585,7 @@ namespace
         using namespace ABI::Windows::Foundation::Collections;
         using namespace ABI::Windows::Devices::Enumeration;
 
-    #if !defined(WINAPI_FAMILY) || (WINAPI_FAMILY == WINAPI_FAMILY_DESKTOP_APP)
+    #if !defined(WinApp_FAMILY) || (WinApp_FAMILY == WinApp_FAMILY_DESKTOP_APP)
         RoInitializeWrapper initialize(RO_INIT_MULTITHREADED);
         ThrowIfFailed(initialize);
     #endif
@@ -1684,7 +1684,7 @@ std::vector<AudioEngine::RendererDetail> AudioEngine::GetRendererDetails()
     using namespace ABI::Windows::Foundation::Collections;
     using namespace ABI::Windows::Devices::Enumeration;
 
-#if !defined(WINAPI_FAMILY) || (WINAPI_FAMILY == WINAPI_FAMILY_DESKTOP_APP)
+#if !defined(WinApp_FAMILY) || (WinApp_FAMILY == WinApp_FAMILY_DESKTOP_APP)
     RoInitializeWrapper initialize(RO_INIT_MULTITHREADED);
     ThrowIfFailed(initialize);
 #endif

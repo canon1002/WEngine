@@ -16,7 +16,7 @@
 #include <grdk.h>
 #endif
 
-#if (defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_GAMES)) || (defined(_GAMING_DESKTOP) && (_GRDK_EDITION >= 220600))
+#if (defined(WinApp_FAMILY) && (WinApp_FAMILY == WinApp_FAMILY_GAMES)) || (defined(_GAMING_DESKTOP) && (_GRDK_EDITION >= 220600))
 #define USING_GAMEINPUT
 #elif (_WIN32_WINNT >= 0x0A00 /*_WIN32_WINNT_WIN10*/) && !defined(_GAMING_DESKTOP) && !defined(__MINGW32__)
 #define USING_WINDOWS_GAMING_INPUT

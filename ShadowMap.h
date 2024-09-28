@@ -1,5 +1,5 @@
 #pragma once
-#include "GameEngine/Base/DirectX/DirectXCommon.h"
+#include "Base/DirectX/DirectXCommon.h"
 
 using namespace DirectX;
 

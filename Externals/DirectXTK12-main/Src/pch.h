@@ -180,7 +180,7 @@
 #pragma clang diagnostic pop
 #endif
 
-#if (defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_APP)) || (defined(_XBOX_ONE) && defined(_TITLE))
+#if (defined(WinApp_FAMILY) && (WinApp_FAMILY == WinApp_FAMILY_APP)) || (defined(_XBOX_ONE) && defined(_TITLE))
 #pragma warning(push)
 #pragma warning(disable: 4471 5204 5256)
 #include <Windows.UI.Core.h>

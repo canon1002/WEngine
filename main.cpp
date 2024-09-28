@@ -1,5 +1,5 @@
-#include "GameEngine/Base/DirectX/DirectXCommon.h"
-#include "GameEngine/Base/Engine.h"
+#include "Base/DirectX/DirectXCommon.h"
+#include "Base/Engine.h"
 #include <d3d12.h>
 
 // Windowsアプリでのエントリーポイント(main関数)

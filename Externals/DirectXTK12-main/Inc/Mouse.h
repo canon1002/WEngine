@@ -16,9 +16,9 @@
 #include <grdk.h>
 #endif
 
-#if (defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_GAMES)) || (defined(_GAMING_DESKTOP) && (_GRDK_EDITION >= 220600))
+#if (defined(WinApp_FAMILY) && (WinApp_FAMILY == WinApp_FAMILY_GAMES)) || (defined(_GAMING_DESKTOP) && (_GRDK_EDITION >= 220600))
 #define USING_GAMEINPUT
-#elif (defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_APP)) || (defined(_XBOX_ONE) && defined(_TITLE))
+#elif (defined(WinApp_FAMILY) && (WinApp_FAMILY == WinApp_FAMILY_APP)) || (defined(_XBOX_ONE) && defined(_TITLE))
 #define USING_COREWINDOW
 #endif
 
