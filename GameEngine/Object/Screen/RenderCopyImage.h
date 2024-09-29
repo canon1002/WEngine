@@ -7,6 +7,61 @@
 // 前方宣言
 class CameraCommon;
 
+// 各エフェクトごとの要素別に構造体でまとめておく
+
+// スクリーン
+struct Screen{
+	int32_t enableGrayScele;	// Graysceleの有無
+	int32_t enableScreenColor;  // 画面全体の色を変更する
+	int32_t padding[2];			// *メモリ合わせ
+	Vector4 screenColor;		// 上記の際に使うVector4(RGB+A型)
+};
+
+
+// ビネット
+struct Vignette{
+	int32_t enable;		// 使用フラグ
+	float index;		// 乗数
+	float multipliier;	// 指数
+	int32_t padding;	// *メモリ合わせ
+	Vector4 color;		// ビネットの色
+};
+
+// ぼかし
+struct Smooting {
+	int32_t useBox;			// BoxFillterを使用する
+	int32_t useGaussian;    // GaussianFillterを使用する
+	int32_t kernelSize;     // カーネルの大きさ
+	float gaussianSigma;    // GaussianFilterの際に使う標準偏差
+};
+
+// 輝度アウトライン
+struct LuminanceOutline {
+	int32_t  enable;	// 使用フラグ
+	float multipliier;  // アウトライン生成時の差を大きくする数値 
+};
+
+// 深度アウトライン
+struct DepthOutline {
+	int32_t  enable;	// 使用フラグ
+	Matrix4x4 projectionInverse; // NDCをViewに変換するために使う逆行列    
+};
+
+//	アウトライン
+struct Outline {
+	LuminanceOutline luminance;	// 輝度アウトライン
+	int32_t padding;	// *メモリ合わせ
+	DepthOutline depth;		// 深度アウトライン
+};
+
+// レンダリング時のポストエフェクト
+struct PostEffects {
+	Screen screen;		// スクリーンの色を変更する
+	Vignette vignette;	// ビネット
+	Smooting smooting;	// ぼかし
+	Outline outline;	// アウトライン
+};
+
 // レンダリング時にポストエフェクトで使う変数をまとめた構造体
 struct FullScereenEffect {
 	int32_t enableScreenColor;  // 画面全体の色を変更する
@@ -51,13 +106,14 @@ public:
 	void Update();
 	void PreDraw();
 	void Draw();
+	void Debug();
 
 	// ビネットの色を変更
-	void SetViggnetColor(Vector4 color) { fullScreenData->vignettingColor = color; }
+	void SetViggnetColor(Vector4 color) { mPostEffects->vignette.color = color; }
 	// ビネットの
-	void SetViggnetMultiplier(float multiplier) { fullScreenData->vigneMultipliier = multiplier; }
+	void SetViggnetMultiplier(float multiplier) { mPostEffects->vignette.multipliier = multiplier; }
 	// ビネットの乗数を変更
-	void SetViggnetIndex(float index) { fullScreenData->vigneIndex = index; }
+	void SetViggnetIndex(float index) { mPostEffects->vignette.index = index; }
 
 private:	// -- private メンバ関数 -- //
 
@@ -115,7 +171,7 @@ public:
 	}
 
 	const D3D12_VERTEX_BUFFER_VIEW& GetVBV() const { return mVertexBufferView; }
-	auto* GetMaterial() { return  fullScreenResource.Get(); }
+	auto* GetMaterial() { return  mPostEffectResource.Get(); }
 	auto* GetWVP() { return mWvpResource.Get(); }
 
 
@@ -138,8 +194,8 @@ private:
 	// VertexResourceを生成する(P.42)
 	// 実際に頂点リソースを作る
 	Microsoft::WRL::ComPtr<ID3D12Resource> mVertexResource = nullptr;
-	// マテリアル用のResourceを作る
-	Microsoft::WRL::ComPtr<ID3D12Resource> fullScreenResource = nullptr;
+	// ポストエフェクトのパラメータ用のResourceを作る
+	Microsoft::WRL::ComPtr<ID3D12Resource> mPostEffectResource = nullptr;
 	// Transformation用のResourceを作る
 	Microsoft::WRL::ComPtr<ID3D12Resource> mWvpResource = nullptr;
 	// データを書き込む
@@ -151,10 +207,12 @@ private:
 	// マテリアルデータ
 	Color* materialData = nullptr;
 	// PostEffectデータ
-	FullScereenEffect* fullScreenData = nullptr; 
-	
+	//FullScereenEffect* fullScreenData = nullptr; 
+	PostEffects* mPostEffects;
+
 	// テクスチャハンドル
 	int32_t mTextureHandle;
+
 	// depStencilResourceの登録番号とリソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> mDepthStencilResource;
 	int32_t mDepthStencilHandle;

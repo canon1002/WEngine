@@ -9,17 +9,17 @@ struct PixelShaderOutput{
 
 struct FullScereenEffect
 {
+    int32_t enableGrayScele; // Graysceleの有無
     int32_t enableScreenColor;  // Graysceleやセピア調など、画面全体の色を変更する
-    int32_t enableGrayScele;    // Graysceleの有無
     
     float32_t4 screenColor;     // 上記の際に使うfloat[4](RGB+A型)
     
+    int32_t enableVignetting; // ビネット処理の有無(画面端を暗くする)
+    float32_t vigneIndex; // ビネット処理の際に使用する指数
+    float32_t vigneMultipliier; // ビネット処理の際に使用する乗数
+    
     float32_t4 vignettingColor; // ビネット処理で使うfloat[4](RGB+A型)
     
-    int32_t enableVignetting;   // ビネット処理の有無(画面端を暗くする)
-    float32_t vigneMultipliier; // ビネット処理の際に使用する乗数
-    float32_t vigneIndex;       // ビネット処理の際に使用する指数
-    int32_t enableSmooting;     // Smooting(ぼかし)の有無 (ぼかしの種類は以下の変数で決める)
     
     int32_t enableBoxFilter;    // ぼかしの際にBoxFillterを使用するのか
     int32_t enableGaussianFilter;    // ぼかしをガウスぼかしにするのか
@@ -29,6 +29,7 @@ struct FullScereenEffect
     int32_t enableLuminanceOutline; // 輝度で検出したアウトラインの有無
     float32_t outlineMultipliier;   // アウトライン生成時の差を大きくするための数値  
     int32_t enableDepthOutline; // 深度(Depth)で検出したアウトラインの有無
+    
     float32_t4x4 projectionInverse; // NDCをViewに変換するために使う逆行列    
 };
 ConstantBuffer<FullScereenEffect> gEffects: register(b0);

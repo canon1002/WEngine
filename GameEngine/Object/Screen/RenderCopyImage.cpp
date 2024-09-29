@@ -25,6 +25,8 @@ RenderCopyImage* RenderCopyImage::GetInstance()
 
 void RenderCopyImage::Finalize()
 {
+	delete mPostEffects;
+
 	delete instance;
 	instance = nullptr;
 }
@@ -41,6 +43,34 @@ void RenderCopyImage::Initialize(DirectXCommon* dxCommon, CameraCommon* camera) 
 	CreateTransformation();
 	CreateBufferView();
 
+	// PostEffect用のResourceを作る
+	mPostEffects = nullptr;
+	mPostEffectResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(PostEffects));
+	// 書き込むためのアドレスを取得
+	mPostEffectResource->Map(0, nullptr, reinterpret_cast<void**>(&mPostEffects));
+	
+	// スクリーン
+	mPostEffects->screen.enableGrayScele = 0;
+	mPostEffects->screen.enableScreenColor = 0;
+	mPostEffects->screen.screenColor = { 1.0f,1.0f,1.0f,1.0f };
+	// ビネット
+	mPostEffects->vignette.enable = 1;
+	mPostEffects->vignette.index = 0.1f;
+	mPostEffects->vignette.multipliier = 0.2f;
+	mPostEffects->vignette.color = { 0.0f,0.4f,0.4f,1.0f };
+	// ぼかし
+	mPostEffects->smooting.useBox = 0;
+	mPostEffects->smooting.useGaussian = 0;
+	mPostEffects->smooting.kernelSize = 3;
+	mPostEffects->smooting.gaussianSigma = 2.0f;
+	// アウトライン
+	mPostEffects->outline.luminance.enable = 0;
+	mPostEffects->outline.luminance.multipliier = 6.0f;
+	mPostEffects->outline.depth.enable = 0;
+	mPostEffects->outline.depth.projectionInverse = Inverse(MainCamera::GetInstance()->GetProjectionMatrix());
+	
+
+	// 画像を設定(エラー回避)
 	mTextureHandle = mDxCommon->srv_->LoadTexture("uvChecker.png");
 	mTextureHandle = mDxCommon->srv_->CreateRenderTextureSRV(mDxCommon->rtv_->mRenderTextureResource.Get());
 
@@ -53,66 +83,9 @@ void RenderCopyImage::Update() {
 	//fullScreenResource->Map(0, nullptr, reinterpret_cast<void**>(&fullScreenData));
 
 	// 逆行列を取得しておく
-	fullScreenData->projectionInverse = Inverse(MainCamera::GetInstance()->GetProjectionMatrix());
+	mPostEffects->outline.depth.projectionInverse = Inverse(MainCamera::GetInstance()->GetProjectionMatrix());
 
-#ifdef _DEBUG
-
-	ImGui::Begin("RenderTexture");
-
-	//画面全体のカラー変更 // とりあえずグレースケールに設定
-	ImGui::SliderInt("GaryScale Flag", &fullScreenData->enableGrayScele, 0, 1);
-	if (fullScreenData->enableGrayScele == 1) {
-		// 色を変更
-		/*Color newColor = { fullScreenData->screenColor.x,fullScreenData->screenColor.y,
-			fullScreenData->screenColor.z,fullScreenData->screenColor.w};
-		ImGui::ColorEdit4("SctreenColor", &newColor.r);
-		fullScreenData->screenColor = Vector4(newColor.r,newColor.g,newColor.b,newColor.a);*/
-	}
-	// ビネット
-	ImGui::SliderInt("Viggetting Flag", &fullScreenData->enableVignetting, 0, 1);
-	if (fullScreenData->enableVignetting == 1) {
-		ImGui::DragFloat4("Color", &fullScreenData->vignettingColor.x, 0.01f, 0.0f, 1.0f);
-		ImGui::DragFloat("Multipliier", &fullScreenData->vigneMultipliier, 0.01f, 0.0f, 100.0f);
-		ImGui::DragFloat("Index", &fullScreenData->vigneIndex, 0.01f, 0.0f, 10.0f);
-	}
-
-	// ぼかし(BoxFilter/GuaseFilter)
-	ImGui::SliderInt("Smooting Flag", &fullScreenData->enableSmooting, 0, 1);
-	if (fullScreenData->enableSmooting==1) {
-
-		// GuaseFilter
-		ImGui::SliderInt("GaussianFilter Flag", &fullScreenData->enableGaussianFilter, 0, 1);
-		if (fullScreenData->enableGaussianFilter == 1) {
-			// GuaseFilter実行時、BoxFilterは実行しないようにする
-			fullScreenData->enableBoxFilter = 0;
-
-			ImGui::DragInt("KernelSize", &fullScreenData->kernelSize, 1, 1, 21);
-			ImGui::DragFloat("Sigma", &fullScreenData->GaussianSigma);
-
-		}
-
-		// BoxFilter
-		ImGui::SliderInt("BoxFilter Flag", &fullScreenData->enableBoxFilter, 0, 1);
-		if (fullScreenData->enableBoxFilter == 1) {
-			// BoxFilter実行時、GuaseFilterは実行しないようにする
-			fullScreenData->enableGaussianFilter = 0;
-
-			ImGui::DragInt("kernelSize", &fullScreenData->kernelSize,1,1,21);
-		}
-
-
-	}
-
-	// Outline 輝度検出
-	ImGui::SliderInt("LuminanceOutline Flag", &fullScreenData->enableLuminanceOutline, 0, 1);
-	if (fullScreenData->enableLuminanceOutline == 1) {
-		ImGui::DragFloat("Multipliier", &fullScreenData->outlineMultipliier);
-	}
-
-	ImGui::End();
-
-#endif // _DEBUG
-
+	Debug();
 
 	// カメラのワールド行列
 	cameraM = MakeAffineMatrix(Vector3{ 1.0f,1.0f,1.0f },
@@ -144,7 +117,7 @@ void RenderCopyImage::Draw() {
 	/// CBV設定
 
 	// マテリアルのCBufferの場所を指定
-	mDxCommon->mCommandList->SetGraphicsRootConstantBufferView(0, fullScreenResource->GetGPUVirtualAddress());
+	mDxCommon->mCommandList->SetGraphicsRootConstantBufferView(0, mPostEffectResource->GetGPUVirtualAddress());
 	//wvp用のCBufferの場所を指定
 	mDxCommon->mCommandList->SetGraphicsRootConstantBufferView(1, mWvpResource->GetGPUVirtualAddress());
 	// テクスチャをセット
@@ -154,6 +127,59 @@ void RenderCopyImage::Draw() {
 
 	// インスタンス生成
 	mDxCommon->mCommandList->DrawInstanced(3, 1, 0, 0);
+
+}
+
+void RenderCopyImage::Debug()
+{
+
+#ifdef _DEBUG
+
+	if (!ImGui::Begin("PostEffects", nullptr, ImGuiWindowFlags_MenuBar)) {
+		ImGui::End();
+		return;
+	}
+	if (!ImGui::BeginMenuBar()) return;
+	
+	// スクリーン
+	if (ImGui::BeginMenu("Screen")) {
+		ImGui::SliderInt("GaryScale Enable", &mPostEffects->screen.enableGrayScele, 0, 1);
+		ImGui::SliderInt("ScrreenColor Enable", &mPostEffects->screen.enableScreenColor, 0, 1);
+		ImGui::ColorEdit4("SctreenColor", &mPostEffects->screen.screenColor.x);
+		ImGui::EndMenu();
+	}
+
+	// スクリーン
+	if (ImGui::BeginMenu("Viggnete")) {
+		ImGui::SliderInt("Enable", &mPostEffects->vignette.enable, 0, 1);
+		ImGui::DragFloat("Multipliier", &mPostEffects->vignette.multipliier, 0.01f, 0.0f, 100.0f);
+		ImGui::DragFloat("Index", &mPostEffects->vignette.index, 0.01f, 0.0f, 10.0f);
+		ImGui::DragFloat4("Color", &mPostEffects->vignette.color.x, 0.01f, 0.0f, 1.0f);
+		ImGui::EndMenu();
+	}
+
+	// ぼかし
+	if (ImGui::BeginMenu("Smooting")) {
+		ImGui::SliderInt("Use BoxFilter", &mPostEffects->smooting.useBox, 0, 1);
+		ImGui::SliderInt("Use GuaseFilter", &mPostEffects->smooting.useGaussian, 0, 1);
+		ImGui::SliderInt("KernelSize", &mPostEffects->smooting.kernelSize, 1, 9);
+		ImGui::DragFloat("GaussianSigma", &mPostEffects->smooting.gaussianSigma, 0.01f, 0.0f, 10.0f);
+		ImGui::EndMenu();
+	}
+
+	// アウトライン
+	if (ImGui::BeginMenu("Outline")) {
+		ImGui::SliderInt("Luminance Enable", &mPostEffects->outline.luminance.enable, 0, 1);
+		ImGui::DragFloat("Multipliier", &mPostEffects->outline.luminance.multipliier, 0.1f, 0.0f, 60.0f);
+		ImGui::SliderInt("Depth Enable", &mPostEffects->outline.depth.enable, 0, 1);
+		ImGui::EndMenu();
+	}
+
+	ImGui::EndMenuBar();
+
+	ImGui::End();
+
+#endif // _DEBUG
 
 }
 
@@ -328,29 +354,6 @@ void RenderCopyImage::CreateVertexResource() {
 	// 実際に頂点リソースを作る
 	mVertexResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(VertexData) * 3);
 
-	// PostEffect用のResourceを作る
-	fullScreenData = nullptr;
-	fullScreenResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(FullScereenEffect));
-	// 書き込むためのアドレスを取得
-	fullScreenResource->Map(0, nullptr, reinterpret_cast<void**>(&fullScreenData));
-
-	// PostEffect用構造体にデータを書き込む
-	fullScreenData->enableScreenColor = 0;
-	fullScreenData->enableGrayScele = 0;
-	fullScreenData->screenColor = { 1.0f,1.0f,1.0f,1.0f };
-	fullScreenData->vignettingColor = { 0.0f,0.4f,0.4f,1.0f };
-	fullScreenData->enableVignetting = 1;
-	fullScreenData->vigneMultipliier = 0.2f;
-	fullScreenData->vigneIndex = 0.1f;
-	fullScreenData->enableSmooting = 0;
-	fullScreenData->enableBoxFilter = 0;
-	fullScreenData->enableGaussianFilter = 1;
-	fullScreenData->kernelSize = 3;
-	fullScreenData->GaussianSigma = 2.0f;
-	fullScreenData->enableLuminanceOutline = 0;
-	fullScreenData->outlineMultipliier = 6.0f;
-	fullScreenData->enableDepthOutline = 0;
-	fullScreenData->projectionInverse = Inverse(MainCamera::GetInstance()->GetProjectionMatrix());
 }
 
 //
