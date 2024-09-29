@@ -25,8 +25,6 @@ RenderCopyImage* RenderCopyImage::GetInstance()
 
 void RenderCopyImage::Finalize()
 {
-	delete mPostEffects;
-
 	delete instance;
 	instance = nullptr;
 }
@@ -57,7 +55,12 @@ void RenderCopyImage::Initialize(DirectXCommon* dxCommon, CameraCommon* camera) 
 	mPostEffects->vignette.enable = 1;
 	mPostEffects->vignette.index = 0.1f;
 	mPostEffects->vignette.multipliier = 0.2f;
-	mPostEffects->vignette.color = { 0.0f,0.4f,0.4f,1.0f };
+	mPostEffects->vignette.color = { 0.0f,0.0f,0.0f,0.0f };
+	// 赤色ビネット
+	mPostEffects->redVignnete.enable = 0;
+	mPostEffects->redVignnete.index = 0.0f;
+	mPostEffects->redVignnete.multipliier = 2.8f;
+	mPostEffects->redVignnete.color = { 0.0f,0.4f,0.4f,1.0f };
 	// ぼかし
 	mPostEffects->smooting.useBox = 0;
 	mPostEffects->smooting.useGaussian = 0;
@@ -149,12 +152,21 @@ void RenderCopyImage::Debug()
 		ImGui::EndMenu();
 	}
 
-	// スクリーン
+	// ビネット
 	if (ImGui::BeginMenu("Viggnete")) {
 		ImGui::SliderInt("Enable", &mPostEffects->vignette.enable, 0, 1);
 		ImGui::DragFloat("Multipliier", &mPostEffects->vignette.multipliier, 0.01f, 0.0f, 100.0f);
 		ImGui::DragFloat("Index", &mPostEffects->vignette.index, 0.01f, 0.0f, 10.0f);
 		ImGui::DragFloat4("Color", &mPostEffects->vignette.color.x, 0.01f, 0.0f, 1.0f);
+		ImGui::EndMenu();
+	}
+
+	// 赤色ビネット
+	if (ImGui::BeginMenu("RedViggnete")) {
+		ImGui::SliderInt("Enable", &mPostEffects->redVignnete.enable, 0, 1);
+		ImGui::DragFloat("Multipliier", &mPostEffects->redVignnete.multipliier, 0.01f, 0.0f, 100.0f);
+		ImGui::DragFloat("Index", &mPostEffects->redVignnete.index, 0.01f, 0.0f, 10.0f);
+		ImGui::DragFloat4("Color", &mPostEffects->redVignnete.color.x, 0.01f, 0.0f, 1.0f);
 		ImGui::EndMenu();
 	}
 

@@ -58,6 +58,7 @@ struct Outline {
 struct PostEffects {
 	Screen screen;		// スクリーンの色を変更する
 	Vignette vignette;	// ビネット
+	Vignette redVignnete; // 赤色ビネット
 	Smooting smooting;	// ぼかし
 	Outline outline;	// アウトライン
 };
@@ -110,10 +111,23 @@ public:
 
 	// ビネットの色を変更
 	void SetViggnetColor(Vector4 color) { mPostEffects->vignette.color = color; }
-	// ビネットの
+	// ビネットの指数
 	void SetViggnetMultiplier(float multiplier) { mPostEffects->vignette.multipliier = multiplier; }
 	// ビネットの乗数を変更
 	void SetViggnetIndex(float index) { mPostEffects->vignette.index = index; }
+
+	// -- 以下 赤色ビネット 処理 -- //
+
+	// ビネットの切り替え
+	void SetRedViggnetEnable(bool flag) { mPostEffects->redVignnete.enable = flag; }
+
+	// ビネットの色を変更
+	void SetRedViggnetColor(Vector4 color) { mPostEffects->redVignnete.color = color; }
+	// ビネットの指数
+	void SetRedViggnetMultiplier(float multiplier) { mPostEffects->redVignnete.multipliier = multiplier; }
+	// ビネットの乗数を変更
+	void SetRedViggnetIndex(float index) { mPostEffects->redVignnete.index = index; }
+
 
 private:	// -- private メンバ関数 -- //
 

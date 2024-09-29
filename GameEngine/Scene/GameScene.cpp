@@ -224,6 +224,18 @@ void GameScene::Update(){
 	// ボス
 	mBoss->Update();
 
+	// プレイヤーの現在HPに応じて赤色ビネットを変化させる
+	float playerHPRatio = (float(mPlayer->GetStatus()->MAXHP) - float(mPlayer->GetStatus()->HP)) / float(mPlayer->GetStatus()->MAXHP);
+	if (playerHPRatio > 0.3f) {
+
+		if (playerHPRatio > 0.6f) {
+			RenderCopyImage::GetInstance()->SetRedViggnetMultiplier(ExponentialInterpolation(2.8f, 0.8f, playerHPRatio, 1.0f));
+		}
+
+		RenderCopyImage::GetInstance()->SetRedViggnetEnable(true);
+		RenderCopyImage::GetInstance()->SetRedViggnetIndex(ExponentialInterpolation(0.0f, 0.5f, playerHPRatio, 1.0f));
+	}
+
 	// レベルエディタ更新
 	LevelEditor::GetInstance()->Update();
 

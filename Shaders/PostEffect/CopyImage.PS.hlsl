@@ -9,23 +9,30 @@ struct PixelShaderOutput{
 
 struct FullScereenEffect
 {
+    // スクリーン
     int32_t enableGrayScele; // Graysceleの有無
     int32_t enableScreenColor;  // Graysceleやセピア調など、画面全体の色を変更する
-    
     float32_t4 screenColor;     // 上記の際に使うfloat[4](RGB+A型)
     
+    // ビネット
     int32_t enableVignetting; // ビネット処理の有無(画面端を暗くする)
     float32_t vigneIndex; // ビネット処理の際に使用する指数
     float32_t vigneMultipliier; // ビネット処理の際に使用する乗数
-    
     float32_t4 vignettingColor; // ビネット処理で使うfloat[4](RGB+A型)
     
+    // 赤色ビネット
+    int32_t enableRedVignetting; // ビネット処理の有無(画面端を暗くする)
+    float32_t redVigneIndex; // ビネット処理の際に使用する指数
+    float32_t redVigneMultipliier; // ビネット処理の際に使用する乗数
+    float32_t4 redVignettingColor; // ビネット処理で使うfloat[4](RGB+A型)
     
+    // ぼかし
     int32_t enableBoxFilter;    // ぼかしの際にBoxFillterを使用するのか
     int32_t enableGaussianFilter;    // ぼかしをガウスぼかしにするのか
     int32_t kernelSize; // カーネルの大きさ
     float32_t GaussianSigma;    // GaussianFilterの際に使う標準偏差
     
+    // アウトライン
     int32_t enableLuminanceOutline; // 輝度で検出したアウトラインの有無
     float32_t outlineMultipliier;   // アウトライン生成時の差を大きくするための数値  
     int32_t enableDepthOutline; // 深度(Depth)で検出したアウトラインの有無
@@ -183,6 +190,29 @@ PixelShaderOutput main(VertexShaderOutput input)
         
         // 赤色を加算するために、ビネット効果の反対色を計算
         float3 vignetteColor = float3(vignette - gEffects.vignettingColor.r, vignette - gEffects.vignettingColor.g, vignette - gEffects.vignettingColor.b);
+
+        // 係数として乗算（ビネット効果に赤を加える）
+        output.color.r = output.color.r * vignetteColor.r;
+        output.color.g = output.color.g * vignetteColor.g;
+        output.color.b = output.color.b * vignetteColor.b;
+
+    }
+     // 赤色ビネット
+    if (gEffects.enableRedVignetting != 0)
+    {
+        // 周囲を0に、中心に近くなるほど明るくなるように計算で調整
+        float32_t2 correct = input.texcoord * (1.0f - input.texcoord.yx);
+        // correctだけで計算すると中心の最大値が0.0625と暗すぎるのでScale調整
+        float vignette = correct.x * correct.y * gEffects.redVigneMultipliier;
+        // n乗してみる nはgEffectのvignetIndex
+        vignette = saturate(pow(vignette, gEffects.redVigneIndex));
+        //// 係数として乗算
+        //output.color.r = output.color.r * (vignette - gEffects.vignettingColor.r);
+        //output.color.g = output.color.g * (vignette - gEffects.vignettingColor.g);
+        //output.color.b = output.color.b * (vignette - gEffects.vignettingColor.b);
+        
+        // 赤色を加算するために、ビネット効果の反対色を計算
+        float3 vignetteColor = float3(vignette - gEffects.redVignettingColor.r, vignette - gEffects.redVignettingColor.g, vignette - gEffects.redVignettingColor.b);
 
         // 係数として乗算（ビネット効果に赤を加える）
         output.color.r = output.color.r * vignetteColor.r;
