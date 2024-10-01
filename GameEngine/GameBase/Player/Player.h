@@ -60,6 +60,21 @@ struct AvoidStatus {
 	Vector3 mAvoidMoveEndPos;
 };
 
+// 突進攻撃 パラメータ
+struct ChargeStatus {
+	bool isCastMode;	// 攻撃準備中か
+	float castTime;		// 使用前待機時間
+	float recastTime;	// 再使用待機時間
+	float attackRange;	// 攻撃範囲(=移動距離)
+	float pushingFrame;	// ボタンを押している時間
+	Vector3 direction;	// 向き
+	float power;		// 威力
+	bool isCharge;		// 突進攻撃中か
+	Vector3 startPos;	// 移動の始点
+	Vector3 endPos;		// 移動の終点
+	float moveingTime;	// 移動時間
+};
+
 class Player {
 
 public: // -- 公開 メンバ関数 -- //
@@ -100,10 +115,15 @@ public: // -- 公開 メンバ関数 -- //
 	// Debag用
 	void DebagCtr();
 
-	// 溜め処理
+	// 突撃
 	void Charge();
 	// 溜め->攻撃 移行処理
 	void ChengeChageToAttack();
+
+	void SpecialAtkRB();
+	void SpecialAtkRT();
+	void SpecialAtkLB();
+	void SpecialAtkLT();
 
 	// アロー生成関数
 	Arrow* CreateArrow(Vector3 startPos,Vector3 endPos);
@@ -144,6 +164,8 @@ private: // -- 非公開 メンバ変数 -- //
 	// 最大コンボ回数
 	const int32_t kComboCountMax = 3;
 
+	// カメラ回転量保持
+	Vector3 mCameraPreDir = { 0.0f,0.0f,0.0f };
 
 	// 3D照準クラス
 	std::unique_ptr<Reticle3D> mReticle;
@@ -160,8 +182,17 @@ private: // -- 非公開 メンバ変数 -- //
 	AttackStatus mAttackStatus;
 	// 防御関連パラメータ
 	GuardStatus mGuardStatus;
-	// 防御関連パラメータ
+	// 回避関連パラメータ
 	AvoidStatus mAvoidStatus;
+
+	// 突進攻撃 パラメータ
+	ChargeStatus mChargeStatus;
+
+	// -- カメラ操作関係 -- //
+
+	// カメラ回転ロックの有無
+	bool mIsCameraRotateLock;
+
 
 
 };

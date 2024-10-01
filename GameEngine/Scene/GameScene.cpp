@@ -37,6 +37,7 @@ void GameScene::Init(){
 	ModelManager::GetInstance()->LoadModel("boss", "boss.gltf");
 	ModelManager::GetInstance()->LoadModel("Weapons", "sword.gltf");
 	ModelManager::GetInstance()->LoadModel("Shield", "Shield.gltf");
+	ModelManager::GetInstance()->LoadModel("player", "gatotu0.gltf");
 
 	// SkyBox 読み込み
 	DirectXCommon::GetInstance()->srv_->LoadTexture("skybox/rostock_laage_airport_4k.dds");

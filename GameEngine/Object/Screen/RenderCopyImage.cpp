@@ -88,8 +88,6 @@ void RenderCopyImage::Update() {
 	// 逆行列を取得しておく
 	mPostEffects->outline.depth.projectionInverse = Inverse(MainCamera::GetInstance()->GetProjectionMatrix());
 
-	Debug();
-
 	// カメラのワールド行列
 	cameraM = MakeAffineMatrix(Vector3{ 1.0f,1.0f,1.0f },
 		Vector3{ 0.0f,0.0f,0.0f }, Vector3{ 0.0f,0.0f,-5.0f });
@@ -138,12 +136,7 @@ void RenderCopyImage::Debug()
 
 #ifdef _DEBUG
 
-	if (!ImGui::Begin("PostEffects", nullptr, ImGuiWindowFlags_MenuBar)) {
-		ImGui::End();
-		return;
-	}
-	if (!ImGui::BeginMenuBar()) return;
-	
+
 	// スクリーン
 	if (ImGui::BeginMenu("Screen")) {
 		ImGui::SliderInt("GaryScale Enable", &mPostEffects->screen.enableGrayScele, 0, 1);
@@ -186,10 +179,6 @@ void RenderCopyImage::Debug()
 		ImGui::SliderInt("Depth Enable", &mPostEffects->outline.depth.enable, 0, 1);
 		ImGui::EndMenu();
 	}
-
-	ImGui::EndMenuBar();
-
-	ImGui::End();
 
 #endif // _DEBUG
 

@@ -107,6 +107,7 @@ void TitleScene::Update() {
 	mObject->Update();
 	mGroundObj->Update();
 	mBuildingObj->Update();
+	mBuildingObj->DrawGUI();
 
 	// UI 更新
 	mTitleOne.sprite->Update();

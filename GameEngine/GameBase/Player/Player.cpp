@@ -20,9 +20,9 @@ Player::~Player() {
 void Player::Init() {
 	mObject = std::make_unique<Object3d>();
 	mObject->Init("PlayerObj");
-	mObject->SetModel("walk.gltf");
+	mObject->SetModel("gatotu0.gltf");
 	mObject->mSkinning = new Skinnig();
-	mObject->mSkinning->Init("human", "walk.gltf",
+	mObject->mSkinning->Init("player", "gatotu0.gltf",
 		mObject->GetModel()->modelData);
 	mObject->SetTranslate({ 1.0f,1.0f,7.0f });
 
@@ -113,10 +113,13 @@ void Player::Update() {
 		Avoid();
 
 		// 防御関連処理
-		Guard();
+		//Guard();
 
 		// 攻撃関連処理
 		Attack();
+
+		// 突撃
+		SpecialAtkRB();
 
 		// デバッグ操作
 		#ifdef _DEBUG
@@ -159,12 +162,7 @@ void Player::Update() {
 }
 
 void Player::Draw() {
-	//mObject->Draw();
-
-	for (const auto& arrow : mArrows) {
-		arrow->Draw();
-	}
-
+	mObject->Draw();
 }
 
 void Player::DrawGUI() {
@@ -231,9 +229,9 @@ void Player::ColliderDraw() {
 	mReticle->Draw3DReticle();
 
 	// 剣
-	mAttackStatus.sword->Draw();
+	//mAttackStatus.sword->Draw();
 	// シールド
-	mGuardStatus.shield->Draw();
+	//mGuardStatus.shield->Draw();
 
 	for (const auto& arrow : mArrows) {
 		arrow->GetCollider()->Draw();
@@ -591,19 +589,26 @@ void Player::DebagCtr()
 	// 勾配
 	static float k = 1.0f;
 	// 始点と終点
-	static Vector3 s = { 0.0f,0.0f,0.0f };
-	static Vector3 e = { 0.0f,0.5f,-8.0f };
+	static Vector3 s = { 0.0f,0.5f,-8.0f };
+	static Vector3 e = { 0.0f,1.8f,-26.0f };
+
+	// カメラの回転量を保持
+	if (mInput->GetPused(Gamepad::Button::LEFT_SHOULDER) && t == 0.0f) {
+		mCameraPreDir = MainCamera::GetInstance()->GetRotate();
+	}
 
 	// 狙えるようにカメラの移動 
 	if (mInput->GetLongPush(Gamepad::Button::LEFT_SHOULDER)) {
+	
 		mIsAimMode = true;
 	}
 	else {
 		mIsAimMode = false;
+		
 	}
 	if (mIsAimMode) {
 		if (t < 1.0f) {
-			t += 3.0f / 60.0f;
+			t += 2.0f / 60.0f;
 		}
 		else if (t > 1.0f) {
 			t = 1.0f;
@@ -617,6 +622,22 @@ void Player::DebagCtr()
 			t = 0.0f;
 		}
 	}
+
+	if (t > 0.0f) {
+		mIsCameraRotateLock = true;
+	}
+	else {
+		mIsCameraRotateLock = false;
+	}
+
+	if (mIsCameraRotateLock) {
+		MainCamera::GetInstance()->SetCameraRotateControll(false);
+		MainCamera::GetInstance()->SetRotate(Vector3(ExponentialInterpolation(mCameraPreDir.x, 0.55f, t, k), mCameraPreDir.y, mCameraPreDir.z));
+	}
+	else {
+		MainCamera::GetInstance()->SetCameraRotateControll(true);
+	}
+
 	// 補間後の数値を計算
 	Vector3 cVel = ExponentialInterpolation(s, e, t, k);
 
@@ -654,6 +675,120 @@ void Player::ChengeChageToAttack()
 		// 複数のアローを生成し、アロークラスの配列に要素を追加する
 		mArrows.push_back(CreateArrow(randomStartPos, endPos));
 	}
+
+}
+
+void Player::SpecialAtkRB()
+{
+	// 入力段階
+	if (mChargeStatus.isCharge != true) {
+
+		// 突進攻撃(仮)
+		if (mInput->GetGamepad()->getButton(Gamepad::Button::RIGHT_SHOULDER)) {
+			mChargeStatus.pushingFrame += 1.0f / 60.0f;
+
+			// 入力時間が一定まで達していたら 攻撃方向を指定できるようにする
+			if (mChargeStatus.pushingFrame > (15.0f / 60.0f)) {
+				mChargeStatus.isCastMode = true;
+
+				// 右スティックで方向を指定
+				const static int stickValue = 6000;
+				// いずれかの数値が、以上(以下)であれば移動処理を行う
+				if (mInput->GetStick(Gamepad::Stick::RIGHT_X) < -stickValue || // 左 
+					mInput->GetStick(Gamepad::Stick::RIGHT_X) > stickValue || // 右
+					mInput->GetStick(Gamepad::Stick::RIGHT_Y) < -stickValue || // 上
+					mInput->GetStick(Gamepad::Stick::RIGHT_Y) > stickValue	  // 下
+					) {
+
+					// Xの移動量とYの移動量を設定する
+					mChargeStatus.direction = {
+						(float)mInput->GetStick(Gamepad::Stick::RIGHT_X) ,
+						0.0f,
+						(float)mInput->GetStick(Gamepad::Stick::RIGHT_Y)
+					};
+
+				}
+
+
+			}
+
+		}
+
+		// 離すと攻撃する
+		if (mChargeStatus.pushingFrame > 0.0f && mInput->GetReleased(Gamepad::Button::RIGHT_SHOULDER)) {
+			
+			// 攻撃フラグをtrueにする
+			mChargeStatus.isCharge = true;
+
+			// 始点の設定
+			mChargeStatus.startPos = mObject->mWorldTransform->translation;
+
+			// 正規化
+			if (Length(mChargeStatus.direction) != 0.0f) {
+				mChargeStatus.direction = Normalize(mChargeStatus.direction);
+			}
+			// 方向指定がなければ正面方向へ発動する
+			else {
+				mChargeStatus.direction.z = 1.0f;
+			}
+			// カメラの回転量を反映
+			mChargeStatus.direction = TransformNomal(mChargeStatus.direction, MainCamera::GetInstance()->mWorldTransform->GetWorldMatrix());
+			// y座標は移動しない
+			mChargeStatus.direction.y = 0.0f;
+			// 終点の設定
+			mChargeStatus.attackRange = 7.0f;
+			mChargeStatus.endPos = mObject->mWorldTransform->translation + Scalar(mChargeStatus.attackRange, mChargeStatus.direction);
+
+			mChargeStatus.moveingTime = 0.0f;
+
+		}
+
+
+		// 何かしらのボタンでキャンセル
+
+	}
+
+	// 攻撃段階
+	else {
+
+		// 線形補間を利用して座標を移動させる
+		if (mChargeStatus.moveingTime < 1.0f) {
+			// 回避時の移動速度/フレームレートで加算する
+			mChargeStatus.moveingTime += 1.0f / 30.0f;
+		}
+		else if (mChargeStatus.moveingTime >= 1.0f) {
+			// タイムを補正
+			mChargeStatus.moveingTime = 1.0f;
+
+			mChargeStatus.direction = { 0.0f,0.0f,0.0f };
+
+			// 攻撃フラグをfalseにする
+			mChargeStatus.isCharge = false;
+
+			// 移動終了
+			mBehavior = Behavior::kRoot;
+		}
+
+		// 移動
+		mObject->mWorldTransform->translation.x = (1.0f - mChargeStatus.moveingTime) * mChargeStatus.startPos.x + mChargeStatus.moveingTime * mChargeStatus.endPos.x;
+		mObject->mWorldTransform->translation.z = (1.0f - mChargeStatus.moveingTime) * mChargeStatus.startPos.z + mChargeStatus.moveingTime * mChargeStatus.endPos.z;
+	}
+
+
+}
+
+void Player::SpecialAtkRT()
+{
+
+}
+
+void Player::SpecialAtkLB()
+{
+
+}
+
+void Player::SpecialAtkLT()
+{
 
 }
 

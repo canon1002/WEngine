@@ -30,6 +30,9 @@ void MainCamera::Initialize(){
 	mTarget = nullptr;
 	// 追加平行移動値
 	mAddTranslation = { 0.0f,0.0f,0.0f };
+
+	// カメラ回転操作
+	mIsControll = true;
 }
 void MainCamera::Update()
 {
@@ -61,39 +64,42 @@ void MainCamera::Update()
 
 		Matrix4x4 matW = mWorldTransform->GetWorldMatrix();
 
-		// スティック入力の量
-		const static int stickValue = 6000;
+		// 回転操作可能であれば回転できるようにする
+		if (mIsControll) {
 
-		// 入力量に応じた回転を行う
-		if (mInput->GetStick(Gamepad::Stick::RIGHT_X) < -stickValue || // 左 
-			mInput->GetStick(Gamepad::Stick::RIGHT_X) > stickValue || // 右
-			mInput->GetStick(Gamepad::Stick::RIGHT_Y) < -stickValue || // 上
-			mInput->GetStick(Gamepad::Stick::RIGHT_Y) > stickValue	  // 下
-			) {
+			// スティック入力の量
+			const static int stickValue = 6000;
 
-			// Xの移動量とYの移動量を設定する
-			Vector3 direction = {
-				(float)mInput->GetStick(Gamepad::Stick::RIGHT_Y),
-				(float)mInput->GetStick(Gamepad::Stick::RIGHT_X),
-				0.0f,
-			};
-			// 念のために正規化
-			direction = Normalize(direction);
-			// スティック上に倒すと下をみるようにする
-			direction.x *= (-1.0f);
+			// 入力量に応じた回転を行う
+			if (mInput->GetStick(Gamepad::Stick::RIGHT_X) < -stickValue || // 左 
+				mInput->GetStick(Gamepad::Stick::RIGHT_X) > stickValue || // 右
+				mInput->GetStick(Gamepad::Stick::RIGHT_Y) < -stickValue || // 上
+				mInput->GetStick(Gamepad::Stick::RIGHT_Y) > stickValue	  // 下
+				) {
 
-			// 回転の速度 // メンバ変数にしても良さそう
-			float rotateSpeed = 0.01f;
-			mWorldTransform->rotation += direction * rotateSpeed;
+				// Xの移動量とYの移動量を設定する
+				Vector3 direction = {
+					(float)mInput->GetStick(Gamepad::Stick::RIGHT_Y),
+					(float)mInput->GetStick(Gamepad::Stick::RIGHT_X),
+					0.0f,
+				};
+				// 念のために正規化
+				direction = Normalize(direction);
+				// スティック上に倒すと下をみるようにする
+				direction.x *= (-1.0f);
 
-			// x軸の回転は制限する
-			if (mWorldTransform->rotation.x < -0.2f) {
-				mWorldTransform->rotation.x = -0.2f;
+				// 回転の速度 // メンバ変数にしても良さそう
+				float rotateSpeed = 0.01f;
+				mWorldTransform->rotation += direction * rotateSpeed;
+
+				// x軸の回転は制限する
+				if (mWorldTransform->rotation.x < -0.2f) {
+					mWorldTransform->rotation.x = -0.2f;
+				}
+				if (mWorldTransform->rotation.x > 0.2f) {
+					mWorldTransform->rotation.x = 0.2f;
+				}
 			}
-			if (mWorldTransform->rotation.x > 0.2f) {
-				mWorldTransform->rotation.x = 0.2f;
-			}
-
 
 		}
 

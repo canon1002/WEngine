@@ -151,6 +151,9 @@ int SceneManager::Run() {
 			LevelEditor::GetInstance()->CheckLevelEditorFile();
 		}
 		
+		// ポストエフェクトのImGui
+		copyImage_->Debug();
+
 		// バックグラウンド処理
 		//if (ImGui::Button("Q")) {
 		//	// ボタンを押すとバックグラウンド処理を行う

@@ -36,6 +36,10 @@ public: // -- public メンバ関数 -- //
 		mAddTranslation = translation;
 	}
 
+	inline void SetCameraRotateControll(bool flag) {
+		mIsControll = flag;
+	}
+
 private: // -- private メンバ関数 -- //
 
 	// コピーコンストラクタと演算子オーバーロードの禁止
@@ -54,6 +58,8 @@ private: // -- private メンバ変数 -- //
 	const WorldTransform* mTarget;
 	// 追加平行移動値
 	Vector3 mAddTranslation;
+	// カメラの回転操作を有効にするか
+	bool mIsControll;
 
 };
 
