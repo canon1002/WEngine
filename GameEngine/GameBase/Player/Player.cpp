@@ -18,11 +18,16 @@ Player::~Player() {
 }
 
 void Player::Init() {
+
+	// モデル読み込み
+	ModelManager::GetInstance()->LoadModel("player", "idle.gltf");
+	ModelManager::GetInstance()->LoadModel("player", "gatotu0.gltf");
+
 	mObject = std::make_unique<Object3d>();
 	mObject->Init("PlayerObj");
-	mObject->SetModel("gatotu0.gltf");
+	mObject->SetModel("idle.gltf");
 	mObject->mSkinning = new Skinnig();
-	mObject->mSkinning->Init("player", "gatotu0.gltf",
+	mObject->mSkinning->Init("player", "idle.gltf",
 		mObject->GetModel()->modelData);
 	mObject->SetTranslate({ 1.0f,1.0f,7.0f });
 
@@ -76,12 +81,36 @@ void Player::Init() {
 	mAttackStatus.sword = std::make_unique<Object3d>();
 	mAttackStatus.sword->Init("sword");
 	mAttackStatus.sword->SetModel("sword.gltf");
-	mAttackStatus.sword->mWorldTransform->scale = { 0.1f,0.1f,0.1f };
+	mAttackStatus.sword->mWorldTransform->scale = { 0.5f,0.5f,0.5f };
 	mAttackStatus.sword->mWorldTransform->rotation = { 1.7f,-0.3f,0.0f };
-	mAttackStatus.sword->mWorldTransform->translation = mObject->GetWorldTransform()->translation;
+	mAttackStatus.sword->mSkinning = new Skinnig();
+	mAttackStatus.sword->mSkinning->Init("Weapons", "sword.gltf",
+		mAttackStatus.sword->GetModel()->modelData);
+	mAttackStatus.sword->mSkinning->IsInactive();
+	mAttackStatus.sword->mSkeleton = Skeleton::Create(mAttackStatus.sword->GetModel()->modelData.rootNode);
+	//mAttackStatus.sword->mWorldTransform->translation = mObject->GetWorldTransform()->translation;
 	mAttackStatus.pos = { 1000.0f,900.0f,0.0f };// 初期位置
 	mAttackStatus.normalRot = { 1.7f,-0.3f,-0.2f };// 初期回転量
 	mAttackStatus.endRot = { 3.8f,-0.3f,1.0f };// 最終回転量
+	// ペアレント
+	mAttackStatus.weaponParentMat = MakeIdentity();
+	mAttackStatus.sword->mWorldTransform->SetParent(mAttackStatus.weaponParentMat);
+
+	// 武器にコライダーをセットする
+	for (int32_t i = 0; i < 5; i++) {
+		mAttackStatus.swordWorldMat[i] = MakeAffineMatrix(Vector3{ 0.0f,0.0f,0.0f }, Vector3{ 0.0f,0.0f,0.0f }, Vector3{ 0.0f,0.0f,0.0f });
+		// コライダー 宣言
+		SphereCollider* newCollider = new SphereCollider(new WorldTransform(), 0.1f);
+		// 初期化
+		newCollider->Init();
+		newCollider->SetCollisionAttribute(kCollisionAttributeEnemyBullet);
+		newCollider->SetCollisionMask(kCollisionAttributePlayer);
+		// 武器に設定したボーンのワールド座標をセット
+		newCollider->
+			GetWorld()->SetParent(mAttackStatus.swordWorldMat[i]);
+		//// 配列にプッシュする
+		mAttackStatus.swordColliders.push_back(newCollider);
+	}
 
 	// 防御関連パラメータ
 	mGuardStatus.shield = std::make_unique<Object3d>();
@@ -100,6 +129,11 @@ void Player::Init() {
 }
 
 void Player::Update() {
+
+	// 右手のワールド行列を更新
+	mAttackStatus.weaponParentMat = Multiply(
+		GetObject3D()->mSkinning->GetSkeleton().joints[GetObject3D()->mSkinning->GetSkeleton().jointMap["weaponM"]
+		].skeletonSpaceMatrix, GetObject3D()->GetWorldTransform()->GetWorldMatrix());
 
 	if (mStatus->HP > 0.0f) {
 
@@ -151,8 +185,33 @@ void Player::Update() {
 	mObject->Update();
 	mObject->mSkinning->GetSkeleton().joints;
 	mObject->mCollider->Update();
+	
 	// 剣
 	mAttackStatus.sword->Update();
+
+	// ワールド座標更新
+	mAttackStatus.swordWorldMat[0] = Multiply(
+		mAttackStatus.sword->mSkinning->GetSkeleton().joints[mAttackStatus.sword->mSkinning->GetSkeleton().jointMap["Blade0"]
+		].skeletonSpaceMatrix, mAttackStatus.sword->GetWorldTransform()->GetWorldMatrix());
+	mAttackStatus.swordWorldMat[1] = Multiply(
+		mAttackStatus.sword->mSkinning->GetSkeleton().joints[mAttackStatus.sword->mSkinning->GetSkeleton().jointMap["Blade1"]
+		].skeletonSpaceMatrix, mAttackStatus.sword->GetWorldTransform()->GetWorldMatrix());
+	mAttackStatus.swordWorldMat[2] = Multiply(
+		mAttackStatus.sword->mSkinning->GetSkeleton().joints[mAttackStatus.sword->mSkinning->GetSkeleton().jointMap["Blade2"]
+		].skeletonSpaceMatrix, mAttackStatus.sword->GetWorldTransform()->GetWorldMatrix());
+	mAttackStatus.swordWorldMat[3] = Multiply(
+		mAttackStatus.sword->mSkinning->GetSkeleton().joints[mAttackStatus.sword->mSkinning->GetSkeleton().jointMap["Blade3"]
+		].skeletonSpaceMatrix, mAttackStatus.sword->GetWorldTransform()->GetWorldMatrix());
+	mAttackStatus.swordWorldMat[4] = Multiply(
+		mAttackStatus.sword->mSkinning->GetSkeleton().joints[mAttackStatus.sword->mSkinning->GetSkeleton().jointMap["Blade4"]
+		].skeletonSpaceMatrix, mAttackStatus.sword->GetWorldTransform()->GetWorldMatrix());
+
+	// 武器のコライダー 更新
+	for (Collider* collider : mAttackStatus.swordColliders) {
+		collider->Update();
+	}
+
+
 	// シールド
 	mGuardStatus.shield->Update();
 
@@ -229,7 +288,13 @@ void Player::ColliderDraw() {
 	mReticle->Draw3DReticle();
 
 	// 剣
-	//mAttackStatus.sword->Draw();
+	mAttackStatus.sword->Draw();
+	// 武器のコライダー 更新
+	for (Collider* collider : mAttackStatus.swordColliders) {
+		collider->Draw();
+	}
+
+
 	// シールド
 	//mGuardStatus.shield->Draw();
 
@@ -453,12 +518,12 @@ void Player::Attack()
 		}
 	}
 
-	// 剣の位置を更新(2D配置→ワールド座標に変換)
-	mAttackStatus.sword->mWorldTransform->translation = DamageReaction::GetWorldPosForScreen(Vector2(mAttackStatus.pos.x, mAttackStatus.pos.y), 1.0f, MainCamera::GetInstance());
+	//// 剣の位置を更新(2D配置→ワールド座標に変換)
+	//mAttackStatus.sword->mWorldTransform->translation = DamageReaction::GetWorldPosForScreen(Vector2(mAttackStatus.pos.x, mAttackStatus.pos.y), 1.0f, MainCamera::GetInstance());
 
-	// 回転量をtの数値に応じて設定する
-	mAttackStatus.sword->mWorldTransform->rotation = ExponentialInterpolation(mAttackStatus.normalRot, mAttackStatus.endRot, mAttackStatus.t, 1.0f);
-	mAttackStatus.sword->mWorldTransform->rotation.y += MainCamera::GetInstance()->GetRotate().y;
+	//// 回転量をtの数値に応じて設定する
+	//mAttackStatus.sword->mWorldTransform->rotation = ExponentialInterpolation(mAttackStatus.normalRot, mAttackStatus.endRot, mAttackStatus.t, 1.0f);
+	//mAttackStatus.sword->mWorldTransform->rotation.y += MainCamera::GetInstance()->GetRotate().y;
 
 	// レティクルの位置(コライダー)をtの値に応じて移動させる
 	mReticle->SetReticleDistance(ExponentialInterpolation(0.5f, 10.0f, mAttackStatus.t, 1.0f));

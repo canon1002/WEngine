@@ -30,6 +30,9 @@ struct AttackStatus {
 	Vector3 pos;		// 座標
 	Vector3 normalRot;	// 通常時の回転
 	Vector3 endRot;		// 回転の最終値
+	Matrix4x4 weaponParentMat; // 親の行列
+	std::array<Matrix4x4, 5> swordWorldMat; // 武器のワールド座標
+	std::vector<Collider*> swordColliders;// 武器の衝突判定
 };
 
 struct GuardStatus {
