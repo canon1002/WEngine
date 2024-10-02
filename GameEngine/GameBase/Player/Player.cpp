@@ -22,14 +22,20 @@ void Player::Init() {
 	// モデル読み込み
 	ModelManager::GetInstance()->LoadModel("player", "idle.gltf");
 	ModelManager::GetInstance()->LoadModel("player", "gatotu0.gltf");
+	ModelManager::GetInstance()->LoadModel("player", "slash.gltf");
 
 	mObject = std::make_unique<Object3d>();
 	mObject->Init("PlayerObj");
-	mObject->SetModel("idle.gltf");
-	mObject->mSkinning = new Skinnig();
-	mObject->mSkinning->Init("player", "idle.gltf",
-		mObject->GetModel()->modelData);
 	mObject->SetTranslate({ 1.0f,1.0f,7.0f });
+	// モデルを設定
+	mObject->SetModel("idle.gltf");
+	// スキニングアニメーションを生成
+	mObject->mSkinning = new Skinnig();
+	mObject->mSkinning->Init("player", "idle.gltf",mObject->GetModel()->modelData);
+	// 使用するアニメーションを登録しておく
+	mObject->mSkinning->CreateSkinningData("player", "idle", ".gltf", mObject->GetModel()->modelData);
+	mObject->mSkinning->CreateSkinningData("player", "gatotu0", ".gltf", mObject->GetModel()->modelData);
+	mObject->mSkinning->CreateSkinningData("player", "slash", ".gltf", mObject->GetModel()->modelData);
 
 	// メインカメラをフォローカメラ仕様にする
 	MainCamera::GetInstance()->SetTarget(mObject->GetWorldTransform());
@@ -476,6 +482,7 @@ void Player::Attack()
 		// Bボタン Triggerで攻撃
 		if (mInput->GetPused(Gamepad::Button::B)) {
 			mAttackStatus.isUp = true;
+			mObject->mSkinning->SetNextAnimation("slash");
 		}
 
 	}
@@ -514,6 +521,7 @@ void Player::Attack()
 				mAttackStatus.isDown = false;
 				mAttackStatus.isOperating = false;
 				mAttackStatus.isHit = false;
+				mObject->mSkinning->SetNextAnimation("idle");
 			}
 		}
 	}

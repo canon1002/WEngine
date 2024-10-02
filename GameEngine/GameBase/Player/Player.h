@@ -196,7 +196,10 @@ private: // -- 非公開 メンバ変数 -- //
 	// カメラ回転ロックの有無
 	bool mIsCameraRotateLock;
 
+	// -- アニメーション関連 -- //
 
+	// モーションの保存
+	std::map<std::shared_ptr<Skinnig>, std::string> mMotionMap;
 
 };
 

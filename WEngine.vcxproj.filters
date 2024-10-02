@@ -275,6 +275,8 @@
     <ClCompile Include="GameEngine\Object\ShadowObject.cpp" />
     <ClCompile Include="ShadowMap.cpp" />
     <ClCompile Include="GameEngine\GameBase\Status\StatusManager.cpp" />
+    <ClCompile Include="GameEngine\GameBase\Player\Action\Skill.cpp" />
+    <ClCompile Include="GameEngine\GameBase\Player\Action\Slash.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameEngine\Base\System.h">
@@ -469,6 +471,8 @@
     <ClInclude Include="GameEngine\Object\ShadowObject.h" />
     <ClInclude Include="ShadowMap.h" />
     <ClInclude Include="GameEngine\GameBase\Status\StatusManager.h" />
+    <ClInclude Include="GameEngine\GameBase\Player\Action\Skill.h" />
+    <ClInclude Include="GameEngine\GameBase\Player\Action\Slash.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt">
