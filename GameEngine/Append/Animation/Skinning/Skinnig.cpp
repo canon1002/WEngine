@@ -84,25 +84,30 @@ void Skinnig::ApplyAniation() {
 			// 下記のif文はC++17から可能になった初期化付きif文
 			if (auto it = mNowSkincluster->animation.nodeAnimations.find(joint.name); it != mNowSkincluster->animation.nodeAnimations.end())
 			{
-				if (auto itN = mNextSkincluster->animation.nodeAnimations.find(joint.name); itN != mNextSkincluster->animation.nodeAnimations.end())
+				if (auto itNext = mNextSkincluster->animation.nodeAnimations.find(joint.name); itNext != mNextSkincluster->animation.nodeAnimations.end())
 				{
 					// 両方のルートを取得
 					const NodeAnimation& rootAnimation = (*it).second;
-					const NodeAnimation& rootAnimationN = (*itN).second;
+					const NodeAnimation& rootAnimationNext = (*itNext).second;
 
 					// スケール・回転・平行移動を要素ごとに補間を行なう
+
+					// 各アニメーションの平行移動をVector3に変換し、取得
 					std::array<Vector3, 2> transration;
 					transration[0] = CalculateValue(rootAnimation.translation, mNowSkincluster->animationTime);
-					transration[1] = CalculateValue(rootAnimationN.translation, mNextSkincluster->animationTime);
+					transration[1] = CalculateValue(rootAnimationNext.translation, mNextSkincluster->animationTime);
 
+					// 各アニメーション回転をQuaternionに変換し、取得
 					std::array<Quaternion, 2> rotation;
 					rotation[0] = CalculateValue(rootAnimation.rotation, mNowSkincluster->animationTime);
-					rotation[1] = CalculateValue(rootAnimationN.rotation, mNextSkincluster->animationTime);
+					rotation[1] = CalculateValue(rootAnimationNext.rotation, mNextSkincluster->animationTime);
 					
+					// 各アニメーションのスケールをVector3に変換し、取得
 					std::array<Vector3, 2> scale;
 					scale[0] = CalculateValue(rootAnimation.scale, mNowSkincluster->animationTime);
-					scale[1] = CalculateValue(rootAnimationN.scale, mNextSkincluster->animationTime);
+					scale[1] = CalculateValue(rootAnimationNext.scale, mNextSkincluster->animationTime);
 
+					// 線形補間(回転は球面線形補間)を行いモーションブレンドする
 					joint.transform.translation_ = Lerp(transration[0], transration[1], mMotionBrendingTime);
 					joint.transform.rotation_ = Slerp(rotation[0], rotation[1], mMotionBrendingTime);
 					joint.transform.scale_ = Lerp(scale[0], scale[1], mMotionBrendingTime);

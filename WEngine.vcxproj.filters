@@ -273,7 +273,7 @@
     <ClCompile Include="GameEngine\GameBase\AI\BehaviorTree\BTAttackAction.cpp" />
     <ClCompile Include="GameEngine\GameBase\Enemy\Action\AttackAction.cpp" />
     <ClCompile Include="GameEngine\Object\ShadowObject.cpp" />
-    <ClCompile Include="ShadowMap.cpp" />
+    <ClCompile Include="GameEngine\Object\Screen\ShadowMap.cpp" />
     <ClCompile Include="GameEngine\GameBase\Status\StatusManager.cpp" />
     <ClCompile Include="GameEngine\GameBase\Player\Action\Skill.cpp" />
     <ClCompile Include="GameEngine\GameBase\Player\Action\Slash.cpp" />
@@ -469,7 +469,7 @@
     <ClInclude Include="GameEngine\GameBase\AI\BehaviorTree\BTMoveAction.h" />
     <ClInclude Include="GameEngine\GameBase\AI\BehaviorTree\BTAttackAction.h" />
     <ClInclude Include="GameEngine\Object\ShadowObject.h" />
-    <ClInclude Include="ShadowMap.h" />
+    <ClInclude Include="GameEngine\Object\Screen\ShadowMap.h" />
     <ClInclude Include="GameEngine\GameBase\Status\StatusManager.h" />
     <ClInclude Include="GameEngine\GameBase\Player\Action\Skill.h" />
     <ClInclude Include="GameEngine\GameBase\Player\Action\Slash.h" />
