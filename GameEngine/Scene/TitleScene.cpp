@@ -3,7 +3,7 @@
 #include "GameEngine/Object/ObjectAdministrator.h"
 #include "GameEngine/Base/Debug/ImGuiManager.h"
 #include "GameEngine/Editor/LevelEditor.h"
-#include "GameEngine/GameBase/Reaction/DamageReaction.h"
+#include "App/Reaction/DamageReaction.h"
 #include "GameEngine/Effect/Particle/ParticleManager.h"
 #include "GameEngine/Object/Screen/RenderCopyImage.h"
 

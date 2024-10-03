@@ -1,7 +1,7 @@
 #include "SceneManager.h"
 #include "GameEngine/Editor/GlobalVariables.h"
 #include "GameEngine/Editor/LevelEditor.h"
-#include "GameEngine/GameBase/Reaction/DamageReaction.h"
+#include "App/Reaction/DamageReaction.h"
 
 #include <thread>
 #include <queue>

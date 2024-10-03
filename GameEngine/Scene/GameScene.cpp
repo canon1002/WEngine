@@ -6,9 +6,9 @@
 #include "GameEngine/Object/ObjectAdministrator.h"
 #include "GameEngine/Base/Debug/ImGuiManager.h"
 #include "GameEngine/Editor/LevelEditor.h"
-#include "GameEngine/GameBase/Reaction/DamageReaction.h"
+#include "App/Reaction/DamageReaction.h"
 #include "GameEngine/Effect/Particle/ParticleManager.h"
-#include "GameEngine/GameBase/Status/StatusManager.h"
+#include "App/Status/StatusManager.h"
 #include "GameEngine/Object/Screen/RenderCopyImage.h"
 
 void GameScene::Finalize(){}

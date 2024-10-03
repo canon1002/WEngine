@@ -8,8 +8,8 @@
 #include "GameEngine/Object/ShadowObject.h"
 
 // ゲーム用
-#include "GameEngine/GameBase/Player/Player.h"
-#include "GameEngine/GameBase/Enemy/BossEnemy.h"
+#include "App/Player/Player.h"
+#include "App/Enemy/BossEnemy.h"
 // エフェクト
 #include "GameEngine/Effect/Particle/DiffusionToCircleParticle.h"
 // マネージャー
