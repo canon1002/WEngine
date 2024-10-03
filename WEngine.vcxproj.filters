@@ -8,50 +8,14 @@
     <Filter Include="Engine">
       <UniqueIdentifier>{79a475c8-effe-474c-9b0b-adea0da283f8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engine\base">
-      <UniqueIdentifier>{7efa9ed3-11ab-466c-ac46-781d56dca699}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Engine\math">
       <UniqueIdentifier>{8366f130-0620-4bdd-a003-4d85064dbb9e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\object">
-      <UniqueIdentifier>{e466fe93-9190-4fb3-ab34-ab026ab0e249}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\object\WorldTransform">
-      <UniqueIdentifier>{7080e14c-228e-4d3f-929d-d845c5b3f007}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\object\Camera">
-      <UniqueIdentifier>{23a8e57e-719a-435a-9bf4-559d53aaa05a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\object\Light">
-      <UniqueIdentifier>{3aabf391-e7d4-4cee-a79d-2de8f3ca0524}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\object\Model">
-      <UniqueIdentifier>{eb743ed8-e752-4eeb-bcd5-54f6a95ee6ee}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\base\DirectX">
-      <UniqueIdentifier>{58013492-ed9b-4a56-a74d-0ecf1b84379a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\base\DirectX\RTV">
-      <UniqueIdentifier>{3abc21fd-95e4-4312-9ee3-52909f7b0ff3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\base\DirectX\SRV">
-      <UniqueIdentifier>{3288a30a-03f8-40c2-b8d3-22685fc2ef0c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\base\DirectX\DSV">
-      <UniqueIdentifier>{146fb369-94e9-4db7-9310-12d000f8f00c}</UniqueIdentifier>
     </Filter>
     <Filter Include="Externals">
       <UniqueIdentifier>{2fcbab74-8890-4485-8e30-c6cd756ee061}</UniqueIdentifier>
     </Filter>
     <Filter Include="Externals\imgui">
       <UniqueIdentifier>{6eaad0ce-75d7-4032-b592-03be9ea31292}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\scene">
-      <UniqueIdentifier>{cb3f15ed-4218-4968-b0ef-876b54aa0080}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\color">
-      <UniqueIdentifier>{9f51436a-eb12-40d6-854a-c042c884df61}</UniqueIdentifier>
     </Filter>
     <Filter Include="App">
       <UniqueIdentifier>{38a6db3a-45b4-4552-a164-e6fc5ea2f695}</UniqueIdentifier>
@@ -62,32 +26,11 @@
     <Filter Include="App\object">
       <UniqueIdentifier>{8950ac9c-34ae-4729-ac8d-0022f6b10d5d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engine\object\3d">
-      <UniqueIdentifier>{bc639819-c07f-4050-bb41-870122750342}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\object\2d">
-      <UniqueIdentifier>{6b0fbe17-3e38-41b5-afb6-fd0cf5afd2de}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\object\Sprite">
-      <UniqueIdentifier>{872ae062-3e4e-4376-af30-003abaf5194c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Engine\Input">
       <UniqueIdentifier>{0c0618fc-3e73-419f-94e7-55cad856a744}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engine\object\resouces">
-      <UniqueIdentifier>{f83658ba-df8f-4545-b3ec-e574ed48a7c5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\object\resouces\section">
-      <UniqueIdentifier>{f0a45819-e0a1-4a18-8c1a-98dc693afa94}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\object\primitive">
-      <UniqueIdentifier>{0512642e-ded2-4cf3-bd3a-15c74a008ad5}</UniqueIdentifier>
-    </Filter>
     <Filter Include="App\command\EnemyState">
       <UniqueIdentifier>{1c141ced-152d-4abb-8b8a-47bcd0e157ef}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\base\WinApp">
-      <UniqueIdentifier>{f3331b3c-17e2-464c-96ae-10368f025fc8}</UniqueIdentifier>
     </Filter>
     <Filter Include="Engine\Append">
       <UniqueIdentifier>{7f02235f-e474-466c-bed7-86bbaeffea3f}</UniqueIdentifier>
@@ -98,31 +41,130 @@
     <Filter Include="Engine\GameBase">
       <UniqueIdentifier>{6da8ee87-f1f3-4ee1-b181-1ba2bb425cf6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="App\AI">
+      <UniqueIdentifier>{bcb81d8a-2d8a-4d9b-b03b-5132a0fa8189}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="App\Enemy">
+      <UniqueIdentifier>{f7e502f4-91e1-47f0-97ce-0dc7503dbfb7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="App\Player">
+      <UniqueIdentifier>{77ddcdb9-2846-4d05-ab67-d0cbd56427cc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="App\Reaction">
+      <UniqueIdentifier>{1de7d744-ddbb-404d-9a40-4100398b7cb6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="App\Reticle">
+      <UniqueIdentifier>{dc2a85f5-eb94-4f09-8724-26eb50902f6f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="App\Status">
+      <UniqueIdentifier>{95c29238-e749-4053-9195-3bf0638ad012}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Effect">
+      <UniqueIdentifier>{2bf1e4ed-add4-4938-8e5e-aee0a21a8225}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Scene">
+      <UniqueIdentifier>{cb3f15ed-4218-4968-b0ef-876b54aa0080}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Object">
+      <UniqueIdentifier>{e466fe93-9190-4fb3-ab34-ab026ab0e249}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Object\Camera">
+      <UniqueIdentifier>{23a8e57e-719a-435a-9bf4-559d53aaa05a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Object\Light">
+      <UniqueIdentifier>{3aabf391-e7d4-4cee-a79d-2de8f3ca0524}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Object\Model">
+      <UniqueIdentifier>{eb743ed8-e752-4eeb-bcd5-54f6a95ee6ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Object\3d">
+      <UniqueIdentifier>{bc639819-c07f-4050-bb41-870122750342}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Object\Sprite">
+      <UniqueIdentifier>{872ae062-3e4e-4376-af30-003abaf5194c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="リソース ファイル\Shader">
+      <UniqueIdentifier>{8117a4d9-99e3-4157-89ab-981c1ed28c0c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="リソース ファイル\Shader\PostEffect">
+      <UniqueIdentifier>{09995034-6892-4d61-9353-ef3d6c2105d8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="App\Enemy\Action">
+      <UniqueIdentifier>{2c602fe2-0af8-483d-be4d-8d1206f2ea04}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Editor">
+      <UniqueIdentifier>{47fdf49b-75fe-4abe-8bf2-6f547d51d7ae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="App\Player\Skill">
+      <UniqueIdentifier>{e71c4b1c-e9b7-48eb-863a-82edec137628}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Append\Animation">
+      <UniqueIdentifier>{3bbfac35-07b2-494c-9378-5fbc266244d7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Append\Transform">
+      <UniqueIdentifier>{b3b705b2-4f0b-4986-9fb2-cf539f3d8fcd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Resource">
+      <UniqueIdentifier>{b33b5cde-04b6-4da6-8138-a44b17608e10}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Append\Animation\Node">
+      <UniqueIdentifier>{8daa067a-f8c8-4349-98f1-23aeecc693f5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Append\Animation\Skinning">
+      <UniqueIdentifier>{21b8b443-0b96-4cb5-9b96-ed8880f874ca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Base">
+      <UniqueIdentifier>{7efa9ed3-11ab-466c-ac46-781d56dca699}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Base\DirectX">
+      <UniqueIdentifier>{58013492-ed9b-4a56-a74d-0ecf1b84379a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Base\WinApp">
+      <UniqueIdentifier>{f3331b3c-17e2-464c-96ae-10368f025fc8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Base\Debug">
+      <UniqueIdentifier>{5df8acf8-13fd-4bb3-bda3-de4dec0b5753}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Resource\Audio">
+      <UniqueIdentifier>{6a9f3f3f-56dc-4216-9fee-58080a4f9feb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Resource\Material">
+      <UniqueIdentifier>{2ec48709-1cc3-4d97-8f52-bd880617cd7b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Resource\Texture">
+      <UniqueIdentifier>{ebf40d13-fb6b-4ed8-bfdb-849dab417573}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Object\Model\Skybox">
+      <UniqueIdentifier>{72db10d5-5148-442e-9ddc-b3d6049434b1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Object\Screen">
+      <UniqueIdentifier>{8374b0f6-1c84-493e-8b70-92743bc54f28}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Effect\Particle">
+      <UniqueIdentifier>{81a3235d-b2f6-48f0-98bd-9b03c54e2692}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Effect\PostEffect">
+      <UniqueIdentifier>{5a72591c-40c9-46a6-92b6-5703cc28f978}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\GameMaster">
+      <UniqueIdentifier>{afab8b24-ec7d-46ef-8df6-851e4472f9f1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="App\AI\BehaviorTree">
+      <UniqueIdentifier>{b603224a-e7a0-49f6-971b-787998034bc2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="App\AI\State">
+      <UniqueIdentifier>{3d1bb15d-203b-440f-b118-4a1cd909d623}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="GameEngine\Object\Sprite\Triangle.cpp">
-      <Filter>Engine\object\primitive</Filter>
-    </ClCompile>
-    <ClCompile Include="GameEngine\Resource\Texture\Resource.cpp">
-      <Filter>Engine\object\resouces\section</Filter>
-    </ClCompile>
-    <ClCompile Include="GameEngine\Append\Transform\WorldTransform.cpp">
-      <Filter>Engine\object\WorldTransform</Filter>
-    </ClCompile>
-    <ClCompile Include="GameEngine\Object\Sprite\Sphere.cpp">
-      <Filter>Engine\object\primitive</Filter>
-    </ClCompile>
     <ClCompile Include="GameEngine\Object\Light\DirectionalLight.cpp">
-      <Filter>Engine\object\Light</Filter>
+      <Filter>Engine\Object\Light</Filter>
     </ClCompile>
     <ClCompile Include="GameEngine\Object\Model\Model.cpp">
-      <Filter>Engine\object\Model</Filter>
+      <Filter>Engine\Object\Model</Filter>
     </ClCompile>
     <ClCompile Include="GameEngine\Base\DirectX\DirectXCommon.cpp">
-      <Filter>Engine\base\DirectX</Filter>
-    </ClCompile>
-    <ClCompile Include="GameEngine\Base\DirectX\SRV.cpp">
-      <Filter>Engine\base\DirectX\SRV</Filter>
+      <Filter>Engine\Base\DirectX</Filter>
     </ClCompile>
     <ClCompile Include="Externals\imgui\imgui.cpp">
       <Filter>Externals\imgui</Filter>
@@ -145,17 +187,14 @@
     <ClCompile Include="Externals\imgui\imgui_widgets.cpp">
       <Filter>Externals\imgui</Filter>
     </ClCompile>
-    <ClCompile Include="GameEngine\Resource\Audio\Audio.cpp">
-      <Filter>Engine\object\resouces\section</Filter>
-    </ClCompile>
     <ClCompile Include="GameEngine\Scene\IScene.cpp">
-      <Filter>Engine\scene</Filter>
+      <Filter>Engine\Scene</Filter>
     </ClCompile>
     <ClCompile Include="GameEngine\Scene\SceneManager.cpp">
-      <Filter>Engine\scene</Filter>
+      <Filter>Engine\Scene</Filter>
     </ClCompile>
     <ClCompile Include="GameEngine\Scene\TitleScene.cpp">
-      <Filter>Engine\scene</Filter>
+      <Filter>Engine\Scene</Filter>
     </ClCompile>
     <ClCompile Include="GameEngine\Math\Matrix4x4.cpp">
       <Filter>Engine\math</Filter>
@@ -173,34 +212,31 @@
       <Filter>Engine\math</Filter>
     </ClCompile>
     <ClCompile Include="GameEngine\Object\Camera\MainCamera.cpp">
-      <Filter>Engine\object\Camera</Filter>
+      <Filter>Engine\Object\Camera</Filter>
     </ClCompile>
     <ClCompile Include="GameEngine\Append\Collider\CollisionManager.cpp">
       <Filter>Engine\Append\Collider</Filter>
     </ClCompile>
     <ClCompile Include="GameEngine\Object\Camera\CameraCommon.cpp">
-      <Filter>Engine\object\Camera</Filter>
+      <Filter>Engine\Object\Camera</Filter>
     </ClCompile>
     <ClCompile Include="GameEngine\Object\Model\ModelManager.cpp">
-      <Filter>Engine\object\Model</Filter>
+      <Filter>Engine\Object\Model</Filter>
     </ClCompile>
     <ClCompile Include="GameEngine\Object\3d\Object3d.cpp">
-      <Filter>Engine\object\3d</Filter>
+      <Filter>Engine\Object\3d</Filter>
     </ClCompile>
     <ClCompile Include="GameEngine\Object\3d\Object3dCommon.cpp">
-      <Filter>Engine\object\3d</Filter>
+      <Filter>Engine\Object\3d</Filter>
     </ClCompile>
     <ClCompile Include="GameEngine\Scene\GameScene.cpp">
-      <Filter>Engine\scene</Filter>
+      <Filter>Engine\Scene</Filter>
     </ClCompile>
     <ClCompile Include="GameEngine\Scene\ResultScene.cpp">
-      <Filter>Engine\scene</Filter>
-    </ClCompile>
-    <ClCompile Include="GameEngine\Object\Sprite\SpriteAdministrator.cpp">
-      <Filter>Engine\object\2d</Filter>
+      <Filter>Engine\Scene</Filter>
     </ClCompile>
     <ClCompile Include="GameEngine\Object\Sprite\Sprite.cpp">
-      <Filter>Engine\object\Sprite</Filter>
+      <Filter>Engine\Object\Sprite</Filter>
     </ClCompile>
     <ClCompile Include="GameEngine\Input\InputManager.cpp">
       <Filter>Engine\Input</Filter>
@@ -211,45 +247,8 @@
     <ClCompile Include="GameEngine\Input\Gamepad.cpp">
       <Filter>Engine\Input</Filter>
     </ClCompile>
-    <ClCompile Include="main.cpp">
-      <Filter>Engine\object\resouces</Filter>
-    </ClCompile>
-    <ClCompile Include="GameEngine\Base\Debug\ImGuiManager.cpp" />
-    <ClCompile Include="GameEngine\Base\Engine.cpp" />
-    <ClCompile Include="GameEngine\Effect\Particle\ParticleManager.cpp" />
-    <ClCompile Include="GameEngine\Object\ObjectAdministrator.cpp" />
-    <ClCompile Include="GameEngine\Base\DirectX\RTV.cpp" />
-    <ClCompile Include="GameEngine\Base\DirectX\DSV.cpp" />
-    <ClCompile Include="GameEngine\Object\Model\Skybox\Skybox.cpp" />
-    <ClCompile Include="GameEngine\Object\Screen\RenderCopyImage.cpp" />
-    <ClCompile Include="GameEngine\Resource\ResourceCommon.cpp" />
-    <ClCompile Include="GameEngine\Object\Model\Line.cpp" />
-    <ClCompile Include="GameEngine\Append\Animation\Skinning\Skeleton.cpp" />
-    <ClCompile Include="GameEngine\Append\Animation\Skinning\SkinCluster.cpp" />
-    <ClCompile Include="GameEngine\Append\Animation\Skinning\Skinnig.cpp" />
-    <ClCompile Include="GameEngine\Append\Animation\Node\NodeAnimation.cpp" />
-    <ClCompile Include="GameEngine\Append\Animation\Skinning\Joint.cpp" />
-    <ClCompile Include="GameEngine\Object\Grid3D.cpp" />
-    <ClCompile Include="App\Player\Player.cpp" />
-    <ClCompile Include="GameEngine\Object\Model\MultiModel.cpp" />
-    <ClCompile Include="GameEngine\Effect\PostEffect\BoxFilter.cpp" />
-    <ClCompile Include="GameEngine\Effect\PostEffect\DepthOutline.cpp" />
-    <ClCompile Include="GameEngine\Effect\PostEffect\GaussianFilter.cpp" />
-    <ClCompile Include="GameEngine\Effect\PostEffect\GrayScale.cpp" />
-    <ClCompile Include="GameEngine\Effect\PostEffect\IPostEffect.cpp" />
-    <ClCompile Include="GameEngine\Effect\PostEffect\LuminanceOutline.cpp" />
-    <ClCompile Include="GameEngine\Effect\PostEffect\Vignette.cpp" />
-    <ClCompile Include="App\AI\State\IBossState.cpp" />
-    <ClCompile Include="App\AI\State\VitalityBossState.cpp" />
-    <ClCompile Include="App\IObjectBase.cpp" />
-    <ClCompile Include="GameEngine\Append\Collider\PlaneCollider.cpp" />
-    <ClCompile Include="GameEngine\Append\Collider\RayCollider.cpp" />
-    <ClCompile Include="GameEngine\Append\Collider\SphereCollider.cpp" />
-    <ClCompile Include="GameEngine\Append\Collider\TriangleCollider.cpp" />
-    <ClCompile Include="GameEngine\Append\Collider\OBBCollider.cpp" />
-    <ClCompile Include="App\Reticle\Reticle3D.cpp" />
     <ClCompile Include="GameEngine\Base\WinApp\WinAPI.cpp">
-      <Filter>Engine\base\WinApp</Filter>
+      <Filter>Engine\Base\WinApp</Filter>
     </ClCompile>
     <ClCompile Include="GameEngine\Append\Collider\AABBCollider.cpp">
       <Filter>Engine\Append\Collider</Filter>
@@ -260,50 +259,188 @@
     <ClCompile Include="App\Enemy\BossEnemy.cpp">
       <Filter>Engine\GameBase</Filter>
     </ClCompile>
-    <ClCompile Include="GameEngine\Editor\GlobalVariables.cpp" />
-    <ClCompile Include="App\Reaction\DamageReaction.cpp" />
-    <ClCompile Include="GameEngine\Editor\LevelEditor.cpp" />
-    <ClCompile Include="GameEngine\Effect\Particle\ParticleCommon.cpp" />
-    <ClCompile Include="GameEngine\Effect\Particle\DiffusionToCircleParticle.cpp" />
-    <ClCompile Include="GameEngine\GameMaster\Framerate.cpp" />
-    <ClCompile Include="GameEngine\Scene\LoadingScene.cpp" />
-    <ClCompile Include="App\Enemy\Action\Action.cpp" />
-    <ClCompile Include="App\AI\BehaviorTree\BTMoveAction.cpp" />
-    <ClCompile Include="App\AI\BehaviorTree\BTAttackAction.cpp" />
-    <ClCompile Include="App\Enemy\Action\AttackAction.cpp" />
-    <ClCompile Include="GameEngine\Object\ShadowObject.cpp" />
-    <ClCompile Include="GameEngine\Object\Screen\ShadowMap.cpp" />
-    <ClCompile Include="App\Status\StatusManager.cpp" />
-    <ClCompile Include="App\Player\Action\Skill.cpp" />
-    <ClCompile Include="App\Player\Action\Slash.cpp" />
+    <ClCompile Include="App\IObjectBase.cpp">
+      <Filter>App</Filter>
+    </ClCompile>
+    <ClCompile Include="App\Player\Player.cpp">
+      <Filter>App\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="GameEngine\Scene\LoadingScene.cpp">
+      <Filter>Engine\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="App\Enemy\Action\Action.cpp">
+      <Filter>App\Enemy\Action</Filter>
+    </ClCompile>
+    <ClCompile Include="App\Enemy\Action\AttackAction.cpp">
+      <Filter>App\Enemy\Action</Filter>
+    </ClCompile>
+    <ClCompile Include="App\Player\Action\Skill.cpp">
+      <Filter>App\Player\Skill</Filter>
+    </ClCompile>
+    <ClCompile Include="GameEngine\Append\Animation\Node\NodeAnimation.cpp">
+      <Filter>Engine\Append\Animation\Node</Filter>
+    </ClCompile>
+    <ClCompile Include="GameEngine\Append\Animation\Skinning\Joint.cpp">
+      <Filter>Engine\Append\Animation\Skinning</Filter>
+    </ClCompile>
+    <ClCompile Include="GameEngine\Append\Animation\Skinning\Skeleton.cpp">
+      <Filter>Engine\Append\Animation\Skinning</Filter>
+    </ClCompile>
+    <ClCompile Include="GameEngine\Append\Animation\Skinning\SkinCluster.cpp">
+      <Filter>Engine\Append\Animation\Skinning</Filter>
+    </ClCompile>
+    <ClCompile Include="GameEngine\Append\Animation\Skinning\Skinnig.cpp">
+      <Filter>Engine\Append\Animation\Skinning</Filter>
+    </ClCompile>
+    <ClCompile Include="GameEngine\Base\Engine.cpp">
+      <Filter>Engine\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="GameEngine\Base\Debug\ImGuiManager.cpp">
+      <Filter>Engine\Base\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GameEngine\Base\DirectX\DSV.cpp">
+      <Filter>Engine\Base\DirectX</Filter>
+    </ClCompile>
+    <ClCompile Include="GameEngine\Base\DirectX\SRV.cpp">
+      <Filter>Engine\Base\DirectX</Filter>
+    </ClCompile>
+    <ClCompile Include="GameEngine\Base\DirectX\RTV.cpp">
+      <Filter>Engine\Base\DirectX</Filter>
+    </ClCompile>
+    <ClCompile Include="GameEngine\Editor\GlobalVariables.cpp">
+      <Filter>Engine\Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="GameEngine\Editor\LevelEditor.cpp">
+      <Filter>Engine\Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="GameEngine\Resource\ResourceCommon.cpp">
+      <Filter>Engine\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="GameEngine\Append\Transform\WorldTransform.cpp">
+      <Filter>Engine\Append\Transform</Filter>
+    </ClCompile>
+    <ClCompile Include="GameEngine\Resource\Texture\Resource.cpp">
+      <Filter>Engine\Resource\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="GameEngine\Resource\Audio\Audio.cpp">
+      <Filter>Engine\Resource\Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="GameEngine\Object\Sprite\SpriteAdministrator.cpp">
+      <Filter>Engine\Object\Sprite</Filter>
+    </ClCompile>
+    <ClCompile Include="GameEngine\Object\Sprite\Sphere.cpp">
+      <Filter>Engine\Object\Sprite</Filter>
+    </ClCompile>
+    <ClCompile Include="GameEngine\Object\Sprite\Triangle.cpp">
+      <Filter>Engine\Object\Sprite</Filter>
+    </ClCompile>
+    <ClCompile Include="GameEngine\Object\Model\Skybox\Skybox.cpp">
+      <Filter>Engine\Object\Model\Skybox</Filter>
+    </ClCompile>
+    <ClCompile Include="GameEngine\Object\Model\Line.cpp">
+      <Filter>Engine\Object\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="GameEngine\Object\Model\MultiModel.cpp">
+      <Filter>Engine\Object\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="GameEngine\Object\Screen\RenderCopyImage.cpp">
+      <Filter>Engine\Object\Screen</Filter>
+    </ClCompile>
+    <ClCompile Include="GameEngine\Object\Screen\ShadowMap.cpp">
+      <Filter>Engine\Object\Screen</Filter>
+    </ClCompile>
+    <ClCompile Include="GameEngine\Object\ShadowObject.cpp">
+      <Filter>Engine\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="GameEngine\Object\ObjectAdministrator.cpp">
+      <Filter>Engine\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="GameEngine\Object\Grid3D.cpp">
+      <Filter>Engine\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="GameEngine\Append\Collider\SphereCollider.cpp">
+      <Filter>Engine\Append\Collider</Filter>
+    </ClCompile>
+    <ClCompile Include="GameEngine\Append\Collider\TriangleCollider.cpp">
+      <Filter>Engine\Append\Collider</Filter>
+    </ClCompile>
+    <ClCompile Include="GameEngine\Append\Collider\PlaneCollider.cpp">
+      <Filter>Engine\Append\Collider</Filter>
+    </ClCompile>
+    <ClCompile Include="GameEngine\Append\Collider\RayCollider.cpp">
+      <Filter>Engine\Append\Collider</Filter>
+    </ClCompile>
+    <ClCompile Include="GameEngine\Append\Collider\OBBCollider.cpp">
+      <Filter>Engine\Append\Collider</Filter>
+    </ClCompile>
+    <ClCompile Include="App\Player\Action\Slash.cpp">
+      <Filter>App\Player\Skill</Filter>
+    </ClCompile>
+    <ClCompile Include="App\Reaction\DamageReaction.cpp">
+      <Filter>App\Reaction</Filter>
+    </ClCompile>
+    <ClCompile Include="App\Reticle\Reticle3D.cpp">
+      <Filter>App\Reticle</Filter>
+    </ClCompile>
+    <ClCompile Include="App\Status\StatusManager.cpp">
+      <Filter>App\Status</Filter>
+    </ClCompile>
+    <ClCompile Include="GameEngine\Effect\PostEffect\BoxFilter.cpp">
+      <Filter>Engine\Effect\PostEffect</Filter>
+    </ClCompile>
+    <ClCompile Include="GameEngine\Effect\PostEffect\DepthOutline.cpp">
+      <Filter>Engine\Effect\PostEffect</Filter>
+    </ClCompile>
+    <ClCompile Include="GameEngine\Effect\Particle\DiffusionToCircleParticle.cpp">
+      <Filter>Engine\Effect\PostEffect</Filter>
+    </ClCompile>
+    <ClCompile Include="GameEngine\Effect\PostEffect\GaussianFilter.cpp">
+      <Filter>Engine\Effect\PostEffect</Filter>
+    </ClCompile>
+    <ClCompile Include="GameEngine\Effect\PostEffect\GrayScale.cpp">
+      <Filter>Engine\Effect\PostEffect</Filter>
+    </ClCompile>
+    <ClCompile Include="GameEngine\Effect\PostEffect\IPostEffect.cpp">
+      <Filter>Engine\Effect\PostEffect</Filter>
+    </ClCompile>
+    <ClCompile Include="GameEngine\Effect\PostEffect\LuminanceOutline.cpp">
+      <Filter>Engine\Effect\PostEffect</Filter>
+    </ClCompile>
+    <ClCompile Include="GameEngine\Effect\Particle\ParticleCommon.cpp">
+      <Filter>Engine\Effect\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="GameEngine\Effect\Particle\ParticleManager.cpp">
+      <Filter>Engine\Effect\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="GameEngine\GameMaster\Framerate.cpp">
+      <Filter>Engine\GameMaster</Filter>
+    </ClCompile>
+    <ClCompile Include="App\AI\State\IBossState.cpp">
+      <Filter>App\AI\State</Filter>
+    </ClCompile>
+    <ClCompile Include="App\AI\State\VitalityBossState.cpp">
+      <Filter>App\AI\State</Filter>
+    </ClCompile>
+    <ClCompile Include="App\AI\BehaviorTree\BTAttackAction.cpp">
+      <Filter>App\AI\BehaviorTree</Filter>
+    </ClCompile>
+    <ClCompile Include="App\AI\BehaviorTree\BTMoveAction.cpp">
+      <Filter>App\AI\BehaviorTree</Filter>
+    </ClCompile>
+    <ClCompile Include="GameEngine\Effect\PostEffect\Vignette.cpp">
+      <Filter>Engine\Effect\PostEffect</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="GameEngine\Base\System.h">
-      <Filter>Engine\base</Filter>
-    </ClInclude>
-    <ClInclude Include="GameEngine\Object\Sprite\Triangle.h">
-      <Filter>Engine\object\primitive</Filter>
-    </ClInclude>
-    <ClInclude Include="GameEngine\Resource\Texture\Resource.h">
-      <Filter>Engine\object\resouces\section</Filter>
-    </ClInclude>
-    <ClInclude Include="GameEngine\Append\Transform\WorldTransform.h">
-      <Filter>Engine\object\WorldTransform</Filter>
-    </ClInclude>
-    <ClInclude Include="GameEngine\Object\Sprite\Sphere.h">
-      <Filter>Engine\object\primitive</Filter>
-    </ClInclude>
     <ClInclude Include="GameEngine\Object\Light\DirectionalLight.h">
-      <Filter>Engine\object\Light</Filter>
+      <Filter>Engine\Object\Light</Filter>
     </ClInclude>
     <ClInclude Include="GameEngine\Object\Model\Model.h">
-      <Filter>Engine\object\Model</Filter>
+      <Filter>Engine\Object\Model</Filter>
     </ClInclude>
     <ClInclude Include="GameEngine\Base\DirectX\DirectXCommon.h">
-      <Filter>Engine\base\DirectX</Filter>
-    </ClInclude>
-    <ClInclude Include="GameEngine\Base\DirectX\SRV.h">
-      <Filter>Engine\base\DirectX\SRV</Filter>
+      <Filter>Engine\Base\DirectX</Filter>
     </ClInclude>
     <ClInclude Include="Externals\imgui\imconfig.h">
       <Filter>Externals\imgui</Filter>
@@ -329,17 +466,14 @@
     <ClInclude Include="Externals\imgui\imstb_truetype.h">
       <Filter>Externals\imgui</Filter>
     </ClInclude>
-    <ClInclude Include="GameEngine\Resource\Audio\Audio.h">
-      <Filter>Engine\object\resouces\section</Filter>
-    </ClInclude>
     <ClInclude Include="GameEngine\Scene\IScene.h">
-      <Filter>Engine\scene</Filter>
+      <Filter>Engine\Scene</Filter>
     </ClInclude>
     <ClInclude Include="GameEngine\Scene\SceneManager.h">
-      <Filter>Engine\scene</Filter>
+      <Filter>Engine\Scene</Filter>
     </ClInclude>
     <ClInclude Include="GameEngine\Scene\TitleScene.h">
-      <Filter>Engine\scene</Filter>
+      <Filter>Engine\Scene</Filter>
     </ClInclude>
     <ClInclude Include="GameEngine\Math\Math.h">
       <Filter>Engine\math</Filter>
@@ -353,9 +487,6 @@
     <ClInclude Include="GameEngine\Math\Vector3.h">
       <Filter>Engine\math</Filter>
     </ClInclude>
-    <ClInclude Include="GameEngine\Resource\Material\Color.h">
-      <Filter>Engine\color</Filter>
-    </ClInclude>
     <ClInclude Include="GameEngine\Math\Vec2.h">
       <Filter>Engine\math</Filter>
     </ClInclude>
@@ -363,7 +494,7 @@
       <Filter>Engine\math</Filter>
     </ClInclude>
     <ClInclude Include="GameEngine\Object\Camera\MainCamera.h">
-      <Filter>Engine\object\Camera</Filter>
+      <Filter>Engine\Object\Camera</Filter>
     </ClInclude>
     <ClInclude Include="GameEngine\Append\Collider\Collider.h">
       <Filter>Engine\Append\Collider</Filter>
@@ -375,30 +506,26 @@
       <Filter>Engine\Append\Collider</Filter>
     </ClInclude>
     <ClInclude Include="GameEngine\Object\Camera\CameraCommon.h">
-      <Filter>Engine\object\Camera</Filter>
+      <Filter>Engine\Object\Camera</Filter>
     </ClInclude>
     <ClInclude Include="GameEngine\Object\Model\ModelManager.h">
-      <Filter>Engine\object\Model</Filter>
+      <Filter>Engine\Object\Model</Filter>
     </ClInclude>
     <ClInclude Include="GameEngine\Object\3d\Object3d.h">
-      <Filter>Engine\object\3d</Filter>
+      <Filter>Engine\Object\3d</Filter>
     </ClInclude>
     <ClInclude Include="GameEngine\Object\3d\Object3dCommon.h">
-      <Filter>Engine\object\3d</Filter>
+      <Filter>Engine\Object\3d</Filter>
     </ClInclude>
     <ClInclude Include="GameEngine\Scene\GameScene.h">
-      <Filter>Engine\scene</Filter>
+      <Filter>Engine\Scene</Filter>
     </ClInclude>
     <ClInclude Include="GameEngine\Scene\ResultScene.h">
-      <Filter>Engine\scene</Filter>
-    </ClInclude>
-    <ClInclude Include="GameEngine\Object\Sprite\SpriteAdministrator.h">
-      <Filter>Engine\object\2d</Filter>
+      <Filter>Engine\Scene</Filter>
     </ClInclude>
     <ClInclude Include="GameEngine\Object\Sprite\Sprite.h">
-      <Filter>Engine\object\Sprite</Filter>
+      <Filter>Engine\Object\Sprite</Filter>
     </ClInclude>
-    <ClInclude Include="GameEngine\Resource\Material\Material.h" />
     <ClInclude Include="GameEngine\Input\InputManager.h">
       <Filter>Engine\Input</Filter>
     </ClInclude>
@@ -408,43 +535,8 @@
     <ClInclude Include="GameEngine\Input\Gamepad.h">
       <Filter>Engine\Input</Filter>
     </ClInclude>
-    <ClInclude Include="GameEngine\Base\Debug\ImGuiManager.h" />
-    <ClInclude Include="GameEngine\Base\Engine.h" />
-    <ClInclude Include="GameEngine\Effect\Particle\ParticleManager.h" />
-    <ClInclude Include="GameEngine\Object\ObjectAdministrator.h" />
-    <ClInclude Include="GameEngine\Base\DirectX\RTV.h" />
-    <ClInclude Include="GameEngine\Base\DirectX\DSV.h" />
-    <ClInclude Include="GameEngine\Object\Model\Skybox\Skybox.h" />
-    <ClInclude Include="GameEngine\Object\Screen\RenderCopyImage.h" />
-    <ClInclude Include="GameEngine\Resource\ResourceCommon.h" />
-    <ClInclude Include="GameEngine\Object\Model\Line.h" />
-    <ClInclude Include="GameEngine\Append\Animation\Skinning\Skeleton.h" />
-    <ClInclude Include="GameEngine\Append\Animation\Skinning\SkinCluster.h" />
-    <ClInclude Include="GameEngine\Append\Animation\Skinning\Skinnig.h" />
-    <ClInclude Include="GameEngine\Append\Animation\Node\NodeAnimation.h" />
-    <ClInclude Include="GameEngine\Append\Animation\Skinning\Joint.h" />
-    <ClInclude Include="GameEngine\Object\Grid3D.h" />
-    <ClInclude Include="App\Player\Player.h" />
-    <ClInclude Include="GameEngine\Object\Model\MultiModel.h" />
-    <ClInclude Include="GameEngine\Effect\PostEffect\Vignette.h" />
-    <ClInclude Include="GameEngine\Effect\PostEffect\BoxFilter.h" />
-    <ClInclude Include="GameEngine\Effect\PostEffect\DepthOutline.h" />
-    <ClInclude Include="GameEngine\Effect\PostEffect\GaussianFilter.h" />
-    <ClInclude Include="GameEngine\Effect\PostEffect\GrayScale.h" />
-    <ClInclude Include="GameEngine\Effect\PostEffect\IPostEffect.h" />
-    <ClInclude Include="GameEngine\Effect\PostEffect\LuminanceOutline.h" />
-    <ClInclude Include="App\AI\BehaviorTree\IBehavior.h" />
-    <ClInclude Include="App\AI\State\IBossState.h" />
-    <ClInclude Include="App\AI\State\VitalityBossState.h" />
-    <ClInclude Include="App\IObjectBase.h" />
-    <ClInclude Include="GameEngine\Append\Collider\PlaneCollider.h" />
-    <ClInclude Include="GameEngine\Append\Collider\RayCollider.h" />
-    <ClInclude Include="GameEngine\Append\Collider\SphereCollider.h" />
-    <ClInclude Include="GameEngine\Append\Collider\TriangleCollider.h" />
-    <ClInclude Include="GameEngine\Append\Collider\OBBCollider.h" />
-    <ClInclude Include="App\Reticle\Reticle3D.h" />
     <ClInclude Include="GameEngine\Base\WinApp\WinAPI.h">
-      <Filter>Engine\base\WinApp</Filter>
+      <Filter>Engine\Base\WinApp</Filter>
     </ClInclude>
     <ClInclude Include="GameEngine\Append\Collider\AABBCollider.h">
       <Filter>Engine\Append\Collider</Filter>
@@ -455,21 +547,186 @@
     <ClInclude Include="App\Enemy\BossEnemy.h">
       <Filter>Engine\GameBase</Filter>
     </ClInclude>
-    <ClInclude Include="GameEngine\Editor\GlobalVariables.h" />
-    <ClInclude Include="App\Reaction\DamageReaction.h" />
-    <ClInclude Include="GameEngine\Editor\LevelEditor.h" />
-    <ClInclude Include="GameEngine\Effect\Particle\ParticleCommon.h" />
-    <ClInclude Include="GameEngine\Effect\Particle\DiffusionToCircleParticle.h" />
-    <ClInclude Include="GameEngine\GameMaster\Framerate.h" />
-    <ClInclude Include="GameEngine\Scene\LoadingScene.h" />
-    <ClInclude Include="App\Enemy\Action\Action.h" />
-    <ClInclude Include="App\AI\BehaviorTree\BTMoveAction.h" />
-    <ClInclude Include="App\AI\BehaviorTree\BTAttackAction.h" />
-    <ClInclude Include="GameEngine\Object\ShadowObject.h" />
-    <ClInclude Include="GameEngine\Object\Screen\ShadowMap.h" />
-    <ClInclude Include="App\Status\StatusManager.h" />
-    <ClInclude Include="App\Player\Action\Skill.h" />
-    <ClInclude Include="App\Player\Action\Slash.h" />
+    <ClInclude Include="App\IObjectBase.h">
+      <Filter>App</Filter>
+    </ClInclude>
+    <ClInclude Include="App\Player\Player.h">
+      <Filter>App\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="GameEngine\Scene\LoadingScene.h">
+      <Filter>Engine\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="App\Enemy\Action\Action.h">
+      <Filter>App\Enemy\Action</Filter>
+    </ClInclude>
+    <ClInclude Include="App\Player\Action\Skill.h">
+      <Filter>App\Player\Skill</Filter>
+    </ClInclude>
+    <ClInclude Include="GameEngine\Append\Animation\Node\NodeAnimation.h">
+      <Filter>Engine\Append\Animation\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="GameEngine\Append\Animation\Skinning\Joint.h">
+      <Filter>Engine\Append\Animation\Skinning</Filter>
+    </ClInclude>
+    <ClInclude Include="GameEngine\Append\Animation\Skinning\Skeleton.h">
+      <Filter>Engine\Append\Animation\Skinning</Filter>
+    </ClInclude>
+    <ClInclude Include="GameEngine\Append\Animation\Skinning\SkinCluster.h">
+      <Filter>Engine\Append\Animation\Skinning</Filter>
+    </ClInclude>
+    <ClInclude Include="GameEngine\Append\Animation\Skinning\Skinnig.h">
+      <Filter>Engine\Append\Animation\Skinning</Filter>
+    </ClInclude>
+    <ClInclude Include="GameEngine\Base\Engine.h">
+      <Filter>Engine\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="GameEngine\Base\Debug\ImGuiManager.h">
+      <Filter>Engine\Base\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="GameEngine\Base\DirectX\DSV.h">
+      <Filter>Engine\Base\DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="GameEngine\Base\DirectX\SRV.h">
+      <Filter>Engine\Base\DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="GameEngine\Base\DirectX\RTV.h">
+      <Filter>Engine\Base\DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="GameEngine\Base\System.h">
+      <Filter>Engine\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="GameEngine\Editor\GlobalVariables.h">
+      <Filter>Engine\Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="GameEngine\Editor\LevelEditor.h">
+      <Filter>Engine\Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="GameEngine\Resource\ResourceCommon.h">
+      <Filter>Engine\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="GameEngine\Append\Transform\WorldTransform.h">
+      <Filter>Engine\Append\Transform</Filter>
+    </ClInclude>
+    <ClInclude Include="GameEngine\Resource\Texture\Resource.h">
+      <Filter>Engine\Resource\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="GameEngine\Resource\Audio\Audio.h">
+      <Filter>Engine\Resource\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="GameEngine\Resource\Material\Color.h">
+      <Filter>Engine\Resource\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="GameEngine\Resource\Material\Material.h">
+      <Filter>Engine\Resource\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="GameEngine\Object\Sprite\SpriteAdministrator.h">
+      <Filter>Engine\Object\Sprite</Filter>
+    </ClInclude>
+    <ClInclude Include="GameEngine\Object\Sprite\Sphere.h">
+      <Filter>Engine\Object\Sprite</Filter>
+    </ClInclude>
+    <ClInclude Include="GameEngine\Object\Sprite\Triangle.h">
+      <Filter>Engine\Object\Sprite</Filter>
+    </ClInclude>
+    <ClInclude Include="GameEngine\Object\Model\Skybox\Skybox.h">
+      <Filter>Engine\Object\Model\Skybox</Filter>
+    </ClInclude>
+    <ClInclude Include="GameEngine\Object\Model\Line.h">
+      <Filter>Engine\Object\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="GameEngine\Object\Model\MultiModel.h">
+      <Filter>Engine\Object\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="GameEngine\Object\Screen\RenderCopyImage.h">
+      <Filter>Engine\Object\Screen</Filter>
+    </ClInclude>
+    <ClInclude Include="GameEngine\Object\Screen\ShadowMap.h">
+      <Filter>Engine\Object\Screen</Filter>
+    </ClInclude>
+    <ClInclude Include="GameEngine\Object\ShadowObject.h">
+      <Filter>Engine\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="GameEngine\Object\ObjectAdministrator.h">
+      <Filter>Engine\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="GameEngine\Object\Grid3D.h">
+      <Filter>Engine\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="GameEngine\Append\Collider\SphereCollider.h">
+      <Filter>Engine\Append\Collider</Filter>
+    </ClInclude>
+    <ClInclude Include="GameEngine\Append\Collider\TriangleCollider.h">
+      <Filter>Engine\Append\Collider</Filter>
+    </ClInclude>
+    <ClInclude Include="GameEngine\Append\Collider\PlaneCollider.h">
+      <Filter>Engine\Append\Collider</Filter>
+    </ClInclude>
+    <ClInclude Include="GameEngine\Append\Collider\RayCollider.h">
+      <Filter>Engine\Append\Collider</Filter>
+    </ClInclude>
+    <ClInclude Include="GameEngine\Append\Collider\OBBCollider.h">
+      <Filter>Engine\Append\Collider</Filter>
+    </ClInclude>
+    <ClInclude Include="App\Player\Action\Slash.h">
+      <Filter>App\Player\Skill</Filter>
+    </ClInclude>
+    <ClInclude Include="App\Reaction\DamageReaction.h">
+      <Filter>App\Reaction</Filter>
+    </ClInclude>
+    <ClInclude Include="App\Reticle\Reticle3D.h">
+      <Filter>App\Reticle</Filter>
+    </ClInclude>
+    <ClInclude Include="App\Status\StatusManager.h">
+      <Filter>App\Status</Filter>
+    </ClInclude>
+    <ClInclude Include="GameEngine\Effect\PostEffect\BoxFilter.h">
+      <Filter>Engine\Effect\PostEffect</Filter>
+    </ClInclude>
+    <ClInclude Include="GameEngine\Effect\PostEffect\DepthOutline.h">
+      <Filter>Engine\Effect\PostEffect</Filter>
+    </ClInclude>
+    <ClInclude Include="GameEngine\Effect\Particle\DiffusionToCircleParticle.h">
+      <Filter>Engine\Effect\PostEffect</Filter>
+    </ClInclude>
+    <ClInclude Include="GameEngine\Effect\PostEffect\GaussianFilter.h">
+      <Filter>Engine\Effect\PostEffect</Filter>
+    </ClInclude>
+    <ClInclude Include="GameEngine\Effect\PostEffect\GrayScale.h">
+      <Filter>Engine\Effect\PostEffect</Filter>
+    </ClInclude>
+    <ClInclude Include="GameEngine\Effect\PostEffect\IPostEffect.h">
+      <Filter>Engine\Effect\PostEffect</Filter>
+    </ClInclude>
+    <ClInclude Include="GameEngine\Effect\PostEffect\LuminanceOutline.h">
+      <Filter>Engine\Effect\PostEffect</Filter>
+    </ClInclude>
+    <ClInclude Include="GameEngine\Effect\Particle\ParticleManager.h">
+      <Filter>Engine\Effect\Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="GameEngine\Effect\Particle\ParticleCommon.h">
+      <Filter>Engine\Effect\Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="GameEngine\GameMaster\Framerate.h">
+      <Filter>Engine\GameMaster</Filter>
+    </ClInclude>
+    <ClInclude Include="App\AI\State\IBossState.h">
+      <Filter>App\AI\State</Filter>
+    </ClInclude>
+    <ClInclude Include="App\AI\State\VitalityBossState.h">
+      <Filter>App\AI\State</Filter>
+    </ClInclude>
+    <ClInclude Include="App\AI\BehaviorTree\BTAttackAction.h">
+      <Filter>App\AI\BehaviorTree</Filter>
+    </ClInclude>
+    <ClInclude Include="App\AI\BehaviorTree\BTMoveAction.h">
+      <Filter>App\AI\BehaviorTree</Filter>
+    </ClInclude>
+    <ClInclude Include="App\AI\BehaviorTree\IBehavior.h">
+      <Filter>App\AI\BehaviorTree</Filter>
+    </ClInclude>
+    <ClInclude Include="GameEngine\Effect\PostEffect\Vignette.h">
+      <Filter>Engine\Effect\PostEffect</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt">
@@ -477,21 +734,49 @@
     </Text>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shaders\Sprite2d.hlsli" />
-    <None Include="Shaders\Particle.hlsli" />
-    <None Include="Shaders\Object3d.hlsli" />
-    <None Include="Shaders\CopyImage.hlsli" />
-    <None Include="Shaders\ColorConvert.hlsli" />
+    <None Include="Shaders\ColorConvert.hlsli">
+      <Filter>リソース ファイル\Shader\PostEffect</Filter>
+    </None>
+    <None Include="Shaders\CopyImage.hlsli">
+      <Filter>リソース ファイル\Shader\PostEffect</Filter>
+    </None>
+    <None Include="Shaders\Object3d.hlsli">
+      <Filter>リソース ファイル\Shader</Filter>
+    </None>
+    <None Include="Shaders\Particle.hlsli">
+      <Filter>リソース ファイル\Shader</Filter>
+    </None>
+    <None Include="Shaders\Sprite2d.hlsli">
+      <Filter>リソース ファイル\Shader</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Shaders\Sprite2d.PS.hlsl" />
-    <FxCompile Include="Shaders\Sprite2d.VS.hlsl" />
-    <FxCompile Include="Shaders\Object3d.PS.hlsl" />
-    <FxCompile Include="Shaders\Object3d.VS.hlsl" />
-    <FxCompile Include="Shaders\Particle.PS.hlsl" />
-    <FxCompile Include="Shaders\Particle.VS.hlsl" />
-    <FxCompile Include="Shaders\CopyImage.PS.hlsl" />
-    <FxCompile Include="Shaders\CopyImage.VS.hlsl" />
-    <FxCompile Include="Shaders\SkinningObject3d.VS.hlsl" />
+    <FxCompile Include="Shaders\CopyImage.PS.hlsl">
+      <Filter>リソース ファイル\Shader\PostEffect</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\CopyImage.VS.hlsl">
+      <Filter>リソース ファイル\Shader\PostEffect</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\Object3d.PS.hlsl">
+      <Filter>リソース ファイル\Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\Object3d.VS.hlsl">
+      <Filter>リソース ファイル\Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\Particle.PS.hlsl">
+      <Filter>リソース ファイル\Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\Particle.VS.hlsl">
+      <Filter>リソース ファイル\Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\SkinningObject3d.VS.hlsl">
+      <Filter>リソース ファイル\Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\Sprite2d.VS.hlsl">
+      <Filter>リソース ファイル\Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\Sprite2d.PS.hlsl">
+      <Filter>リソース ファイル\Shader</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>
