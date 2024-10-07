@@ -18,6 +18,7 @@ void TitleScene::Init() {
 	mObject->Init("ShadowObject");
 	ModelManager::GetInstance()->LoadModel("box", "box.gltf");
 	mObject->SetModel("box.gltf");
+	mObject->mModel->mTextureHandle = DirectXCommon::GetInstance()->srv_->LoadTexture("uvChecker.dds");
 	mObject->mWorldTransform->rotation = { 0.5f,0.0f,0.0f };
 
 	// カメラ設定

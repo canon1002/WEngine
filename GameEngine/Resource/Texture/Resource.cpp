@@ -11,11 +11,13 @@
 namespace Resource
 {
 	// テクスチャ読み込み
-	DirectX::ScratchImage LoadTextrue(const std::string& filePath) {
+	DirectX::ScratchImage LoadTextrue(const std::string& filePath) 
+	{
 		// テクスチャファイルを読んでプログラムで使えるようにする
 		DirectX::ScratchImage image{};
 		const std::string& fullPath = "Resources/objs/" + filePath;
 		std::wstring filePathW = WinAPI::ConvertString(fullPath);
+
 		// .ddsで終わっていれば.ddsとみなす。別の方法も存在するらしい
 		HRESULT hr;
 		if (filePathW.ends_with(L".dds")) {
