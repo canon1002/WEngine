@@ -19,7 +19,7 @@ public: // -- 公開 メンバ関数 -- //
 	void Draw2DReticle();
 
 	// 3Dレティクルのワールド座標を取得する
-	Vector3 GetWorld3D() { return mObject->GetWorldTransform()->translation; }
+	Vector3 GetWorld3D() { return mObject->mWorldTransform.translation; }
 	void SetCubeMap(const int32_t& textureHandle) { mObject->GetModel()->SetCubeTexture(textureHandle); }
 
 	void SetReticleDistance(float distance) { mReticleDistance = distance; }

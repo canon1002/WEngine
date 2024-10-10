@@ -58,14 +58,14 @@ void SphereCollider::Update() {
 
 }
 
-void SphereCollider::Draw() {
+void SphereCollider::Draw(Camera camera) {
 	//wvp用のCBufferの場所を指定
 	mDxCommon->mCommandList->SetGraphicsRootConstantBufferView(1, mWvpResource->GetGPUVirtualAddress());
 	// 頂点をセット
 	// 配列を渡す(開始スロット番号、使用スロット数、VBV配列へのポインタ)
 	mDxCommon->mCommandList->IASetVertexBuffers(0, 1, &mModel->mVertexBufferView);
 	// 描画
-	mModel->Draw();
+	mModel->Draw(camera);
 }
 
 void SphereCollider::CreateTransformation() {

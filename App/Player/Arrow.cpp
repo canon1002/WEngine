@@ -27,7 +27,7 @@ void Arrow::Init(Player* player,Vector3 pos, Vector3 vel)
 	// 拡大率を変更
 	mObject->mWorldTransform.scale = { 0.1f,0.1f,1.0f };
 	// 代入した数値を初期座標にする
-	mObject->SetTranslate(pos);
+	mObject->mWorldTransform.translation = pos;
 
 	// 移動量を設定
 	mMoveVel = vel;
@@ -44,7 +44,7 @@ void Arrow::Init(Player* player,Vector3 pos, Vector3 vel)
 
 	//コライダーの宣言
 	// コライダーの宣言
-	mObject->mCollider = new SphereCollider(&mObject->GetWorld(), 0.05f);
+	mObject->mCollider = new SphereCollider(&mObject->mWorldTransform, 0.05f);
 	mObject->mCollider->Init();
 	mObject->mCollider->SetCollisionAttribute(kCollisionAttributePlayerBullet);
 	mObject->mCollider->SetCollisionMask(kCollisionAttributeEnemy);
@@ -61,12 +61,12 @@ void Arrow::Update()
 	// 移動させる
 	mObject->AddTranslate(mMoveVel);
 
-	if (mObject->GetWorld().translation.x >= 250.0f ||
-		mObject->GetWorld().translation.x <= -250.0f ||
-		mObject->GetWorld().translation.y >= 250.0f ||
-		mObject->GetWorld().translation.y <= -250.0f ||
-		mObject->GetWorld().translation.z >= 250.0f ||
-		mObject->GetWorld().translation.z <= -250.0f) {
+	if (mObject->mWorldTransform.translation.x >= 250.0f ||
+		mObject->mWorldTransform.translation.x <= -250.0f ||
+		mObject->mWorldTransform.translation.y >= 250.0f ||
+		mObject->mWorldTransform.translation.y <= -250.0f ||
+		mObject->mWorldTransform.translation.z >= 250.0f ||
+		mObject->mWorldTransform.translation.z <= -250.0f) {
 		mIsActive = false;
 	}
 
@@ -80,7 +80,7 @@ void Arrow::Update()
 
 		// ダメージ表示
 		int32_t damage = static_cast<int32_t>(static_cast<int32_t>(mPlayer->GetStatus()->STR / 2.0f) * 1.0f) - static_cast<int32_t>(mPlayer->mBoss->GetStatus()->VIT / 4.0f);;
-		DamageReaction::GetInstance()->Reaction(this->GetWorldPos(), damage, MainCamera::GetInstance());
+		DamageReaction::GetInstance()->Reaction(this->GetWorldPos(), damage, *MainCamera::GetInstance());
 	}
 
 	mObject->Update();

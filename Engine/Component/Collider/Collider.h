@@ -11,9 +11,8 @@
 #include<cmath>
 #include<algorithm>
 
+#include "Engine/Object/Camera/Camera.h"
 #include "Component/Transform/WorldTransform.h"
-
-
 #include "Resource/Model/Model.h"
 
 
@@ -36,7 +35,7 @@ public: // -- 公開 メンバ関数 -- //
 
 	virtual void Init() = 0;
 	virtual void Update() = 0;
-	virtual void Draw() = 0;
+	virtual void Draw(Camera camera) = 0;
 	virtual void CreateTransformation() = 0;
 
 	// 衝突時の処理

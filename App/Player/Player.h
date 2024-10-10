@@ -72,16 +72,16 @@ public: // -- 公開 メンバ関数 -- //
 	// 更新
 	void Update();
 	// 描画
-	void Draw();
+	void Draw(Camera camera);
 	// デバッグUI表示
 	void DrawGUI();
-	void ColliderDraw();
+	void ColliderDraw(Camera camera);
 
 	Object3d* GetObject3D() { return mObject.get(); }
 	Model* GetModel() { return mObject->GetModel(); }
 	Collider* GetCollider() { return mObject->mCollider; }
 
-	Vector3 GetWorldPos() { return mObject->GetWorld().translation; }
+	Vector3 GetWorldPos() { return mObject->mWorldTransform.translation; }
 	Reticle3D* GetReticle3D() { return mReticle.get(); }
 
 	void SetColliderListForArrow(CollisionManager* cManager);

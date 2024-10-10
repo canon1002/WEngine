@@ -17,8 +17,9 @@ void RayCollider::Update()
 {
 }
 
-void RayCollider::Draw()
+void RayCollider::Draw(Camera camera)
 {
+	camera;
 }
 
 bool RayCollider::IsCollision(Collider* c){

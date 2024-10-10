@@ -26,7 +26,7 @@ void Player::Init() {
 	mObject->SetTranslation({ 1.0f,1.0f,7.0f });
 
 	// メインカメラをフォローカメラ仕様にする
-	MainCamera::GetInstance()->SetTarget(&mObject->GetWorld());
+	MainCamera::GetInstance()->SetTarget(&mObject->mWorldTransform);
 
 	// 最初は通常状態から始める
 	mBehavior = Behavior::kRoot;
@@ -41,7 +41,7 @@ void Player::Init() {
 	mJumpCount = kJumpCountMax;
 
 	// コライダーの宣言
-	mObject->mCollider = new SphereCollider(&mObject->GetWorld(), 1.0f);
+	mObject->mCollider = new SphereCollider(&mObject->mWorldTransform, 1.0f);
 	mObject->mCollider->Init();
 	mObject->mCollider->SetAddtranslation(Vector3(0.0f, 0.55f, -0.1f));
 	mObject->mCollider->SetCollisionAttribute(kCollisionAttributePlayer);
@@ -77,7 +77,7 @@ void Player::Init() {
 	mAttackStatus.sword->SetModel("sword.gltf");
 	mAttackStatus.sword->GetWorld().scale = { 0.1f,0.1f,0.1f };
 	mAttackStatus.sword->GetWorld().rotation = { 1.7f,-0.3f,0.0f };
-	mAttackStatus.sword->GetWorld().translation = mObject->GetWorld().translation;
+	mAttackStatus.sword->GetWorld().translation = mObject->mWorldTransform.translation;
 	mAttackStatus.pos = { 1000.0f,900.0f,0.0f };// 初期位置
 	mAttackStatus.normalRot = { 1.7f,-0.3f,-0.2f };// 初期回転量
 	mAttackStatus.endRot = { 3.8f,-0.3f,1.0f };// 最終回転量
@@ -88,7 +88,7 @@ void Player::Init() {
 	mGuardStatus.shield->SetModel("Shield.gltf");
 	mGuardStatus.shield->GetWorld().scale = { 0.4f,0.4f,0.4f };
 	mGuardStatus.shield->GetWorld().rotation = { 1.5f,0.0f,0.0f };
-	mGuardStatus.shield->GetWorld().translation = mObject->GetWorld().translation;
+	mGuardStatus.shield->GetWorld().translation = mObject->mWorldTransform.translation;
 	mGuardStatus.normalPos = { -150.0f,900.0f,0.0f };// 初期位置
 	mGuardStatus.guardPos = { 170.0f,720.0f,0.0f };// 構え位置
 
@@ -157,7 +157,7 @@ void Player::Update() {
 
 }
 
-void Player::Draw() {
+void Player::Draw(Camera camera) {
 	//mObject->Draw();
 
 	for (const auto& arrow : mArrows) {
@@ -223,19 +223,19 @@ void Player::DrawGUI() {
 
 }
 
-void Player::ColliderDraw() {
+void Player::ColliderDraw(Camera camera) {
 #ifdef _DEBUG
 	//mObject->mCollider->Draw();
 #endif // _DEBUG
 	mReticle->Draw3DReticle();
 
 	// 剣
-	mAttackStatus.sword->Draw(*MainCamera::GetInstance());
+	mAttackStatus.sword->Draw(camera);
 	// シールド
-	mGuardStatus.shield->Draw(*MainCamera::GetInstance());
+	mGuardStatus.shield->Draw(camera);
 
 	for (const auto& arrow : mArrows) {
-		arrow->GetCollider()->Draw();
+		arrow->GetCollider()->Draw(camera);
 	}
 }
 
@@ -276,7 +276,7 @@ void Player::Avoid()
 		// 回避経過時間( 0.0f ~ 1.0f )
 		mAvoidStatus.mAvoidTime = 0.0f;
 		// 回避開始地点に現在の座標を代入
-		mAvoidStatus.mAvoidMoveStartPos = mObject->GetWorld().translation;
+		mAvoidStatus.mAvoidMoveStartPos = mObject->mWorldTransform.translation;
 
 
 		// スティック入力の量
@@ -301,7 +301,7 @@ void Player::Avoid()
 			// y座標は移動しない
 			direction.y = 0.0f;
 
-			mAvoidStatus.mAvoidMoveEndPos = mObject->GetWorld().translation + Scalar(mAvoidStatus.mAvoidRange, direction);
+			mAvoidStatus.mAvoidMoveEndPos = mObject->mWorldTransform.translation + Scalar(mAvoidStatus.mAvoidRange, direction);
 
 			// 回避状態に変更
 			mBehavior = Behavior::kAvoid;
@@ -313,7 +313,7 @@ void Player::Avoid()
 			Vector3 direction = TransformNomal(Vector3(0.0f, 0.0f, -1.0f), MainCamera::GetInstance()->GetWorld().GetWorldMatrix());
 			// y座標は移動しない
 			direction.y = 0.0f;
-			mAvoidStatus.mAvoidMoveEndPos = mObject->GetWorld().translation + Scalar(mAvoidStatus.mAvoidRange, direction);
+			mAvoidStatus.mAvoidMoveEndPos = mObject->mWorldTransform.translation + Scalar(mAvoidStatus.mAvoidRange, direction);
 			// 回避状態に変更
 			mBehavior = Behavior::kAvoid;
 
@@ -338,8 +338,8 @@ void Player::Avoid()
 		}
 
 		// 移動
-		mObject->GetWorld().translation.x = (1.0f - mAvoidStatus.mAvoidTime) * mAvoidStatus.mAvoidMoveStartPos.x + mAvoidStatus.mAvoidTime * mAvoidStatus.mAvoidMoveEndPos.x;
-		mObject->GetWorld().translation.z = (1.0f - mAvoidStatus.mAvoidTime) * mAvoidStatus.mAvoidMoveStartPos.z + mAvoidStatus.mAvoidTime * mAvoidStatus.mAvoidMoveEndPos.z;
+		mObject->mWorldTransform.translation.x = (1.0f - mAvoidStatus.mAvoidTime) * mAvoidStatus.mAvoidMoveStartPos.x + mAvoidStatus.mAvoidTime * mAvoidStatus.mAvoidMoveEndPos.x;
+		mObject->mWorldTransform.translation.z = (1.0f - mAvoidStatus.mAvoidTime) * mAvoidStatus.mAvoidMoveStartPos.z + mAvoidStatus.mAvoidTime * mAvoidStatus.mAvoidMoveEndPos.z;
 
 	}
 
@@ -376,9 +376,9 @@ void Player::Guard()
 	mGuardStatus.pos = ExponentialInterpolation(mGuardStatus.normalPos, mGuardStatus.guardPos, mGuardStatus.t, 1.0f);
 
 	// シールドの位置を更新(2D配置→ワールド座標に変換)
-	mGuardStatus.shield->GetWorld().translation = DamageReaction::GetWorldPosForScreen(Vector2(mGuardStatus.pos.x, mGuardStatus.pos.y), 1.0f, MainCamera::GetInstance());
+	mGuardStatus.shield->GetWorld().translation = DamageReaction::GetWorldPosForScreen(Vector2(mGuardStatus.pos.x, mGuardStatus.pos.y), 1.0f, *MainCamera::GetInstance());
 	// 回転量をカメラから取得
-	mGuardStatus.shield->GetWorld().rotation.y = MainCamera::GetInstance()->GetWorld().rotation.y;
+	mGuardStatus.shield->mWorldTransform.rotation.y = MainCamera::GetInstance()->GetWorld().rotation.y;
 
 
 	// tの値に応じてflagをon/offする
@@ -455,11 +455,11 @@ void Player::Attack()
 	}
 
 	// 剣の位置を更新(2D配置→ワールド座標に変換)
-	mAttackStatus.sword->GetWorld().translation = DamageReaction::GetWorldPosForScreen(Vector2(mAttackStatus.pos.x, mAttackStatus.pos.y), 1.0f, MainCamera::GetInstance());
+	mAttackStatus.sword->GetWorld().translation = DamageReaction::GetWorldPosForScreen(Vector2(mAttackStatus.pos.x, mAttackStatus.pos.y), 1.0f, *MainCamera::GetInstance());
 
 	// 回転量をtの数値に応じて設定する
 	mAttackStatus.sword->GetWorld().rotation = ExponentialInterpolation(mAttackStatus.normalRot, mAttackStatus.endRot, mAttackStatus.t, 1.0f);
-	mAttackStatus.sword->GetWorld().rotation.y += MainCamera::GetInstance()->GetRotate().y;
+	mAttackStatus.sword->mWorldTransform.rotation.y += MainCamera::GetInstance()->GetWorld().rotation.y;
 
 	// レティクルの位置(コライダー)をtの値に応じて移動させる
 	mReticle->SetReticleDistance(ExponentialInterpolation(0.5f, 10.0f, mAttackStatus.t, 1.0f));
@@ -475,7 +475,7 @@ void Player::Attack()
 
 			// ダメージ表示
 			int32_t damage = static_cast<int32_t>(static_cast<int32_t>(mStatus->STR / 2.0f) * 1.0f) - static_cast<int32_t>(mBoss->GetStatus()->VIT / 4.0f);;
-			DamageReaction::GetInstance()->Reaction(mReticle->GetWorld3D(), damage, MainCamera::GetInstance());
+			DamageReaction::GetInstance()->Reaction(mReticle->GetWorld3D(), damage, *MainCamera::GetInstance());
 		}
 	}
 
@@ -555,7 +555,7 @@ void Player::Move()
 		if (rotateY < -PI) {
 			rotateY += 2.0f * PI;
 		}
-		mObject->GetWorld().rotation.y = rotateY;
+		mObject->mWorldTransform.rotation.y = rotateY;
 	}
 
 }
@@ -563,17 +563,17 @@ void Player::Move()
 void Player::Fall()
 {
 	// 落下処理
-	if (mObject->GetWorld().translation.y > 0.0f) {
+	if (mObject->mWorldTransform.translation.y > 0.0f) {
 
 		// 移動量を加算
-		mObject->GetWorld().translation.y += mVelocity.y;
+		mObject->mWorldTransform.translation.y += mVelocity.y;
 		mVelocity.y -= 9.8f * (1.0f / 360.0f);
 	}
 	// 地面に到達したら
-	else if (mObject->GetWorld().translation.y < 0.0f) {
+	else if (mObject->mWorldTransform.translation.y < 0.0f) {
 
 		// 地面に固定
-		mObject->GetWorld().translation.y = 0.0f;
+		mObject->mWorldTransform.translation.y = 0.0f;
 
 		// 移動量修正
 		mVelocity.y = 0.0f;

@@ -40,6 +40,7 @@ public: // -- 公開 メンバ関数 -- //
 	Matrix4x4 GetViewMatrix() { return mViewMatrix; }
 	Matrix4x4 GetProjectionMatrix() { return mProjectionMatrix_; }
 	Matrix4x4 GetViewProjectionMatrix() { return mViewMatrix; }
+	Vector2 GetWindowSize();
 
 protected: // -- 限定公開 メンバ変数 -- //
 

@@ -97,7 +97,7 @@ void LevelEditor::CheckLevelEditorFile(){
 	// レベルデータからオブジェクトを生成&配置
 	for (auto& objectData : levelData->objects) {
 		// モデルを指定して3Dオブジェクトを生成
-		Object3d* newObject = new Object3d(objectData.objectName);
+		Object3d* newObject = new Object3d();
 		newObject->Init(objectData.objectName);
 		// ファイル拡張子を指定 とりあえずgltfのみ読み込む
 		std::string extension = ".gltf";
@@ -127,15 +127,9 @@ void LevelEditor::Update(){
 
 #endif // _DEBUG
 
-	for (auto& object : mObjects) {
-		
-		// オブジェクトの更新処理
+	for (auto& object : mObjects) 
+	{
 		object->Update();
-
-		// デバッグ用のImGuiを表示
-		#ifdef _DEBUG
-		object->DrawGuiTree();
-		#endif // _DEBUG
 	}
 
 #ifdef _DEBUG
@@ -145,12 +139,12 @@ void LevelEditor::Update(){
 
 }
 
-void LevelEditor::Draw(){
+void LevelEditor::Draw(Camera camera){
 
 	// スキニングなしの3Dオブジェクトを表示
 	ModelManager::GetInstance()->PreDraw();
 	for (auto& object : mObjects) {
-		object->Draw();
+		object->Draw(camera);
 	}
 
 }

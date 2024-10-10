@@ -12,7 +12,7 @@ public:
 
     void Init()override;
     void Update()override;
-    void Draw()override;
+    void Draw(Camera camera)override;
 
     // 衝突判定関数
     virtual bool IsCollision(Collider* c)override;

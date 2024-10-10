@@ -2,8 +2,14 @@
 #include <string>
 #include "Component/Transform/WorldTransform.h"
 
+// 前方宣言
 class Camera;
 
+/// <summary>
+/// オブジェクト基底クラス
+/// <para> 3D空間に存在するオブジェクトの基底クラス </para>
+/// 
+/// </summary>
 class ObjectBase
 {
 public: // -- 公開 メンバ関数 -- //
@@ -16,7 +22,7 @@ public: // -- 公開 メンバ関数 -- //
 	/// <summary>
 	/// デストラクタ
 	/// </summary>
-	~ObjectBase() = default;;
+	~ObjectBase() = default;
 
 	/// <summary>
 	/// 初期化処理
@@ -66,7 +72,7 @@ public: // -- 公開 メンバ関数 -- //
 	virtual void AddTranslate(Vector3 translation) { mWorldTransform.translation += translation; }
 
 
-protected: // -- 限定公開 メンバ変数 -- //
+public: // -- 公開 メンバ変数 -- //
 
 	// オブジェクト名
 	std::string mObjectName;

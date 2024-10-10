@@ -6,7 +6,6 @@
 #include "Component/Animation/Skinning/Skinnig.h"
 
 #include "Resource/Model/Model.h"
-#include "Resource/Model/MultiModel.h"
 
 namespace Resource
 {
@@ -120,124 +119,6 @@ namespace Resource
 		return modelData;
 	}
 
-	MultiModelData LoadMultiModelFile(const std::string& directoryPath, const std::string& filename)
-	{
-		/// 変数の宣言
-		MultiModelData modelData;// 構築するモデルのデータ
-		std::vector<Vector4> positions;//位置
-		std::vector<Vector3> normals;//法線
-		std::vector<Vector2> texcoords;//テクスチャ座標
-		std::string line; // ファイルから読んだ一行を格納する
-
-		// -- ファイルを開く -- //
-		const std::string& forwardPath = "Resources/objs/";
-		const std::string& fullPath = forwardPath + directoryPath + "/" + filename;
-		std::ifstream file(fullPath); // ファイルを開く
-		assert(file.is_open());
-
-		// assimpを利用する
-		Assimp::Importer importer;
-
-		// オプションを指定
-		// aiProcess_FlipWindingOrder -- 三角形の並び順を逆にする --
-		// aiProcess_FlipUVs -- UVをフリップする(texcoord.y=1.0f-texcoord.y の処理) --
-		const aiScene* scene = importer.ReadFile(fullPath.c_str(), aiProcess_FlipWindingOrder | aiProcess_FlipUVs);
-		assert(scene->HasMeshes()); // Mesh無しは対応しない
-
-		// SceneのRootNodeを読んでシーン全体の階層構造を作り上げる
-		modelData.rootNode = ReadNode(scene->mRootNode);
-
-		// -- Meshの解析 --// 
-
-		for (uint32_t meshIndex = 0; meshIndex < scene->mNumMeshes; ++meshIndex) {
-
-			Mesh mesh;
-
-			aiMesh* aiMesh = scene->mMeshes[meshIndex];
-			assert(aiMesh->HasNormals()); // 法線がないMeshは今回非対応
-			assert(aiMesh->HasTextureCoords(0)); // TexcoordがないMeshは今回非対応
-			mesh.vertices.resize(aiMesh->mNumVertices);// 最初に頂点数分のメモリを確保しておく
-			// Meshの中身の解析
-			for (uint32_t vertexIndex = 0; vertexIndex < aiMesh->mNumVertices; ++vertexIndex) {
-				aiVector3D& position = aiMesh->mVertices[vertexIndex];
-				aiVector3D& normal = aiMesh->mNormals[vertexIndex];
-				aiVector3D& texcoord = aiMesh->mTextureCoords[0][vertexIndex];
-				// 右手系から左手系に変換を行う
-				mesh.vertices[vertexIndex].position = { -position.x,position.y,position.z,1.0f };
-				mesh.vertices[vertexIndex].normal = { -normal.x,normal.y,normal.z };
-				mesh.vertices[vertexIndex].texcoord = { texcoord.x,texcoord.y };
-			}
-
-			// Indexの解析
-			for (uint32_t faceIndex = 0; faceIndex < aiMesh->mNumFaces; ++faceIndex) {
-				aiFace& face = aiMesh->mFaces[faceIndex];
-				assert(face.mNumIndices == 3);
-
-				// Faseの中身を解析
-				for (uint32_t element = 0; element < face.mNumIndices; ++element) {
-					uint32_t vertexIndex = face.mIndices[element];
-					mesh.indices.push_back(vertexIndex);
-				}
-
-			}
-
-			// -- SkinClusterを構築するデータを取得 -- //
-
-			for (uint32_t boneIndex = 0; boneIndex < aiMesh->mNumBones; ++boneIndex) {
-				// MeshからBoneを取得
-				aiBone* bone = aiMesh->mBones[boneIndex];
-				// BoneからJointの名前を取得
-				std::string jointName = bone->mName.C_Str();
-				// モデルのSkinClusterDataからJointWeightDataを取得
-				JointWeightData& jointWeightData = mesh.skinClusterData[jointName];
-
-				// BindPose(バインドポーズ)行列を取得する
-				aiMatrix4x4 bindPoseMatrixAssimp = bone->mOffsetMatrix.Inverse();
-				aiVector3D scale, translation;
-				aiQuaternion rotation;
-				bindPoseMatrixAssimp.Decompose(scale, rotation, translation);
-				// asiimpの行列を基本の float4x4行列 に変換する
-				// この際座標系を修正しておく
-				Matrix4x4 bindPoseMatrix = MakeAffineMatrix(
-					{ scale.x,scale.y,scale.z },
-					{ rotation.x,-rotation.y,-rotation.z,rotation.w },
-					{ -translation.x,translation.y,translation.z }
-				);
-				// 逆行列を格納
-				jointWeightData.inverseBindPoseMatrix = Inverse(bindPoseMatrix);
-
-				// Weight情報を取り出す
-				for (uint32_t weightIndex = 0; weightIndex < bone->mNumWeights; ++weightIndex) {
-					jointWeightData.vertexWeights.push_back({ bone->mWeights[weightIndex].mWeight,bone->mWeights[weightIndex].mVertexId });
-				}
-
-			}
-
-			mesh.materialIndex = aiMesh->mMaterialIndex;
-			modelData.meshes.push_back(mesh);
-		}
-
-		// -- Materialの解析 -- //
-
-
-		for (uint32_t materialIndex = 0; materialIndex < scene->mNumMaterials; ++materialIndex) {
-			aiMaterial* aiMaterial = scene->mMaterials[materialIndex];
-			if (aiMaterial->GetTextureCount(aiTextureType_DIFFUSE) != 0) {
-				MultiMaterial material;
-				aiString textureFilePath;
-
-				// テクスチャのファイルパスを取得
-				aiMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &textureFilePath);
-				material.filepath= directoryPath + "/" + textureFilePath.C_Str();
-				
-				// マテリアルの配列に追加する
-				modelData.materials.push_back(material);
-			}
-		}
-
-		// モデルデータを返す
-		return modelData;
-	}
 
 ModelData LoadObjFile(const std::string& directoryPath, const std::string& filename) {
 

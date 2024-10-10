@@ -17,12 +17,12 @@ public: // -- 公開 メンバ関数 -- //
 	void Draw();
 	void DebugDraw() { mObject->Debug(); }
 
-	Vector3 GetWorldPos() { return mObject->GetWorld().translation; };
+	Vector3 GetWorldPos() { return mObject->mWorldTransform.translation; };
 	void SetCubeMap(const int32_t& textureHandle) {
 		mObject->GetModel()->SetCubeTexture(textureHandle); 
 		mObject->mCollider->GetModel()->mTextureHandleCubeMap = textureHandle;
 	}
-	void SetRotate(const Vector3& rot) { mObject->GetWorld().rotation = rot; }
+	void SetRotate(const Vector3& rot) { mObject->mWorldTransform.rotation = rot; }
 
 	bool GetIsActive()const { return mIsActive; }
 	Collider* GetCollider() { return mObject->mCollider; }

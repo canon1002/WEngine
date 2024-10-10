@@ -22,7 +22,7 @@ class Model
 {
 public:
 
-	Model();
+	Model() = default;
 	~Model();
 	static Model* Create(const std::string& directrypath, const std::string& filename);
 	void Init();

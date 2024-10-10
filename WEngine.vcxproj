@@ -117,6 +117,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="App\Reticle\Reticle3D.cpp" />
     <ClCompile Include="Engine\Object\Camera\Camera.cpp" />
     <ClCompile Include="Engine\Component\Animation\Node\NodeAnimation.cpp" />
     <ClCompile Include="Engine\Component\Animation\Skinning\Joint.cpp" />
@@ -184,7 +185,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\Input\Gamepad.cpp" />
     <ClCompile Include="Engine\Input\InputManager.cpp" />
     <ClCompile Include="Engine\Input\Keyboard.cpp" />
-    <ClCompile Include="App\Command\ICommand.cpp" />
     <ClCompile Include="App\AI\State\IBossState.cpp" />
     <ClCompile Include="App\IObjectBase.cpp" />
     <ClCompile Include="Engine\Editor\GlobalVariables.cpp" />
@@ -198,7 +198,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\Object\Skybox\Skybox.cpp" />
     <ClCompile Include="App\Player\Player.cpp" />
     <ClCompile Include="App\AI\State\VitalityBossState.cpp" />
-    <ClCompile Include="App\Reticle\Reticle3D.cpp" />
     <ClCompile Include="Engine\Object\Base\ObjectBase.cpp" />
     <ClCompile Include="Engine\Resource\ResourceManager.cpp" />
     <ClCompile Include="Engine\Object\Object3d.cpp" />
@@ -206,6 +205,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\Resource\Texture\Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="App\Reticle\Reticle3D.h" />
     <ClInclude Include="Engine\Object\Camera\Camera.h" />
     <ClInclude Include="Engine\Component\Animation\Node\NodeAnimation.h" />
     <ClInclude Include="Engine\Component\Animation\Skinning\Joint.h" />
@@ -287,11 +287,9 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\Object\Skybox\Skybox.h" />
     <ClInclude Include="App\Player\Player.h" />
     <ClInclude Include="App\AI\BehaviorTree\IBehavior.h" />
-    <ClInclude Include="App\Command\ICommand.h" />
     <ClInclude Include="App\AI\State\IBossState.h" />
     <ClInclude Include="App\AI\State\VitalityBossState.h" />
     <ClInclude Include="App\IObjectBase.h" />
-    <ClInclude Include="App\Reticle\Reticle3D.h" />
     <ClInclude Include="Engine\Editor\GlobalVariables.h" />
     <ClInclude Include="Engine\Editor\LevelEditor.h" />
     <ClInclude Include="Engine\Effect\Particle\ParticleCommon.h" />

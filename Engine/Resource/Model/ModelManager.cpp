@@ -47,21 +47,6 @@ void ModelManager::LoadModel(const std::string& directoryPath, const std::string
 	models.insert(std::make_pair(filepath, std::move(model)));
 }
 
-void ModelManager::LoadMultiModel(const std::string& directoryPath, const std::string& filepath) {
-	// 読み込み済みのモデルを検索
-	if (models.contains(filepath)) {
-		// 読み込み済みの場合は早期リターンする
-		return;
-	}
-
-	// モデルの生成とファイル読み込み
-	std::unique_ptr<MultiModel> model = std::make_unique<MultiModel>();
-	//初期化
-	model->Initialize(mDxCommon, mCamera, directoryPath, filepath);
-
-	// モデルをmapコンテナに格納
-	multiModels.insert(std::make_pair(filepath, std::move(model)));
-}
 
 Model* ModelManager::FindModel(const std::string filepath)
 {
@@ -74,16 +59,6 @@ Model* ModelManager::FindModel(const std::string filepath)
 	return nullptr;
 }
 
-MultiModel* ModelManager::FindMultiModel(const std::string filepath)
-{
-	// 読み込み済みモデルを検索
-	if (multiModels.contains(filepath)) {
-		// 読み込み済みモデルを戻り値としてreturn
-		return multiModels.at(filepath).get();
-	}
-	// ファイル名不一致の場合はnullptrを返す
-	return nullptr;
-}
 
 std::shared_ptr<Model> ModelManager::Create(const std::string& filepath, const std::string filename){
 	// 登録されていなければ新たにモデルを登録・生成

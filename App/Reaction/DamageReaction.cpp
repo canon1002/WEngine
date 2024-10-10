@@ -1,4 +1,5 @@
 #include "DamageReaction.h"
+#include "Object/Camera/Camera.h"
 #include "Object/Camera/MainCamera.h"
 #include "Object/Sprite/SpriteAdministrator.h"
 
@@ -78,13 +79,13 @@ void DamageReaction::DrawSprite() {
 
 }
 
-void DamageReaction::Reaction(const Vector3 pos,int32_t damage, const MainCamera* camera){
+void DamageReaction::Reaction(const Vector3 pos,int32_t damage, Camera camera){
 	
     // リストにセットする
     RenderSprite(damage, pos,camera);
 }
 
-void DamageReaction::RenderSprite(const int32_t value, Vector3 pos,const MainCamera* camera)
+void DamageReaction::RenderSprite(const int32_t value, Vector3 pos,Camera camera)
 {
     // スクリーン座標に変換
     Vector2 screenPos = GetScreenPos(pos, camera);
@@ -140,7 +141,7 @@ void DamageReaction::PositionUpdate(std::vector<DamageData*> sprites){
 
     for (auto& sprite : sprites) {
         // スクリーン座標に変換
-        Vector2 screenPos = GetScreenPos(sprite->world->GetWorldPosition(), MainCamera::GetInstance());
+        Vector2 screenPos = GetScreenPos(sprite->world->GetWorldPosition(), *MainCamera::GetInstance());
 
         // 座標設定
         sprite->sprite->SetPos(Vector2(screenPos.x + (index * 16.0f), screenPos.y));
@@ -149,15 +150,15 @@ void DamageReaction::PositionUpdate(std::vector<DamageData*> sprites){
 
 }
 
-Vector2 DamageReaction::GetScreenPos(const Vector3 pos, const MainCamera* camera)
+Vector2 DamageReaction::GetScreenPos(const Vector3 pos, Camera camera)
 {
 
 	// 3Dから2Dへの変換を行う
 	const static Matrix4x4 viewPort = MakeViewportMatrix(0, 0,
-		camera->GetWindowSize().x, camera->GetWindowSize().y, 0.0f, 1.0f);
+		camera.GetWindowSize().x, camera.GetWindowSize().y, 0.0f, 1.0f);
 
-	Matrix4x4 V = camera->GetViewMatrix();
-	Matrix4x4 P = camera->GetProjectionMatrix();
+	Matrix4x4 V = camera.GetViewMatrix();
+	Matrix4x4 P = camera.GetProjectionMatrix();
 	Matrix4x4 VPV = Multiply(Multiply(V, P), viewPort);
 
 	// スクリーン座標に変換する
@@ -166,15 +167,15 @@ Vector2 DamageReaction::GetScreenPos(const Vector3 pos, const MainCamera* camera
 	return Vector2(screenPos.x,screenPos.y);
 }
 
-Vector3 DamageReaction::GetWorldPosForScreen(const Vector2 pos, const float distance, const MainCamera* camera)
+Vector3 DamageReaction::GetWorldPosForScreen(const Vector2 pos, const float distance, Camera camera)
 {
     // 2Dから3Dへの変換を行う
 
     // viewPort計算
     const static Matrix4x4 viewPort = MakeViewportMatrix(0, 0,
-        camera->GetWindowSize().x, camera->GetWindowSize().y, 0.0f, 1.0f);
+        camera.GetWindowSize().x, camera.GetWindowSize().y, 0.0f, 1.0f);
     // VP行列をviewPort行列を合成
-    Matrix4x4 VPV = Multiply(Multiply(camera->GetViewMatrix(), camera->GetProjectionMatrix()), viewPort);
+    Matrix4x4 VPV = Multiply(Multiply(camera.GetViewMatrix(), camera.GetProjectionMatrix()), viewPort);
     // VPV行列を逆行列にする
     Matrix4x4 inVPV = Inverse(VPV);
 

@@ -30,7 +30,7 @@ public: // -- 公開 メンバ関数 -- //
 		newPos.x -= 0.0f;
 		newPos.y += 2.0f;
 		mSprite->SetAnchorPoint({0.5f,0.5f});
-		mSprite->SetPos(DamageReaction::GetInstance()->GetScreenPos(newPos,MainCamera::GetInstance()));
+		mSprite->SetPos(DamageReaction::GetInstance()->GetScreenPos(newPos,*MainCamera::GetInstance()));
 		
 		// スケール更新
 		float hpUIScale = ((float)HP / (float)MAXHP);

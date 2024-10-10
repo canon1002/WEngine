@@ -36,10 +36,10 @@ public: // -- 公開 メンバ関数 -- //
 	void DrawSprite();
 
 	// 
-	void Reaction(const Vector3 pos, int32_t damage, const MainCamera* camera);
+	void Reaction(const Vector3 pos, int32_t damage, const Camera camera);
 
 	// テキスト画像の表示
-	void RenderSprite(const int32_t value, Vector3 pos, const MainCamera* camera);
+	void RenderSprite(const int32_t value, Vector3 pos, const Camera camera);
 	// テキスト画像の座標更新
 	void PositionUpdate(std::vector<DamageData*> sprites);
 
@@ -47,9 +47,9 @@ public: // -- 公開 メンバ関数 -- //
 	void RenderText(const std::wstring& text, float x, float y);
 
 	// ワールド座標をスクリーン座標に変換する
-	static Vector2 GetScreenPos(const Vector3 pos,const MainCamera* camera);
+	static Vector2 GetScreenPos(const Vector3 pos,const Camera camera);
 	// スクリーン->ワールド変換
-	static Vector3 GetWorldPosForScreen(const Vector2 pos,const float distance,const MainCamera* camera);
+	static Vector3 GetWorldPosForScreen(const Vector2 pos,const float distance,const Camera camera);
 
 	// int型の桁数を計算する関数
 	int32_t GetDigits(int32_t num);

@@ -42,3 +42,8 @@ void Camera::Update()
 void Camera::Debug()
 {
 }
+
+Vector2 Camera::GetWindowSize()
+{
+	return Vector2((float)WinApp::GetInstance()->kClientWidth, (float)WinApp::GetInstance()->kClientHeight);
+}

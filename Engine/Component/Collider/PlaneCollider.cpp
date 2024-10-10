@@ -16,8 +16,9 @@ void PlaneCollider::Update()
 {
 }
 
-void PlaneCollider::Draw()
+void PlaneCollider::Draw(Camera camera)
 {
+	camera;
 }
 
 bool PlaneCollider::IsCollision(Collider* c){

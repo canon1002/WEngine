@@ -217,7 +217,6 @@
     <ClCompile Include="Engine\Effect\PostEffect\IPostEffect.cpp" />
     <ClCompile Include="Engine\Effect\PostEffect\LuminanceOutline.cpp" />
     <ClCompile Include="Engine\Effect\PostEffect\Vignette.cpp" />
-    <ClCompile Include="App\Command\ICommand.cpp" />
     <ClCompile Include="App\AI\State\IBossState.cpp" />
     <ClCompile Include="App\AI\State\VitalityBossState.cpp" />
     <ClCompile Include="App\IObjectBase.cpp" />
@@ -226,7 +225,6 @@
     <ClCompile Include="Engine\Component\Collider\SphereCollider.cpp" />
     <ClCompile Include="Engine\Component\Collider\TriangleCollider.cpp" />
     <ClCompile Include="Engine\Component\Collider\OBBCollider.cpp" />
-    <ClCompile Include="App\Reticle\Reticle3D.cpp" />
     <ClCompile Include="Engine\Base\WinApp\WinApp.cpp">
       <Filter>Engine\base\WinApp</Filter>
     </ClCompile>
@@ -263,6 +261,7 @@
     <ClCompile Include="Engine\Resource\Texture\Texture.cpp" />
     <ClCompile Include="Engine\Resource\ResourceManager.cpp" />
     <ClCompile Include="Engine\Object\Object3d.cpp" />
+    <ClCompile Include="App\Reticle\Reticle3D.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Base\System.h">
@@ -399,7 +398,6 @@
     <ClInclude Include="Engine\Effect\PostEffect\IPostEffect.h" />
     <ClInclude Include="Engine\Effect\PostEffect\LuminanceOutline.h" />
     <ClInclude Include="App\AI\BehaviorTree\IBehavior.h" />
-    <ClInclude Include="App\Command\ICommand.h" />
     <ClInclude Include="App\Command\MoveCommand.h" />
     <ClInclude Include="App\AI\State\IBossState.h" />
     <ClInclude Include="App\AI\State\VitalityBossState.h" />
@@ -409,7 +407,6 @@
     <ClInclude Include="Engine\Component\Collider\SphereCollider.h" />
     <ClInclude Include="Engine\Component\Collider\TriangleCollider.h" />
     <ClInclude Include="Engine\Component\Collider\OBBCollider.h" />
-    <ClInclude Include="App\Reticle\Reticle3D.h" />
     <ClInclude Include="Engine\Base\WinApp\WinApp.h">
       <Filter>Engine\base\WinApp</Filter>
     </ClInclude>
@@ -445,6 +442,7 @@
     <ClInclude Include="Engine\Resource\Texture\Texture.h" />
     <ClInclude Include="Engine\Resource\ResourceManager.h" />
     <ClInclude Include="Engine\Object\Object3d.h" />
+    <ClInclude Include="App\Reticle\Reticle3D.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt">

@@ -18,12 +18,12 @@ void BossEnemy::Init() {
 	mObject->mSkinning->Init("boss", "Idle.gltf",
 		mObject->GetModel()->modelData);
 	mObject->mSkeleton = Skeleton::Create(mObject->GetModel()->modelData.rootNode);
-	mObject->GetWorld().translation = { 3.0f,1.0f,7.0f };
+	mObject->mWorldTransform.translation = { 3.0f,1.0f,7.0f };
 	mObject->GetModel()->materialData_->color = { 1.0f,0.7f,0.7f,1.0f };
 
 	// ワールドトランスフォーム
-	mObject->GetWorld().scale = {1.2f,1.2f,1.2f};
-	mObject->GetWorld().translation = { 0.0f,0.0f,20.0f };
+	mObject->mWorldTransform.scale = {1.2f,1.2f,1.2f};
+	mObject->mWorldTransform.translation = { 0.0f,0.0f,20.0f };
 
 	// 移動量を初期化
 	mVelocity = { 0.0f,0.0f ,0.002f };
@@ -41,9 +41,9 @@ void BossEnemy::Init() {
 	mStatus = StatusManager::GetInstance()->GetBossStatus();
 
 	// コライダーの宣言
-	mObject->mCollider = new SphereCollider(&mObject->GetWorld(), mObject->GetWorld().scale.x);
+	mObject->mCollider = new SphereCollider(&mObject->mWorldTransform, mObject->mWorldTransform.scale.x);
 	mObject->mCollider->Init();
-	mObject->mCollider->SetAddtranslation(Vector3(0.0f, mObject->GetWorld().scale.y, 0.0f));
+	mObject->mCollider->SetAddtranslation(Vector3(0.0f, mObject->mWorldTransform.scale.y, 0.0f));
 	mObject->mCollider->SetCollisionAttribute(kCollisionAttributeEnemy);
 	mObject->mCollider->SetCollisionMask(kCollisionAttributePlayerBullet);
 
@@ -186,13 +186,13 @@ void BossEnemy::Update() {
 	//(this->*CommandTable[0])();
 
 	// 一旦ここに落下処理をつくる
-	if (mObject->GetWorld().translation.y > 0.0f) {
+	if (mObject->mWorldTransform.translation.y > 0.0f) {
 		// 移動量を加算
-		mObject->GetWorld().translation.y += mVelocity.y;
+		mObject->mWorldTransform.translation.y += mVelocity.y;
 		mVelocity.y -= 9.8f * (1.0f / 720.0f);
 	}
-	else if (mObject->GetWorld().translation.y < 0.0f) {
-		mObject->GetWorld().translation.y = 0.0f;
+	else if (mObject->mWorldTransform.translation.y < 0.0f) {
+		mObject->mWorldTransform.translation.y = 0.0f;
 		// 移動量修正
 		mVelocity.y = 0.0f;
 	}
@@ -226,7 +226,7 @@ void BossEnemy::Update() {
 		mObject->mCollider->Update();
 
 		// UI更新
-		mStatus->Update(&mObject->GetWorld());
+		mStatus->Update(&mObject->mWorldTransform);
 
 		if (mActiveAction != nullptr) {
 			mActiveAction->Update();
@@ -235,8 +235,8 @@ void BossEnemy::Update() {
 
 }
 
-void BossEnemy::Draw() {
-	mObject->Draw(*MainCamera::GetInstance());
+void BossEnemy::Draw(Camera camera) {
+	mObject->Draw(camera);
 }
 
 void BossEnemy::DrawGUI() {
@@ -397,12 +397,12 @@ void BossEnemy::BackStep()
 void BossEnemy::Jump(float JumpPower)
 {
 	// 移動量を加算
-	mObject->GetWorld().translation.y += JumpPower;
+	mObject->mWorldTransform.translation.y += JumpPower;
 }
 
 Vector3 BossEnemy::GetWorldPos()
 {
-	return mObject->GetWorld().translation;
+	return mObject->mWorldTransform.translation;
 }
 
 Vector3 BossEnemy::GetWorldPosForTarget() {
@@ -415,7 +415,7 @@ bool BossEnemy::InvokeNearDistance() {
 		GetWorldPos().x - GetWorldPosForTarget().x,
 		GetWorldPos().y - GetWorldPosForTarget().y,
 		GetWorldPos().z - GetWorldPosForTarget().z))
-		<= (mObject->GetWorld().scale.x + mObject->GetWorld().scale.z) / 0.8f) {
+		<= (mObject->mWorldTransform.scale.x + mObject->mWorldTransform.scale.z) / 0.8f) {
 		return true;
 	}
 	return false;
@@ -433,14 +433,14 @@ bool BossEnemy::InvokeFarDistance() {
 	return false;
 }
 
-void BossEnemy::ColliderDraw() {
+void BossEnemy::ColliderDraw(Camera camera) {
 	mWeapon->Draw(*MainCamera::GetInstance());
 
 	if (mActiveAction != nullptr) {
-		mActiveAction->Draw();
+		mActiveAction->Draw(camera);
 	}
 #ifdef _DEBUG
-	mObject->mCollider->Draw();
+	mObject->mCollider->Draw(camera);
 	
 #endif // _DEBUG
 }

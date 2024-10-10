@@ -234,24 +234,26 @@ void GameScene::Update(){
 
 void GameScene::Draw() {
 
+	MainCamera* camera = MainCamera::GetInstance();
+
 	// Skyboxの描画前処理
 	skybox_->PreDraw();
 	//skybox_->Draw();
 
 	// レベルデータ読み込み
-	LevelEditor::GetInstance()->Draw();
+	LevelEditor::GetInstance()->Draw(*camera);
 
 	// Object3D(3DModel)の描画前処理
 	ModelManager::GetInstance()->PreDraw();
 
-	mPlayer->ColliderDraw();
-	mBoss->ColliderDraw();
+	mPlayer->ColliderDraw(*camera);
+	mBoss->ColliderDraw(*camera);
 
 	// Object3D(Skinning)の描画前処理
 	ModelManager::GetInstance()->PreDrawForSkinning();
 
-	mPlayer->Draw();
-	mBoss->Draw();
+	mPlayer->Draw(*camera);
+	mBoss->Draw(*camera);
 
 	//ParticleManager::GetInstance()->PreDraw();
 	//mDTCParticle->Draw();

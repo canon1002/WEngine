@@ -72,8 +72,9 @@ void ACT::MoveToPlayer::Update()
 	}
 }
 
-void ACT::MoveToPlayer::Draw()
+void ACT::MoveToPlayer::Draw(Camera camera)
 {
+	camera;
 }
 
 void ACT::MoveToPlayer::Start()
@@ -194,8 +195,9 @@ void ACT::BackStep::Update()
 	}
 }
 
-void ACT::BackStep::Draw()
+void ACT::BackStep::Draw(Camera camera)
 {
+	camera;
 }
 
 void ACT::BackStep::Start()

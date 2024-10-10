@@ -3,7 +3,6 @@
 #include <map>
 #include <sstream>
 #include "Model.h"
-#include "MultiModel.h"
 
 class ModelManager{
 public: // -- public メンバ関数 -- //
@@ -19,7 +18,7 @@ public: // -- public メンバ関数 -- //
 	void LoadModel(const std::string& directoryPath,const std::string& filepath);
 	void LoadMultiModel(const std::string& directoryPath,const std::string& filepath);
 	Model* FindModel(const std::string filepath);
-	MultiModel* FindMultiModel(const std::string filepath);
+
 
 	static std::shared_ptr<Model> Create(const std::string& filepath, const std::string filename);
 
@@ -83,7 +82,6 @@ private: // -- private メンバ変数 -- //
 
 	// モデルデータ
 	std::unordered_map<std::string, std::unique_ptr<Model>> models;
-	std::unordered_map<std::string, std::unique_ptr<MultiModel>> multiModels;
 
 	// グラフィックパイプライン
 	Microsoft::WRL::ComPtr <ID3D12PipelineState> graphicsPipelineState = nullptr;

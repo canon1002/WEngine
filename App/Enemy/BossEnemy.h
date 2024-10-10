@@ -26,10 +26,10 @@ public: // -- 公開 メンバ関数 -- //
 	// 更新
 	void Update();
 	// 描画
-	void Draw();
+	void Draw(Camera camera);
 	// デバッグUI表示
 	void DrawGUI();
-	void ColliderDraw();
+	void ColliderDraw(Camera camera);
 
 	Object3d* GetObject3D() { return mObject.get(); }
 	// モデルの取得
@@ -84,15 +84,15 @@ public: // -- 公開 メンバ関数 -- //
 	// ジャンプ
 	void Jump(float JumpPower);
 
-	inline void MoveForward() { mObject->GetWorld().translation.z += mVelocity.z; }
+	inline void MoveForward() { mObject->mWorldTransform.translation.z += mVelocity.z; }
 	
 
 	// -- 変更用関数 -- //
 
 	// 移動させる
-	void AddTransform(Vector3 velocity) { mObject->GetWorld().translation += velocity; }
+	void AddTransform(Vector3 velocity) { mObject->mWorldTransform.translation += velocity; }
 	// 回転量を任意の値に変更する
-	void SetRotation(Vector3 rotation) { mObject->GetWorld().rotation = rotation; }
+	void SetRotation(Vector3 rotation) { mObject->mWorldTransform.rotation = rotation; }
 
 
 

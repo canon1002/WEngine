@@ -24,7 +24,7 @@ void Reticle3D::Init()
 	mObject->SetModel("box.gltf");
 
 	// 3Dレティクルのコライダー
-	mObject->mCollider = new SphereCollider(&mObject->GetWorld(), 0.5f);
+	mObject->mCollider = new SphereCollider(&mObject->mWorldTransform, 0.5f);
 	mObject->mCollider->Init();
 	mObject->mCollider->SetCollisionAttribute(kCollisionAttributePlayerBullet);
 	mObject->mCollider->SetCollisionMask(kCollisionAttributeEnemy);
@@ -62,7 +62,7 @@ void Reticle3D::Update()
 	Vector3 cameraDirection = RotateVector(RotateVector(RotateVector(forward,qRoll), qPitch), qYaw);
 
 	// レティクルの位置を計算 // Y座標をやや高めの位置に
-	mObject->GetWorld().translation = {
+	mObject->mWorldTransform.translation = {
 		pCamera->GetWorld().translation.x + cameraDirection.x * mReticleDistance,
 		pCamera->GetWorld().translation.y + cameraDirection.y * mReticleDistance,
 		pCamera->GetWorld().translation.z + cameraDirection.z * mReticleDistance
@@ -78,7 +78,7 @@ void Reticle3D::Update()
 	Matrix4x4 VPV = Multiply(Multiply(V,P), viewPort);
 
 	// スクリーン座標に変換する
-	Vector3 screenPos = Transform(mObject->GetWorld().GetWorldPosition(), VPV);
+	Vector3 screenPos = Transform(mObject->mWorldTransform.GetWorldPosition(), VPV);
 	// スクリーン座標を代入
 	mPostionReticle2D = Vector2(screenPos.x, screenPos.y);
 
@@ -89,9 +89,9 @@ void Reticle3D::Update()
 	ImGui::DragFloat2("Reticle2D", &mPostionReticle2D.x, 1.0f, -1280.0f, 1280.0f);
 	ImGui::DragFloat3("posNear", &mPosNear.x, 1.0f, -1280.0f, 1280.0f);
 	ImGui::DragFloat3("posFar", &mPosFar.x, 1.0f, -1280.0f, 1280.0f);
-	ImGui::DragFloat3("Reticle3D S", &mObject->GetWorld().scale.x);
-	ImGui::DragFloat3("Reticle3D R", &mObject->GetWorld().rotation.x);
-	ImGui::DragFloat3("Reticle3D T", &mObject->GetWorld().translation.x);
+	ImGui::DragFloat3("Reticle3D S", &mObject->mWorldTransform.scale.x);
+	ImGui::DragFloat3("Reticle3D R", &mObject->mWorldTransform.rotation.x);
+	ImGui::DragFloat3("Reticle3D T", &mObject->mWorldTransform.translation.x);
 	ImGui::End();
 
 

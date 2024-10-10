@@ -34,7 +34,7 @@ namespace ACT {
 		// 更新処理
 		virtual void Update() = 0;
 		// 描画処理
-		virtual void Draw() =0;
+		virtual void Draw(Camera camera) =0;
 
 		// 開始処理
 		virtual void Start() = 0;
@@ -74,7 +74,7 @@ namespace ACT {
 		// 更新処理
 		virtual void Update() override;
 		// 描画処理
-		virtual void Draw() override;
+		virtual void Draw(Camera camera) override;
 
 		// 開始処理
 		virtual void Start() override;
@@ -121,7 +121,7 @@ namespace ACT {
 		// 更新処理
 		virtual void Update() override;
 		// 描画処理
-		virtual void Draw() override;
+		virtual void Draw(Camera camera) override;
 
 		// 開始処理
 		virtual void Start() override;
@@ -166,7 +166,7 @@ namespace ACT {
 		// 更新処理
 		virtual void Update() override;
 		// 描画処理
-		virtual void Draw() override;
+		virtual void Draw(Camera camera) override;
 
 		// 開始処理
 		virtual void Start() override;
@@ -203,7 +203,7 @@ namespace ACT {
 		// 更新処理
 		virtual void Update() override;
 		// 描画処理
-		virtual void Draw() override;
+		virtual void Draw(Camera camera) override;
 
 		// 開始処理
 		virtual void Start() override;

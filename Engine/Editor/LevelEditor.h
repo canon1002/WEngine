@@ -42,7 +42,7 @@ public: // -- 公開 メンバ関数 -- //
 	// 更新処理
 	void Update();
 	// 描画処理
-	void Draw();
+	void Draw(Camera camera);
 
 	// レベルエディタファイルのチェック
 	void CheckLevelEditorFile();

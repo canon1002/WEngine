@@ -54,7 +54,7 @@ void ACT::AttackClose::Update()
 	}
 }
 
-void ACT::AttackClose::Draw() {
+void ACT::AttackClose::Draw(Camera camera) {
 
 	if (kActiveColliderCount.x < mActiveColliderCount &&
 		mActiveColliderCount < kActiveColliderCount.y) {
@@ -63,7 +63,7 @@ void ACT::AttackClose::Draw() {
 
 		// 武器のコライダー 描画
 		for (Collider* collider : mBoss->mWeaponColliders) {
-			collider->Draw();
+			collider->Draw(camera);
 		}
 	}
 
@@ -160,7 +160,7 @@ void ACT::AttackThrust::Update()
 	}
 }
 
-void ACT::AttackThrust::Draw() {
+void ACT::AttackThrust::Draw(Camera camera) {
 
 	if (kActiveColliderCount.x < mActiveColliderCount &&
 		mActiveColliderCount < kActiveColliderCount.y) {
@@ -169,7 +169,7 @@ void ACT::AttackThrust::Draw() {
 
 		// 武器のコライダー 描画
 		for (Collider* collider : mBoss->mWeaponColliders) {
-			collider->Draw();
+			collider->Draw(camera);
 		}
 	}
 
