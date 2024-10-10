@@ -63,5 +63,8 @@ private:
 	UISet mMoveUI;
 	UISet mActionUI;
 
+	// 動くオブジェクトの地面影
+	std::array<std::unique_ptr<Object3d>, 2> mGroundShadow;
+
 };
 

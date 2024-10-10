@@ -67,9 +67,11 @@ public: // -- 公開 メンバ関数 -- //
 	/// </summary>
 	/// <param name="directorypath">ディレクトリパス</param>
 	/// <param name="filename">リソースファイルの名称</param>
-	/// /// <param name="filrExt">ファイル拡張子</param>
+	/// <param name="filrExt">ファイル拡張子</param>
 	/// <param name="modelData">モデルデータ</param>
-	void CreateSkinningData(const std::string& directorypath, const std::string& filename, const std::string& filrExt, ModelData modelData);
+	/// <param name="isLoop">ループするか</param>
+	void CreateSkinningData(const std::string& directorypath, const std::string& filename, const std::string& filrExt,
+		ModelData modelData, bool isLoop = false);
 
 	/// <summary>
 	/// 移行後のモーションを設定する
@@ -88,7 +90,14 @@ public: // -- 公開 メンバ関数 -- //
 	/// </summary>
 	void EndMotionBrend();
 
+	float GetMotionBlendingTime() { return mMotionBrendingTime; }
+	void SetMotionBlendingInterval(float interval) { mMotionBrendingInterval = interval; }
 
+	float GetDurationTime() { return mNowSkincluster->animation.duration; }
+	float GetDurationTime(std::string name) { return mSkinClusterMap.at(name)->animation.duration; }
+
+	bool GetIsMotionbrending() { return mIsMotionBrending; }
+	bool GetIsActiveAnimation(std::string name);
 
 private: // -- 非公開 メンバ変数 -- //
 
@@ -107,6 +116,8 @@ private: // -- 非公開 メンバ変数 -- //
 	std::shared_ptr<SkinningStatus> mNextSkincluster;
 	// モーション遷移時の時間(0.0f ~ 1.0f の間で操作)
 	float mMotionBrendingTime;
+	// モーションブレンドの切替速度(早 1.0f ~ n 遅い)
+	float mMotionBrendingInterval;
 	// モーションブレンド中で在るかのフラグ
 	bool mIsMotionBrending;
 

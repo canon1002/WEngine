@@ -12,6 +12,7 @@ class BossEnemy;
 // 振る舞い
 enum class Behavior {
 	kRoot,   // 通常状態
+	kMove,   // 移動状態
 	kAttack, // 攻撃中
 	kJump,	 // ジャンプ中
 	kCharge, // 溜め動作中

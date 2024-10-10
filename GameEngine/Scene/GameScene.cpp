@@ -29,14 +29,11 @@ void GameScene::Init(){
 	ModelManager::GetInstance()->LoadModel("ball", "ball.obj");
 	ModelManager::GetInstance()->LoadModel("AnimatedCube", "AnimatedCube.gltf");
 	ModelManager::GetInstance()->LoadModel("simpleSkin", "simpleSkin.gltf");
-	ModelManager::GetInstance()->LoadModel("human", "sneakWalk.gltf");
-	ModelManager::GetInstance()->LoadModel("human", "walk.gltf");
-	ModelManager::GetInstance()->LoadModel("Bow", "BowBody.gltf");
-	ModelManager::GetInstance()->LoadModel("Bow", "Bow.obj");
-	ModelManager::GetInstance()->LoadModel("Arrow", "Arrow.gltf");
+
 	ModelManager::GetInstance()->LoadModel("boss", "boss.gltf");
 	ModelManager::GetInstance()->LoadModel("Weapons", "sword.gltf");
 	ModelManager::GetInstance()->LoadModel("Shield", "Shield.gltf");
+	ModelManager::GetInstance()->LoadModel("groundShadow", "groundShadow.gltf");
 
 	// SkyBox 読み込み
 	DirectXCommon::GetInstance()->srv_->LoadTexture("skybox/rostock_laage_airport_4k.dds");
@@ -97,6 +94,13 @@ void GameScene::Init(){
 	mMoveUI.displayCount = 0.0f;
 	mMoveUI.isActive = true;
 
+	// 動くオブジェクトの地面影
+	for (int32_t i = 0; i < mGroundShadow.size(); i++) {
+		mGroundShadow[i] = std::make_unique<Object3d>();
+		mGroundShadow[i]->Init("groundshadow" + std::to_string(i));
+		mGroundShadow[i]->SetModel("groundShadow.gltf");
+	}
+	
 
 }
 
@@ -222,7 +226,11 @@ void GameScene::Update(){
 	// プレイヤー
 	mPlayer->Update();
 	// ボス
-	mBoss->Update();
+	//mBoss->Update();
+
+	// 地面影
+	mGroundShadow[0]->mWorldTransform->translation = mPlayer->GetWorldPos();
+	mGroundShadow[0]->Update();
 
 	// プレイヤーの現在HPに応じて赤色ビネットを変化させる
 	float playerHPRatio = (float(mPlayer->GetStatus()->MAXHP) - float(mPlayer->GetStatus()->HP)) / float(mPlayer->GetStatus()->MAXHP);
@@ -257,14 +265,16 @@ void GameScene::Draw() {
 	// Object3D(3DModel)の描画前処理
 	ModelManager::GetInstance()->PreDraw();
 
+	mGroundShadow[0]->Draw();
+
 	mPlayer->ColliderDraw();
-	mBoss->ColliderDraw();
+	//mBoss->ColliderDraw();
 
 	// Object3D(Skinning)の描画前処理
 	ModelManager::GetInstance()->PreDrawForSkinning();
 
 	mPlayer->Draw();
-	mBoss->Draw();
+	//mBoss->Draw();
 
 	//ParticleManager::GetInstance()->PreDraw();
 	//mDTCParticle->Draw();

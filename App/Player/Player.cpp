@@ -23,6 +23,7 @@ void Player::Init() {
 	ModelManager::GetInstance()->LoadModel("player", "idle.gltf");
 	ModelManager::GetInstance()->LoadModel("player", "gatotu0.gltf");
 	ModelManager::GetInstance()->LoadModel("player", "slash.gltf");
+	ModelManager::GetInstance()->LoadModel("player", "walk.gltf");
 
 	mObject = std::make_unique<Object3d>();
 	mObject->Init("PlayerObj");
@@ -31,11 +32,14 @@ void Player::Init() {
 	mObject->SetModel("idle.gltf");
 	// スキニングアニメーションを生成
 	mObject->mSkinning = new Skinnig();
-	mObject->mSkinning->Init("player", "idle.gltf",mObject->GetModel()->modelData);
+	mObject->mSkinning->Init("player", "idle.gltf", mObject->GetModel()->modelData);
 	// 使用するアニメーションを登録しておく
-	mObject->mSkinning->CreateSkinningData("player", "idle", ".gltf", mObject->GetModel()->modelData);
+	mObject->mSkinning->CreateSkinningData("player", "idle", ".gltf", mObject->GetModel()->modelData, true);
+	mObject->mSkinning->CreateSkinningData("player", "prepare", ".gltf", mObject->GetModel()->modelData);
 	mObject->mSkinning->CreateSkinningData("player", "gatotu0", ".gltf", mObject->GetModel()->modelData);
 	mObject->mSkinning->CreateSkinningData("player", "slash", ".gltf", mObject->GetModel()->modelData);
+	mObject->mSkinning->CreateSkinningData("player", "walk", ".gltf", mObject->GetModel()->modelData, true);
+
 
 	// メインカメラをフォローカメラ仕様にする
 	MainCamera::GetInstance()->SetTarget(mObject->GetWorldTransform());
@@ -143,6 +147,7 @@ void Player::Update() {
 
 	if (mStatus->HP > 0.0f) {
 
+
 		// 落下処理
 		Fall();
 
@@ -162,9 +167,9 @@ void Player::Update() {
 		SpecialAtkRB();
 
 		// デバッグ操作
-		#ifdef _DEBUG
+#ifdef _DEBUG
 		DebagCtr();
-		#endif // _DEBUG
+#endif // _DEBUG
 
 
 		// レティクル 更新
@@ -191,7 +196,7 @@ void Player::Update() {
 	mObject->Update();
 	mObject->mSkinning->GetSkeleton().joints;
 	mObject->mCollider->Update();
-	
+
 	// 剣
 	mAttackStatus.sword->Update();
 
@@ -234,50 +239,55 @@ void Player::DrawGUI() {
 #ifdef _DEBUG
 
 	// メニューバーを表示する
-	ImGui::Begin("Player", nullptr, ImGuiWindowFlags_MenuBar);
-	if (ImGui::BeginMenuBar()) {
+	ImGui::Begin("Player");
 
-		//mObject->DrawGuiTree();
-		// プレイヤー ステータス
-		if (ImGui::BeginMenu("Status")) {
-			ImGui::DragInt("HP", &mStatus->HP, 1.0f, 0, 100);
-			ImGui::DragInt("STR", &mStatus->STR, 1.0f, 0, 100);
-			ImGui::DragInt("VIT", &mStatus->VIT, 1.0f, 0, 100);
-			ImGui::DragInt("AGI", &mStatus->AGI, 1.0f, 0, 100);
-			ImGui::EndMenu();
-		}
+	if (ImGui::CollapsingHeader("Animation")) {
 
-		// 回避パラメータ
-		if (ImGui::BeginMenu("Avoid")) {
-			ImGui::DragFloat("AvoidRange", &mAvoidStatus.mAvoidRange);
-			ImGui::DragFloat("AvoidSpeed", &mAvoidStatus.mAvoidSpeed);
-			ImGui::DragFloat("AvoidTime", &mAvoidStatus.mAvoidTime);
-			ImGui::DragFloat3("Avoid Start", &mAvoidStatus.mAvoidMoveStartPos.x);
-			ImGui::DragFloat3("Avoid End", &mAvoidStatus.mAvoidMoveEndPos.x);
-			ImGui::EndMenu();
-		}
+		std::string strNormalT = "MotionBlendingTime : " + std::to_string(mObject->mSkinning->GetMotionBlendingTime());
+		ImGui::ProgressBar(mObject->mSkinning->GetMotionBlendingTime(), ImVec2(-1.0f, 0.0f), strNormalT.c_str());
 
-		// 防御パラメータ
-		if (ImGui::BeginMenu("Guard")) {
-			ImGui::DragFloat3("NormalPos", &mGuardStatus.normalPos.x, 1.0f, -1000.0f, 1000.0f);
-			ImGui::DragFloat3("GuradPos", &mGuardStatus.guardPos.x, 1.0f, -1000.0f, 1000.0f);
-			ImGui::DragFloat3("Pos", &mGuardStatus.pos.x, 0.05f, -10.0f, 10.0f);
-			mGuardStatus.shield->DrawGuiTree();
-			ImGui::EndMenu();
-		}
 
-		// 攻撃パラメータ
-		if (ImGui::BeginMenu("Attack")) {
-			ImGui::DragFloat("t", &mAttackStatus.t, 1.0f, -1000.0f, 1000.0f);
-			ImGui::DragFloat3("Pos", &mAttackStatus.pos.x, 1.0f, -1000.0f, 1000.0f);
-			ImGui::DragFloat3("normalRot", &mAttackStatus.normalRot.x, 0.01f, -6.28f, 6.28f);
-			ImGui::DragFloat3("EndRot", &mAttackStatus.endRot.x, 0.01f, -6.28f, 6.28f);
-			mAttackStatus.sword->DrawGuiTree();
-			ImGui::EndMenu();
-		}
-
-		ImGui::EndMenuBar();
 	}
+
+	//mObject->DrawGuiTree();
+	// プレイヤー ステータス
+	if (ImGui::CollapsingHeader("Status")) {
+		ImGui::DragInt("HP", &mStatus->HP, 1.0f, 0, 100);
+		ImGui::DragInt("STR", &mStatus->STR, 1.0f, 0, 100);
+		ImGui::DragInt("VIT", &mStatus->VIT, 1.0f, 0, 100);
+		ImGui::DragInt("AGI", &mStatus->AGI, 1.0f, 0, 100);
+		
+	}
+
+	// 回避パラメータ
+	if (ImGui::CollapsingHeader("Avoid")) {
+		ImGui::DragFloat("AvoidRange", &mAvoidStatus.mAvoidRange);
+		ImGui::DragFloat("AvoidSpeed", &mAvoidStatus.mAvoidSpeed);
+		ImGui::DragFloat("AvoidTime", &mAvoidStatus.mAvoidTime);
+		ImGui::DragFloat3("Avoid Start", &mAvoidStatus.mAvoidMoveStartPos.x);
+		ImGui::DragFloat3("Avoid End", &mAvoidStatus.mAvoidMoveEndPos.x);
+		
+	}
+
+	// 防御パラメータ
+	if (ImGui::CollapsingHeader("Guard")) {
+		ImGui::DragFloat3("NormalPos", &mGuardStatus.normalPos.x, 1.0f, -1000.0f, 1000.0f);
+		ImGui::DragFloat3("GuradPos", &mGuardStatus.guardPos.x, 1.0f, -1000.0f, 1000.0f);
+		ImGui::DragFloat3("Pos", &mGuardStatus.pos.x, 0.05f, -10.0f, 10.0f);
+		mGuardStatus.shield->DrawGuiTree();
+	
+	}
+
+	// 攻撃パラメータ
+	if (ImGui::CollapsingHeader("Attack")) {
+		ImGui::DragFloat("t", &mAttackStatus.t, 1.0f, -1000.0f, 1000.0f);
+		ImGui::DragFloat3("Pos", &mAttackStatus.pos.x, 1.0f, -1000.0f, 1000.0f);
+		ImGui::DragFloat3("normalRot", &mAttackStatus.normalRot.x, 0.01f, -6.28f, 6.28f);
+		ImGui::DragFloat3("EndRot", &mAttackStatus.endRot.x, 0.01f, -6.28f, 6.28f);
+		mAttackStatus.sword->DrawGuiTree();
+		
+	}
+
 	ImGui::End();
 
 
@@ -295,14 +305,12 @@ void Player::ColliderDraw() {
 
 	// 剣
 	mAttackStatus.sword->Draw();
-	// 武器のコライダー 更新
-	for (Collider* collider : mAttackStatus.swordColliders) {
-		collider->Draw();
+	if (mAttackStatus.isOperating) {
+		// 武器のコライダー 描画
+		for (Collider* collider : mAttackStatus.swordColliders) {
+			collider->Draw();
+		}
 	}
-
-
-	// シールド
-	//mGuardStatus.shield->Draw();
 
 	for (const auto& arrow : mArrows) {
 		arrow->GetCollider()->Draw();
@@ -323,11 +331,11 @@ void Player::SetColliderListForArrow(CollisionManager* cManager)
 
 void Player::SetColliderList(CollisionManager* cManager)
 {
-
 	// 攻撃中かつ命中前であればコライダーをリストに追加する
 	if (!mAttackStatus.isHit && mAttackStatus.isOperating) {
-
-		cManager->SetCollider(mReticle->GetReticleCollider());
+		for (Collider* collider : mAttackStatus.swordColliders) {
+			cManager->SetCollider(collider);
+		}
 	}
 }
 
@@ -476,13 +484,12 @@ void Player::Attack()
 {
 	// 動作中でない場合のみキー入力を行う
 	if (mAttackStatus.isUp == false &&
-		mAttackStatus.isDown == false &&
-		mAttackStatus.isOperating == false) {
+		!mObject->mSkinning->GetIsMotionbrending()) {
 
 		// Bボタン Triggerで攻撃
-		if (mInput->GetPused(Gamepad::Button::B)) {
+		if (mInput->GetPused(Gamepad::Button::B) || mInput->GetTriggerKey(DIK_RETURN)) {
 			mAttackStatus.isUp = true;
-			mObject->mSkinning->SetNextAnimation("slash");
+			mObject->mSkinning->SetNextAnimation("gatotu0");
 		}
 
 	}
@@ -491,37 +498,20 @@ void Player::Attack()
 	if (mAttackStatus.isUp) {
 		// tを増加させる
 		if (mAttackStatus.t < 1.0f) {
-			mAttackStatus.t += 5.0f / 60.0f;
-
+			mAttackStatus.t += 1.0f / 60.0f;
+			//mObject->mSkinning->GetDurationTime();
 			// 攻撃が命中していない かつ tが0.1f以上であれば攻撃フラグをtrueにする
-			if (mAttackStatus.t >= 0.1f && !mAttackStatus.isHit && !mAttackStatus.isOperating) {
+			if (mAttackStatus.t >= 0.6f && !mAttackStatus.isHit && !mAttackStatus.isOperating) {
 				mAttackStatus.isOperating = true;
 			}
 			// tが最大値の1.0fを超過したら今度は減少させる
 			if (mAttackStatus.t >= 1.0f) {
+				mAttackStatus.t = 0.0f;
 				mAttackStatus.isUp = false;
-				mAttackStatus.isDown = true;
-			}
-		}
-	}
-
-	// 数値減少中の場合
-	if (mAttackStatus.isDown) {
-		// tを減少させる
-		if (mAttackStatus.t > 0.0f) {
-			mAttackStatus.t -= 4.0f / 60.0f;
-
-			// 攻撃が命中していない かつ tが0.7f未満であれば攻撃フラグをfalseにする
-			if (mAttackStatus.t <= 0.7f && mAttackStatus.isOperating) {
-				mAttackStatus.isOperating = false;
-			}
-			// tが最小値の0.0f以下になったらフラグを解除
-			if (mAttackStatus.t <= 0.0f) {
-				mAttackStatus.isUp = false;
-				mAttackStatus.isDown = false;
 				mAttackStatus.isOperating = false;
 				mAttackStatus.isHit = false;
 				mObject->mSkinning->SetNextAnimation("idle");
+
 			}
 		}
 	}
@@ -537,8 +527,15 @@ void Player::Attack()
 	mReticle->SetReticleDistance(ExponentialInterpolation(0.5f, 10.0f, mAttackStatus.t, 1.0f));
 
 	// 衝突時の処理
-	if (mReticle->GetReticleCollider()->GetOnCollisionFlag()) {
-		if (mAttackStatus.isOperating == true && mAttackStatus.isHit == false) {
+	if (mAttackStatus.isOperating == true && mAttackStatus.isHit == false)
+	{
+		for (Collider* collider : mAttackStatus.swordColliders)
+		{
+			if (collider->GetOnCollisionFlag() == false)
+			{
+				continue;
+			}
+
 			// 次のフレームで消す
 			mAttackStatus.isHit = true;
 
@@ -551,31 +548,32 @@ void Player::Attack()
 		}
 	}
 
+
 }
 
 void Player::Move()
 {
 	// 通常/防御時に有効
-	if (mBehavior == Behavior::kRoot || mBehavior == Behavior::kGuard) {
+	if (mBehavior == Behavior::kRoot || mBehavior == Behavior::kMove || mBehavior == Behavior::kGuard) {
 
-		if (mInput == nullptr) { 
+		if (mInput == nullptr) {
 			mInput = InputManager::GetInstance();
 		}
 
 		// 移動量
 		Vector3 direction{};
 		// 上下移動の可否
-		if (mInput->GetPushKey(DIK_W)) { 
+		if (mInput->GetPushKey(DIK_W)) {
 			direction.z += 1.0f;
 		}
-		if (mInput->GetPushKey(DIK_S)) { 
+		if (mInput->GetPushKey(DIK_S)) {
 			direction.z -= 1.0f;
 		}
 		// 左右移動の可否
-		if (mInput->GetPushKey(DIK_A)) { 
+		if (mInput->GetPushKey(DIK_A)) {
 			direction.x -= 1.0f;
 		}
-		if (mInput->GetPushKey(DIK_D)) { 
+		if (mInput->GetPushKey(DIK_D)) {
 			direction.x += 1.0f;
 		}
 
@@ -595,6 +593,19 @@ void Player::Move()
 				(float)mInput->GetStick(Gamepad::Stick::LEFT_Y)
 			};
 
+			// 移動状態に変更
+			if (mBehavior == Behavior::kRoot) {
+				mBehavior = Behavior::kMove;
+				mObject->mSkinning->SetNextAnimation("walk");
+			}
+
+		}
+		else {
+			if (mBehavior == Behavior::kMove) {
+				// 通常状態に戻す
+				mBehavior = Behavior::kRoot;
+				mObject->mSkinning->SetNextAnimation("idle");
+			}
 		}
 
 		// 正規化
@@ -628,6 +639,7 @@ void Player::Move()
 			rotateY += 2.0f * PI;
 		}
 		mObject->mWorldTransform->rotation.y = rotateY;
+
 	}
 
 }
@@ -672,12 +684,12 @@ void Player::DebagCtr()
 
 	// 狙えるようにカメラの移動 
 	if (mInput->GetLongPush(Gamepad::Button::LEFT_SHOULDER)) {
-	
+
 		mIsAimMode = true;
 	}
 	else {
 		mIsAimMode = false;
-		
+
 	}
 	if (mIsAimMode) {
 		if (t < 1.0f) {
@@ -754,14 +766,23 @@ void Player::ChengeChageToAttack()
 void Player::SpecialAtkRB()
 {
 	// 入力段階
-	if (mChargeStatus.isCharge != true) {
+	if (mBehavior == Behavior::kRoot || mBehavior == Behavior::kMove|| mBehavior == Behavior::kCharge) {
 
 		// 突進攻撃(仮)
 		if (mInput->GetGamepad()->getButton(Gamepad::Button::RIGHT_SHOULDER)) {
 			mChargeStatus.pushingFrame += 1.0f / 60.0f;
 
 			// 入力時間が一定まで達していたら 攻撃方向を指定できるようにする
-			if (mChargeStatus.pushingFrame > (15.0f / 60.0f)) {
+			if (mChargeStatus.pushingFrame > (15.0f / 60.0f))
+			{
+				if (mBehavior == Behavior::kRoot || mBehavior == Behavior::kMove)
+				{
+					mBehavior = Behavior::kCharge;
+					// 溜めモーションを切り替える
+					mObject->mSkinning->SetNextAnimation("prepare");
+				}
+
+				// 溜めフラグをtrueに
 				mChargeStatus.isCastMode = true;
 
 				// 右スティックで方向を指定
@@ -789,7 +810,9 @@ void Player::SpecialAtkRB()
 
 		// 離すと攻撃する
 		if (mChargeStatus.pushingFrame > 0.0f && mInput->GetReleased(Gamepad::Button::RIGHT_SHOULDER)) {
-			
+
+			// 溜めフラグの解除
+			mBehavior = Behavior::kAttack;
 			// 攻撃フラグをtrueにする
 			mChargeStatus.isCharge = true;
 
@@ -814,6 +837,9 @@ void Player::SpecialAtkRB()
 
 			mChargeStatus.moveingTime = 0.0f;
 
+			// モーションを切り替える(+モーションブレンド切替速度を早く)
+			mObject->mSkinning->SetMotionBlendingInterval(6.0f);
+			mObject->mSkinning->SetNextAnimation("gatotu0");
 		}
 
 
@@ -840,6 +866,11 @@ void Player::SpecialAtkRB()
 
 			// 移動終了
 			mBehavior = Behavior::kRoot;
+
+			// モーションを切り替える
+			mObject->mSkinning->SetMotionBlendingInterval(30.0f);
+			mObject->mSkinning->SetNextAnimation("idle");
+
 		}
 
 		// 移動

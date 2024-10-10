@@ -31,6 +31,8 @@ void Skinnig::Init(const std::string& directorypath, const std::string& filepath
 
 	// モーションブレンドをしていない
 	mIsMotionBrending = false;
+	// モーションブレンドの切替速度(早 1.0f ~ n 遅い)
+	mMotionBrendingInterval = 30.0f;
 
 }
 
@@ -51,7 +53,7 @@ void Skinnig::Update()
 		// モーションブレンドの進行度を上昇させる
 		if (mMotionBrendingTime < 1.0f) 
 		{
-			mMotionBrendingTime += 1.0f / 60.0f;
+			mMotionBrendingTime += 1.0f / 30.0f;
 		}
 
 		// 上限まで行ったら自動で終了する
@@ -69,7 +71,9 @@ void Skinnig::Update()
 	mSkeleton.Update();
 	// スキンクラスター 更新
 	mNowSkincluster->skinCluster.Update(mSkeleton);
-
+	if (mNextSkincluster != nullptr) {
+		mNextSkincluster->skinCluster.Update(mSkeleton);
+	}
 
 }
 
@@ -133,7 +137,7 @@ void Skinnig::ApplyAniation() {
 	}
 }
 
-void Skinnig::CreateSkinningData(const std::string& directorypath, const std::string& filename, const std::string& filrExt, ModelData modelData)
+void Skinnig::CreateSkinningData(const std::string& directorypath, const std::string& filename, const std::string& filrExt, ModelData modelData, bool isLoop)
 {
 	// 新規にスキンクラスターを含めたデータを生成
 	std::shared_ptr<SkinningStatus> newSkinning = std::make_shared<SkinningStatus>();
@@ -146,7 +150,7 @@ void Skinnig::CreateSkinningData(const std::string& directorypath, const std::st
 	// アニメーションの一時停止をoffに
 	newSkinning->isPause = false;
 	// ループさせる
-	newSkinning->isLoop = true;
+	newSkinning->isLoop = isLoop;
 	// アニメーションの開始時間を0.0fに設定
 	newSkinning->animationTime = 0.0f;
 	// アニメーションを有効にする
@@ -183,6 +187,10 @@ void Skinnig::StartMotionBrend()
 	// 各パラメータの初期化
 	mMotionBrendingTime = 0.0f; // モーションブレンド移行時間を0.0fに
 	mIsMotionBrending = true; // モーションブレンドのフラグをtrueに
+
+	// 次回アニメーションの開始時間を設定
+	mNextSkincluster->animationTime = 0.0f;
+
 }
 
 void Skinnig::EndMotionBrend()
@@ -191,4 +199,13 @@ void Skinnig::EndMotionBrend()
 	mIsMotionBrending = false; // モーションブレンドのフラグをfalseに
 	mNowSkincluster = mNextSkincluster; // アニメーションを切り替える
 	mNextSkincluster = nullptr; // 移行して不要になったアニメーションのポインタを破棄
+}
+
+bool Skinnig::GetIsActiveAnimation(std::string name)
+{
+	if (mNowSkincluster->name.c_str() == name.c_str()) {
+		return true;
+	}
+
+	return false;
 }
