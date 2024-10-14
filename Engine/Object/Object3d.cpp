@@ -25,8 +25,8 @@ void Object3d::Update() {
 
 }
 
-void Object3d::Draw(Camera camera) {
-
+void Object3d::Draw(Camera camera) 
+{
 	DirectXCommon* dxCommon = DirectXCommon::GetInstance();
 
 	// 引数で取得したカメラから行列を取得してワールド座標を計算
@@ -60,12 +60,11 @@ void Object3d::Draw(Camera camera) {
 	}
 
 	mModel->Draw(camera);
-
 }
 
 
-void Object3d::Debug() {
-
+void Object3d::Debug() 
+{
 #ifdef _DEBUG
 	ImGui::Begin(mObjectName.c_str());
 	ImGui::SliderAngle("RotateX", &mWorldTransform.rotation.x);
@@ -140,22 +139,18 @@ void Object3d::Debug() {
 
 }
 
-void Object3d::CreateTransformation() {
-
+void Object3d::CreateTransformation() 
+{
 	DirectXCommon* dxCommon = DirectXCommon::GetInstance();
 
-	// Transformation用のResourceを作る
+	// リソース領域の確保
 	mWvpResource = dxCommon->CreateBufferResource(dxCommon->device_.Get(), sizeof(TransformationMatrix));
-
-	// データを書き込む
-	// 書き込むためのアドレスを取得
 	mWvpResource->Map(0, nullptr, reinterpret_cast<void**>(&mWvpData));
 	
 	// 単位行列を書き込む
 	mWvpData->WVP = MakeAffineMatrix(Vector3(1.0f, 1.0f, 1.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f));
 	mWvpData->World = MakeIdentity();
 	mWvpData->InverseTransposeWorld = Inverse(MakeIdentity());
-
 }
 
 

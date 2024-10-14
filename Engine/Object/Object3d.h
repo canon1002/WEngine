@@ -37,7 +37,7 @@ public: // -- 公開 メンバ関数 -- //
 	virtual void Draw(Camera camera) override;
 
 	/// <summary>
-	/// デバッグ描画
+	/// デバッグ処理
 	/// </summary>
 	virtual void Debug() override;
 
@@ -48,19 +48,21 @@ public: // -- 公開 メンバ関数 -- //
 	Model* GetModel() { return mModel; }
 
 	/// <summary>
-	/// モデル登録関数
+	/// オブジェクトにモデルを登録する
 	/// </summary>
 	/// <param name="filepath">モデルのファイルパス</param>
 	void SetModel(const std::string& filepath);
 
 private: // -- 非公開 メンバ関数 -- //
 
-
+	/// <summary>
+	/// Transformation用のResourceを作成する
+	/// </summary>
 	void CreateTransformation();
 
 protected: // -- 限定公開 メンバ変数 -- //
 
-	// Transformation用のResourceを作る
+	// Transformation用のResource
 	Microsoft::WRL::ComPtr<ID3D12Resource> mWvpResource = nullptr;
 	// データを書き込む
 	TransformationMatrix* mWvpData = nullptr;

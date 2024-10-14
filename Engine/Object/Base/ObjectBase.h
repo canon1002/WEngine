@@ -8,7 +8,6 @@ class Camera;
 /// <summary>
 /// オブジェクト基底クラス
 /// <para> 3D空間に存在するオブジェクトの基底クラス </para>
-/// 
 /// </summary>
 class ObjectBase
 {
