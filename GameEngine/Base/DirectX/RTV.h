@@ -14,7 +14,7 @@ public: // -- public メンバ関数 -- //
 	/// 初期化
 	/// </summary>
 	/// <param name="dxCommon"></param>
-	void Initialize(DirectXCommon* dxCommon);
+	void Init(DirectXCommon* dxCommon);
 
 private: // -- private メンバ関数 -- //
 

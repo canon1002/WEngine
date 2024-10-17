@@ -16,7 +16,7 @@ DirectXCommon* DirectXCommon::GetInstance() {
 	return instance;
 }
 
-void DirectXCommon::Initialize(WinApp* win) {
+void DirectXCommon::Init(WinApp* win) {
 
 	// FPS固定
 	InitFixFPS();
@@ -80,13 +80,13 @@ void DirectXCommon::Initialize(WinApp* win) {
 	InitializeDXC();
 
 	// レンダーターゲットを生成
-	rtv_->Initialize(this);
+	rtv_->Init(this);
 	// シェーダーリソースを生成
-	srv_->Initialize(this);
+	srv_->Init(this);
 	// ディープステンシルの生成
-	dsv_->Initialize(this);
+	dsv_->Init(this);
 
-	InitializeViewPort();
+	InitViewPort();
 	// 深度バッファ生成
 	//CreateDepthBuffer();
 	// フェンスの生成
@@ -262,7 +262,7 @@ void DirectXCommon::SetResourceBarrier(
 
 
 ///
-void DirectXCommon::InitializeViewPort() {
+void DirectXCommon::InitViewPort() {
 
 	// ビューポート
 	// クライアント領域のサイズと一緒にして画面全体に表示

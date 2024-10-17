@@ -23,7 +23,7 @@ public:
 	ImGuiManager() = default;
 	~ImGuiManager() = default;
 
-	void Initialize(WinApp* winApp,DirectXCommon* dxComoon);
+	void Init(WinApp* winApp,DirectXCommon* dxComoon);
 
 	void Begin();
 

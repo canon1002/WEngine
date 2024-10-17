@@ -41,7 +41,7 @@ public: // ** メンバ関数 ** //
 	~WinApp() = default;
 
 	// 初期化
-	void Initialize();
+	void Init();
 
 	// 消去
 	void Finalize();

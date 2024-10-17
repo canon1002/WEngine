@@ -29,9 +29,21 @@ struct D3DResourceLeakChecker {
 	}
 };
 
-
+/// <summary>
+/// DirectXクラス
+/// <para> CommandList,RTV,SRV等の描画に必要なクラス・関数・ポインタを所有する </para>
+/// </summary>
 class DirectXCommon
 {
+public: // -- 公開 メンバ関数 -- // 
+
+
+	/// 初期化
+	void Init(WinApp* win);
+
+	/// 終了処理
+	void Finalize();
+
 public:
 	
 	DirectXCommon() = default;
@@ -53,24 +65,16 @@ private: // -- 静的メンバ関数 -- //
 
 public: // -- 公開 メンバ関数 -- //
 
-	/// 初期化
-	void Initialize(WinApp* win);
-
-	/// 終了処理
-	void Finalize();
 
 	/// 
 	/// </summary>
-	void InitializeViewPort();
+	
 	
 	void PreDrawForRenderTarget();
 	void PostDrawForRenderTarget();
 	void PreDraw();
-
-	/// <summary>
-	/// 
-	/// </summary>
 	void PostDraw();
+
 
 	inline D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDescriptorHandle(Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap,
 		uint32_t descriptorSize, uint32_t index) {
@@ -95,6 +99,8 @@ public: // -- 公開 メンバ関数 -- //
 
 
 private: // --非公開 メンバ関数 -- //
+
+	void InitViewPort();
 
 	/// <summary>
 	/// DXGIデバイス初期化

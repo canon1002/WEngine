@@ -63,12 +63,12 @@ int SceneManager::Run() {
 	
 
 #ifdef _DEBUG
-	imGuiManager_->Initialize(winApp_, mDxCommon);
+	imGuiManager_->Init(winApp_, mDxCommon);
 #endif // _DEBUG
 
 
-	inputManager_->Initialize(winApp_);
-	audio_->Initialize();
+	inputManager_->Init(winApp_);
+	audio_->Init();
 	//mainCamera_->mWorldTransform.translation = { 0.0f,0.0f,-6.0f };
 
 	// 非同期処理

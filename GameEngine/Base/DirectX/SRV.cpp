@@ -6,7 +6,7 @@
 #include "Editor/ImGui/ImGuiManager.h"
 
 
-void SRV::Initialize(DirectXCommon* dx) {
+void SRV::Init(DirectXCommon* dx) {
 	mDxCommon = dx;
 
 	CreateShaderResourceView();

@@ -20,7 +20,7 @@ public: // -- public メンバ関数 -- //
 	SRV() = default;
 	~SRV() = default;
 
-	void Initialize(DirectXCommon* dx);
+	void Init(DirectXCommon* dx);
 	void CreateShaderResourceView();
 	void CreateSRVDescriptorHeap();
 	int LoadTexture(const std::string filePath);

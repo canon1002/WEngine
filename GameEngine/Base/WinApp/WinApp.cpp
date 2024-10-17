@@ -11,7 +11,7 @@ WinApp* WinApp::GetInstance() {
 }
 
 // 初期化
-void WinApp::Initialize() {
+void WinApp::Init() {
 
 	// COMの初期化
 	CoInitializeEx(0, COINIT_MULTITHREADED);

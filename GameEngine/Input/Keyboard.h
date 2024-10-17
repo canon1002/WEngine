@@ -26,7 +26,7 @@ public:
 	void Finalize();
 
 	// 初期化
-	void Initialize(WinApp* winApp);
+	void Init(WinApp* winApp);
 	// 更新
 	void Input();
 	// デバッグUIの表示

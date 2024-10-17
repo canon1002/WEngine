@@ -3,7 +3,7 @@
 #include "Resource/Base/Resource.h"
 #include "Resource/Texture/Texture.h"
 
-void RTV::Initialize(DirectXCommon* dxCommon){
+void RTV::Init(DirectXCommon* dxCommon){
 	// DirectXCommonのポインタを取得
 	mDxCommon = dxCommon;
 

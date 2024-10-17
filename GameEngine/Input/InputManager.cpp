@@ -18,12 +18,12 @@ void InputManager::Finalize()
 
 }
 
-void InputManager::Initialize(WinApp* winApp) {
+void InputManager::Init(WinApp* winApp) {
 
 	winApp_ = winApp;
 	// DirectInput関連の初期化
 	keyboard = Keyboard::GetInstance();
-	keyboard->Initialize(winApp_);
+	keyboard->Init(winApp_);
 
 }
 

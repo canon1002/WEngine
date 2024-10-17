@@ -1,7 +1,7 @@
 #include "ImGuiManager.h"
 
 #ifdef _DEBUG
-void ImGuiManager::Initialize(WinApp* winApp, DirectXCommon* dxCommon){
+void ImGuiManager::Init(WinApp* winApp, DirectXCommon* dxCommon){
 	winApp_ = winApp;
 	mDxCommon = dxCommon;
 

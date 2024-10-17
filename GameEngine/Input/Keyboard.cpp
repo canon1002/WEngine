@@ -20,7 +20,7 @@ void Keyboard::Finalize()
 
 }
 
-void Keyboard::Initialize(WinApp* winApp) {
+void Keyboard::Init(WinApp* winApp) {
 	winApp_ = winApp;
 	// Directinputオブジェクトの生成
 	HRESULT hr = DirectInput8Create(

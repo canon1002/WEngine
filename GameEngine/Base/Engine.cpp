@@ -18,9 +18,9 @@ void Engine::Run(){
 	//
 
 	// WinApp
-	winApp_->Initialize();
+	winApp_->Init();
 	// DirectXCommon
-	mDxCommon->Initialize(winApp_);
+	mDxCommon->Init(winApp_);
 	// Scene
 	sceneManager_->Init(winApp_, mDxCommon);
 	

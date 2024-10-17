@@ -57,7 +57,7 @@ public: // ** 静的メンバ関数 ** //
 	// 解放処理
 	void Finalize();
 	// 初期化
-	void Initialize();
+	void Init();
 
 	SoundData LoadWave(const char* filename);
 	void UnLoadWave(SoundData* soundData);

@@ -16,7 +16,7 @@ void Audio::Finalize(){
 	xAudio2_.Reset();
 }
 
-void Audio::Initialize() {
+void Audio::Init() {
 	HRESULT hr = XAudio2Create(&xAudio2_, 0, XAUDIO2_USE_DEFAULT_PROCESSOR);
 	hr = xAudio2_->CreateMasteringVoice(&masterVoice_);
 

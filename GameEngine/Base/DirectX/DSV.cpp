@@ -3,7 +3,7 @@
 #include "Resource/Base/Resource.h"
 #include "Resource/Texture/Texture.h"
 
-void DSV::Initialize(DirectXCommon* dxCommon){
+void DSV::Init(DirectXCommon* dxCommon){
 	// DirectXCommonのポインタを取得
 	mDxCommon = dxCommon;
 	// 深度バッファ生成
