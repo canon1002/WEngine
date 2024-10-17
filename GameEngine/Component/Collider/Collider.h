@@ -11,7 +11,7 @@
 #include<cmath>
 #include<algorithm>
 
-#include "Engine/Object/Camera/Camera.h"
+#include "GameEngine/Object/Camera/Camera.h"
 #include "Component/Transform/WorldTransform.h"
 #include "Resource/Model/Model.h"
 
