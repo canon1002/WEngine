@@ -58,6 +58,9 @@ void TitleScene::Init() {
 	mCameraTrZ.e = { 0.0f,6.0f,-60.0f };
 	mCameraTrZ.t = 0.0f;
 
+	
+	mIsTransitionForPreScene = true;
+	viggnetOnlyTime = 0.0f;
 	mIsTransitionTitleSelect = false;
 	mIsTransitionGameScene = false;
 	mIsActiveTransition = false;
@@ -65,7 +68,7 @@ void TitleScene::Init() {
 	// ビネット初期設定(透明)
 	RenderCopyImage* render = RenderCopyImage::GetInstance();
 	render->SetViggnetColor(Vector4(0.0f, 0.0f, 0.0f, 0.0f));
-	render->SetViggnetIndex(0.0f);
+	render->SetViggnetIndex(10.0f);
 	render->SetViggnetMultiplier(10.0f);
 
 	// 以下 UI
@@ -146,6 +149,21 @@ void TitleScene::Update() {
 			}
 
 		}
+	}
+
+	if (mIsTransitionForPreScene) 
+	{
+		if (viggnetOnlyTime < 1.0f) 
+		{
+			viggnetOnlyTime += (1.0f / 60.0f);
+
+		}
+		else if (viggnetOnlyTime >= 1.0f) 
+		{
+			viggnetOnlyTime = 1.0f;
+			mIsActiveTransition = false;
+		}
+		RenderCopyImage::GetInstance()->SetViggnetIndex(ExponentialInterpolation(10.0f, 0.0f, viggnetOnlyTime, 1.0f));
 	}
 
 	// カメラ遷移

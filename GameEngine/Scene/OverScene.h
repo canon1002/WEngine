@@ -2,7 +2,7 @@
 #include "IScene.h"
 #include "GameEngine/Input/InputManager.h"
 
-class ResultScene :
+class OverScene :
     public IScene
 {
 public:
@@ -21,7 +21,6 @@ public:
 
 	// フェード中か
 	bool mIsFading;
-	bool mIsFadingSceneEnd;
 	// 開始前のビネット
 	float mViggnetTime;
 

@@ -2,7 +2,7 @@
 #include "IScene.h"
 #include "GameEngine/Input/InputManager.h"
 
-class ResultScene :
+class StartScene :
     public IScene
 {
 public:
@@ -19,9 +19,17 @@ public:
 	// 入力マネージャー
 	InputManager* mInput;
 
+	// 開始時の間
+	const float kStartWaitTimeMax = 2.0f;
+	float mStartWaitTime;
+
+	UISet mBackGround;
+	UISet mLogoImage;
+
 	// フェード中か
 	bool mIsFading;
-	bool mIsFadingSceneEnd;
+	bool mIsFadeOuting;
+
 	// 開始前のビネット
 	float mViggnetTime;
 

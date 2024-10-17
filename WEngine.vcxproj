@@ -167,8 +167,11 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="GameEngine\Resource\Texture\Resource.cpp" />
     <ClCompile Include="GameEngine\Scene\GameScene.cpp" />
     <ClCompile Include="GameEngine\Scene\IScene.cpp" />
+    <ClCompile Include="GameEngine\Scene\MenuScene.cpp" />
+    <ClCompile Include="GameEngine\Scene\OverScene.cpp" />
     <ClCompile Include="GameEngine\Scene\ResultScene.cpp" />
     <ClCompile Include="GameEngine\Scene\SceneManager.cpp" />
+    <ClCompile Include="GameEngine\Scene\StartScene.cpp" />
     <ClCompile Include="GameEngine\Scene\TitleScene.cpp" />
     <ClCompile Include="Externals\imgui\imgui.cpp" />
     <ClCompile Include="Externals\imgui\imgui_demo.cpp" />
@@ -266,8 +269,11 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="GameEngine\Resource\Texture\Resource.h" />
     <ClInclude Include="GameEngine\Scene\GameScene.h" />
     <ClInclude Include="GameEngine\Scene\IScene.h" />
+    <ClInclude Include="GameEngine\Scene\MenuScene.h" />
+    <ClInclude Include="GameEngine\Scene\OverScene.h" />
     <ClInclude Include="GameEngine\Scene\ResultScene.h" />
     <ClInclude Include="GameEngine\Scene\SceneManager.h" />
+    <ClInclude Include="GameEngine\Scene\StartScene.h" />
     <ClInclude Include="GameEngine\Scene\TitleScene.h" />
     <ClInclude Include="Externals\imgui\imconfig.h" />
     <ClInclude Include="Externals\imgui\imgui.h" />

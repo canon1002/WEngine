@@ -48,10 +48,11 @@ void SceneManager::Init(WinAPI* winApp, DirectXCommon* dxCommon){
 	DamageReaction::GetInstance()->Init();
 
 	// 各シーンの配列
+	sceneArr_[START] = std::make_unique<StartScene>();
 	sceneArr_[TITLE] = std::make_unique<TitleScene>();
 	sceneArr_[STAGE] = std::make_unique<GameScene>();
 	sceneArr_[RESULT] = std::make_unique<ResultScene>();
-	//sceneArr_[OVER] = std::make_unique<ResultScene>();
+	sceneArr_[OVER] = std::make_unique<OverScene>();
 
 	// 初期シーン
 	currentSceneNo_ = STAGE;
@@ -69,10 +70,8 @@ int SceneManager::Run() {
 	imGuiManager_->Initialize(winApp_, mDxCommon);
 #endif // _DEBUG
 
-
 	inputManager_->Initialize(winApp_);
 	audio_->Initialize();
-	//mainCamera_->mWorldTransform->translation = { 0.0f,0.0f,-6.0f };
 
 	// 非同期処理
 	//std::mutex mutex;
@@ -212,9 +211,12 @@ int SceneManager::Run() {
 	CoUninitialize();
 
 	// 解放処理
+	sceneArr_[START]->Finalize();
 	sceneArr_[TITLE]->Finalize();
 	sceneArr_[STAGE]->Finalize();
 	sceneArr_[RESULT]->Finalize();
+	sceneArr_[OVER]->Finalize();
+
 	sceneArr_[TITLE].reset();
 	sceneArr_[STAGE].reset();
 	sceneArr_[RESULT].reset();

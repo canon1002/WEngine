@@ -16,23 +16,23 @@
                     0.0
                 ],
                 "scaling": [
-                    64.0,
-                    64.0,
+                    1.0,
+                    1.0,
                     1.0
                 ]
             },
-            "file_name": "Plane",
+            "file_name": "field",
             "collider": {
-                "type": "Box",
+                "type": "BOX",
                 "center": [
                     0.0,
                     0.0,
                     0.0
                 ],
                 "size": [
-                    1.0,
-                    1.0,
-                    0.0
+                    2.0,
+                    2.0,
+                    2.0
                 ]
             }
         }

@@ -16,24 +16,40 @@ enum class Behavior {
 	kAttack, // 攻撃中
 	kJump,	 // ジャンプ中
 	kCharge, // 溜め動作中
+	kChargeAttack, // 溜め攻撃
 	kAvoid,  // 回避行動
 	kGuard,  // 防御行動
 };
 
+// 攻撃用定数
+struct ConstAttack {
+	float offence;			// 威力
+	float motionTimeMax;	// 終了時間
+	float actionSpeed;		// 実行速度
+	float inputWaitTime;	// 入力受付時間
+	float recoveryTime;		// 硬直時間
+};
 
 struct AttackStatus {
+
+
 	std::unique_ptr<Object3d> sword; // オブジェクト
 	bool isUp;			// 数値が上昇しているか
 	bool isDown;		// 数値が減少しているか
 	bool isOperating;	// 動作中であるか(攻撃判定フラグとしても扱う)
 	bool isHit;			// 攻撃が命中したか
-	float t;			// 動作の時間
+	float motionTime;	// 動作の時間
 	Vector3 pos;		// 座標
 	Vector3 normalRot;	// 通常時の回転
 	Vector3 endRot;		// 回転の最終値
 	Matrix4x4 weaponParentMat; // 親の行列
 	std::array<Matrix4x4, 5> swordWorldMat; // 武器のワールド座標
 	std::vector<Collider*> swordColliders;// 武器の衝突判定
+
+	int32_t comboCount; // 現在のコンボが何段目か
+	int32_t inComboPhase; // 現在の攻撃モーションはどの段階か
+	float inputWaitingTime; // 入力待ち段階
+	bool isComboRequest; // 入力を受けたか
 };
 
 struct GuardStatus {
@@ -77,6 +93,8 @@ struct ChargeStatus {
 	Vector3 startPos;	// 移動の始点
 	Vector3 endPos;		// 移動の終点
 	float moveingTime;	// 移動時間
+	Vector3 cameraStartRot;
+	Vector3 cameraEndRot;
 };
 
 class Player {
@@ -119,11 +137,7 @@ public: // -- 公開 メンバ関数 -- //
 	// Debag用
 	void DebagCtr();
 
-	// 突撃
-	void Charge();
-	// 溜め->攻撃 移行処理
-	void ChengeChageToAttack();
-
+	
 	void SpecialAtkRB();
 	void SpecialAtkRT();
 	void SpecialAtkLB();
@@ -142,6 +156,14 @@ public: // -- 公開 メンバ関数 -- //
 	// ボスクラスのポインタ
 	BossEnemy* mBoss;
 
+public: // -- 公開 メンバ変数 & 定数 -- //
+
+	// 最大コンボ回数
+	static const int32_t kComboCountMax = 3;
+
+	// コンボ定数表
+	static const std::array<ConstAttack, kComboCountMax> kConstAttacks;
+
 private: // -- 非公開 メンバ変数 -- //
 
 	// 入力を取得
@@ -156,6 +178,9 @@ private: // -- 非公開 メンバ変数 -- //
 
 	// 移動量
 	Vector3 mVelocity;
+	// プレイヤーの向いてる向き
+	Vector3 mDirection;
+
 	// 重力の影響を受けるか
 	bool mIsGravity;
 	// 残りジャンプ回数
@@ -165,8 +190,7 @@ private: // -- 非公開 メンバ変数 -- //
 	// ジャンプ初速
 	const float kJumpFirstSpeed = 0.4f;
 
-	// 最大コンボ回数
-	const int32_t kComboCountMax = 3;
+	
 
 	// カメラ回転量保持
 	Vector3 mCameraPreDir = { 0.0f,0.0f,0.0f };
@@ -196,11 +220,5 @@ private: // -- 非公開 メンバ変数 -- //
 
 	// カメラ回転ロックの有無
 	bool mIsCameraRotateLock;
-
-	// -- アニメーション関連 -- //
-
-	// モーションの保存
-	std::map<std::shared_ptr<Skinnig>, std::string> mMotionMap;
-
 };
 

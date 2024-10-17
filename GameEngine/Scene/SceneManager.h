@@ -1,9 +1,12 @@
 #pragma once
 #include <memory>
 #include "IScene.h"
+#include "StartScene.h"
 #include "TitleScene.h"
 #include "GameScene.h"
 #include "ResultScene.h"
+#include "OverScene.h"
+#include "MenuScene.h"
 
 #include "GameEngine/Base/DirectX/DirectXCommon.h"
 #include "GameEngine/Base/Debug/ImGuiManager.h"
@@ -25,7 +28,7 @@ class SceneManager
 private:
 
 	// シーンを保持するメンバ変数
-	std::unique_ptr<IScene> sceneArr_[3];
+	std::array<std::unique_ptr<IScene>, 6> sceneArr_;
 
 	// どのシーンを呼び出すかを管理する変数
 	int32_t currentSceneNo_;// 現在のシーン

@@ -43,6 +43,9 @@ private:
 	// 建物
 	std::unique_ptr<Object3d> mBuildingObj;
 
+	// シーン開幕のビネット処理
+	bool mIsTransitionForPreScene;
+	float viggnetOnlyTime;
 	// ゲームシーンに移行するか
 	bool mIsTransitionGameScene;
 	// タイトルでの選択表示に移行するか
@@ -64,6 +67,10 @@ private:
 
 	// オブジェクト
 	std::unique_ptr<ShadowObject> mObject;
+
+	// -- 画面遷移テスト -- //
+
+
 
 };
 

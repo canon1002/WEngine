@@ -3,7 +3,14 @@
 #include "GameEngine/Object/Sprite/Sprite.h"
 #include <memory>
 
-enum SCENE { TITLE, STAGE,RESULT,OVER };
+enum SCENE { 
+	START,
+	TITLE, 
+	STAGE,
+	RESULT,
+	OVER ,
+	MENU,
+};
 
 class IScene
 {

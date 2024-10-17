@@ -39,6 +39,9 @@ public: // -- 公開 メンバ関数 -- //
 	// スケルトンの取得
 	Skeleton GetSkeleton() { return mSkeleton;}
 
+	// ImGuiの表示
+	void DrawGui();
+
 	// 一時停止する
 	void Pause() { mNowSkincluster->isPause = true; }
 
@@ -99,6 +102,13 @@ public: // -- 公開 メンバ関数 -- //
 	bool GetIsMotionbrending() { return mIsMotionBrending; }
 	bool GetIsActiveAnimation(std::string name);
 
+	std::shared_ptr<SkinningStatus> GetNowSkinCluster() { return mNowSkincluster; }
+
+	void SetAnimationPlaySpeed(float speed) { mAnimationPlaySpeed = speed; }
+
+	std::vector<std::shared_ptr<SkinningStatus>> GetWaitingSkinClusters() { return mWaitingSkinClusters; }
+	bool SearchToWaitingSkinCluster(std::string name);
+
 private: // -- 非公開 メンバ変数 -- //
 
 	// 外部ポインタ
@@ -120,5 +130,10 @@ private: // -- 非公開 メンバ変数 -- //
 	float mMotionBrendingInterval;
 	// モーションブレンド中で在るかのフラグ
 	bool mIsMotionBrending;
+	// アニメーションの再生速度
+	float mAnimationPlaySpeed = 1.0f;
+	
+	// 切り替え待ちのスキンクラスターの可変行列
+	std::vector<std::shared_ptr<SkinningStatus>> mWaitingSkinClusters;
 
 };

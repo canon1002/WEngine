@@ -25,6 +25,7 @@ void GameScene::Init(){
 
 	// モデル 読み込み
 	ModelManager::GetInstance()->LoadModel("plane", "plane.gltf");
+	ModelManager::GetInstance()->LoadModel("field", "field.gltf");
 	ModelManager::GetInstance()->LoadModel("box", "box.gltf");
 	ModelManager::GetInstance()->LoadModel("ball", "ball.obj");
 	ModelManager::GetInstance()->LoadModel("AnimatedCube", "AnimatedCube.gltf");

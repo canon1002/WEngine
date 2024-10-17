@@ -38,6 +38,7 @@ void Player::Init() {
 	mObject->mSkinning->CreateSkinningData("player", "prepare", ".gltf", mObject->GetModel()->modelData);
 	mObject->mSkinning->CreateSkinningData("player", "gatotu0", ".gltf", mObject->GetModel()->modelData);
 	mObject->mSkinning->CreateSkinningData("player", "slash", ".gltf", mObject->GetModel()->modelData);
+	mObject->mSkinning->CreateSkinningData("player", "slashUp", ".gltf", mObject->GetModel()->modelData);
 	mObject->mSkinning->CreateSkinningData("player", "walk", ".gltf", mObject->GetModel()->modelData, true);
 
 
@@ -140,62 +141,79 @@ void Player::Init() {
 
 void Player::Update() {
 
-	// 右手のワールド行列を更新
-	mAttackStatus.weaponParentMat = Multiply(
-		GetObject3D()->mSkinning->GetSkeleton().joints[GetObject3D()->mSkinning->GetSkeleton().jointMap["weaponM"]
-		].skeletonSpaceMatrix, GetObject3D()->GetWorldTransform()->GetWorldMatrix());
-
 	if (mStatus->HP > 0.0f) {
-
 
 		// 落下処理
 		Fall();
-
 		// 移動処理
 		Move();
 
 		// 回避関連処理
-		Avoid();
-
+		//Avoid();
 		// 防御関連処理
 		//Guard();
 
-		// 攻撃関連処理
-		Attack();
-
 		// 突撃
 		SpecialAtkRB();
+		// 攻撃関連処理
+		Attack();
 
 		// デバッグ操作
 #ifdef _DEBUG
 		DebagCtr();
 #endif // _DEBUG
 
+		switch (mBehavior)
+		{
+		case Behavior::kRoot:
+
+			if (mObject->mSkinning->GetNowSkinCluster()->name != "idle" &&
+				!mObject->mSkinning->SearchToWaitingSkinCluster("idle"))
+			{
+				mObject->mSkinning->SetNextAnimation("idle");
+			}
+
+			break;
+		case Behavior::kMove:
+
+			if (mObject->mSkinning->GetNowSkinCluster()->name != "walk" &&
+				!mObject->mSkinning->SearchToWaitingSkinCluster("walk"))
+			{
+				mObject->mSkinning->SetNextAnimation("walk");
+			}
+
+			break;
+		case Behavior::kAttack:
+			break;
+		case Behavior::kJump:
+			break;
+		case Behavior::kCharge:
+			break;
+		case Behavior::kChargeAttack:
+			break;
+		case Behavior::kAvoid:
+			break;
+		case Behavior::kGuard:
+			break;
+		default:
+			break;
+		}
+		
 
 		// レティクル 更新
 		mReticle->Update();
 
 	}
-	// プレイヤーの弾 -- 更新 --
-	auto arrowIt = mArrows.begin();  // イテレータを初期化
-	while (arrowIt != mArrows.end()) {
-		const auto& arrow = *arrowIt;
-		// Bulletが消失条件を満たす場合
-		if (!arrow->GetIsActive()) {
-			arrowIt = mArrows.erase(arrowIt);  // erase()は削除された要素の次の有効なイテレータを返す
-		}
-		else {
-			arrow->Update();
-			arrow->DebugDraw();
-			++arrowIt;  // イテレータを次に進める
-		}
-	}
-
 
 	// オブジェクト更新
 	mObject->Update();
 	mObject->mSkinning->GetSkeleton().joints;
 	mObject->mCollider->Update();
+
+	// 右手のワールド行列を更新
+	mAttackStatus.weaponParentMat = Multiply(
+		GetObject3D()->mSkinning->GetSkeleton().joints[GetObject3D()->mSkinning->GetSkeleton().jointMap["weaponM"]
+		].skeletonSpaceMatrix, GetObject3D()->GetWorldTransform()->GetWorldMatrix());
 
 	// 剣
 	mAttackStatus.sword->Update();
@@ -222,6 +240,29 @@ void Player::Update() {
 		collider->Update();
 	}
 
+	// 衝突時の処理
+	if (mBehavior == Behavior::kAttack || mBehavior == Behavior::kChargeAttack) {
+		if ((mAttackStatus.isOperating == true || mChargeStatus.isCharge == true) && mAttackStatus.isHit == false)
+		{
+			for (Collider* collider : mAttackStatus.swordColliders)
+			{
+				if (collider->GetOnCollisionFlag() == false)
+				{
+					continue;
+				}
+
+				// 次のフレームで消す
+				mAttackStatus.isHit = true;
+
+				// 敵にダメージを与える
+				ReciveDamageToBoss(1.2f);
+
+				// ダメージ表示
+				int32_t damage = static_cast<int32_t>(static_cast<int32_t>(mStatus->STR / 2.0f) * 1.0f) - static_cast<int32_t>(mBoss->GetStatus()->VIT / 4.0f);;
+				DamageReaction::GetInstance()->Reaction(mReticle->GetWorld3D(), damage, MainCamera::GetInstance());
+			}
+		}
+	}
 
 	// シールド
 	mGuardStatus.shield->Update();
@@ -241,12 +282,27 @@ void Player::DrawGUI() {
 	// メニューバーを表示する
 	ImGui::Begin("Player");
 
+	const char* str[] = {
+		"kRoot",   // 通常状態
+		"kMove",   // 移動状態
+		"kAttack", // 攻撃中
+		"kJump",	 // ジャンプ中
+		"kCharge", // 溜め動作中
+		"kChargeAttack", // 溜め攻撃
+		"kAvoid",  // 回避行動
+		"kGuard",  // 防御行動
+	};
+	int32_t behaviorNumber = (int32_t)mBehavior;
+
+	ImGui::ListBox("Current State",&behaviorNumber, str, IM_ARRAYSIZE(str));
+
 	if (ImGui::CollapsingHeader("Animation")) {
 
 		std::string strNormalT = "MotionBlendingTime : " + std::to_string(mObject->mSkinning->GetMotionBlendingTime());
 		ImGui::ProgressBar(mObject->mSkinning->GetMotionBlendingTime(), ImVec2(-1.0f, 0.0f), strNormalT.c_str());
 
-
+		// Skinning
+		mObject->mSkinning->DrawGui();
 	}
 
 	//mObject->DrawGuiTree();
@@ -256,7 +312,7 @@ void Player::DrawGUI() {
 		ImGui::DragInt("STR", &mStatus->STR, 1.0f, 0, 100);
 		ImGui::DragInt("VIT", &mStatus->VIT, 1.0f, 0, 100);
 		ImGui::DragInt("AGI", &mStatus->AGI, 1.0f, 0, 100);
-		
+
 	}
 
 	// 回避パラメータ
@@ -266,7 +322,7 @@ void Player::DrawGUI() {
 		ImGui::DragFloat("AvoidTime", &mAvoidStatus.mAvoidTime);
 		ImGui::DragFloat3("Avoid Start", &mAvoidStatus.mAvoidMoveStartPos.x);
 		ImGui::DragFloat3("Avoid End", &mAvoidStatus.mAvoidMoveEndPos.x);
-		
+
 	}
 
 	// 防御パラメータ
@@ -275,17 +331,27 @@ void Player::DrawGUI() {
 		ImGui::DragFloat3("GuradPos", &mGuardStatus.guardPos.x, 1.0f, -1000.0f, 1000.0f);
 		ImGui::DragFloat3("Pos", &mGuardStatus.pos.x, 0.05f, -10.0f, 10.0f);
 		mGuardStatus.shield->DrawGuiTree();
-	
+
 	}
 
 	// 攻撃パラメータ
 	if (ImGui::CollapsingHeader("Attack")) {
-		ImGui::DragFloat("t", &mAttackStatus.t, 1.0f, -1000.0f, 1000.0f);
-		ImGui::DragFloat3("Pos", &mAttackStatus.pos.x, 1.0f, -1000.0f, 1000.0f);
-		ImGui::DragFloat3("normalRot", &mAttackStatus.normalRot.x, 0.01f, -6.28f, 6.28f);
-		ImGui::DragFloat3("EndRot", &mAttackStatus.endRot.x, 0.01f, -6.28f, 6.28f);
+		std::string timeStr = "Time : " + std::to_string(mAttackStatus.motionTime);
+		ImGui::ProgressBar(mAttackStatus.motionTime, ImVec2(-1.0f, 0.0f), timeStr.c_str());
+		ImGui::DragInt("ComboCount", &mAttackStatus.comboCount, 0);
+		std::string inputTimeStr = "inputWait : " + std::to_string(mAttackStatus.inputWaitingTime);
+		ImGui::ProgressBar(mAttackStatus.inputWaitingTime, ImVec2(-1.0f, 0.0f), inputTimeStr.c_str());
+
+		if (mAttackStatus.isComboRequest)
+		{
+			ImGui::Text("ComboRequest: [ON]");
+		}
+		else
+		{
+			ImGui::Text("ComboRequest: [OFF]");
+		}
 		mAttackStatus.sword->DrawGuiTree();
-		
+
 	}
 
 	ImGui::End();
@@ -305,10 +371,14 @@ void Player::ColliderDraw() {
 
 	// 剣
 	mAttackStatus.sword->Draw();
-	if (mAttackStatus.isOperating) {
-		// 武器のコライダー 描画
-		for (Collider* collider : mAttackStatus.swordColliders) {
-			collider->Draw();
+	if (mBehavior == Behavior::kAttack || mBehavior == Behavior::kChargeAttack)
+	{
+		if (mAttackStatus.isOperating|| mChargeStatus.isCharge)
+		{
+			// 武器のコライダー 描画
+			for (Collider* collider : mAttackStatus.swordColliders) {
+				collider->Draw();
+			}
 		}
 	}
 
@@ -482,71 +552,106 @@ void Player::Guard()
 
 void Player::Attack()
 {
-	// 動作中でない場合のみキー入力を行う
-	if (mAttackStatus.isUp == false &&
-		!mObject->mSkinning->GetIsMotionbrending()) {
-
+	// コンボ上限に達していない
+	if (mAttackStatus.comboCount < kComboCountMax) {
 		// Bボタン Triggerで攻撃
-		if (mInput->GetPused(Gamepad::Button::B) || mInput->GetTriggerKey(DIK_RETURN)) {
-			mAttackStatus.isUp = true;
-			mObject->mSkinning->SetNextAnimation("gatotu0");
+		if (mInput->GetPused(Gamepad::Button::B) || mInput->GetTriggerKey(DIK_RETURN))
+		{
+			// 初期動作
+			if (mBehavior == Behavior::kRoot)
+			{
+				mBehavior = Behavior::kAttack;
+				mAttackStatus.motionTime = 1.0f;
+			}
+
+			// コンボ有効
+			mAttackStatus.isComboRequest = true;
 		}
-
 	}
+	if (mBehavior != Behavior::kAttack) { return; }
+	if (mAttackStatus.motionTime >= 1.0f)
+	{
+		// コンボ
+		if (mAttackStatus.isComboRequest)
+		{
+			// コンボ回数 増加	
+			mAttackStatus.comboCount++;
+			// リクエスト解除
+			mAttackStatus.isComboRequest = false;
+			// タイマーをリセット
+			mAttackStatus.motionTime = 0.0f;
 
-	// 数値上昇中の場合
-	if (mAttackStatus.isUp) {
-		// tを増加させる
-		if (mAttackStatus.t < 1.0f) {
-			mAttackStatus.t += 1.0f / 60.0f;
-			//mObject->mSkinning->GetDurationTime();
-			// 攻撃が命中していない かつ tが0.1f以上であれば攻撃フラグをtrueにする
-			if (mAttackStatus.t >= 0.6f && !mAttackStatus.isHit && !mAttackStatus.isOperating) {
+			mAttackStatus.isOperating = false;
+			mAttackStatus.isHit = false;
+
+			// コンボ段階に応じたモーションに切り替える
+			// 攻撃コンボの段階に応じた処理
+			switch (mAttackStatus.comboCount)
+			{
+			case 1:
+
+				mObject->mSkinning->SetNextAnimation("slash");
+
+				break;
+
+			case 2:
+
+				mObject->mSkinning->SetMotionBlendingInterval(4.0f);
+				mObject->mSkinning->SetNextAnimation("slashUp");
+
+				break;
+
+			case 3:
+
+				mObject->mSkinning->SetMotionBlendingInterval(10.0f);
+				mObject->mSkinning->SetNextAnimation("prepare");
+
+				break;
+
+			default:
+				break;
+			}
+
+		}
+		// コンボを継続しない場合、通常状態に戻る
+		else
+		{
+			mAttackStatus.motionTime = 0.0f;
+			mAttackStatus.isOperating = false;
+			mAttackStatus.isHit = false;
+			mAttackStatus.isUp = false;
+			mObject->mSkinning->SetMotionBlendingInterval(2.0f);
+			//mObject->mSkinning->SetNextAnimation("idle");
+			// コンボ回数リセット
+			mAttackStatus.comboCount = 0;
+			mBehavior = Behavior::kRoot;
+		}
+	}
+	else
+	{
+		mAttackStatus.motionTime += (1.0f / 60.0f);
+
+		if (mAttackStatus.comboCount == 3)
+		{
+			if (mAttackStatus.motionTime >= 0.1f &&
+				mObject->mSkinning->GetNowSkinCluster()->name != "gatotu0" &&
+				!mObject->mSkinning->SearchToWaitingSkinCluster("gatotu0"))
+			{
+				mObject->mSkinning->SetNextAnimation("gatotu0");
 				mAttackStatus.isOperating = true;
 			}
-			// tが最大値の1.0fを超過したら今度は減少させる
-			if (mAttackStatus.t >= 1.0f) {
-				mAttackStatus.t = 0.0f;
-				mAttackStatus.isUp = false;
-				mAttackStatus.isOperating = false;
-				mAttackStatus.isHit = false;
-				mObject->mSkinning->SetNextAnimation("idle");
-
-			}
 		}
-	}
-
-	//// 剣の位置を更新(2D配置→ワールド座標に変換)
-	//mAttackStatus.sword->mWorldTransform->translation = DamageReaction::GetWorldPosForScreen(Vector2(mAttackStatus.pos.x, mAttackStatus.pos.y), 1.0f, MainCamera::GetInstance());
-
-	//// 回転量をtの数値に応じて設定する
-	//mAttackStatus.sword->mWorldTransform->rotation = ExponentialInterpolation(mAttackStatus.normalRot, mAttackStatus.endRot, mAttackStatus.t, 1.0f);
-	//mAttackStatus.sword->mWorldTransform->rotation.y += MainCamera::GetInstance()->GetRotate().y;
-
-	// レティクルの位置(コライダー)をtの値に応じて移動させる
-	mReticle->SetReticleDistance(ExponentialInterpolation(0.5f, 10.0f, mAttackStatus.t, 1.0f));
-
-	// 衝突時の処理
-	if (mAttackStatus.isOperating == true && mAttackStatus.isHit == false)
-	{
-		for (Collider* collider : mAttackStatus.swordColliders)
-		{
-			if (collider->GetOnCollisionFlag() == false)
+		else {
+			
+			// 攻撃が命中していない かつ tが0.1f以上であれば攻撃フラグをtrueにする
+			if (mAttackStatus.motionTime >= 0.6f && !mAttackStatus.isHit && !mAttackStatus.isOperating)
 			{
-				continue;
+				mAttackStatus.isOperating = true;
 			}
 
-			// 次のフレームで消す
-			mAttackStatus.isHit = true;
-
-			// 敵にダメージを与える
-			ReciveDamageToBoss(1.2f);
-
-			// ダメージ表示
-			int32_t damage = static_cast<int32_t>(static_cast<int32_t>(mStatus->STR / 2.0f) * 1.0f) - static_cast<int32_t>(mBoss->GetStatus()->VIT / 4.0f);;
-			DamageReaction::GetInstance()->Reaction(mReticle->GetWorld3D(), damage, MainCamera::GetInstance());
 		}
 	}
+
 
 
 }
@@ -560,21 +665,19 @@ void Player::Move()
 			mInput = InputManager::GetInstance();
 		}
 
-		// 移動量
-		Vector3 direction{};
 		// 上下移動の可否
 		if (mInput->GetPushKey(DIK_W)) {
-			direction.z += 1.0f;
+			mDirection.z += 1.0f;
 		}
 		if (mInput->GetPushKey(DIK_S)) {
-			direction.z -= 1.0f;
+			mDirection.z -= 1.0f;
 		}
 		// 左右移動の可否
 		if (mInput->GetPushKey(DIK_A)) {
-			direction.x -= 1.0f;
+			mDirection.x -= 1.0f;
 		}
 		if (mInput->GetPushKey(DIK_D)) {
-			direction.x += 1.0f;
+			mDirection.x += 1.0f;
 		}
 
 		// スティック入力の量
@@ -587,58 +690,64 @@ void Player::Move()
 			) {
 
 			// Xの移動量とYの移動量を設定する
-			direction = {
+			mDirection = {
 				(float)mInput->GetStick(Gamepad::Stick::LEFT_X) ,
 				0.0f,
 				(float)mInput->GetStick(Gamepad::Stick::LEFT_Y)
 			};
 
+			// 正規化
+			if (Length(mDirection) != 0.0f) {
+				mDirection = Normalize(mDirection);
+			}
+
+			// 移動速度を設定
+			float moveSpeed = 0.10f;
+			// ガード中は移動速度を減少
+			if (mBehavior == Behavior::kGuard) {
+				moveSpeed = 0.03f;
+			}
+
+			// カメラの回転量を反映
+			mDirection = TransformNomal(mDirection, MainCamera::GetInstance()->mWorldTransform->GetWorldMatrix());
+			// y座標は移動しない
+			mDirection.y = 0.0f;
+
+			// 平行移動を行う
+			mObject->mWorldTransform->translation += mDirection * moveSpeed;
+
+			// ここから回転処理
+			const float PI = 3.14f;
+			float rotateY = std::atan2f(mDirection.x, mDirection.z);
+			//rotateY = std::fmodf(rotateY, 2.0f * PI);
+			if (rotateY > PI) {
+				rotateY -= 2.0f * PI;
+			}
+			if (rotateY < -PI) {
+				rotateY += 2.0f * PI;
+			}
+			mObject->mWorldTransform->rotation.y = rotateY;
+
 			// 移動状態に変更
 			if (mBehavior == Behavior::kRoot) {
 				mBehavior = Behavior::kMove;
-				mObject->mSkinning->SetNextAnimation("walk");
+				
 			}
 
 		}
-		else {
+
+		if (mInput->GetStick(Gamepad::Stick::LEFT_X) >= -stickValue && // 左 
+			mInput->GetStick(Gamepad::Stick::LEFT_X) <= stickValue && // 右
+			mInput->GetStick(Gamepad::Stick::LEFT_Y) >= -stickValue && // 上
+			mInput->GetStick(Gamepad::Stick::LEFT_Y) <= stickValue	  // 下
+			) {
+
 			if (mBehavior == Behavior::kMove) {
 				// 通常状態に戻す
 				mBehavior = Behavior::kRoot;
-				mObject->mSkinning->SetNextAnimation("idle");
 			}
 		}
 
-		// 正規化
-		if (Length(direction) != 0.0f) {
-			direction = Normalize(direction);
-		}
-
-		// 移動速度を設定
-		float moveSpeed = 0.10f;
-		// ガード中は移動速度を減少
-		if (mBehavior == Behavior::kGuard) {
-			moveSpeed = 0.03f;
-		}
-
-		// カメラの回転量を反映
-		direction = TransformNomal(direction, MainCamera::GetInstance()->mWorldTransform->GetWorldMatrix());
-		// y座標は移動しない
-		direction.y = 0.0f;
-
-		// 平行移動を行う
-		mObject->mWorldTransform->translation += direction * moveSpeed;
-
-		// ここから回転処理
-		const float PI = 3.14f;
-		float rotateY = std::atan2f(direction.x, direction.z);
-		rotateY = std::fmodf(rotateY, 2.0f * PI);
-		if (rotateY > PI) {
-			rotateY -= 2.0f * PI;
-		}
-		if (rotateY < -PI) {
-			rotateY += 2.0f * PI;
-		}
-		mObject->mWorldTransform->rotation.y = rotateY;
 
 	}
 
@@ -731,57 +840,31 @@ void Player::DebagCtr()
 
 }
 
-void Player::Charge()
-{
-	// [ため動作中]に状態を変更
-	mBehavior = Behavior::kCharge;
-
-	// 設定したボタンが長押しされている間、ため動作を行う
-	mChargeCount++;
-
-}
-
-void Player::ChengeChageToAttack()
-{
-	// [攻撃動作中]に状態を変更
-	mBehavior = Behavior::kAttack;
-	// ため動作の継続時間リセット
-	mChargeCount = 0;
-
-	// アローの生成
-	Vector3 startPos = this->GetWorldPos();// 移動の始点
-	Vector3 endPos = mReticle->GetWorld3D();// 移動の終点
-
-	// 初期位置をずらし、アローの着弾位置をずらす
-	for (int32_t i = 0; i < 3; i++) {
-		Vector3 randomStartPos = startPos;
-		randomStartPos.x += (rand() % (i * 2 + 2)) * 0.25f;
-		randomStartPos.y += (rand() % (i + 2)) * 0.25f;
-		// 複数のアローを生成し、アロークラスの配列に要素を追加する
-		mArrows.push_back(CreateArrow(randomStartPos, endPos));
-	}
-
-}
-
 void Player::SpecialAtkRB()
 {
 	// 入力段階
-	if (mBehavior == Behavior::kRoot || mBehavior == Behavior::kMove|| mBehavior == Behavior::kCharge) {
+	if (mBehavior == Behavior::kRoot || mBehavior == Behavior::kMove || mBehavior == Behavior::kCharge) {
 
 		// 突進攻撃(仮)
 		if (mInput->GetGamepad()->getButton(Gamepad::Button::RIGHT_SHOULDER)) {
 			mChargeStatus.pushingFrame += 1.0f / 60.0f;
 
 			// 入力時間が一定まで達していたら 攻撃方向を指定できるようにする
-			if (mChargeStatus.pushingFrame > (15.0f / 60.0f))
+			if (mChargeStatus.pushingFrame >= 1.0f)
 			{
 				if (mBehavior == Behavior::kRoot || mBehavior == Behavior::kMove)
 				{
 					mBehavior = Behavior::kCharge;
-					// 溜めモーションを切り替える
-					mObject->mSkinning->SetNextAnimation("prepare");
 				}
-
+				
+				if (mBehavior == Behavior::kCharge) {
+					if (mObject->mSkinning->GetNowSkinCluster()->name != "prepare" &&
+						!mObject->mSkinning->SearchToWaitingSkinCluster("prepare")) {
+						// 溜めモーションを切り替える
+						mObject->mSkinning->SetMotionBlendingInterval(10.0f);
+						mObject->mSkinning->SetNextAnimation("prepare");
+					}
+				}
 				// 溜めフラグをtrueに
 				mChargeStatus.isCastMode = true;
 
@@ -795,51 +878,90 @@ void Player::SpecialAtkRB()
 					) {
 
 					// Xの移動量とYの移動量を設定する
-					mChargeStatus.direction = {
+					mDirection = {
 						(float)mInput->GetStick(Gamepad::Stick::RIGHT_X) ,
 						0.0f,
 						(float)mInput->GetStick(Gamepad::Stick::RIGHT_Y)
 					};
+
+					// 正規化
+					if (Length(mDirection) != 0.0f) {
+						mDirection = Normalize(mDirection);
+					}
+
+					// カメラの回転量を反映
+					//mDirection = TransformNomal(mDirection, MainCamera::GetInstance()->mWorldTransform->GetWorldMatrix());
+					// y座標は移動しない
+					mDirection.y = 0.0f;
+
+					// ここから回転処理
+					const float PI = 3.14f;
+					float rotateY = std::atan2f(mDirection.x, mDirection.z);
+					rotateY = std::fmodf(rotateY, 2.0f * PI);
+					if (rotateY > PI) {
+						rotateY -= 2.0f * PI;
+					}
+					if (rotateY < -PI) {
+						rotateY += 2.0f * PI;
+					}
+					mObject->mWorldTransform->rotation.y = rotateY;
 
 				}
 
 
 			}
 
+			// カメラの回転操作を停止
+			MainCamera::GetInstance()->SetCameraRotateControll(false);
+
 		}
 
 		// 離すと攻撃する
 		if (mChargeStatus.pushingFrame > 0.0f && mInput->GetReleased(Gamepad::Button::RIGHT_SHOULDER)) {
 
+			// ちゃんと攻撃モーションが発生するようにする
+			if (mObject->mSkinning->GetIsMotionbrending()) {
+				mObject->mSkinning->EndMotionBrend();
+			}
+
 			// 溜めフラグの解除
-			mBehavior = Behavior::kAttack;
+			mBehavior = Behavior::kChargeAttack;
 			// 攻撃フラグをtrueにする
 			mChargeStatus.isCharge = true;
 
 			// 始点の設定
 			mChargeStatus.startPos = mObject->mWorldTransform->translation;
+			// 初期回転量
+			mChargeStatus.cameraStartRot = MainCamera::GetInstance()->GetRotate();
+			mChargeStatus.cameraEndRot = { mChargeStatus.cameraStartRot.x,mDirection.y,mChargeStatus.cameraStartRot.z };
+			// カメラの回転操作を停止
+			MainCamera::GetInstance()->SetCameraRotateControll(false);
 
 			// 正規化
-			if (Length(mChargeStatus.direction) != 0.0f) {
-				mChargeStatus.direction = Normalize(mChargeStatus.direction);
+			if (Length(mDirection) != 0.0f) {
+				mDirection = Normalize(mDirection);
 			}
-			// 方向指定がなければ正面方向へ発動する
 			else {
-				mChargeStatus.direction.z = 1.0f;
+
+				mDirection;
 			}
+			
 			// カメラの回転量を反映
-			mChargeStatus.direction = TransformNomal(mChargeStatus.direction, MainCamera::GetInstance()->mWorldTransform->GetWorldMatrix());
+			//mDirection = TransformNomal(mDirection, MainCamera::GetInstance()->mWorldTransform->GetWorldMatrix());
 			// y座標は移動しない
-			mChargeStatus.direction.y = 0.0f;
+			mDirection.y = 0.0f;
 			// 終点の設定
-			mChargeStatus.attackRange = 7.0f;
-			mChargeStatus.endPos = mObject->mWorldTransform->translation + Scalar(mChargeStatus.attackRange, mChargeStatus.direction);
+			mChargeStatus.attackRange = 14.0f;
+			mChargeStatus.endPos = mObject->mWorldTransform->translation + Scalar(mChargeStatus.attackRange, mDirection);
 
 			mChargeStatus.moveingTime = 0.0f;
 
 			// モーションを切り替える(+モーションブレンド切替速度を早く)
-			mObject->mSkinning->SetMotionBlendingInterval(6.0f);
-			mObject->mSkinning->SetNextAnimation("gatotu0");
+			mObject->mSkinning->SetMotionBlendingInterval(10.0f);
+			if  (mObject->mSkinning->GetNowSkinCluster()->name != "gatotu0" &&
+				!mObject->mSkinning->SearchToWaitingSkinCluster("gatotu0")) {
+				mObject->mSkinning->SetNextAnimation("gatotu0");
+			}
 		}
 
 
@@ -848,34 +970,35 @@ void Player::SpecialAtkRB()
 	}
 
 	// 攻撃段階
-	else {
+	else if (mBehavior == Behavior::kChargeAttack) {
 
 		// 線形補間を利用して座標を移動させる
 		if (mChargeStatus.moveingTime < 1.0f) {
-			// 回避時の移動速度/フレームレートで加算する
+
+			// カメラ回転
+			MainCamera::GetInstance()->SetRotate(ExponentialInterpolation(mChargeStatus.cameraStartRot, mChargeStatus.cameraEndRot, mChargeStatus.moveingTime, 1.0f));
+
+			// 移動
 			mChargeStatus.moveingTime += 1.0f / 30.0f;
+			mObject->mWorldTransform->translation.x = (1.0f - mChargeStatus.moveingTime) * mChargeStatus.startPos.x + mChargeStatus.moveingTime * mChargeStatus.endPos.x;
+			mObject->mWorldTransform->translation.z = (1.0f - mChargeStatus.moveingTime) * mChargeStatus.startPos.z + mChargeStatus.moveingTime * mChargeStatus.endPos.z;
+
 		}
 		else if (mChargeStatus.moveingTime >= 1.0f) {
 			// タイムを補正
 			mChargeStatus.moveingTime = 1.0f;
-
-			mChargeStatus.direction = { 0.0f,0.0f,0.0f };
 
 			// 攻撃フラグをfalseにする
 			mChargeStatus.isCharge = false;
 
 			// 移動終了
 			mBehavior = Behavior::kRoot;
-
-			// モーションを切り替える
-			mObject->mSkinning->SetMotionBlendingInterval(30.0f);
-			mObject->mSkinning->SetNextAnimation("idle");
+			mObject->mSkinning->SetMotionBlendingInterval(2.0f);
+			
+			// カメラの回転操作をON
+			MainCamera::GetInstance()->SetCameraRotateControll(false);
 
 		}
-
-		// 移動
-		mObject->mWorldTransform->translation.x = (1.0f - mChargeStatus.moveingTime) * mChargeStatus.startPos.x + mChargeStatus.moveingTime * mChargeStatus.endPos.x;
-		mObject->mWorldTransform->translation.z = (1.0f - mChargeStatus.moveingTime) * mChargeStatus.startPos.z + mChargeStatus.moveingTime * mChargeStatus.endPos.z;
 	}
 
 

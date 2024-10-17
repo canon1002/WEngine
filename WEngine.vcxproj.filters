@@ -434,6 +434,15 @@
     <ClCompile Include="GameEngine\Effect\PostEffect\Vignette.cpp">
       <Filter>GameEngine\Effect\PostEffect</Filter>
     </ClCompile>
+    <ClCompile Include="GameEngine\Scene\MenuScene.cpp">
+      <Filter>GameEngine\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="GameEngine\Scene\OverScene.cpp">
+      <Filter>GameEngine\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="GameEngine\Scene\StartScene.cpp">
+      <Filter>GameEngine\Scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameEngine\Object\Light\DirectionalLight.h">
@@ -729,6 +738,15 @@
     </ClInclude>
     <ClInclude Include="GameEngine\Effect\PostEffect\Vignette.h">
       <Filter>GameEngine\Effect\PostEffect</Filter>
+    </ClInclude>
+    <ClInclude Include="GameEngine\Scene\MenuScene.h">
+      <Filter>GameEngine\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="GameEngine\Scene\OverScene.h">
+      <Filter>GameEngine\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="GameEngine\Scene\StartScene.h">
+      <Filter>GameEngine\Scene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
