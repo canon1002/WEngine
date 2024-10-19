@@ -16,6 +16,9 @@ struct SkinningStatus {
 	bool isActive; // アニメーションを有効にするか(骨のみ使う場合はfalse)
 };
 
+/// <summary>
+/// スキニングアニメーションクラス
+/// </summary>
 class Skinnig
 {
 public: // -- 公開 メンバ関数 -- //
@@ -93,20 +96,66 @@ public: // -- 公開 メンバ関数 -- //
 	/// </summary>
 	void EndMotionBrend();
 
+	/// <summary>
+	/// 現在のモーションブレンドの移行時間を取得
+	/// </summary>
 	float GetMotionBlendingTime() { return mMotionBrendingTime; }
+
+	/// <summary>
+	/// モーション切替速度の変更
+	/// </summary>
+	/// <param name="interval"> モーション切替速度 1.0f ~ n </param>
 	void SetMotionBlendingInterval(float interval) { mMotionBrendingInterval = interval; }
 
+	/// <summary>
+	/// アニメーション全体の尺を取得する
+	/// </summary>
+	/// <returns></returns>
 	float GetDurationTime() { return mNowSkincluster->animation.duration; }
+
+	/// <summary>
+	/// アニメーション全体の尺を取得する(登録済みのアニメーションのMAPから指定する)
+	/// </summary>
+	/// <param name="name"> アニメーション名 </param>
+	/// <returns></returns>
 	float GetDurationTime(std::string name) { return mSkinClusterMap.at(name)->animation.duration; }
 
+	/// <summary>
+	/// モーションブレンドを行っているか取得
+	/// </summary>
+	/// <returns></returns>
 	bool GetIsMotionbrending() { return mIsMotionBrending; }
+
+	/// <summary>
+	/// 現行のアニメーションが指定した名前であるか確認
+	/// </summary>
+	/// <param name="name"> アニメーション名 </param>
+	/// <returns></returns>
 	bool GetIsActiveAnimation(std::string name);
 
+	/// <summary>
+	/// 現行のアニメーションのスキンクラスター等の情報を取得
+	/// </summary>
+	/// <returns></returns>
 	std::shared_ptr<SkinningStatus> GetNowSkinCluster() { return mNowSkincluster; }
 
+	/// <summary>
+	/// アニメーションの再生速度を設定
+	/// </summary>
+	/// <param name="speed"></param>
 	void SetAnimationPlaySpeed(float speed) { mAnimationPlaySpeed = speed; }
 
+	/// <summary>
+	/// モーションブレンドを待機しているアニメーション配列を取得
+	/// </summary>
+	/// <returns></returns>
 	std::vector<std::shared_ptr<SkinningStatus>> GetWaitingSkinClusters() { return mWaitingSkinClusters; }
+
+	/// <summary>
+	/// 待機しているアニメーション配列に指定したアニメーションがあるか検索
+	/// </summary>
+	/// <param name="name"></param>
+	/// <returns></returns>
 	bool SearchToWaitingSkinCluster(std::string name);
 
 private: // -- 非公開 メンバ変数 -- //
