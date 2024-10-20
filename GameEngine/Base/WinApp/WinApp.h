@@ -23,19 +23,16 @@
 #include <wrl.h>
 #include <memory>
 
+/// <summary>
+/// WINAPI関連クラス
+/// </summary>
 class WinApp final
 {
-private: // ** メンバ関数 ** //
-
-	// コピーコンストラクタと演算子オーバーロードの禁止
-	WinApp(const WinApp& obj) = delete;
-	WinApp& operator=(const WinApp& obj) = delete;
-
 public: // ** 静的メンバ関数 ** //
 
 	static WinApp* GetInstance();
 
-public: // ** メンバ関数 ** //
+public: // -- 公開 メンバ関数 -- //
 
 	WinApp() = default;
 	~WinApp() = default;
@@ -78,8 +75,13 @@ public: // -- アクセッサ -- //
 	// wstring->string
 	static std::string ConvertString(const std::wstring& str);
 
+private: // -- 非公開 メンバ関数 -- //
 
-public:
+	// コピーコンストラクタと演算子オーバーロードの禁止
+	WinApp(const WinApp& obj) = delete;
+	WinApp& operator=(const WinApp& obj) = delete;
+
+public: // -- 公開 メンバ変数 -- //
 
 	// ウィンドウクラスの宣言
 	WNDCLASS wc{};
@@ -96,7 +98,7 @@ public:
 	// メッセージ
 	MSG msg{};
 
-private: 
+private: // -- 非公開 メンバ変数 -- //
 
 	// インスタンス
 	static WinApp* instance;
