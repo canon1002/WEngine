@@ -106,8 +106,17 @@ public: // -- 公開 メンバ関数 -- //
 
 	// 初期化
 	void Init();
-	// 更新
+
+	// -- 更新処理 -- //
+
+	// 全体更新
 	void Update();
+	
+	// 座標/アニメーション更新
+	void UpdateObject();
+
+
+	
 	// 描画
 	void Draw();
 	// デバッグUI表示

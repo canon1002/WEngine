@@ -46,6 +46,7 @@ void GameScene::Init(){
 	// プレイヤー
 	mPlayer = std::make_unique<Player>();
 	mPlayer->Init();
+
 	// ボス
 	mBoss = std::make_unique<BossEnemy>();
 	mBoss->Init();
@@ -102,7 +103,13 @@ void GameScene::Init(){
 		mGroundShadow[i]->SetModel("groundShadow.gltf");
 	}
 	
+	// スタート演出
+	mPlayerStartAndEnd.start = { 0.0f,0.0f,-48.0f };
+	mPlayerStartAndEnd.end = { 0.0f,0.0f,-24.0f };
+	mPlayerStartAndEnd.t = 0.0f;
+	mPlayerStartAndEnd.k = 1.0f;
 
+	
 }
 
 void GameScene::Update(){
@@ -123,7 +130,24 @@ void GameScene::Update(){
 	{
 	case Phase::BEGIN:
 	
+		
 		if (viggnetTime < 1.0f) {
+
+			// 初期化
+			if (viggnetTime == 0.0f) {
+
+				mPlayer->GetObject3D()->mWorldTransform->translation = ExponentialInterpolation(mPlayerStartAndEnd.start, mPlayerStartAndEnd.end, mPlayerStartAndEnd.t, mPlayerStartAndEnd.k);
+
+				// フォローターゲット解除
+				/*MainCamera::GetInstance()->EraseTarget();
+				MainCamera::GetInstance()->SetTransform(
+					Vector3(1.0f, 1.0f, 1.0f),
+					Vector3((3.14f/4.0f), 0.0f, 0.0f),
+					Vector3(0.0f, 32.0f, 0.0f)
+				);*/
+
+			}
+
 			viggnetTime += 1.0f / 60.0f;
 		}
 		else if (viggnetTime >= 1.0f) {
@@ -136,10 +160,31 @@ void GameScene::Update(){
 		// フェードインが終わったら戦闘開始
 		if (viggnetTime == 1.0f) {
 			
-			// フェーズ移行
-			mPhase = Phase::BATTLE;
-		
+			if (mPlayerStartAndEnd.t < 1.0f) {
+				
+				mPlayerStartAndEnd.t += 1.0f / (60.0f * 2.0f);
+
+				if (mPlayerStartAndEnd.t >= 1.0f) {
+					mPlayerStartAndEnd.t = 1.0f;
+
+					// メインカメラをフォローカメラ仕様にする
+					MainCamera::GetInstance()->SetTarget(mPlayer->GetObject3D()->GetWorldTransform());
+					
+
+					// フェーズ移行
+					mPhase = Phase::BATTLE;
+				}
+
+				MainCamera::GetInstance()->SetTranslate(ExponentialInterpolation(Vector3(0.0f,32.0f,0.0f), Vector3(0.0f, 6.0f, 0.0f), mPlayerStartAndEnd.t, 1.0f));
+				MainCamera::GetInstance()->SetRotate(ExponentialInterpolation(Vector3(1.57f,0.0f,0.0f), Vector3(0.215f,0.0f,0.0f), mPlayerStartAndEnd.t, 1.0f));
+				mPlayer->GetObject3D()->mWorldTransform->translation = ExponentialInterpolation(mPlayerStartAndEnd.start, mPlayerStartAndEnd.end, mPlayerStartAndEnd.t, mPlayerStartAndEnd.k);
+
+			}
+
 		}
+
+		// プレイヤー 更新
+		mPlayer->UpdateObject();
 
 		break;
 	case Phase::BATTLE:
@@ -154,6 +199,9 @@ void GameScene::Update(){
 			mPhase = Phase::WIN;
 			viggnetTime = 0.0f;
 		}
+
+		// プレイヤー 更新
+		mPlayer->Update();
 
 		// コライダーリストへの追加処理
 		mCollisionManager->SetCollider(mPlayer->GetObject3D()->mCollider);
@@ -224,8 +272,7 @@ void GameScene::Update(){
 	// ステータスマネージャ
 	StatusManager::GetInstance()->Update();
 
-	// プレイヤー
-	mPlayer->Update();
+	
 	// ボス
 	//mBoss->Update();
 

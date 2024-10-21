@@ -30,6 +30,8 @@ public: // -- public メンバ関数 -- //
 
 	// フォローカメラ機能 -- フォロー対象設定 -- 
 	inline void SetTarget(const WorldTransform* target) { mTarget = target; }
+	// フォローカメラ機能 -- フォロー解除 -- 
+	inline void EraseTarget() { mTarget = nullptr; }
 
 	// フォローカメラ機能 -- 追加平行移動値の設定 -- 
 	inline void SetAddTranslation(const Vector3 translation){

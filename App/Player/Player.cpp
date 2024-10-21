@@ -43,7 +43,7 @@ void Player::Init() {
 
 
 	// メインカメラをフォローカメラ仕様にする
-	MainCamera::GetInstance()->SetTarget(mObject->GetWorldTransform());
+	//MainCamera::GetInstance()->SetTarget(mObject->GetWorldTransform());
 
 	// 最初は通常状態から始める
 	mBehavior = Behavior::kRoot;
@@ -206,6 +206,19 @@ void Player::Update() {
 	}
 
 	// オブジェクト更新
+	UpdateObject();
+
+	// シールド
+	mGuardStatus.shield->Update();
+
+	// UI更新
+	mStatus->Update();
+
+}
+
+void Player::UpdateObject()
+{
+	// オブジェクト更新
 	mObject->Update();
 	mObject->mSkinning->GetSkeleton().joints;
 	mObject->mCollider->Update();
@@ -263,12 +276,6 @@ void Player::Update() {
 			}
 		}
 	}
-
-	// シールド
-	mGuardStatus.shield->Update();
-
-	// UI更新
-	mStatus->Update();
 
 }
 

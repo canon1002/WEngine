@@ -21,7 +21,13 @@ enum class Phase {
 	WIN,	// プレイヤー勝利
 };
 
-
+// イージング変数セット
+struct EasingToVector3 {
+	Vector3 start;	// 初期地点
+	Vector3 end;	// 終了地点
+	float t;		// 時間(0.0f ~ 1.0f)
+	float k;		// 係数(指数関数用)
+};
 
 class GameScene :
 	public IScene
@@ -58,6 +64,9 @@ private:
 
 	// 開始前のビネット
 	float viggnetTime;
+	// ゲーム開始演出関連
+	EasingToVector3 mPlayerStartAndEnd;
+	EasingToVector3 mBossStartAndEnd;
 
 	// UI
 	UISet mMoveUI;
