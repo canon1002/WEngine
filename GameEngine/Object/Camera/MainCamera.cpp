@@ -44,6 +44,7 @@ void MainCamera::Update()
 		ImGui::SliderAngle("RotateZ", &mWorldTransform->rotation.z);
 		ImGui::DragFloat3("Rotate", &mWorldTransform->rotation.x, 0.1f, -1000.0f, 1000.0f);
 		ImGui::DragFloat3("Transform", &mWorldTransform->translation.x, 0.1f, -1000.0f, 1000.0f);
+		ImGui::DragFloat3("AddTransform", &mAddTranslation.x, 0.1f, -1000.0f, 1000.0f);
 		ImGui::DragFloat("NearClip", &nearClip_, 0.01f, 0.0f, 100.0f);
 		ImGui::DragFloat("FarClip", &farClip_, 0.1f, 1.0f, 1000.0f);
 		ImGui::End();

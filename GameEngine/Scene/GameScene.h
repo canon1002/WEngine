@@ -67,6 +67,8 @@ private:
 	// ゲーム開始演出関連
 	EasingToVector3 mPlayerStartAndEnd;
 	EasingToVector3 mBossStartAndEnd;
+	EasingToVector3 mCameraRot;
+	EasingToVector3 mCameraTr;
 
 	// UI
 	UISet mMoveUI;

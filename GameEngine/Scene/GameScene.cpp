@@ -104,12 +104,24 @@ void GameScene::Init(){
 	}
 	
 	// スタート演出
-	mPlayerStartAndEnd.start = { 0.0f,0.0f,-48.0f };
-	mPlayerStartAndEnd.end = { 0.0f,0.0f,-24.0f };
+	mPlayerStartAndEnd.start = { 0.0f,0.0f,-36.0f };
+	mPlayerStartAndEnd.end = { 0.0f,0.0f,-8.0f };
 	mPlayerStartAndEnd.t = 0.0f;
 	mPlayerStartAndEnd.k = 1.0f;
 
+	MainCamera::GetInstance()->SetTranslate(Vector3(0.0f, 60.0f, 0.0f));
+	MainCamera::GetInstance()->SetRotate(Vector3(1.57f, 12.56f, 0.0f));
 	
+	mCameraRot.start = { 1.57f,6.28f,0.0f };
+	mCameraRot.end = { 0.0f,0.0f,0.0f };
+	mCameraRot.t = 0.0f;
+	mCameraRot.k = 0.0f;
+
+	mCameraTr.start = { 0.0f,60.0f,0.0f };
+	mCameraTr.end = { 0.0f,1.7f,-15.5f };
+	mCameraTr.t = 0.0f;
+	mCameraTr.k = 0.0f;
+
 }
 
 void GameScene::Update(){
@@ -159,29 +171,64 @@ void GameScene::Update(){
 
 		// フェードインが終わったら戦闘開始
 		if (viggnetTime == 1.0f) {
-			
-			if (mPlayerStartAndEnd.t < 1.0f) {
-				
-				mPlayerStartAndEnd.t += 1.0f / (60.0f * 2.0f);
 
-				if (mPlayerStartAndEnd.t >= 1.0f) {
-					mPlayerStartAndEnd.t = 1.0f;
+			if (mCameraTr.k < 1.0f || mCameraRot.k < 1.0f ) {
 
-					// メインカメラをフォローカメラ仕様にする
-					MainCamera::GetInstance()->SetTarget(mPlayer->GetObject3D()->GetWorldTransform());
-					
-
-					// フェーズ移行
-					mPhase = Phase::BATTLE;
+				mCameraRot.t += 1.0f / (60.0f * 6.0f);
+				if (mCameraRot.t > 1.0f) {
+					mCameraRot.t = 1.0f;
 				}
 
-				MainCamera::GetInstance()->SetTranslate(ExponentialInterpolation(Vector3(0.0f,32.0f,0.0f), Vector3(0.0f, 6.0f, 0.0f), mPlayerStartAndEnd.t, 1.0f));
-				MainCamera::GetInstance()->SetRotate(ExponentialInterpolation(Vector3(1.57f,0.0f,0.0f), Vector3(0.215f,0.0f,0.0f), mPlayerStartAndEnd.t, 1.0f));
-				mPlayer->GetObject3D()->mWorldTransform->translation = ExponentialInterpolation(mPlayerStartAndEnd.start, mPlayerStartAndEnd.end, mPlayerStartAndEnd.t, mPlayerStartAndEnd.k);
+				if (mCameraRot.t > 0.5f) {
+					mCameraTr.t += 1.0f / (60.0f * 2.0f);
+					if (mCameraTr.t > 1.0f) {
+						mCameraTr.t = 1.0f;
+					}
+				}
+
+				if (mCameraRot.t >= 1.0f) {
+					mCameraRot.k += 2.0f / 60.0f;
+					if (mCameraRot.k > 1.0f) {
+						mCameraRot.k = 1.0f;
+					}
+					MainCamera::GetInstance()->mWorldTransform->rotation.x = ExponentialInterpolation(mCameraRot.start.x, mCameraRot.end.x, mCameraRot.k, 1.0f);
+
+				}
+				if(mCameraTr.t>=1.0f){
+					mCameraTr.k += 2.0f / 60.0f;
+					if (mCameraTr.k > 1.0f) {
+						mCameraTr.k = 1.0f;
+					}
+
+					MainCamera::GetInstance()->mWorldTransform->translation.z = ExponentialInterpolation(mCameraTr.start.z, mCameraTr.end.z, mCameraTr.k, 1.0f);
+
+				}
+
+				MainCamera::GetInstance()->mWorldTransform->translation.y = ExponentialInterpolation(mCameraTr.start.y, mCameraTr.end.y, mCameraTr.t, 1.0f);
+				MainCamera::GetInstance()->mWorldTransform->rotation.y = ExponentialInterpolation(mCameraRot.start.y, mCameraRot.end.y, mCameraRot.t, 1.0f);
+			
 
 			}
+			else if (mPlayerStartAndEnd.t >= 1.0f && mCameraTr.k >= 1.0f && mCameraRot.k >= 1.0f) {
 
+				// メインカメラをフォローカメラ仕様にする
+				MainCamera::GetInstance()->SetTarget(mPlayer->GetObject3D()->GetWorldTransform());
+
+				// フェーズ移行
+				mPhase = Phase::BATTLE;
+			}
 		}
+
+	if (mPlayerStartAndEnd.t < 1.0f) {
+
+		mPlayerStartAndEnd.t += 1.0f / (60.0f * 4.0f);
+
+		if (mPlayerStartAndEnd.t >= 1.0f) {
+			mPlayerStartAndEnd.t = 1.0f;
+		}
+
+		mPlayer->GetObject3D()->mWorldTransform->translation = ExponentialInterpolation(mPlayerStartAndEnd.start, mPlayerStartAndEnd.end, mPlayerStartAndEnd.t, mPlayerStartAndEnd.k);
+	}
 
 		// プレイヤー 更新
 		mPlayer->UpdateObject();

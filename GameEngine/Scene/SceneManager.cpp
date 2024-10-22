@@ -54,8 +54,6 @@ void SceneManager::Init(WinAPI* winApp, DirectXCommon* dxCommon){
 	sceneArr_[RESULT] = std::make_unique<ResultScene>();
 	sceneArr_[OVER] = std::make_unique<OverScene>();
 
-	// 初期シーン
-	currentSceneNo_ = STAGE;
 
 	//
 	copyImage_ = RenderCopyImage::GetInstance();

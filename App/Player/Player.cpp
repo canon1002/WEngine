@@ -160,9 +160,9 @@ void Player::Update() {
 
 		// デバッグ操作
 #ifdef _DEBUG
-		DebagCtr();
+		
 #endif // _DEBUG
-
+		DebagCtr();
 		switch (mBehavior)
 		{
 		case Behavior::kRoot:
