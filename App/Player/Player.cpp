@@ -160,9 +160,9 @@ void Player::Update() {
 
 		// デバッグ操作
 #ifdef _DEBUG
-		DebagCtr();
+		
 #endif // _DEBUG
-
+		DebagCtr();
 		switch (mBehavior)
 		{
 		case Behavior::kRoot:
@@ -288,6 +288,8 @@ void Player::DrawGUI() {
 
 	// メニューバーを表示する
 	ImGui::Begin("Player");
+
+	ImGui::DragFloat3("Direction", &mDirection.x);
 
 	const char* str[] = {
 		"kRoot",   // 通常状態
@@ -803,7 +805,7 @@ void Player::DebagCtr()
 
 		mIsAimMode = true;
 	}
-	else {
+	else if(mInput->GetReleased(Gamepad::Button::LEFT_SHOULDER)){
 		mIsAimMode = false;
 
 	}
@@ -836,7 +838,7 @@ void Player::DebagCtr()
 		MainCamera::GetInstance()->SetRotate(Vector3(ExponentialInterpolation(mCameraPreDir.x, 0.55f, t, k), mCameraPreDir.y, mCameraPreDir.z));
 	}
 	else {
-		MainCamera::GetInstance()->SetCameraRotateControll(true);
+		//MainCamera::GetInstance()->SetCameraRotateControll(true);
 	}
 
 	// 補間後の数値を計算
@@ -897,7 +899,7 @@ void Player::SpecialAtkRB()
 					}
 
 					// カメラの回転量を反映
-					//mDirection = TransformNomal(mDirection, MainCamera::GetInstance()->mWorldTransform->GetWorldMatrix());
+					mDirection = TransformNomal(mDirection, MainCamera::GetInstance()->mWorldTransform->GetWorldMatrix());
 					// y座標は移動しない
 					mDirection.y = 0.0f;
 
@@ -915,16 +917,17 @@ void Player::SpecialAtkRB()
 
 				}
 
-
+				// カメラの回転操作を停止
+				//MainCamera::GetInstance()->SetCameraRotateControll(false);
+				mIsAimMode = true;
 			}
-
-			// カメラの回転操作を停止
-			MainCamera::GetInstance()->SetCameraRotateControll(false);
 
 		}
 
 		// 離すと攻撃する
 		if (mChargeStatus.pushingFrame > 0.0f && mInput->GetReleased(Gamepad::Button::RIGHT_SHOULDER)) {
+
+			mIsAimMode = false;
 
 			// ちゃんと攻撃モーションが発生するようにする
 			if (mObject->mSkinning->GetIsMotionbrending()) {
@@ -940,9 +943,7 @@ void Player::SpecialAtkRB()
 			mChargeStatus.startPos = mObject->mWorldTransform->translation;
 			// 初期回転量
 			mChargeStatus.cameraStartRot = MainCamera::GetInstance()->GetRotate();
-			mChargeStatus.cameraEndRot = { mChargeStatus.cameraStartRot.x,mDirection.y,mChargeStatus.cameraStartRot.z };
-			// カメラの回転操作を停止
-			MainCamera::GetInstance()->SetCameraRotateControll(false);
+			mChargeStatus.cameraEndRot = { mChargeStatus.cameraStartRot.x,std::atan2f(mDirection.x, mDirection.z),mChargeStatus.cameraStartRot.z };
 
 			// 正規化
 			if (Length(mDirection) != 0.0f) {
@@ -1003,7 +1004,7 @@ void Player::SpecialAtkRB()
 			mObject->mSkinning->SetMotionBlendingInterval(2.0f);
 			
 			// カメラの回転操作をON
-			MainCamera::GetInstance()->SetCameraRotateControll(false);
+			MainCamera::GetInstance()->SetCameraRotateControll(true);
 
 		}
 	}
