@@ -174,6 +174,31 @@ PixelShaderOutput main(VertexShaderOutput input)
             }
         }
     }
+    
+    // 赤色ビネット
+    if (gEffects.enableRedVignetting != 0)
+    {
+        // 周囲を0に、中心に近くなるほど明るくなるように計算で調整
+        float32_t2 correct = input.texcoord * (1.0f - input.texcoord.yx);
+        // correctだけで計算すると中心の最大値が0.0625と暗すぎるのでScale調整
+        float vignette = correct.x * correct.y * gEffects.redVigneMultipliier;
+        // n乗してみる nはgEffectのvignetIndex
+        vignette = saturate(pow(vignette, gEffects.redVigneIndex));
+        //// 係数として乗算
+        //output.color.r = output.color.r * (vignette - gEffects.vignettingColor.r);
+        //output.color.g = output.color.g * (vignette - gEffects.vignettingColor.g);
+        //output.color.b = output.color.b * (vignette - gEffects.vignettingColor.b);
+        
+        // 赤色を加算するために、ビネット効果の反対色を計算
+        float3 vignetteColor = float3(vignette - gEffects.redVignettingColor.r, vignette - gEffects.redVignettingColor.g, vignette - gEffects.redVignettingColor.b);
+
+        // 係数として乗算（ビネット効果に赤を加える）
+        output.color.r = output.color.r * vignetteColor.r;
+        output.color.g = output.color.g * vignetteColor.g;
+        output.color.b = output.color.b * vignetteColor.b;
+
+    }
+    
     // ビネット
     if (gEffects.enableVignetting != 0)
     {
@@ -197,29 +222,7 @@ PixelShaderOutput main(VertexShaderOutput input)
         output.color.b = output.color.b * vignetteColor.b;
 
     }
-     // 赤色ビネット
-    if (gEffects.enableRedVignetting != 0)
-    {
-        // 周囲を0に、中心に近くなるほど明るくなるように計算で調整
-        float32_t2 correct = input.texcoord * (1.0f - input.texcoord.yx);
-        // correctだけで計算すると中心の最大値が0.0625と暗すぎるのでScale調整
-        float vignette = correct.x * correct.y * gEffects.redVigneMultipliier;
-        // n乗してみる nはgEffectのvignetIndex
-        vignette = saturate(pow(vignette, gEffects.redVigneIndex));
-        //// 係数として乗算
-        //output.color.r = output.color.r * (vignette - gEffects.vignettingColor.r);
-        //output.color.g = output.color.g * (vignette - gEffects.vignettingColor.g);
-        //output.color.b = output.color.b * (vignette - gEffects.vignettingColor.b);
-        
-        // 赤色を加算するために、ビネット効果の反対色を計算
-        float3 vignetteColor = float3(vignette - gEffects.redVignettingColor.r, vignette - gEffects.redVignettingColor.g, vignette - gEffects.redVignettingColor.b);
-
-        // 係数として乗算（ビネット効果に赤を加える）
-        output.color.r = output.color.r * vignetteColor.r;
-        output.color.g = output.color.g * vignetteColor.g;
-        output.color.b = output.color.b * vignetteColor.b;
-
-    }
+  
     // 輝度で検出したアウトラインの有無
     if (gEffects.enableLuminanceOutline)
     {

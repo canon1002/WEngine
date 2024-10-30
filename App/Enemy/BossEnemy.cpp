@@ -148,40 +148,6 @@ void (BossEnemy::* BossEnemy::CommandTable[])() = {
 
 void BossEnemy::Update() {
 
-	// 右手のワールド行列を更新
-	mRightHandWorldMat = Multiply(
-		GetObject3D()->mSkinning->GetSkeleton().joints[GetObject3D()->mSkinning->GetSkeleton().jointMap["mixamorig:RightHandThumb1"]
-		].skeletonSpaceMatrix, GetObject3D()->GetWorldTransform()->GetWorldMatrix());
-	
-	mRightHandsWorldMat = Multiply(
-		GetObject3D()->mSkinning->GetSkeleton().joints[GetObject3D()->mSkinning->GetSkeleton().jointMap["mixamorig:RightHandMiddle1"]
-		].skeletonSpaceMatrix, GetObject3D()->GetWorldTransform()->GetWorldMatrix());
-
-	mWeapon->Update();
-	
-
-	// ワールド座標更新
-	mWeaponWorldMat[0] = Multiply(
-			mWeapon->mSkinning->GetSkeleton().joints[mWeapon->mSkinning->GetSkeleton().jointMap["Blade0"]
-			].skeletonSpaceMatrix, mWeapon->GetWorldTransform()->GetWorldMatrix());
-	mWeaponWorldMat[1] = Multiply(
-			mWeapon->mSkinning->GetSkeleton().joints[mWeapon->mSkinning->GetSkeleton().jointMap["Blade1"]
-			].skeletonSpaceMatrix, mWeapon->GetWorldTransform()->GetWorldMatrix());
-	mWeaponWorldMat[2] = Multiply(
-			mWeapon->mSkinning->GetSkeleton().joints[mWeapon->mSkinning->GetSkeleton().jointMap["Blade2"]
-			].skeletonSpaceMatrix, mWeapon->GetWorldTransform()->GetWorldMatrix());
-	mWeaponWorldMat[3] = Multiply(
-			mWeapon->mSkinning->GetSkeleton().joints[mWeapon->mSkinning->GetSkeleton().jointMap["Blade3"]
-			].skeletonSpaceMatrix, mWeapon->GetWorldTransform()->GetWorldMatrix());
-	mWeaponWorldMat[4] = Multiply(
-			mWeapon->mSkinning->GetSkeleton().joints[mWeapon->mSkinning->GetSkeleton().jointMap["Blade4"]
-			].skeletonSpaceMatrix, mWeapon->GetWorldTransform()->GetWorldMatrix());
-
-	// 武器のコライダー 更新
-	for (Collider* collider : mWeaponColliders) {
-		collider->Update();
-	}
-
 	// テーブルから関数を呼び出す
 	//(this->*CommandTable[0])();
 
@@ -221,16 +187,60 @@ void BossEnemy::Update() {
 			}
 		}
 
-		// オブジェクト更新
-		mObject->Update();
-		mObject->mCollider->Update();
+		
+	}
 
-		// UI更新
-		mStatus->Update(mObject->GetWorldTransform());
+	// オブジェクト更新
+	UpdateObject();
 
-		if (mActiveAction != nullptr) {
-			mActiveAction->Update();
-		}
+}
+
+void BossEnemy::UpdateObject()
+{
+
+	// 右手のワールド行列を更新
+	mRightHandWorldMat = Multiply(
+		GetObject3D()->mSkinning->GetSkeleton().joints[GetObject3D()->mSkinning->GetSkeleton().jointMap["mixamorig:RightHandThumb1"]
+		].skeletonSpaceMatrix, GetObject3D()->GetWorldTransform()->GetWorldMatrix());
+
+	mRightHandsWorldMat = Multiply(
+		GetObject3D()->mSkinning->GetSkeleton().joints[GetObject3D()->mSkinning->GetSkeleton().jointMap["mixamorig:RightHandMiddle1"]
+		].skeletonSpaceMatrix, GetObject3D()->GetWorldTransform()->GetWorldMatrix());
+
+	mWeapon->Update();
+
+
+	// ワールド座標更新
+	mWeaponWorldMat[0] = Multiply(
+		mWeapon->mSkinning->GetSkeleton().joints[mWeapon->mSkinning->GetSkeleton().jointMap["Blade0"]
+		].skeletonSpaceMatrix, mWeapon->GetWorldTransform()->GetWorldMatrix());
+	mWeaponWorldMat[1] = Multiply(
+		mWeapon->mSkinning->GetSkeleton().joints[mWeapon->mSkinning->GetSkeleton().jointMap["Blade1"]
+		].skeletonSpaceMatrix, mWeapon->GetWorldTransform()->GetWorldMatrix());
+	mWeaponWorldMat[2] = Multiply(
+		mWeapon->mSkinning->GetSkeleton().joints[mWeapon->mSkinning->GetSkeleton().jointMap["Blade2"]
+		].skeletonSpaceMatrix, mWeapon->GetWorldTransform()->GetWorldMatrix());
+	mWeaponWorldMat[3] = Multiply(
+		mWeapon->mSkinning->GetSkeleton().joints[mWeapon->mSkinning->GetSkeleton().jointMap["Blade3"]
+		].skeletonSpaceMatrix, mWeapon->GetWorldTransform()->GetWorldMatrix());
+	mWeaponWorldMat[4] = Multiply(
+		mWeapon->mSkinning->GetSkeleton().joints[mWeapon->mSkinning->GetSkeleton().jointMap["Blade4"]
+		].skeletonSpaceMatrix, mWeapon->GetWorldTransform()->GetWorldMatrix());
+
+	// 武器のコライダー 更新
+	for (Collider* collider : mWeaponColliders) {
+		collider->Update();
+	}
+
+	// オブジェクト更新
+	mObject->Update();
+	mObject->mCollider->Update();
+
+	// UI更新
+	mStatus->Update(mObject->GetWorldTransform());
+
+	if (mActiveAction != nullptr) {
+		mActiveAction->Update();
 	}
 
 }

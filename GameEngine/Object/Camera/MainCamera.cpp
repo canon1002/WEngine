@@ -69,7 +69,7 @@ void MainCamera::Update()
 		if (mIsControll) {
 
 			// スティック入力の量
-			const static int stickValue = 6000;
+			const static int stickValue = 8000;
 
 			// 入力量に応じた回転を行う
 			if (mInput->GetStick(Gamepad::Stick::RIGHT_X) < -stickValue || // 左 
@@ -90,7 +90,7 @@ void MainCamera::Update()
 				direction.x *= (-1.0f);
 
 				// 回転の速度 // メンバ変数にしても良さそう
-				float rotateSpeed = 0.01f;
+				float rotateSpeed = 0.05f;
 				mWorldTransform->rotation += direction * rotateSpeed;
 
 				// x軸の回転は制限する
@@ -100,6 +100,15 @@ void MainCamera::Update()
 				if (mWorldTransform->rotation.x > 0.2f) {
 					mWorldTransform->rotation.x = 0.2f;
 				}
+
+				// y軸の数値修正
+				if (mWorldTransform->rotation.y > 3.14f) {
+					mWorldTransform->rotation.y = -3.14f;
+				}
+				else if(mWorldTransform->rotation.y < -3.14f){
+					mWorldTransform->rotation.y = 3.14f;
+				}
+
 			}
 
 		}

@@ -63,7 +63,15 @@ private:
 	Phase mPhase;
 
 	// 開始前のビネット
-	float viggnetTime;
+	float mViggnetTime;
+	bool mIsGameOverSelect;
+	// ゲームオーバー時の赤色スプライト
+	std::unique_ptr<Sprite> mGameOverFadeSprite;
+	std::unique_ptr<Sprite> mGameOverMessageSprite;
+	float mMessageFadeTime;
+	std::array<std::unique_ptr<Sprite>, 2> mGameOverSelectUI;
+	int32_t mGameOverSelectUICount;
+
 	// ゲーム開始演出関連
 	EasingToVector3 mPlayerStartAndEnd;
 	EasingToVector3 mBossStartAndEnd;

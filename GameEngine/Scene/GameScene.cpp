@@ -11,9 +11,9 @@
 #include "App/Status/StatusManager.h"
 #include "GameEngine/Object/Screen/RenderCopyImage.h"
 
-void GameScene::Finalize(){}
+void GameScene::Finalize() {}
 
-void GameScene::Init(){
+void GameScene::Init() {
 	// 入力を取得する
 	mInput = InputManager::GetInstance();
 
@@ -72,7 +72,7 @@ void GameScene::Init(){
 	// ゲームシーンの段階
 	mPhase = Phase::BEGIN;
 	// 開始前のビネット
-	viggnetTime = 0.0f;
+	mViggnetTime = 0.0f;
 
 	// 以下 UI
 	mActionUI.sprite = std::make_unique<Sprite>();
@@ -102,7 +102,7 @@ void GameScene::Init(){
 		mGroundShadow[i]->Init("groundshadow" + std::to_string(i));
 		mGroundShadow[i]->SetModel("groundShadow.gltf");
 	}
-	
+
 	// スタート演出
 	mPlayerStartAndEnd.start = { 0.0f,0.0f,-36.0f };
 	mPlayerStartAndEnd.end = { 0.0f,0.0f,-8.0f };
@@ -111,7 +111,7 @@ void GameScene::Init(){
 
 	MainCamera::GetInstance()->SetTranslate(Vector3(0.0f, 60.0f, 0.0f));
 	MainCamera::GetInstance()->SetRotate(Vector3(1.57f, 12.56f, 0.0f));
-	
+
 	mCameraRot.start = { 1.57f,6.28f,0.0f };
 	mCameraRot.end = { 0.0f,0.0f,0.0f };
 	mCameraRot.t = 0.0f;
@@ -122,9 +122,40 @@ void GameScene::Init(){
 	mCameraTr.t = 0.0f;
 	mCameraTr.k = 0.0f;
 
+	mGameOverFadeSprite = std::make_unique<Sprite>();
+	mGameOverFadeSprite->Init();
+	mGameOverFadeSprite->SetTexture("white2x2.png");
+	mGameOverFadeSprite->SetSpriteSize(Vector2(1280.0f, 720.0f));
+	mGameOverFadeSprite->SetColor(Color(0.8f, 0.0f, 0.0f, 0.0f));
+
+	mGameOverMessageSprite = std::make_unique<Sprite>();
+	mGameOverMessageSprite->Init();
+	mGameOverMessageSprite->SetTexture("Lose.png");
+	mGameOverMessageSprite->SetAnchorPoint(Vector2(0.5f, 0.5f));
+	mGameOverMessageSprite->SetPos(Vector2(640.0f, 200.0f));
+	mGameOverMessageSprite->SetSpriteSize(Vector2(768.0f, 256.0f));
+	mGameOverMessageSprite->SetColor(Color(1.0f, 1.0f, 1.0f, 0.0f));
+	mMessageFadeTime = 0.0f;
+
+	for (int32_t i = 0; i < mGameOverSelectUI.size(); i++) {
+		mGameOverSelectUI[i] = std::make_unique<Sprite>();
+		mGameOverSelectUI[i]->Init();
+		if (i == 0) {
+			mGameOverSelectUI[0]->SetTexture("Retry.png");
+		}
+		else {
+			mGameOverSelectUI[1]->SetTexture("Retire.png");
+		}
+		mGameOverSelectUI[i]->SetAnchorPoint(Vector2(0.5f, 0.5f));
+		mGameOverSelectUI[i]->SetPos(Vector2(640.0f, ((i + 2) * 100.0f + 300.0f)));
+		mGameOverSelectUI[i]->SetSpriteSize(Vector2(256.0f, 64.0f));
+		mGameOverSelectUI[i]->SetColor(Color(1.0f, 1.0f, 1.0f, 0.0f));
+	}
+	mGameOverSelectUICount = 0;
+	mIsGameOverSelect = false;
 }
 
-void GameScene::Update(){
+void GameScene::Update() {
 
 	mMoveUI.sprite->Update();
 	mActionUI.sprite->Update();
@@ -138,15 +169,19 @@ void GameScene::Update(){
 		}
 	}
 
+	if (mInput->GetPushKey(DIK_R)) {
+		Init();
+	}
+
 	switch (mPhase)
 	{
 	case Phase::BEGIN:
-	
-		
-		if (viggnetTime < 1.0f) {
+
+
+		if (mViggnetTime < 1.0f) {
 
 			// 初期化
-			if (viggnetTime == 0.0f) {
+			if (mViggnetTime == 0.0f) {
 
 				mPlayer->GetObject3D()->mWorldTransform->translation = ExponentialInterpolation(mPlayerStartAndEnd.start, mPlayerStartAndEnd.end, mPlayerStartAndEnd.t, mPlayerStartAndEnd.k);
 
@@ -160,19 +195,19 @@ void GameScene::Update(){
 
 			}
 
-			viggnetTime += 1.0f / 60.0f;
+			mViggnetTime += 1.0f / 60.0f;
 		}
-		else if (viggnetTime >= 1.0f) {
-			viggnetTime = 1.0f;
+		else if (mViggnetTime >= 1.0f) {
+			mViggnetTime = 1.0f;
 		}
 
 		// ビネットでフェードインする
-		RenderCopyImage::GetInstance()->SetViggnetIndex(ExponentialInterpolation(10.0f, 0.0f, viggnetTime, 1.0f));
+		RenderCopyImage::GetInstance()->SetViggnetIndex(ExponentialInterpolation(10.0f, 0.0f, mViggnetTime, 1.0f));
 
 		// フェードインが終わったら戦闘開始
-		if (viggnetTime == 1.0f) {
+		if (mViggnetTime == 1.0f) {
 
-			if (mCameraTr.k < 1.0f || mCameraRot.k < 1.0f ) {
+			if (mCameraTr.k < 1.0f || mCameraRot.k < 1.0f) {
 
 				mCameraRot.t += 1.0f / (60.0f * 6.0f);
 				if (mCameraRot.t > 1.0f) {
@@ -194,7 +229,7 @@ void GameScene::Update(){
 					MainCamera::GetInstance()->mWorldTransform->rotation.x = ExponentialInterpolation(mCameraRot.start.x, mCameraRot.end.x, mCameraRot.k, 1.0f);
 
 				}
-				if(mCameraTr.t>=1.0f){
+				if (mCameraRot.k >= 0.5f) {
 					mCameraTr.k += 2.0f / 60.0f;
 					if (mCameraTr.k > 1.0f) {
 						mCameraTr.k = 1.0f;
@@ -206,7 +241,7 @@ void GameScene::Update(){
 
 				MainCamera::GetInstance()->mWorldTransform->translation.y = ExponentialInterpolation(mCameraTr.start.y, mCameraTr.end.y, mCameraTr.t, 1.0f);
 				MainCamera::GetInstance()->mWorldTransform->rotation.y = ExponentialInterpolation(mCameraRot.start.y, mCameraRot.end.y, mCameraRot.t, 1.0f);
-			
+
 
 			}
 			else if (mPlayerStartAndEnd.t >= 1.0f && mCameraTr.k >= 1.0f && mCameraRot.k >= 1.0f) {
@@ -219,36 +254,43 @@ void GameScene::Update(){
 			}
 		}
 
-	if (mPlayerStartAndEnd.t < 1.0f) {
+		if (mPlayerStartAndEnd.t < 1.0f) {
 
-		mPlayerStartAndEnd.t += 1.0f / (60.0f * 4.0f);
+			mPlayerStartAndEnd.t += 1.0f / (60.0f * 4.0f);
 
-		if (mPlayerStartAndEnd.t >= 1.0f) {
-			mPlayerStartAndEnd.t = 1.0f;
+			if (mPlayerStartAndEnd.t >= 1.0f) {
+				mPlayerStartAndEnd.t = 1.0f;
+			}
+
+			mPlayer->GetObject3D()->mWorldTransform->translation = ExponentialInterpolation(mPlayerStartAndEnd.start, mPlayerStartAndEnd.end, mPlayerStartAndEnd.t, mPlayerStartAndEnd.k);
 		}
-
-		mPlayer->GetObject3D()->mWorldTransform->translation = ExponentialInterpolation(mPlayerStartAndEnd.start, mPlayerStartAndEnd.end, mPlayerStartAndEnd.t, mPlayerStartAndEnd.k);
-	}
 
 		// プレイヤー 更新
 		mPlayer->UpdateObject();
+		// ボス 更新
+		mBoss->UpdateObject();
 
 		break;
 	case Phase::BATTLE:
-		
+
 		// プレイヤーのHPが0になったら
 		if (mPlayer->GetStatus()->HP <= 0.0f) {
 			mPhase = Phase::LOSE;
-			viggnetTime = 0.0f;
+			mViggnetTime = 0.0f;
+			RenderCopyImage::GetInstance()->SetRedViggnetEnable(true);
+
 		}
 		// ボスのHPが0になったら
 		if (mBoss->GetStatus()->HP <= 0.0f) {
 			mPhase = Phase::WIN;
-			viggnetTime = 0.0f;
+			mViggnetTime = 0.0f;
 		}
 
 		// プレイヤー 更新
 		mPlayer->Update();
+
+		// ボス
+		mBoss->Update();
 
 		// コライダーリストへの追加処理
 		mCollisionManager->SetCollider(mPlayer->GetObject3D()->mCollider);
@@ -261,40 +303,98 @@ void GameScene::Update(){
 
 		// コライダーリストのクリア
 		mCollisionManager->ClearColliders();
-		
+
 		break;
 	case Phase::LOSE:
+		if (mIsGameOverSelect == false) {
+			if (mViggnetTime < 1.0f) {
+				mViggnetTime += 1.0f / 60.0f;
 
-		if (viggnetTime < 1.0f) {
-			viggnetTime += 1.0f / 60.0f;
+				// ビネットでフェードする
+				RenderCopyImage::GetInstance()->SetViggnetMultiplier(ExponentialInterpolation(10.0f, 20.0f, mViggnetTime, 1.0f));
+				RenderCopyImage::GetInstance()->SetViggnetIndex(ExponentialInterpolation(0.0f, 4.0f, mViggnetTime, 1.0f));
+				RenderCopyImage::GetInstance()->SetRedViggnetMultiplier(ExponentialInterpolation(0.0f, 0.5f, mViggnetTime, 1.0f));
+				RenderCopyImage::GetInstance()->SetRedViggnetIndex(ExponentialInterpolation(0.0f, 0.5f, mViggnetTime, 1.0f));
+				//mGameOverFadeSprite->SetColor(Color(0.4f, 0.0f, 0.0f, ExponentialInterpolation(0.0f, 0.8f, viggnetTime, 1.0f)));
+
+			}
+			else if (mViggnetTime > 1.0f) {
+				mIsGameOverSelect = true;
+			}
 		}
-		else if (viggnetTime >= 1.0f) {
-			viggnetTime = 1.0f;
-		}
+		else
+		{
 
-		// ビネットでフェードインする
-		RenderCopyImage::GetInstance()->SetViggnetIndex(ExponentialInterpolation(00.0f, 10.0f, viggnetTime, 1.0f));
+			if (mMessageFadeTime < 1.0f) {
+				mMessageFadeTime += 1.0f / 30.0f;
+				mViggnetTime = 0.0f;
+			}
+			else if (mMessageFadeTime > 1.0f) {
+				mMessageFadeTime = 1.0f;
+			}
+			else if (mMessageFadeTime == 1.0f) {
 
-		// フェードインが終わったら戦闘開始
-		if (viggnetTime == 1.0f) {
-			sceneNo = SCENE::RESULT;
+				if (mViggnetTime == 0.0f) {
+					if (mInput->GetPused(Gamepad::Button::B)) {
+						mViggnetTime += 1.0f / 60.0f;
+					}
+				}
+				else if (mViggnetTime < 1.0f) {
+
+					mViggnetTime += 1.0f / 60.0f;
+
+					// ビネットでフェードする
+					RenderCopyImage::GetInstance()->SetViggnetMultiplier(ExponentialInterpolation(20.0f, 10.0f, mViggnetTime, 1.0f));
+					RenderCopyImage::GetInstance()->SetViggnetIndex(ExponentialInterpolation(4.0f, 10.0f, mViggnetTime, 1.0f));
+					RenderCopyImage::GetInstance()->SetRedViggnetMultiplier(ExponentialInterpolation(0.0f, 0.5f, mViggnetTime, 1.0f));
+					RenderCopyImage::GetInstance()->SetRedViggnetIndex(ExponentialInterpolation(0.0f, 0.5f, mViggnetTime, 1.0f));
+				}
+				else if (mViggnetTime >= 1.0f){
+					RenderCopyImage::GetInstance()->SetRedViggnetEnable(false);
+					RenderCopyImage::GetInstance()->SetRedViggnetMultiplier(0.0f);
+					RenderCopyImage::GetInstance()->SetRedViggnetIndex(0.0f);
+					this->Init();
+				}
+
+
+				switch (mGameOverSelectUICount)
+				{
+				case 0:
+					mGameOverSelectUI[0]->SetScale(Vector2(1.2f, 1.2f));
+					mGameOverSelectUI[1]->SetScale(Vector2(1.0f, 1.0f));
+					break;
+				default:
+
+					mGameOverSelectUI[0]->SetScale(Vector2(1.0f, 1.0f));
+					mGameOverSelectUI[1]->SetScale(Vector2(1.2f, 1.2f));
+					break;
+				}
+
+			}
+
+			mGameOverMessageSprite->SetColor(Color(1.0f, 1.0f, 1.0f, ExponentialInterpolation(0.0f, 1.0f, mMessageFadeTime, 1.0f)));
+
+			for (int32_t i = 0; i < mGameOverSelectUI.size(); i++) {
+				mGameOverSelectUI[i]->SetColor(Color(1.0f, 1.0f, 1.0f, ExponentialInterpolation(0.0f, 1.0f, mMessageFadeTime, 1.0f)));
+			}
+			//sceneNo = SCENE::RESULT;
 		}
 
 		break;
 	case Phase::WIN:
 
-		if (viggnetTime < 1.0f) {
-			viggnetTime += 1.0f / 60.0f;
+		if (mViggnetTime < 1.0f) {
+			mViggnetTime += 1.0f / 60.0f;
 		}
-		else if (viggnetTime >= 1.0f) {
-			viggnetTime = 1.0f;
+		else if (mViggnetTime >= 1.0f) {
+			mViggnetTime = 1.0f;
 		}
 
 		// ビネットでフェードインする
-		RenderCopyImage::GetInstance()->SetViggnetIndex(ExponentialInterpolation(0.0f, 10.0f, viggnetTime, 1.0f));
+		RenderCopyImage::GetInstance()->SetViggnetIndex(ExponentialInterpolation(0.0f, 10.0f, mViggnetTime, 1.0f));
 
 		// フェードインが終わったら戦闘開始
-		if (viggnetTime == 1.0f) {
+		if (mViggnetTime == 1.0f) {
 			sceneNo = SCENE::RESULT;
 		}
 
@@ -303,7 +403,7 @@ void GameScene::Update(){
 		break;
 	}
 
-	
+
 #ifdef _DEBUG
 	skybox_->DrawGUI("Skybox");
 	mPlayer->DrawGUI();
@@ -315,29 +415,25 @@ void GameScene::Update(){
 
 	// スカイボックス
 	skybox_->Update();
-	
+
 	// ステータスマネージャ
 	StatusManager::GetInstance()->Update();
-
-	
-	// ボス
-	//mBoss->Update();
 
 	// 地面影
 	mGroundShadow[0]->mWorldTransform->translation = mPlayer->GetWorldPos();
 	mGroundShadow[0]->Update();
 
-	// プレイヤーの現在HPに応じて赤色ビネットを変化させる
-	float playerHPRatio = (float(mPlayer->GetStatus()->MAXHP) - float(mPlayer->GetStatus()->HP)) / float(mPlayer->GetStatus()->MAXHP);
-	if (playerHPRatio > 0.3f) {
+	//// プレイヤーの現在HPに応じて赤色ビネットを変化させる
+	//float playerHPRatio = (float(mPlayer->GetStatus()->MAXHP) - float(mPlayer->GetStatus()->HP)) / float(mPlayer->GetStatus()->MAXHP);
+	//if (playerHPRatio > 0.3f) {
 
-		if (playerHPRatio > 0.6f) {
-			RenderCopyImage::GetInstance()->SetRedViggnetMultiplier(ExponentialInterpolation(2.8f, 0.8f, playerHPRatio, 1.0f));
-		}
+	//	if (playerHPRatio > 0.9f) {
+	//		RenderCopyImage::GetInstance()->SetRedViggnetMultiplier(ExponentialInterpolation(2.8f, 0.8f, playerHPRatio, 1.0f));
+	//	}
 
-		RenderCopyImage::GetInstance()->SetRedViggnetEnable(true);
-		RenderCopyImage::GetInstance()->SetRedViggnetIndex(ExponentialInterpolation(0.0f, 0.5f, playerHPRatio, 1.0f));
-	}
+	//	RenderCopyImage::GetInstance()->SetRedViggnetEnable(true);
+	//	RenderCopyImage::GetInstance()->SetRedViggnetIndex(ExponentialInterpolation(0.0f, 0.5f, playerHPRatio, 1.0f));
+	//}
 
 	// レベルエディタ更新
 	LevelEditor::GetInstance()->Update();
@@ -345,6 +441,14 @@ void GameScene::Update(){
 	// パーティクル
 	ParticleManager::GetInstance()->Update();
 	mDTCParticle->Update();
+
+	mGameOverFadeSprite->Update();
+	mGameOverMessageSprite->Update();
+
+	for (int32_t i = 0; i < mGameOverSelectUI.size(); i++) {
+		mGameOverSelectUI[i]->Update();
+	}
+
 
 }
 
@@ -363,13 +467,13 @@ void GameScene::Draw() {
 	mGroundShadow[0]->Draw();
 
 	mPlayer->ColliderDraw();
-	//mBoss->ColliderDraw();
+	mBoss->ColliderDraw();
 
 	// Object3D(Skinning)の描画前処理
 	ModelManager::GetInstance()->PreDrawForSkinning();
 
 	mPlayer->Draw();
-	//mBoss->Draw();
+	mBoss->Draw();
 
 	//ParticleManager::GetInstance()->PreDraw();
 	//mDTCParticle->Draw();
@@ -380,16 +484,41 @@ void GameScene::DrawUI()
 {
 	// 2DSprite(画像)の描画前処理
 	SpriteAdministrator::GetInstance()->PreDraw();
-	mPlayer->GetStatus()->Draw();
-	mBoss->GetStatus()->Draw();
 
-	// UI表示
-	//mMoveUI.sprite->Draw();
-	//mActionUI.sprite->Draw();
-	// レティクル表示
-	mPlayer->GetReticle3D()->Draw2DReticle();
+	switch (mPhase)
+	{
+	case Phase::BEGIN:
+		break;
+	case Phase::BATTLE:
 
-	// ダメージ画像の表記
-	DamageReaction::GetInstance()->DrawSprite();
+		mPlayer->GetStatus()->Draw();
+		mBoss->GetStatus()->Draw();
+
+		// UI表示
+		//mMoveUI.sprite->Draw();
+		//mActionUI.sprite->Draw();
+		// レティクル表示
+		mPlayer->GetReticle3D()->Draw2DReticle();
+
+		// ダメージ画像の表記
+		DamageReaction::GetInstance()->DrawSprite();
+
+		break;
+	case Phase::LOSE:
+
+		mGameOverFadeSprite->Draw();
+		mGameOverMessageSprite->Draw();
+
+
+		for (int32_t i = 0; i < mGameOverSelectUI.size(); i++) {
+			mGameOverSelectUI[i]->Draw();
+		}
+
+		break;
+	case Phase::WIN:
+		break;
+	default:
+		break;
+	}
 
 }
