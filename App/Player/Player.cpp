@@ -43,13 +43,15 @@ void Player::Init() {
 
 
 	// メインカメラをフォローカメラ仕様にする
-	//MainCamera::GetInstance()->SetTarget(mObject->GetWorldTransform());
+	//MainCamera::GetInstance()->SetFollowTarget(mObject->GetWorldTransform());
 
 	// 最初は通常状態から始める
 	mBehavior = Behavior::kRoot;
 
 	// 移動量を初期化
 	mVelocity = { 0.0f,0.0f ,0.0f };
+	// 方向を初期化
+	mVelocity = { 0.0f,0.0f ,1.0f };
 
 	// 重力の影響を受ける
 	mIsGravity = true;
@@ -846,6 +848,10 @@ void Player::DebagCtr()
 
 	// メインカメラに追加の平行移動値を与える
 	MainCamera::GetInstance()->SetAddTranslation(TransformNomal(cVel, MainCamera::GetInstance()->mWorldTransform->GetWorldMatrix()));
+
+	if (mInput->GetPused(Gamepad::Button::X)) {
+		MainCamera::GetInstance()->SetCameraRotarionToSearchTarget();
+	}
 
 }
 

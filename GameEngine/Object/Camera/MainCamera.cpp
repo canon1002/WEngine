@@ -27,12 +27,20 @@ void MainCamera::Initialize(){
 	viewprojectionMatrix_ = Multiply(viewMatrix_, projectionMatrix_);
 
 	// ターゲット
-	mTarget = nullptr;
+	mFollowTarget = nullptr;
+	mSearchTarget = nullptr;
+
+	// 遷移後回転量
+	mEaseBeforeRotation = mWorldTransform->rotation;
+	mEasedRotation = mWorldTransform->rotation;
 	// 追加平行移動値
 	mAddTranslation = { 0.0f,0.0f,0.0f };
 
 	// カメラ回転操作
 	mIsControll = true;
+	mIsRotationEasing = false;
+	mRotaionEasingTime = 0.0f;
+
 }
 void MainCamera::Update()
 {
@@ -52,13 +60,13 @@ void MainCamera::Update()
 #endif // DEBUG
 
 	// フォロー対象がいれば追従を行う
-	if (mTarget) {
+	if (mFollowTarget) {
 		// 追従対象からカメラまでの距離
 		Vector3 offset = { 0.0f,1.2f,0.5f };
 		// オフセットをカメラの回転に合わせて回転させる
 		offset = TransformNomal(offset, mWorldTransform->GetWorldMatrix());
 		// オフセット分ずらす
-		mWorldTransform->translation = mTarget->translation + offset;
+		mWorldTransform->translation = mFollowTarget->translation + offset;
 		
 		// 追加で平行移動値が設定されていれば更にずらす
 		mWorldTransform->translation += mAddTranslation;
@@ -114,6 +122,8 @@ void MainCamera::Update()
 		}
 
 	}
+	UpdateRotationEasing();
+
 
 	// ビュー行列の更新
 	viewMatrix_ = Inverse(mWorldTransform->GetWorldMatrix());
@@ -123,4 +133,62 @@ void MainCamera::Update()
 	viewprojectionMatrix_ = Multiply(viewMatrix_, projectionMatrix_);
 
 
+}
+
+void MainCamera::UpdateRotationEasing()
+{
+	if (!mIsRotationEasing) {
+		return;
+	}
+
+	if (mRotaionEasingTime >= 1.0f) {
+		mIsRotationEasing = false;
+		return;
+	}
+
+	if (mRotaionEasingTime < 1.0f) {
+		mRotaionEasingTime += (3.0f / 60.0f);
+		if (mRotaionEasingTime > 1.0f) {
+			mRotaionEasingTime = 1.0f;
+		}
+	}
+
+	mWorldTransform->rotation.y = ExponentialInterpolation(mEaseBeforeRotation.y,mEasedRotation.y, mRotaionEasingTime, 1.0f);
+	mWorldTransform->rotation.x = ExponentialInterpolation(mEaseBeforeRotation.x,mEasedRotation.x, mRotaionEasingTime, 1.0f);
+}
+
+void MainCamera::SetCameraRotarionToSearchTarget()
+{
+	// 追跡対象のポインタ未所持なら 早期リターン
+	if (mSearchTarget == nullptr) {
+		return;
+	}
+
+	// 開始地点の設定
+	mEaseBeforeRotation = mWorldTransform->rotation;
+
+	// Y軸の計算
+	if (Length(mSearchTarget->translation - mFollowTarget->translation) != 0.0f) {
+		Vector3 direction = Normalize(mSearchTarget->translation - mFollowTarget->translation);
+
+		mEasedRotation.y = atan2f(direction.x, direction.z);
+	}
+	
+	// X軸の計算
+	if (Length(mSearchTarget->translation - mWorldTransform->translation) != 0.0f) {
+		Vector3 direction = Normalize(mSearchTarget->translation - mWorldTransform->translation);
+		mEasedRotation.x = -atan2f(direction.y, direction.z);
+	}
+
+	mRotaionEasingTime = 0.0f;
+	mIsRotationEasing = true;
+
+}
+
+void MainCamera::SetCameraRotationToDirection(const Vector3 direction)
+{
+	mEaseBeforeRotation = mWorldTransform->rotation;
+	mEasedRotation.y = atan2f(direction.x, direction.z);
+	mRotaionEasingTime = 0.0f;
+	mIsRotationEasing = true;
 }

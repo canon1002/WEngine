@@ -27,11 +27,24 @@ public: // -- public メンバ関数 -- //
 	/// </summary>
 	void Update()override;
 
+	void UpdateRotationEasing();
 
 	// フォローカメラ機能 -- フォロー対象設定 -- 
-	inline void SetTarget(const WorldTransform* target) { mTarget = target; }
+	inline void SetFollowTarget(const WorldTransform* target) { mFollowTarget = target; }
 	// フォローカメラ機能 -- フォロー解除 -- 
-	inline void EraseTarget() { mTarget = nullptr; }
+	inline void EraseFollowTarget() { mFollowTarget = nullptr; }
+
+	// 追跡対象設定
+	inline void SetSearchTarget(const WorldTransform* target) { mSearchTarget = target; }
+	// 追跡対象解除
+	inline void EraseSearchTarget() { mSearchTarget = nullptr; }
+
+	// カメラを追跡対象の方向へ向ける
+	void SetCameraRotarionToSearchTarget();
+
+	// カメラを操作キャラの進行方向に合わせる
+	void SetCameraRotationToDirection(const Vector3 direction);
+
 
 	// フォローカメラ機能 -- 追加平行移動値の設定 -- 
 	inline void SetAddTranslation(const Vector3 translation){
@@ -57,7 +70,16 @@ private: // -- private メンバ変数 -- //
 	InputManager* mInput;
 
 	// フォロー対象の座標
-	const WorldTransform* mTarget;
+	const WorldTransform* mFollowTarget;
+	// 追跡対象の座標
+	const WorldTransform* mSearchTarget;
+	// 遷移後回転量
+	Vector3 mEaseBeforeRotation;
+	Vector3 mEasedRotation;
+	// 回転量の遷移中か
+	bool mIsRotationEasing;
+	float mRotaionEasingTime = 0.0f;
+	
 	// 追加平行移動値
 	Vector3 mAddTranslation;
 	// カメラの回転操作を有効にするか

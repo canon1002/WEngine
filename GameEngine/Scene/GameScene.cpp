@@ -186,7 +186,7 @@ void GameScene::Update() {
 				mPlayer->GetObject3D()->mWorldTransform->translation = ExponentialInterpolation(mPlayerStartAndEnd.start, mPlayerStartAndEnd.end, mPlayerStartAndEnd.t, mPlayerStartAndEnd.k);
 
 				// フォローターゲット解除
-				/*MainCamera::GetInstance()->EraseTarget();
+				/*MainCamera::GetInstance()->EraseFollowTarget();
 				MainCamera::GetInstance()->SetTransform(
 					Vector3(1.0f, 1.0f, 1.0f),
 					Vector3((3.14f/4.0f), 0.0f, 0.0f),
@@ -247,7 +247,8 @@ void GameScene::Update() {
 			else if (mPlayerStartAndEnd.t >= 1.0f && mCameraTr.k >= 1.0f && mCameraRot.k >= 1.0f) {
 
 				// メインカメラをフォローカメラ仕様にする
-				MainCamera::GetInstance()->SetTarget(mPlayer->GetObject3D()->GetWorldTransform());
+				MainCamera::GetInstance()->SetFollowTarget(mPlayer->GetObject3D()->GetWorldTransform());
+				MainCamera::GetInstance()->SetSearchTarget(mBoss->GetObject3D()->GetWorldTransform());
 
 				// フェーズ移行
 				mPhase = Phase::BATTLE;
@@ -290,7 +291,7 @@ void GameScene::Update() {
 		mPlayer->Update();
 
 		// ボス
-		mBoss->Update();
+		mBoss->UpdateObject();
 
 		// コライダーリストへの追加処理
 		mCollisionManager->SetCollider(mPlayer->GetObject3D()->mCollider);
