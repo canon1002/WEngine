@@ -436,7 +436,7 @@ void GameScene::Update() {
 	//	RenderCopyImage::GetInstance()->SetRedViggnetIndex(ExponentialInterpolation(0.0f, 0.5f, playerHPRatio, 1.0f));
 	//}
 
-	// レベルエディタ更新
+	// レベルエディタ更新/
 	LevelEditor::GetInstance()->Update();
 
 	// パーティクル

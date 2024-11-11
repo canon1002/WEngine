@@ -22,8 +22,10 @@ void Player::Init() {
 	// モデル読み込み
 	ModelManager::GetInstance()->LoadModel("player", "idle.gltf");
 	ModelManager::GetInstance()->LoadModel("player", "gatotu0.gltf");
-	ModelManager::GetInstance()->LoadModel("player", "slash.gltf");
-	ModelManager::GetInstance()->LoadModel("player", "walk.gltf");
+	ModelManager::GetInstance()->LoadModel("player", "slashR.gltf");
+	ModelManager::GetInstance()->LoadModel("player", "slashL.gltf");
+	ModelManager::GetInstance()->LoadModel("player", "slashEnd.gltf");
+	ModelManager::GetInstance()->LoadModel("player", "run.gltf");
 
 	mObject = std::make_unique<Object3d>();
 	mObject->Init("PlayerObj");
@@ -33,13 +35,15 @@ void Player::Init() {
 	// スキニングアニメーションを生成
 	mObject->mSkinning = new Skinnig();
 	mObject->mSkinning->Init("player", "idle.gltf", mObject->GetModel()->modelData);
+	mObject->mSkinning->SetMotionBlendingInterval(30.0f);
 	// 使用するアニメーションを登録しておく
 	mObject->mSkinning->CreateSkinningData("player", "idle", ".gltf", mObject->GetModel()->modelData, true);
 	mObject->mSkinning->CreateSkinningData("player", "prepare", ".gltf", mObject->GetModel()->modelData);
 	mObject->mSkinning->CreateSkinningData("player", "gatotu0", ".gltf", mObject->GetModel()->modelData);
-	mObject->mSkinning->CreateSkinningData("player", "slash", ".gltf", mObject->GetModel()->modelData);
-	mObject->mSkinning->CreateSkinningData("player", "slashUp", ".gltf", mObject->GetModel()->modelData);
-	mObject->mSkinning->CreateSkinningData("player", "walk", ".gltf", mObject->GetModel()->modelData, true);
+	mObject->mSkinning->CreateSkinningData("player", "slashR", ".gltf", mObject->GetModel()->modelData);
+	mObject->mSkinning->CreateSkinningData("player", "slashL", ".gltf", mObject->GetModel()->modelData);
+	mObject->mSkinning->CreateSkinningData("player", "slashEnd", ".gltf", mObject->GetModel()->modelData);
+	mObject->mSkinning->CreateSkinningData("player", "run", ".gltf", mObject->GetModel()->modelData, true);
 
 
 	// メインカメラをフォローカメラ仕様にする
@@ -94,7 +98,7 @@ void Player::Init() {
 	mAttackStatus.sword = std::make_unique<Object3d>();
 	mAttackStatus.sword->Init("sword");
 	mAttackStatus.sword->SetModel("sword.gltf");
-	mAttackStatus.sword->mWorldTransform->scale = { 0.5f,0.5f,0.5f };
+	mAttackStatus.sword->mWorldTransform->scale = { 0.1f,0.1f,0.1f };
 	mAttackStatus.sword->mWorldTransform->rotation = { 1.7f,-0.3f,0.0f };
 	mAttackStatus.sword->mSkinning = new Skinnig();
 	mAttackStatus.sword->mSkinning->Init("Weapons", "sword.gltf",
@@ -162,7 +166,7 @@ void Player::Update() {
 
 		// デバッグ操作
 #ifdef _DEBUG
-		
+
 #endif // _DEBUG
 		DebagCtr();
 		switch (mBehavior)
@@ -178,10 +182,10 @@ void Player::Update() {
 			break;
 		case Behavior::kMove:
 
-			if (mObject->mSkinning->GetNowSkinCluster()->name != "walk" &&
-				!mObject->mSkinning->SearchToWaitingSkinCluster("walk"))
+			if (mObject->mSkinning->GetNowSkinCluster()->name != "run" &&
+				!mObject->mSkinning->SearchToWaitingSkinCluster("run"))
 			{
-				mObject->mSkinning->SetNextAnimation("walk");
+				mObject->mSkinning->SetNextAnimation("run");
 			}
 
 			break;
@@ -200,7 +204,7 @@ void Player::Update() {
 		default:
 			break;
 		}
-		
+
 
 		// レティクル 更新
 		mReticle->Update();
@@ -227,7 +231,7 @@ void Player::UpdateObject()
 
 	// 右手のワールド行列を更新
 	mAttackStatus.weaponParentMat = Multiply(
-		GetObject3D()->mSkinning->GetSkeleton().joints[GetObject3D()->mSkinning->GetSkeleton().jointMap["weaponM"]
+		GetObject3D()->mSkinning->GetSkeleton().joints[GetObject3D()->mSkinning->GetSkeleton().jointMap["mixamorig:RightHand"]
 		].skeletonSpaceMatrix, GetObject3D()->GetWorldTransform()->GetWorldMatrix());
 
 	// 剣
@@ -305,7 +309,7 @@ void Player::DrawGUI() {
 	};
 	int32_t behaviorNumber = (int32_t)mBehavior;
 
-	ImGui::ListBox("Current State",&behaviorNumber, str, IM_ARRAYSIZE(str));
+	ImGui::ListBox("Current State", &behaviorNumber, str, IM_ARRAYSIZE(str));
 
 	if (ImGui::CollapsingHeader("Animation")) {
 
@@ -384,7 +388,7 @@ void Player::ColliderDraw() {
 	mAttackStatus.sword->Draw();
 	if (mBehavior == Behavior::kAttack || mBehavior == Behavior::kChargeAttack)
 	{
-		if (mAttackStatus.isOperating|| mChargeStatus.isCharge)
+		if (mAttackStatus.isOperating || mChargeStatus.isCharge)
 		{
 			// 武器のコライダー 描画
 			for (Collider* collider : mAttackStatus.swordColliders) {
@@ -601,21 +605,19 @@ void Player::Attack()
 			{
 			case 1:
 
-				mObject->mSkinning->SetNextAnimation("slash");
+				mObject->mSkinning->SetNextAnimation("slashR");
 
 				break;
 
 			case 2:
 
-				mObject->mSkinning->SetMotionBlendingInterval(4.0f);
-				mObject->mSkinning->SetNextAnimation("slashUp");
+				mObject->mSkinning->SetNextAnimation("slashL");
 
 				break;
 
 			case 3:
 
-				mObject->mSkinning->SetMotionBlendingInterval(10.0f);
-				mObject->mSkinning->SetNextAnimation("prepare");
+				mObject->mSkinning->SetNextAnimation("slashEnd");
 
 				break;
 
@@ -631,7 +633,6 @@ void Player::Attack()
 			mAttackStatus.isOperating = false;
 			mAttackStatus.isHit = false;
 			mAttackStatus.isUp = false;
-			mObject->mSkinning->SetMotionBlendingInterval(2.0f);
 			//mObject->mSkinning->SetNextAnimation("idle");
 			// コンボ回数リセット
 			mAttackStatus.comboCount = 0;
@@ -642,25 +643,12 @@ void Player::Attack()
 	{
 		mAttackStatus.motionTime += (1.0f / 60.0f);
 
-		if (mAttackStatus.comboCount == 3)
+		// 攻撃が命中していない かつ tが0.1f以上であれば攻撃フラグをtrueにする
+		if (mAttackStatus.motionTime >= 0.6f && !mAttackStatus.isHit && !mAttackStatus.isOperating)
 		{
-			if (mAttackStatus.motionTime >= 0.1f &&
-				mObject->mSkinning->GetNowSkinCluster()->name != "gatotu0" &&
-				!mObject->mSkinning->SearchToWaitingSkinCluster("gatotu0"))
-			{
-				mObject->mSkinning->SetNextAnimation("gatotu0");
-				mAttackStatus.isOperating = true;
-			}
+			mAttackStatus.isOperating = true;
 		}
-		else {
-			
-			// 攻撃が命中していない かつ tが0.1f以上であれば攻撃フラグをtrueにする
-			if (mAttackStatus.motionTime >= 0.6f && !mAttackStatus.isHit && !mAttackStatus.isOperating)
-			{
-				mAttackStatus.isOperating = true;
-			}
 
-		}
 	}
 
 
@@ -742,7 +730,7 @@ void Player::Move()
 			// 移動状態に変更
 			if (mBehavior == Behavior::kRoot) {
 				mBehavior = Behavior::kMove;
-				
+
 			}
 
 		}
@@ -807,7 +795,7 @@ void Player::DebagCtr()
 
 		mIsAimMode = true;
 	}
-	else if(mInput->GetReleased(Gamepad::Button::LEFT_SHOULDER)){
+	else if (mInput->GetReleased(Gamepad::Button::LEFT_SHOULDER)) {
 		mIsAimMode = false;
 
 	}
@@ -871,12 +859,11 @@ void Player::SpecialAtkRB()
 				{
 					mBehavior = Behavior::kCharge;
 				}
-				
+
 				if (mBehavior == Behavior::kCharge) {
 					if (mObject->mSkinning->GetNowSkinCluster()->name != "prepare" &&
 						!mObject->mSkinning->SearchToWaitingSkinCluster("prepare")) {
 						// 溜めモーションを切り替える
-						mObject->mSkinning->SetMotionBlendingInterval(10.0f);
 						mObject->mSkinning->SetNextAnimation("prepare");
 					}
 				}
@@ -959,7 +946,7 @@ void Player::SpecialAtkRB()
 
 				mDirection;
 			}
-			
+
 			// カメラの回転量を反映
 			//mDirection = TransformNomal(mDirection, MainCamera::GetInstance()->mWorldTransform->GetWorldMatrix());
 			// y座標は移動しない
@@ -970,9 +957,8 @@ void Player::SpecialAtkRB()
 
 			mChargeStatus.moveingTime = 0.0f;
 
-			// モーションを切り替える(+モーションブレンド切替速度を早く)
-			mObject->mSkinning->SetMotionBlendingInterval(10.0f);
-			if  (mObject->mSkinning->GetNowSkinCluster()->name != "gatotu0" &&
+			// モーションを切り替える
+			if (mObject->mSkinning->GetNowSkinCluster()->name != "gatotu0" &&
 				!mObject->mSkinning->SearchToWaitingSkinCluster("gatotu0")) {
 				mObject->mSkinning->SetNextAnimation("gatotu0");
 			}
@@ -1007,8 +993,7 @@ void Player::SpecialAtkRB()
 
 			// 移動終了
 			mBehavior = Behavior::kRoot;
-			mObject->mSkinning->SetMotionBlendingInterval(2.0f);
-			
+
 			// カメラの回転操作をON
 			MainCamera::GetInstance()->SetCameraRotateControll(true);
 

@@ -191,6 +191,28 @@ void Skinnig::DrawGui()
 			ImGui::TreePop();
 		}
 	}
+
+	// 登録済みのモーションデータ
+	if(ImGui::CollapsingHeader("AllMotionData") ){
+		for (auto& skinCluster : mSkinClusterMap) {
+
+			if (ImGui::TreeNode(skinCluster.second->name.c_str()))
+			{
+				ImGui::DragFloat("animationTime", &skinCluster.second->animationTime, 0.0f);
+				ImGui::DragFloat("duration", &skinCluster.second->animation.duration, 0.0f);
+
+				if (skinCluster.second->isLoop) {
+					ImGui::Text("Loop: [ON]");
+				}
+				else {
+					ImGui::Text("Loop: [OFF]");
+				}
+
+				ImGui::TreePop();
+			}
+		}
+	}
+
 #endif // _DEBUG
 }
 
