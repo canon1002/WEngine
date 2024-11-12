@@ -113,7 +113,8 @@ void MainCamera::Update()
 				if (mWorldTransform->rotation.y > 3.14f) {
 					mWorldTransform->rotation.y = -3.14f;
 				}
-				else if(mWorldTransform->rotation.y < -3.14f){
+				
+				if(mWorldTransform->rotation.y < -3.14f){
 					mWorldTransform->rotation.y = 3.14f;
 				}
 
@@ -153,8 +154,15 @@ void MainCamera::UpdateRotationEasing()
 		}
 	}
 
+	// Y軸の計算
+	if (Length(mSearchTarget->translation - mFollowTarget->translation) != 0.0f) {
+		Vector3 direction = Normalize(mSearchTarget->translation - mFollowTarget->translation);
+
+		mEasedRotation.y = atan2f(direction.x, direction.z);
+	}
+
 	mWorldTransform->rotation.y = ExponentialInterpolation(mEaseBeforeRotation.y,mEasedRotation.y, mRotaionEasingTime, 1.0f);
-	mWorldTransform->rotation.x = ExponentialInterpolation(mEaseBeforeRotation.x,mEasedRotation.x, mRotaionEasingTime, 1.0f);
+	//mWorldTransform->rotation.x = ExponentialInterpolation(mEaseBeforeRotation.x,0.0f, mRotaionEasingTime, 1.0f);
 }
 
 void MainCamera::SetCameraRotarionToSearchTarget()

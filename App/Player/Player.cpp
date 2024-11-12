@@ -858,12 +858,15 @@ void Player::DebagCtr()
 	// 補間後の数値を計算
 	Vector3 cVel = ExponentialInterpolation(s, e, t, k);
 
-	// メインカメラに追加の平行移動値を与える
-	MainCamera::GetInstance()->SetAddTranslation(TransformNomal(cVel, MainCamera::GetInstance()->mWorldTransform->GetWorldMatrix()));
-
+	// 操作変更
 	if (mInput->GetPused(Gamepad::Button::X)) {
 		MainCamera::GetInstance()->SetCameraRotarionToSearchTarget();
 	}
+
+	// メインカメラに追加の平行移動値を与える
+	MainCamera::GetInstance()->SetAddTranslation(TransformNomal(cVel, MainCamera::GetInstance()->mWorldTransform->GetWorldMatrix()));
+
+	
 
 }
 
