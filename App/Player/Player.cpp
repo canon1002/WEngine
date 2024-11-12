@@ -25,6 +25,8 @@ void Player::Init() {
 	ModelManager::GetInstance()->LoadModel("player", "slashR.gltf");
 	ModelManager::GetInstance()->LoadModel("player", "slashL.gltf");
 	ModelManager::GetInstance()->LoadModel("player", "slashEnd.gltf");
+	ModelManager::GetInstance()->LoadModel("player", "avoid.gltf");
+	ModelManager::GetInstance()->LoadModel("player", "backStep.gltf");
 	ModelManager::GetInstance()->LoadModel("player", "run.gltf");
 
 	mObject = std::make_unique<Object3d>();
@@ -35,7 +37,7 @@ void Player::Init() {
 	// スキニングアニメーションを生成
 	mObject->mSkinning = new Skinnig();
 	mObject->mSkinning->Init("player", "idle.gltf", mObject->GetModel()->modelData);
-	mObject->mSkinning->SetMotionBlendingInterval(30.0f);
+	mObject->mSkinning->SetMotionBlendingInterval(10.0f);
 	// 使用するアニメーションを登録しておく
 	mObject->mSkinning->CreateSkinningData("player", "idle", ".gltf", mObject->GetModel()->modelData, true);
 	mObject->mSkinning->CreateSkinningData("player", "prepare", ".gltf", mObject->GetModel()->modelData);
@@ -43,6 +45,8 @@ void Player::Init() {
 	mObject->mSkinning->CreateSkinningData("player", "slashR", ".gltf", mObject->GetModel()->modelData);
 	mObject->mSkinning->CreateSkinningData("player", "slashL", ".gltf", mObject->GetModel()->modelData);
 	mObject->mSkinning->CreateSkinningData("player", "slashEnd", ".gltf", mObject->GetModel()->modelData);
+	mObject->mSkinning->CreateSkinningData("player", "avoid", ".gltf", mObject->GetModel()->modelData);
+	mObject->mSkinning->CreateSkinningData("player", "backStep", ".gltf", mObject->GetModel()->modelData);
 	mObject->mSkinning->CreateSkinningData("player", "run", ".gltf", mObject->GetModel()->modelData, true);
 
 
@@ -64,7 +68,7 @@ void Player::Init() {
 	mJumpCount = kJumpCountMax;
 
 	// コライダーの宣言
-	mObject->mCollider = new SphereCollider(mObject->mWorldTransform, 1.0f);
+	mObject->mCollider = new SphereCollider(mObject->mWorldTransform, 0.5f);
 	mObject->mCollider->Init();
 	mObject->mCollider->SetAddtranslation(Vector3(0.0f, 0.55f, -0.1f));
 	mObject->mCollider->SetCollisionAttribute(kCollisionAttributePlayer);
@@ -155,12 +159,13 @@ void Player::Update() {
 		Move();
 
 		// 回避関連処理
-		//Avoid();
+		Avoid();
 		// 防御関連処理
 		//Guard();
 
 		// 突撃
-		SpecialAtkRB();
+		//SpecialAtkRB();
+		
 		// 攻撃関連処理
 		Attack();
 
@@ -283,6 +288,10 @@ void Player::UpdateObject()
 		}
 	}
 
+	// ステージ限界値に合わせた座標の補正
+	mObject->mWorldTransform->translation.x = std::clamp(mObject->mWorldTransform->translation.x, -20.0f, 20.0f);
+	mObject->mWorldTransform->translation.z = std::clamp(mObject->mWorldTransform->translation.z, -20.0f, 20.0f);
+
 }
 
 void Player::Draw() {
@@ -380,7 +389,7 @@ void Player::DrawGUI() {
 
 void Player::ColliderDraw() {
 #ifdef _DEBUG
-	//mObject->mCollider->Draw();
+	mObject->mCollider->Draw();
 #endif // _DEBUG
 	mReticle->Draw3DReticle();
 
@@ -433,7 +442,7 @@ void Player::Avoid()
 		// パラメータの補正
 
 		// 回避距離
-		mAvoidStatus.mAvoidRange = 10.0f;
+		mAvoidStatus.mAvoidRange = 8.0f;
 		// 回避速度
 		mAvoidStatus.mAvoidSpeed = 2.0f;
 		// 回避経過時間( 0.0f ~ 1.0f )
@@ -469,6 +478,10 @@ void Player::Avoid()
 			// 回避状態に変更
 			mBehavior = Behavior::kAvoid;
 
+			// アニメーション変更
+			mObject->mSkinning->SetNextAnimation("avoid");
+			mObject->mSkinning->SetAnimationPlaySpeed(1.5f);
+
 		}
 		// スティック入力がなければバックステップを行う
 		else {
@@ -479,7 +492,9 @@ void Player::Avoid()
 			mAvoidStatus.mAvoidMoveEndPos = mObject->mWorldTransform->translation + Scalar(mAvoidStatus.mAvoidRange, direction);
 			// 回避状態に変更
 			mBehavior = Behavior::kAvoid;
-
+			// アニメーション変更
+			mObject->mSkinning->SetNextAnimation("backStep");
+			mObject->mSkinning->SetAnimationPlaySpeed(2.0f);
 		}
 
 	}
@@ -498,6 +513,7 @@ void Player::Avoid()
 
 			// 移動終了
 			mBehavior = Behavior::kRoot;
+			mObject->mSkinning->SetAnimationPlaySpeed(1.0f);
 		}
 
 		// 移動
@@ -573,7 +589,7 @@ void Player::Attack()
 		if (mInput->GetPused(Gamepad::Button::B) || mInput->GetTriggerKey(DIK_RETURN))
 		{
 			// 初期動作
-			if (mBehavior == Behavior::kRoot)
+			if (mBehavior == Behavior::kRoot || mBehavior == Behavior::kMove)
 			{
 				mBehavior = Behavior::kAttack;
 				mAttackStatus.motionTime = 1.0f;
@@ -606,6 +622,8 @@ void Player::Attack()
 			case 1:
 
 				mObject->mSkinning->SetNextAnimation("slashR");
+				mObject->mSkinning->SetAnimationPlaySpeed(2.0f);
+				mObject->mSkinning->SetMotionBlendingInterval(30.0f);
 
 				break;
 
@@ -617,6 +635,7 @@ void Player::Attack()
 
 			case 3:
 
+				mObject->mSkinning->SetMotionBlendingInterval(15.0f);
 				mObject->mSkinning->SetNextAnimation("slashEnd");
 
 				break;
@@ -627,24 +646,29 @@ void Player::Attack()
 
 		}
 		// コンボを継続しない場合、通常状態に戻る
-		else
-		{
-			mAttackStatus.motionTime = 0.0f;
-			mAttackStatus.isOperating = false;
-			mAttackStatus.isHit = false;
-			mAttackStatus.isUp = false;
-			//mObject->mSkinning->SetNextAnimation("idle");
-			// コンボ回数リセット
-			mAttackStatus.comboCount = 0;
-			mBehavior = Behavior::kRoot;
+		else{
+			if (mAttackStatus.motionTime >= 1.5f) {
+
+				mAttackStatus.motionTime = 0.0f;
+				mAttackStatus.isOperating = false;
+				mAttackStatus.isHit = false;
+				mAttackStatus.isUp = false;
+				//mObject->mSkinning->SetNextAnimation("idle");
+				// コンボ回数リセット
+				mAttackStatus.comboCount = 0;
+				mBehavior = Behavior::kRoot;
+				mObject->mSkinning->SetAnimationPlaySpeed(1.0f);
+				mObject->mSkinning->SetMotionBlendingInterval(30.0f);
+			}
 		}
 	}
-	else
+	
+	if (mAttackStatus.motionTime <= 1.5f)
 	{
-		mAttackStatus.motionTime += (1.0f / 60.0f);
+		mAttackStatus.motionTime += (2.0f / 60.0f);
 
-		// 攻撃が命中していない かつ tが0.1f以上であれば攻撃フラグをtrueにする
-		if (mAttackStatus.motionTime >= 0.6f && !mAttackStatus.isHit && !mAttackStatus.isOperating)
+		// 攻撃が命中していない かつ tが0.2f以上であれば攻撃フラグをtrueにする
+		if (mAttackStatus.motionTime >= 0.2f && !mAttackStatus.isHit && !mAttackStatus.isOperating)
 		{
 			mAttackStatus.isOperating = true;
 		}

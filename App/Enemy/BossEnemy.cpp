@@ -22,7 +22,7 @@ void BossEnemy::Init() {
 	mObject->GetModel()->materialData_->color = { 1.0f,0.7f,0.7f,1.0f };
 
 	// ワールドトランスフォーム
-	mObject->mWorldTransform->scale = { 1.2f,1.2f,1.2f };
+	mObject->mWorldTransform->scale = { 1.0f,1.0f,1.0f };
 	mObject->mWorldTransform->translation = { 0.0f,0.0f,20.0f };
 
 	// 移動量を初期化
@@ -60,7 +60,7 @@ void BossEnemy::Init() {
 	mWeapon->mSkinning->IsInactive();
 	mWeapon->mSkeleton = Skeleton::Create(mWeapon->GetModel()->modelData.rootNode);
 	// 拡大率を変更
-	mWeapon->mWorldTransform->scale = { 4.0f,4.0f,20.0f };
+	mWeapon->mWorldTransform->scale = { 2.0f,2.0f,10.0f };
 
 	// ペアレント
 	mWeapon->mWorldTransform->SetParent(mRightHandWorldMat);
@@ -69,19 +69,18 @@ void BossEnemy::Init() {
 	for (int32_t i = 0; i < 5; i++) {
 		mWeaponWorldMat[i] = MakeAffineMatrix(Vector3{ 0.0f,0.0f,0.0f }, Vector3{ 0.0f,0.0f,0.0f }, Vector3{ 0.0f,0.0f,0.0f });
 		// コライダー 宣言
-		SphereCollider* newCollider = new SphereCollider(new WorldTransform(), 0.5f);
+		SphereCollider* newCollider = new SphereCollider(new WorldTransform(), 0.1f);
 		// 初期化
 		newCollider->Init();
 		newCollider->SetCollisionAttribute(kCollisionAttributeEnemyBullet);
 		newCollider->SetCollisionMask(kCollisionAttributePlayer);
 		// 武器に設定したボーンのワールド座標をセット
-		newCollider->
-			GetWorld()->SetParent(mWeaponWorldMat[i]);
+		newCollider->GetWorld()->SetParent(mWeaponWorldMat[i]);
 		//// 配列にプッシュする
 		mWeaponColliders.push_back(newCollider);
 	}
 
-	mReloadBTCount = 10.0f;
+	mReloadBTCount = 30.0f;
 
 }
 
@@ -242,6 +241,11 @@ void BossEnemy::UpdateObject()
 	if (mActiveAction != nullptr) {
 		mActiveAction->Update();
 	}
+
+
+	// ステージ限界値に合わせた座標の補正
+	mObject->mWorldTransform->translation.x = std::clamp(mObject->mWorldTransform->translation.x, -20.0f, 20.0f);
+	mObject->mWorldTransform->translation.z = std::clamp(mObject->mWorldTransform->translation.z, -20.0f, 20.0f);
 
 }
 
@@ -446,10 +450,12 @@ bool BossEnemy::InvokeFarDistance() {
 void BossEnemy::ColliderDraw() {
 	mWeapon->Draw();
 
+#ifdef _DEBUG
+
 	if (mActiveAction != nullptr) {
 		mActiveAction->Draw();
 	}
-#ifdef _DEBUG
+
 	mObject->mCollider->Draw();
 	
 #endif // _DEBUG

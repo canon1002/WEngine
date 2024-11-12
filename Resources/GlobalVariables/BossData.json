@@ -2,7 +2,7 @@
     "BossData": {
         "AGI": 10,
         "HP": 100,
-        "STR": 300,
+        "STR": 35,
         "VIT": 8
     }
 }

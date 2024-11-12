@@ -291,7 +291,7 @@ void GameScene::Update() {
 		mPlayer->Update();
 
 		// ボス
-		mBoss->UpdateObject();
+		mBoss->Update();
 
 		// コライダーリストへの追加処理
 		mCollisionManager->SetCollider(mPlayer->GetObject3D()->mCollider);
@@ -396,6 +396,7 @@ void GameScene::Update() {
 
 		// フェードインが終わったら戦闘開始
 		if (mViggnetTime == 1.0f) {
+			//this->Init();
 			sceneNo = SCENE::RESULT;
 		}
 
