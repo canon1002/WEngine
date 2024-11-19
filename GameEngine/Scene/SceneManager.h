@@ -55,7 +55,7 @@ private:
 	std::unique_ptr<MainCamera> mainCamera_ = nullptr;
 	
 	// オブジェクト管理者クラス
-	ObjectAdministrator* objectAdmin_;
+	ObjectManager* objectAdmin_;
 
 	// ポストエフェクト
 	RenderCopyImage* copyImage_;

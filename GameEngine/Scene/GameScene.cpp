@@ -10,6 +10,7 @@
 #include "GameEngine/Effect/Particle/ParticleManager.h"
 #include "App/Status/StatusManager.h"
 #include "GameEngine/Object/Screen/RenderCopyImage.h"
+#include "GameEngine/GameMaster/Framerate.h"
 
 void GameScene::Finalize() {}
 
@@ -153,6 +154,20 @@ void GameScene::Init() {
 	}
 	mGameOverSelectUICount = 0;
 	mIsGameOverSelect = false;
+
+
+	// ゲームクリア演出
+	mFinishUI.sprite = std::make_unique<Sprite>();
+	mFinishUI.sprite->Init();
+	mFinishUI.sprite->SetTexture("Finish.png");
+	mFinishUI.sprite->SetAnchorPoint(Vector2(0.5f, 0.5f));
+	mFinishUI.sprite->SetPos(Vector2(640.0f, 200.0f));
+	mFinishUI.sprite->SetSpriteSize(Vector2(768.0f, 256.0f));
+	mFinishUI.sprite->SetColor(Color(1.0f, 1.0f, 1.0f, 0.0f));
+	mFinithUIDisplsyTime = 0.0f;
+	mIsFinishUIDisplayEnd = false;
+
+
 }
 
 void GameScene::Update() {
@@ -195,7 +210,7 @@ void GameScene::Update() {
 
 			}
 
-			mViggnetTime += 1.0f / 60.0f;
+			mViggnetTime += (1.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetGameSpeed();
 		}
 		else if (mViggnetTime >= 1.0f) {
 			mViggnetTime = 1.0f;
@@ -209,20 +224,20 @@ void GameScene::Update() {
 
 			if (mCameraTr.k < 1.0f || mCameraRot.k < 1.0f) {
 
-				mCameraRot.t += 1.0f / (60.0f * 6.0f);
+				mCameraRot.t += (1.0f / (Framerate::GetInstance()->GetFramerate() * 6.0f)) * Framerate::GetInstance()->GetGameSpeed();
 				if (mCameraRot.t > 1.0f) {
 					mCameraRot.t = 1.0f;
 				}
 
 				if (mCameraRot.t > 0.5f) {
-					mCameraTr.t += 1.0f / (60.0f * 2.0f);
+					mCameraTr.t += (1.0f / (Framerate::GetInstance()->GetFramerate() * 2.0f)) * Framerate::GetInstance()->GetGameSpeed();
 					if (mCameraTr.t > 1.0f) {
 						mCameraTr.t = 1.0f;
 					}
 				}
 
 				if (mCameraRot.t >= 1.0f) {
-					mCameraRot.k += 2.0f / 60.0f;
+					mCameraRot.k += (2.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetGameSpeed();
 					if (mCameraRot.k > 1.0f) {
 						mCameraRot.k = 1.0f;
 					}
@@ -230,7 +245,7 @@ void GameScene::Update() {
 
 				}
 				if (mCameraRot.k >= 0.5f) {
-					mCameraTr.k += 2.0f / 60.0f;
+					mCameraTr.k += (2.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetGameSpeed();
 					if (mCameraTr.k > 1.0f) {
 						mCameraTr.k = 1.0f;
 					}
@@ -257,7 +272,7 @@ void GameScene::Update() {
 
 		if (mPlayerStartAndEnd.t < 1.0f) {
 
-			mPlayerStartAndEnd.t += 1.0f / (60.0f * 4.0f);
+			mPlayerStartAndEnd.t += (1.0f / (Framerate::GetInstance()->GetFramerate() * 4.0f)) * Framerate::GetInstance()->GetGameSpeed();
 
 			if (mPlayerStartAndEnd.t >= 1.0f) {
 				mPlayerStartAndEnd.t = 1.0f;
@@ -285,6 +300,9 @@ void GameScene::Update() {
 		if (mBoss->GetStatus()->HP <= 0.0f) {
 			mPhase = Phase::WIN;
 			mViggnetTime = 0.0f;
+			mFinishUI.isActive = true;
+			mBoss->GetObject3D()->mSkinning->SetNextAnimation("death");
+			Framerate::GetInstance()->SetBattleSpeed(0.5f);
 		}
 
 		// プレイヤー 更新
@@ -309,7 +327,7 @@ void GameScene::Update() {
 	case Phase::LOSE:
 		if (mIsGameOverSelect == false) {
 			if (mViggnetTime < 1.0f) {
-				mViggnetTime += 1.0f / 60.0f;
+				mViggnetTime += (1.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetGameSpeed();
 
 				// ビネットでフェードする
 				RenderCopyImage::GetInstance()->SetViggnetMultiplier(ExponentialInterpolation(10.0f, 20.0f, mViggnetTime, 1.0f));
@@ -337,12 +355,12 @@ void GameScene::Update() {
 
 				if (mViggnetTime == 0.0f) {
 					if (mInput->GetPused(Gamepad::Button::B)) {
-						mViggnetTime += 1.0f / 60.0f;
+						mViggnetTime += (1.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetGameSpeed();
 					}
 				}
 				else if (mViggnetTime < 1.0f) {
 
-					mViggnetTime += 1.0f / 60.0f;
+					mViggnetTime += (1.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetGameSpeed();
 
 					// ビネットでフェードする
 					RenderCopyImage::GetInstance()->SetViggnetMultiplier(ExponentialInterpolation(20.0f, 10.0f, mViggnetTime, 1.0f));
@@ -384,13 +402,65 @@ void GameScene::Update() {
 		break;
 	case Phase::WIN:
 
-		if (mViggnetTime < 1.0f) {
-			mViggnetTime += 1.0f / 60.0f;
-		}
-		else if (mViggnetTime >= 1.0f) {
-			mViggnetTime = 1.0f;
+		if (mFinishUI.isActive) {
+			
+			// 終了時のUI表示が終了していない場合
+			if (!mIsFinishUIDisplayEnd) {
+
+				// UI 透明度操作
+				if (mFinishUI.t < 1.0f) {
+					mFinishUI.t += (10.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetGameSpeed();
+				}
+				// 終了時処理
+				else if (mFinishUI.t >= 1.0f) {
+					mFinishUI.t = 1.0f;
+					if (mFinithUIDisplsyTime == 0.0f) {
+						mFinithUIDisplsyTime = kFinithUIDisplsyTimeMax;
+					}
+
+					// 一定時間UIを表示
+					if (mFinithUIDisplsyTime > 0.0f) {
+						mFinithUIDisplsyTime -= (1.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetGameSpeed();
+					}
+					// 終了時処理
+					else if (mFinithUIDisplsyTime <= 0.0f) {
+						mFinithUIDisplsyTime = 0.0f;
+						mIsFinishUIDisplayEnd = true;
+						Framerate::GetInstance()->SetBattleSpeed(1.0f);
+					}
+
+				}
+
+
+			}
+			// 終了時のUI表示が終了している場合
+			else {
+
+				// UIを透明にする
+				if (mFinishUI.t > 0.0f) {
+					mFinishUI.t -= (2.0f / (Framerate::GetInstance()->GetFramerate())) * Framerate::GetInstance()->GetGameSpeed();
+				}
+				// 終了時の処理
+				else if (mFinishUI.t <= 0.0f) {
+					mFinishUI.t = 0.0f;
+					mFinishUI.isActive = false;
+				}
+
+			}
+
+			mFinishUI.sprite->SetColor(Color(1.0f, 1.0f, 1.0f, ExponentialInterpolation(0.0f, 1.0f, mFinishUI.t, 1.0f)));
 		}
 
+		if (mIsFinishUIDisplayEnd && mFinishUI.t <= 0.0f) {
+			if (mBoss->GetObject3D()->mSkinning->IsAnimationFinished()) {
+				if (mViggnetTime < 1.0f) {
+					mViggnetTime += (1.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetGameSpeed();
+				}
+				else if (mViggnetTime >= 1.0f) {
+					mViggnetTime = 1.0f;
+				}
+			}
+		}
 		// ビネットでフェードインする
 		RenderCopyImage::GetInstance()->SetViggnetIndex(ExponentialInterpolation(0.0f, 10.0f, mViggnetTime, 1.0f));
 
@@ -399,6 +469,11 @@ void GameScene::Update() {
 			//this->Init();
 			sceneNo = SCENE::RESULT;
 		}
+
+		// プレイヤー 更新
+		mPlayer->UpdateObject();
+		// ボス 更新
+		mBoss->UpdateObject();
 
 		break;
 	default:
@@ -450,7 +525,7 @@ void GameScene::Update() {
 	for (int32_t i = 0; i < mGameOverSelectUI.size(); i++) {
 		mGameOverSelectUI[i]->Update();
 	}
-
+	mFinishUI.sprite->Update();
 
 }
 
@@ -518,6 +593,9 @@ void GameScene::DrawUI()
 
 		break;
 	case Phase::WIN:
+
+		mFinishUI.sprite->Draw();
+
 		break;
 	default:
 		break;

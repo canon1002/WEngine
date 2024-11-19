@@ -1,4 +1,6 @@
 #pragma once
+#include "GameEngine/Object/Base/ObjectBase.h"
+
 #include "GameEngine/Math/Math.h"
 #include "GameEngine/Append/Transform/WorldTransform.h"
 #include "GameEngine/Resource/Texture/Resource.h"
@@ -13,12 +15,12 @@ class Model;
 class CameraCommon;
 class ModelManager;
 
-class Object3d
+class Object3d : public ObjectBase 
 {
 
 public: // メンバ関数
 
-	Object3d();
+	Object3d() = default;
 	Object3d(const std::string objname);
 	~Object3d();
 
@@ -40,11 +42,8 @@ public: // メンバ関数
 	const WorldTransform* GetWorldTransform()const  { return mWorldTransform; }
 
 	Model* GetModel() { return mModel; }
-
+	
 public: // メンバ変数
-
-	// オブジェクトの名称
-	std::string mObjname;
 
 	// 外部ポインタ
 	DirectXCommon* mDxCommon = nullptr;
@@ -57,7 +56,7 @@ public: // メンバ変数
 	Microsoft::WRL::ComPtr<ID3D12Resource> mWvpResource = nullptr;
 	// データを書き込む
 	TransformationMatrix* mWvpData = nullptr;
-	WorldTransform* mWorldTransform;
+	//WorldTransform* mWorldTransform;
 
 	// マテリアル
 	Material material;

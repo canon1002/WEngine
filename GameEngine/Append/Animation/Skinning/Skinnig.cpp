@@ -5,6 +5,7 @@
 #include <algorithm>
 #include "GameEngine/Object/Model/Model.h"
 #include "GameEngine/Base/Debug/ImGuiManager.h"
+#include "GameEngine/GameMaster/Framerate.h"
 
 void Skinnig::Init(const std::string& directorypath, const std::string& filepath, ModelData modelData)
 {
@@ -42,9 +43,9 @@ void Skinnig::Init(const std::string& directorypath, const std::string& filepath
 
 void Skinnig::Update()
 {
-	// 時刻を進める 右の数値(60.0fはフレームレートに応じて変動させるようにしたい)
+	// 時刻を進める
 	if (mNowSkincluster->isPause == false) {
-		mNowSkincluster->animationTime += (mAnimationPlaySpeed / 60.0f);
+		mNowSkincluster->animationTime += (mAnimationPlaySpeed / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetBattleSpeed();
 	}
 	// 最後まで行ったら最初からリピート再生する(しなくてもいいし、フラグで変更しても良さそう)
 	if (mNowSkincluster->isLoop == true) {
@@ -57,7 +58,7 @@ void Skinnig::Update()
 		// モーションブレンドの進行度を上昇させる
 		if (mMotionBrendingTime < 1.0f)
 		{
-			mMotionBrendingTime += mMotionBrendingInterval / 60.0f;
+			mMotionBrendingTime += (mMotionBrendingInterval / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetBattleSpeed();
 		}
 
 		// 上限まで行ったら自動で終了する

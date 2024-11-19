@@ -7,10 +7,6 @@
 #include "GameEngine/Object/Model/ModelManager.h"
 #include "GameEngine/Base/Debug/ImGuiManager.h"
 
-Object3d::Object3d() {
-	mObjname = "Object3D";
-}
-
 Object3d::Object3d(const std::string objname) {
 	// 名称が引数に入っていれば命名しておく
 	mObjname = objname;

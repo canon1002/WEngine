@@ -2,6 +2,7 @@
 #include "GameEngine/Base/WinApp/WinAPI.h"
 #include "GameEngine/Base/DirectX/DirectXCommon.h"
 #include "GameEngine/Base/Debug/ImGuiManager.h"
+#include "GameEngine/GameMaster/Framerate.h"
 
 MainCamera* MainCamera::instance = nullptr;
 
@@ -148,7 +149,7 @@ void MainCamera::UpdateRotationEasing()
 	}
 
 	if (mRotaionEasingTime < 1.0f) {
-		mRotaionEasingTime += (3.0f / 60.0f);
+		mRotaionEasingTime += (3.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetBattleSpeed();
 		if (mRotaionEasingTime > 1.0f) {
 			mRotaionEasingTime = 1.0f;
 		}

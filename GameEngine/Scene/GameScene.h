@@ -85,5 +85,14 @@ private:
 	// 動くオブジェクトの地面影
 	std::array<std::unique_ptr<Object3d>, 2> mGroundShadow;
 
+
+	// ゲームクリア演出
+	UISet mFinishUI;
+	float mFinithUIDisplsyTime;
+	const float kFinithUIDisplsyTimeMax = 4.0f;
+	bool mIsFinishUIDisplayEnd;
+
+	// ヒットストップ
+
 };
 

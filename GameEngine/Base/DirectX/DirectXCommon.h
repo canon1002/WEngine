@@ -54,23 +54,26 @@ private: // -- 静的メンバ関数 -- //
 public: // -- 公開 メンバ関数 -- //
 
 	/// 初期化
-	void Initialize(WinAPI* win);
+	void Init(WinAPI* win);
 
 	/// 終了処理
-	void Finalize();
+	void Final();
 
-	/// 
-	/// </summary>
-	void InitializeViewPort();
-	
+	// 描画前処理
 	void PreDrawForRenderTarget();
-	void PostDrawForRenderTarget();
 	void PreDraw();
-
-	/// <summary>
-	/// 
-	/// </summary>
+	
+	// 描画後処理
+	void PostDrawForRenderTarget();
 	void PostDraw();
+
+	/// バッファリソースの生成
+	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(ID3D12Device* device, size_t sizeInBytes);
+
+	/// ディスクリプタヒープの生成
+	Microsoft::WRL::ComPtr <ID3D12DescriptorHeap> CreateDescriptorHeap(
+		Microsoft::WRL::ComPtr <ID3D12Device> device, D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors, bool shaderVisible);
+
 
 	inline D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDescriptorHandle(Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap,
 		uint32_t descriptorSize, uint32_t index) {
@@ -86,15 +89,12 @@ public: // -- 公開 メンバ関数 -- //
 		return handleGPU;
 	}
 
-	/// バッファリソースの生成
-	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(ID3D12Device* device, size_t sizeInBytes);
-
-	/// ディスクリプタヒープの生成
-	Microsoft::WRL::ComPtr <ID3D12DescriptorHeap> CreateDescriptorHeap(
-		Microsoft::WRL::ComPtr <ID3D12Device> device, D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors, bool shaderVisible);
+	
 
 
 private: // --非公開 メンバ関数 -- //
+
+	// -- 生成・初期化関数 -- //
 
 	/// <summary>
 	/// DXGIデバイス初期化
@@ -121,11 +121,13 @@ private: // --非公開 メンバ関数 -- //
 	/// </summary>
 	void InitializeDXC();
 
+	void InitViewPort();
+
+	
+
 	void SetResourceBarrier(
-		ID3D12GraphicsCommandList* commandList,
-		ID3D12Resource* resource,
-		D3D12_RESOURCE_STATES stateBefore,
-		D3D12_RESOURCE_STATES stateAfter);
+		ID3D12GraphicsCommandList* commandList,ID3D12Resource* resource,
+		D3D12_RESOURCE_STATES stateBefore,D3D12_RESOURCE_STATES stateAfter);
 
 	void ClearRenderTargetView(ID3D12GraphicsCommandList* commandList, D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle, const float clearColor[4]) {
 		commandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
@@ -144,7 +146,7 @@ private: // --非公開 メンバ関数 -- //
 	}
 
 
-	void CreateRenderTargetForShadow();
+	void CreateRenderTargetForShadow() {}
 
 
 

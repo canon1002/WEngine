@@ -19,6 +19,9 @@ public:
 	// 入力マネージャー
 	InputManager* mInput;
 
+	UISet mTitleOne;
+	UISet mTitleLogo;
+
 	// フェード中か
 	bool mIsFading;
 	bool mIsFadingSceneEnd;

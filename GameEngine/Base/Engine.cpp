@@ -20,7 +20,7 @@ void Engine::Run(){
 	// WinApp
 	winApp_->Initialize();
 	// DirectXCommon
-	mDxCommon->Initialize(winApp_.get());
+	mDxCommon->Init(winApp_.get());
 	// Scene
 	sceneManager_->Init(winApp_.get(), mDxCommon);
 	sceneManager_->Run();
@@ -32,7 +32,7 @@ void Engine::Run(){
 	// Scene
 	sceneManager_.reset();
 	// DirectXCommon
-	mDxCommon->Finalize();
+	mDxCommon->Final();
 	// WinApp
 	winApp_->Finalize();
 }

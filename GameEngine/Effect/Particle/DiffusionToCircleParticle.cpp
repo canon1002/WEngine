@@ -1,6 +1,7 @@
 #include "DiffusionToCircleParticle.h"
 #include "GameEngine/Object/Camera/MainCamera.h"
 #include  "GameEngine/Base/Debug/ImGuiManager.h"
+#include "GameEngine/GameMaster/Framerate.h"
 
 void DiffusionToCircleParticle::Init() {
 
@@ -43,7 +44,7 @@ void DiffusionToCircleParticle::Update() {
 
 
 	// Δtを定義 60fps固定してあるが、実時間を計測して可変fpsで動かせるようにしておきたい
-	const float kDeltaTime = 1.0f / 60.0f;
+	const float kDeltaTime = (1.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetGameSpeed();
 
 	// instancingCountが最大値を上回らないようにする
 	if (instanceCount_ > kNumMaxInstance) { instanceCount_ = kNumMaxInstance; }

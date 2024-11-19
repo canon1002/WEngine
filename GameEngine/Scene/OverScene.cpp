@@ -1,5 +1,6 @@
 #include "OverScene.h"
 #include "GameEngine/Object/Screen/RenderCopyImage.h"
+#include "GameEngine/GameMaster/Framerate.h"
 
 void OverScene::Finalize(){
 
@@ -19,7 +20,7 @@ void OverScene::Update()
 	{
 		if (mViggnetTime < 1.0f)
 		{
-			mViggnetTime += 1.0f / 60.0f;
+			mViggnetTime += (1.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetGameSpeed();
 		}
 		else if (mViggnetTime >= 1.0f)
 		{

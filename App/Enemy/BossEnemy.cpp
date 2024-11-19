@@ -11,20 +11,50 @@
 #include "GameEngine/Object/Model/Skybox/Skybox.h"
 
 void BossEnemy::Init() {
+	
+	// モデル読み込み
+	//ModelManager::GetInstance()->LoadModel("Boss", "boss.gltf");
+	ModelManager::GetInstance()->LoadModel("Boss", "Idle.gltf");
+	ModelManager::GetInstance()->LoadModel("Boss", "Run.gltf");
+	ModelManager::GetInstance()->LoadModel("Boss", "backStep.gltf");
+	ModelManager::GetInstance()->LoadModel("Boss", "death.gltf");
+
+	ModelManager::GetInstance()->LoadModel("Boss", "Slash.gltf");
+	ModelManager::GetInstance()->LoadModel("Boss", "SlashR.gltf");
+	ModelManager::GetInstance()->LoadModel("Boss", "SlashJamp.gltf");
+	ModelManager::GetInstance()->LoadModel("Boss", "SlashDash.gltf");
+	
+	ModelManager::GetInstance()->LoadModel("Boss", "Thrust.gltf");
+	ModelManager::GetInstance()->LoadModel("Boss", "magic.gltf");
+	ModelManager::GetInstance()->LoadModel("Boss", "kick.gltf");
+
 	mObject = std::make_unique<Object3d>();
 	mObject->Init("BossEnemyObj");
-	mObject->SetModel("boss.gltf");
-	mObject->mSkinning = new Skinnig();
-	mObject->mSkinning->Init("boss", "Idle.gltf",
-		mObject->GetModel()->modelData);
-	mObject->mSkeleton = Skeleton::Create(mObject->GetModel()->modelData.rootNode);
-	mObject->SetTranslate({ 3.0f,1.0f,7.0f });
-	mObject->GetModel()->materialData_->color = { 1.0f,0.7f,0.7f,1.0f };
-
-	// ワールドトランスフォーム
 	mObject->mWorldTransform->scale = { 1.0f,1.0f,1.0f };
 	mObject->mWorldTransform->translation = { 0.0f,0.0f,20.0f };
 
+	// モデルを設定
+	mObject->SetModel("boss.gltf");
+	mObject->GetModel()->materialData_->color = { 1.0f,0.7f,0.7f,1.0f };
+	// スキニングアニメーションを生成
+	mObject->mSkinning = new Skinnig();
+	mObject->mSkinning->Init("Boss", "Idle.gltf", mObject->GetModel()->modelData);
+	mObject->mSkinning->SetMotionBlendingInterval(30.0f);
+	// 使用するアニメーションを登録しておく
+	mObject->mSkinning->CreateSkinningData("Boss", "Idle", ".gltf", mObject->GetModel()->modelData, true);
+	mObject->mSkinning->CreateSkinningData("Boss", "Run", ".gltf", mObject->GetModel()->modelData, true);
+	mObject->mSkinning->CreateSkinningData("Boss", "backStep", ".gltf", mObject->GetModel()->modelData);
+	mObject->mSkinning->CreateSkinningData("Boss", "death", ".gltf", mObject->GetModel()->modelData);
+	
+	mObject->mSkinning->CreateSkinningData("Boss", "Slash", ".gltf", mObject->GetModel()->modelData);
+	mObject->mSkinning->CreateSkinningData("Boss", "SlashR", ".gltf", mObject->GetModel()->modelData);
+	mObject->mSkinning->CreateSkinningData("Boss", "SlashDash", ".gltf", mObject->GetModel()->modelData);
+	mObject->mSkinning->CreateSkinningData("Boss", "SlashJamp", ".gltf", mObject->GetModel()->modelData);
+	mObject->mSkinning->CreateSkinningData("Boss", "Thrust", ".gltf", mObject->GetModel()->modelData);
+
+	mObject->mSkinning->CreateSkinningData("Boss", "magic", ".gltf", mObject->GetModel()->modelData);
+	mObject->mSkinning->CreateSkinningData("Boss", "kick", ".gltf", mObject->GetModel()->modelData);
+	
 	// 移動量を初期化
 	mVelocity = { 0.0f,0.0f ,0.002f };
 	// 重力の影響を受ける
@@ -60,7 +90,7 @@ void BossEnemy::Init() {
 	mWeapon->mSkinning->IsInactive();
 	mWeapon->mSkeleton = Skeleton::Create(mWeapon->GetModel()->modelData.rootNode);
 	// 拡大率を変更
-	mWeapon->mWorldTransform->scale = { 2.0f,2.0f,10.0f };
+	mWeapon->mWorldTransform->scale = { 3.0f,3.0f,12.0f };
 
 	// ペアレント
 	mWeapon->mWorldTransform->SetParent(mRightHandWorldMat);
@@ -69,7 +99,7 @@ void BossEnemy::Init() {
 	for (int32_t i = 0; i < 5; i++) {
 		mWeaponWorldMat[i] = MakeAffineMatrix(Vector3{ 0.0f,0.0f,0.0f }, Vector3{ 0.0f,0.0f,0.0f }, Vector3{ 0.0f,0.0f,0.0f });
 		// コライダー 宣言
-		SphereCollider* newCollider = new SphereCollider(new WorldTransform(), 0.1f);
+		SphereCollider* newCollider = new SphereCollider(new WorldTransform(), 0.2f);
 		// 初期化
 		newCollider->Init();
 		newCollider->SetCollisionAttribute(kCollisionAttributeEnemyBullet);
@@ -196,6 +226,14 @@ void BossEnemy::Update() {
 
 void BossEnemy::UpdateObject()
 {
+	if (mActiveAction != nullptr) {
+		mActiveAction->Update();
+	}
+
+
+	// ステージ限界値に合わせた座標の補正
+	mObject->mWorldTransform->translation.x = std::clamp(mObject->mWorldTransform->translation.x, -20.0f, 20.0f);
+	mObject->mWorldTransform->translation.z = std::clamp(mObject->mWorldTransform->translation.z, -20.0f, 20.0f);
 
 	// 右手のワールド行列を更新
 	mRightHandWorldMat = Multiply(
@@ -238,14 +276,8 @@ void BossEnemy::UpdateObject()
 	// UI更新
 	mStatus->Update(mObject->GetWorldTransform());
 
-	if (mActiveAction != nullptr) {
-		mActiveAction->Update();
-	}
+	
 
-
-	// ステージ限界値に合わせた座標の補正
-	mObject->mWorldTransform->translation.x = std::clamp(mObject->mWorldTransform->translation.x, -20.0f, 20.0f);
-	mObject->mWorldTransform->translation.z = std::clamp(mObject->mWorldTransform->translation.z, -20.0f, 20.0f);
 
 }
 

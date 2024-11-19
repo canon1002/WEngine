@@ -4,6 +4,7 @@
 #include "GameEngine/Object/Model/Skybox/Skybox.h"
 #include "GameEngine/Base/Debug/ImGuiManager.h"
 #include "GameEngine/Append/Collider/CollisionManager.h"
+#include "GameEngine/GameMaster/Framerate.h"
 
 void ACT::AttackClose::Init(BossEnemy* boss)
 {
@@ -11,7 +12,6 @@ void ACT::AttackClose::Init(BossEnemy* boss)
 	mBoss = boss;
 	// 初期化する
 	mCondition = Condition::IDOL;
-
 
 
 	/*mColliders.push_back(new SphereCollider(mWeapon->mWorldTransform, 0.25f));
@@ -30,7 +30,7 @@ void ACT::AttackClose::Update()
 	if (mCondition == Condition::RUNNING) {
 
 		// 衝突判定を出す時刻を進める
-		mActiveColliderCount += 2.0f / 60.0f;
+		mActiveColliderCount += (2.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetBattleSpeed();
 
 
 		// 各コライダーの衝突判定を確認
@@ -74,10 +74,7 @@ void ACT::AttackClose::Start()
 	// パラメータの初期化
 
 	// アニメーションの変更
-	mBoss->GetObject3D()->mSkinning->Init("boss", "boss.gltf",
-		mBoss->GetObject3D()->GetModel()->modelData);
-	mBoss->GetObject3D()->mSkinning->ResetTime();
-	mBoss->GetObject3D()->mSkinning->SetLoopMode(false);
+	mBoss->GetObject3D()->mSkinning->SetNextAnimation("Slash");
 
 	mActiveColliderCount = 0.0f;
 
@@ -91,8 +88,7 @@ void ACT::AttackClose::End()
 	mCondition = Condition::FINISHED;
 
 	// アニメーションの変更
-	mBoss->GetObject3D()->mSkinning->Init("boss", "Idle.gltf",
-		mBoss->GetObject3D()->GetModel()->modelData);
+	mBoss->GetObject3D()->mSkinning->SetNextAnimation("Idle");
 }
 
 void ACT::AttackClose::Reset()
@@ -137,7 +133,7 @@ void ACT::AttackThrust::Update()
 	if (mCondition == Condition::RUNNING) {
 
 		// 衝突判定を出す時刻を進める
-		mActiveColliderCount += 2.0f / 60.0f;
+		mActiveColliderCount += (2.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetBattleSpeed();
 
 		// 各コライダーの衝突判定を確認
 		if (kActiveColliderCount.x < mActiveColliderCount &&
@@ -180,10 +176,7 @@ void ACT::AttackThrust::Start()
 	// パラメータの初期化
 
 	// アニメーションの変更
-	mBoss->GetObject3D()->mSkinning->Init("boss", "Thrust.gltf",
-		mBoss->GetObject3D()->GetModel()->modelData);
-	mBoss->GetObject3D()->mSkinning->ResetTime();
-	mBoss->GetObject3D()->mSkinning->SetLoopMode(false);
+	mBoss->GetObject3D()->mSkinning->SetNextAnimation("Thrust");
 	mActiveColliderCount = 0.0f;
 
 	// プレイヤーの方を向く
@@ -218,8 +211,7 @@ void ACT::AttackThrust::End()
 	mCondition = Condition::FINISHED;
 
 	// アニメーションの変更
-	mBoss->GetObject3D()->mSkinning->Init("boss", "Idle.gltf",
-		mBoss->GetObject3D()->GetModel()->modelData);
+	mBoss->GetObject3D()->mSkinning->SetNextAnimation("Idle");
 
 	// 終わったら戻す
 	mBoss->mWeapon->mWorldTransform->SetParent(mBoss->mRightHandWorldMat);

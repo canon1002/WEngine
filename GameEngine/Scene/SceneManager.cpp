@@ -35,7 +35,7 @@ void SceneManager::Init(WinAPI* winApp, DirectXCommon* dxCommon){
 	mainCamera_->Initialize();
 
 	// オブジェクト管理者クラス
-	objectAdmin_ = ObjectAdministrator::GetInstance();
+	objectAdmin_ = ObjectManager::GetInstance();
 	objectAdmin_->Init(mDxCommon);
 
 	// モデル管理クラス
@@ -54,6 +54,8 @@ void SceneManager::Init(WinAPI* winApp, DirectXCommon* dxCommon){
 	sceneArr_[RESULT] = std::make_unique<ResultScene>();
 	sceneArr_[OVER] = std::make_unique<OverScene>();
 
+	// フレームレート
+	Framerate::GetInstance()->Init();
 
 	//
 	copyImage_ = RenderCopyImage::GetInstance();
@@ -68,7 +70,7 @@ int SceneManager::Run() {
 	imGuiManager_->Initialize(winApp_, mDxCommon);
 #endif // _DEBUG
 
-	inputManager_->Initialize(winApp_);
+	inputManager_->Init(winApp_);
 	audio_->Initialize();
 
 	// 非同期処理
@@ -219,7 +221,7 @@ int SceneManager::Run() {
 	sceneArr_[STAGE].reset();
 	sceneArr_[RESULT].reset();
 	
-	inputManager_->Finalize();
+	inputManager_->Final();
 	audio_->Finalize();
 	copyImage_->Finalize();
 

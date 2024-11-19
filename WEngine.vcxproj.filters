@@ -158,6 +158,9 @@
     <Filter Include="リソース ファイル\Shader\Collider">
       <UniqueIdentifier>{58664cd6-c708-4a51-8a02-66e539a99c58}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GameEngine\Object\Base">
+      <UniqueIdentifier>{b1f46cda-82d8-491c-893c-9dac4ac1f522}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameEngine\Object\Light\DirectionalLight.cpp">
@@ -443,6 +446,10 @@
     <ClCompile Include="GameEngine\Scene\StartScene.cpp">
       <Filter>GameEngine\Scene</Filter>
     </ClCompile>
+    <ClCompile Include="GameEngine\Object\Base\ObjectBase.cpp">
+      <Filter>GameEngine\Object\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="GameEngine\Input\Controller.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameEngine\Object\Light\DirectionalLight.h">
@@ -748,6 +755,10 @@
     <ClInclude Include="GameEngine\Scene\StartScene.h">
       <Filter>GameEngine\Scene</Filter>
     </ClInclude>
+    <ClInclude Include="GameEngine\Object\Base\ObjectBase.h">
+      <Filter>GameEngine\Object\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="GameEngine\Input\Controller.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt">

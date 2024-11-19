@@ -1,6 +1,7 @@
 #include "StartScene.h"
 #include "GameEngine/Object/Screen/RenderCopyImage.h"
 #include "GameEngine/Object/ObjectAdministrator.h"
+#include "GameEngine/GameMaster/Framerate.h"
 
 void StartScene::Finalize() {
 
@@ -45,7 +46,7 @@ void StartScene::Update()
 	// 開始時に一時停止
 	if (mStartWaitTime < kStartWaitTimeMax)
 	{
-		mStartWaitTime += (1.0f / 60.0f);
+		mStartWaitTime += (1.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetGameSpeed();
 
 		if (mLogoImage.isActive) 
 		{
@@ -69,7 +70,7 @@ void StartScene::Update()
 		{
 			if (mLogoImage.t < 1.0f)
 			{
-				mLogoImage.t += (1.0f / 60.0f);
+				mLogoImage.t += (1.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetGameSpeed();
 				if (mLogoImage.t > 1.0f)
 				{
 					mLogoImage.t = 1.0f;
@@ -81,7 +82,7 @@ void StartScene::Update()
 			}
 			else if (mLogoImage.t < 2.0f)
 			{
-				mLogoImage.t += (1.0f / 60.0f);
+				mLogoImage.t += (1.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetGameSpeed();
 				mLogoImage.sprite->SetColor(Color(1.0f, 1.0f, 1.0f, (2.0f - mLogoImage.t)));
 
 				if (mLogoImage.t >= 2.0f)
@@ -99,7 +100,7 @@ void StartScene::Update()
 	{
 		if (mViggnetTime < 1.0f)
 		{
-			mViggnetTime += 1.0f / 60.0f;
+			mViggnetTime += (1.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetGameSpeed();
 		}
 		else if (mViggnetTime >= 1.0f)
 		{

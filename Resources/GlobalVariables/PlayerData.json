@@ -2,7 +2,7 @@
     "PlayerData": {
         "AGI": 10,
         "HP": 100,
-        "STR": 8,
+        "STR": 16,
         "VIT": 4
     }
 }

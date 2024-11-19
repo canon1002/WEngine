@@ -13,12 +13,12 @@ InputManager* InputManager::GetInstance() {
 	return instance;
 }
 
-void InputManager::Finalize()
+void InputManager::Final()
 {
 
 }
 
-void InputManager::Initialize(WinAPI* winApp) {
+void InputManager::Init(WinAPI* winApp) {
 
 	winApp_ = winApp;
 	// DirectInput関連の初期化
@@ -35,7 +35,7 @@ void InputManager::Update() {
 	
 }
 
-void InputManager::DrawGUI()
+void InputManager::DrawGui()
 {
 	gamepad->DrawGUI();
 	keyboard->DrawGUI();

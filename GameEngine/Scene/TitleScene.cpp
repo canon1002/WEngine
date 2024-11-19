@@ -6,6 +6,7 @@
 #include "App/Reaction/DamageReaction.h"
 #include "GameEngine/Effect/Particle/ParticleManager.h"
 #include "GameEngine/Object/Screen/RenderCopyImage.h"
+#include "GameEngine/GameMaster/Framerate.h"
 
 void TitleScene::Finalize() {}
 
@@ -74,8 +75,10 @@ void TitleScene::Init() {
 	// 以下 UI
 	mTitleOne.sprite = std::make_unique<Sprite>();
 	mTitleOne.sprite->Init();
-	mTitleOne.sprite->SetTexture("UI/UI2.png");
+	mTitleOne.sprite->SetTexture("pleaseButton.png");
 	mTitleOne.sprite->SetPos({ 640.0f,500.0f});
+	mTitleOne.sprite->SetScale({ 0.5f,0.5f});
+
 	mTitleOne.sprite->SetAnchorPoint({ 0.5f,0.5f });
 	mTitleOne.t = 0.0f;
 	mTitleOne.displayCount = 0.5f;
@@ -118,11 +121,11 @@ void TitleScene::Update() {
 	mTitleLogo.sprite->Update();
 	mTitleSelect.sprite->Update();
 
-	mTitleOne.t += 1.0f / 60.0f;
+	mTitleOne.t += (1.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetGameSpeed();
 	if (mTitleOne.t >= 1.0f) {
 		mTitleOne.t = 0.0f;
 	}
-	mTitleSelect.t += 1.0f / 60.0f;
+	mTitleSelect.t += (1.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetGameSpeed();
 	if (mTitleSelect.t >= 1.0f) {
 		mTitleSelect.t = 0.0f;
 	}
@@ -155,7 +158,7 @@ void TitleScene::Update() {
 	{
 		if (viggnetOnlyTime < 1.0f) 
 		{
-			viggnetOnlyTime += (1.0f / 60.0f);
+			viggnetOnlyTime += (1.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetGameSpeed();
 
 		}
 		else if (viggnetOnlyTime >= 1.0f) 
@@ -173,7 +176,7 @@ void TitleScene::Update() {
 
 		// tを増加させ、座標を移動
 		if (mCameraRot.t < 1.0f) {
-			mCameraRot.t += 1.0f / 60.0f;
+			mCameraRot.t += (1.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetGameSpeed();
 		}
 		else if (mCameraRot.t > 1.0f) {
 			mCameraRot.t = 1.0f;
@@ -185,7 +188,7 @@ void TitleScene::Update() {
 
 		// tを増加させ、座標を移動
 		if (mCameraTrYZ.t < 1.0f) {
-			mCameraTrYZ.t += 1.0f / 60.0f;
+			mCameraTrYZ.t += (1.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetGameSpeed();
 		}
 		else if (mCameraTrYZ.t > 1.0f) {
 			mCameraTrYZ.t = 1.0f;
@@ -206,7 +209,7 @@ void TitleScene::Update() {
 
 		// tを増加させ、座標を移動
 		if (mCameraTrZ.t < 1.0f) {
-			mCameraTrZ.t += 1.0f / 60.0f;
+			mCameraTrZ.t += (1.0f / Framerate::GetInstance()->GetFramerate());
 		}
 		else if (mCameraTrZ.t > 1.0f) {
 			mCameraTrZ.t = 1.0f;

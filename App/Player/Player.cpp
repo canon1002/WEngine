@@ -8,7 +8,7 @@
 #include "GameEngine/Append/Collider/CollisionManager.h"
 #include "App/Enemy/BossEnemy.h"
 #include "App/Reaction/DamageReaction.h"
-
+#include "GameEngine/GameMaster/Framerate.h"
 
 Player::~Player() {
 
@@ -28,10 +28,12 @@ void Player::Init() {
 	ModelManager::GetInstance()->LoadModel("player", "avoid.gltf");
 	ModelManager::GetInstance()->LoadModel("player", "backStep.gltf");
 	ModelManager::GetInstance()->LoadModel("player", "run.gltf");
+	ModelManager::GetInstance()->LoadModel("player", "thrust.gltf");
 
 	mObject = std::make_unique<Object3d>();
 	mObject->Init("PlayerObj");
 	mObject->SetTranslate({ 1.0f,1.0f,7.0f });
+	
 	// モデルを設定
 	mObject->SetModel("idle.gltf");
 	// スキニングアニメーションを生成
@@ -42,9 +44,12 @@ void Player::Init() {
 	mObject->mSkinning->CreateSkinningData("player", "idle", ".gltf", mObject->GetModel()->modelData, true);
 	mObject->mSkinning->CreateSkinningData("player", "prepare", ".gltf", mObject->GetModel()->modelData);
 	mObject->mSkinning->CreateSkinningData("player", "gatotu0", ".gltf", mObject->GetModel()->modelData);
+
 	mObject->mSkinning->CreateSkinningData("player", "slashR", ".gltf", mObject->GetModel()->modelData);
 	mObject->mSkinning->CreateSkinningData("player", "slashL", ".gltf", mObject->GetModel()->modelData);
 	mObject->mSkinning->CreateSkinningData("player", "slashEnd", ".gltf", mObject->GetModel()->modelData);
+	mObject->mSkinning->CreateSkinningData("player", "thrust", ".gltf", mObject->GetModel()->modelData);
+	
 	mObject->mSkinning->CreateSkinningData("player", "avoid", ".gltf", mObject->GetModel()->modelData);
 	mObject->mSkinning->CreateSkinningData("player", "backStep", ".gltf", mObject->GetModel()->modelData);
 	mObject->mSkinning->CreateSkinningData("player", "run", ".gltf", mObject->GetModel()->modelData, true);
@@ -124,8 +129,8 @@ void Player::Init() {
 		SphereCollider* newCollider = new SphereCollider(new WorldTransform(), 0.1f);
 		// 初期化
 		newCollider->Init();
-		newCollider->SetCollisionAttribute(kCollisionAttributeEnemyBullet);
-		newCollider->SetCollisionMask(kCollisionAttributePlayer);
+		newCollider->SetCollisionAttribute(kCollisionAttributePlayerBullet);
+		newCollider->SetCollisionMask(kCollisionAttributeEnemy);
 		// 武器に設定したボーンのワールド座標をセット
 		newCollider->
 			GetWorld()->SetParent(mAttackStatus.swordWorldMat[i]);
@@ -164,7 +169,7 @@ void Player::Update() {
 		//Guard();
 
 		// 突撃
-		//SpecialAtkRB();
+		SpecialAtkRB();
 		
 		// 攻撃関連処理
 		Attack();
@@ -177,6 +182,9 @@ void Player::Update() {
 		switch (mBehavior)
 		{
 		case Behavior::kRoot:
+
+			// コンボ回数リセット
+			mAttackStatus.comboCount = 0;
 
 			if (mObject->mSkinning->GetNowSkinCluster()->name != "idle" &&
 				!mObject->mSkinning->SearchToWaitingSkinCluster("idle"))
@@ -225,10 +233,55 @@ void Player::Update() {
 	// UI更新
 	mStatus->Update();
 
+
+	// 衝突時の処理
+	if (mBehavior == Behavior::kAttack || mBehavior == Behavior::kChargeAttack) {
+		if ((mAttackStatus.isOperating == true || mChargeStatus.isCharge == true) && mAttackStatus.isHit == false)
+		{
+			for (Collider* collider : mAttackStatus.swordColliders)
+			{
+				if (collider->GetOnCollisionFlag() == false)
+				{
+					continue;
+				}
+
+				// 次のフレームで消す
+				mAttackStatus.isHit = true;
+
+				// 敵にダメージを与える
+				ReciveDamageToBoss(1.2f);
+
+				// ダメージ表示
+				int32_t damage = static_cast<int32_t>(static_cast<int32_t>(mStatus->STR / 2.0f) * 1.0f) - static_cast<int32_t>(mBoss->GetStatus()->VIT / 4.0f);;
+				DamageReaction::GetInstance()->Reaction(mReticle->GetWorld3D(), damage, MainCamera::GetInstance());
+			}
+		}
+	}
+
 }
 
 void Player::UpdateObject()
 {
+
+	// 補間数値
+	static float t = 0.0f;
+	// 勾配
+	static float k = 1.0f;
+	// 始点と終点
+	static Vector3 s = { 0.0f,0.5f,-8.0f };
+	static Vector3 e = { 0.0f,1.8f,-26.0f };
+
+
+	// 補間後の数値を計算
+	Vector3 cVel = ExponentialInterpolation(s, e, t, k);
+
+	// メインカメラに追加の平行移動値を与える
+	MainCamera::GetInstance()->SetAddTranslation(TransformNomal(cVel, MainCamera::GetInstance()->mWorldTransform->GetWorldMatrix()));
+
+	// ステージ限界値に合わせた座標の補正
+	mObject->mWorldTransform->translation.x = std::clamp(mObject->mWorldTransform->translation.x, -20.0f, 20.0f);
+	mObject->mWorldTransform->translation.z = std::clamp(mObject->mWorldTransform->translation.z, -20.0f, 20.0f);
+
 	// オブジェクト更新
 	mObject->Update();
 	mObject->mSkinning->GetSkeleton().joints;
@@ -264,33 +317,8 @@ void Player::UpdateObject()
 		collider->Update();
 	}
 
-	// 衝突時の処理
-	if (mBehavior == Behavior::kAttack || mBehavior == Behavior::kChargeAttack) {
-		if ((mAttackStatus.isOperating == true || mChargeStatus.isCharge == true) && mAttackStatus.isHit == false)
-		{
-			for (Collider* collider : mAttackStatus.swordColliders)
-			{
-				if (collider->GetOnCollisionFlag() == false)
-				{
-					continue;
-				}
 
-				// 次のフレームで消す
-				mAttackStatus.isHit = true;
 
-				// 敵にダメージを与える
-				ReciveDamageToBoss(1.2f);
-
-				// ダメージ表示
-				int32_t damage = static_cast<int32_t>(static_cast<int32_t>(mStatus->STR / 2.0f) * 1.0f) - static_cast<int32_t>(mBoss->GetStatus()->VIT / 4.0f);;
-				DamageReaction::GetInstance()->Reaction(mReticle->GetWorld3D(), damage, MainCamera::GetInstance());
-			}
-		}
-	}
-
-	// ステージ限界値に合わせた座標の補正
-	mObject->mWorldTransform->translation.x = std::clamp(mObject->mWorldTransform->translation.x, -20.0f, 20.0f);
-	mObject->mWorldTransform->translation.z = std::clamp(mObject->mWorldTransform->translation.z, -20.0f, 20.0f);
 
 }
 
@@ -505,7 +533,7 @@ void Player::Avoid()
 		// 線形補間を利用して座標を移動させる
 		if (mAvoidStatus.mAvoidTime < 1.0f) {
 			// 回避時の移動速度/フレームレートで加算する
-			mAvoidStatus.mAvoidTime += mAvoidStatus.mAvoidSpeed / 60.0f;
+			mAvoidStatus.mAvoidTime += (mAvoidStatus.mAvoidSpeed / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetBattleSpeed();
 		}
 		else if (mAvoidStatus.mAvoidTime >= 1.0f) {
 			// タイムを補正
@@ -534,7 +562,7 @@ void Player::Guard()
 
 		// tを増加させ、座標を移動
 		if (mGuardStatus.t < 1.0f) {
-			mGuardStatus.t += 5.0f / 60.0f;
+			mGuardStatus.t += (5.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetBattleSpeed();
 		}
 		else if (mGuardStatus.t > 1.0f) {
 			mGuardStatus.t = 1.0f;
@@ -544,7 +572,7 @@ void Player::Guard()
 	// キー入力がなければtを減少
 	else {
 		if (mGuardStatus.t > 0.0f) {
-			mGuardStatus.t -= 5.0f / 60.0f;
+			mGuardStatus.t -= (5.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetBattleSpeed();
 		}
 		else if (mGuardStatus.t < 0.0f) {
 			mGuardStatus.t = 0.0f;
@@ -665,11 +693,11 @@ void Player::Attack()
 	
 	if (mAttackStatus.motionTime <= 1.5f)
 	{
-		mAttackStatus.motionTime += (2.0f / 60.0f);
+		mAttackStatus.motionTime += (2.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetBattleSpeed();
 
-		// 攻撃が命中していない かつ tが0.2f以上であれば攻撃フラグをtrueにする
-		if (mAttackStatus.motionTime >= 0.2f && !mAttackStatus.isHit && !mAttackStatus.isOperating)
-		{
+		// 攻撃が命中していない場合、攻撃フラグをtrueにする
+		if (mAttackStatus.motionTime > 0.2f && !mAttackStatus.isHit && !mAttackStatus.isOperating){
+
 			mAttackStatus.isOperating = true;
 		}
 
@@ -783,7 +811,7 @@ void Player::Fall()
 
 		// 移動量を加算
 		mObject->mWorldTransform->translation.y += mVelocity.y;
-		mVelocity.y -= 9.8f * (1.0f / 360.0f);
+		mVelocity.y -= (9.8f * (1.0f / Framerate::GetInstance()->GetFramerate() * 6.0f)) * Framerate::GetInstance()->GetBattleSpeed();
 	}
 	// 地面に到達したら
 	else if (mObject->mWorldTransform->translation.y < 0.0f) {
@@ -801,72 +829,59 @@ void Player::Fall()
 
 void Player::DebagCtr()
 {
-	// 補間数値
-	static float t = 0.0f;
-	// 勾配
-	static float k = 1.0f;
-	// 始点と終点
-	static Vector3 s = { 0.0f,0.5f,-8.0f };
-	static Vector3 e = { 0.0f,1.8f,-26.0f };
+	
 
-	// カメラの回転量を保持
-	if (mInput->GetPused(Gamepad::Button::LEFT_SHOULDER) && t == 0.0f) {
-		mCameraPreDir = MainCamera::GetInstance()->GetRotate();
-	}
+	//// カメラの回転量を保持
+	//if (mInput->GetPused(Gamepad::Button::LEFT_SHOULDER) && t == 0.0f) {
+	//	mCameraPreDir = MainCamera::GetInstance()->GetRotate();
+	//}
 
-	// 狙えるようにカメラの移動 
-	if (mInput->GetLongPush(Gamepad::Button::LEFT_SHOULDER)) {
+	//// 狙えるようにカメラの移動 
+	//if (mInput->GetLongPush(Gamepad::Button::LEFT_SHOULDER)) {
 
-		mIsAimMode = true;
-	}
-	else if (mInput->GetReleased(Gamepad::Button::LEFT_SHOULDER)) {
-		mIsAimMode = false;
+	//	mIsAimMode = true;
+	//}
+	//else if (mInput->GetReleased(Gamepad::Button::LEFT_SHOULDER)) {
+	//	mIsAimMode = false;
 
-	}
-	if (mIsAimMode) {
-		if (t < 1.0f) {
-			t += 2.0f / 60.0f;
-		}
-		else if (t > 1.0f) {
-			t = 1.0f;
-		}
-	}
-	else {
-		if (t > 0.0f) {
-			t -= 3.0f / 60.0f;
-		}
-		else if (t < 0.0f) {
-			t = 0.0f;
-		}
-	}
+	//}
+	//if (mIsAimMode) {
+	//	if (t < 1.0f) {
+	//		t += (2.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetBattleSpeed();
+	//	}
+	//	else if (t > 1.0f) {
+	//		t = 1.0f;
+	//	}
+	//}
+	//else {
+	//	if (t > 0.0f) {
+	//		t -= (3.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetBattleSpeed();
+	//	}
+	//	else if (t < 0.0f) {
+	//		t = 0.0f;
+	//	}
+	//}
 
-	if (t > 0.0f) {
-		mIsCameraRotateLock = true;
-	}
-	else {
-		mIsCameraRotateLock = false;
-	}
+	//if (t > 0.0f) {
+	//	mIsCameraRotateLock = true;
+	//}
+	//else {
+	//	mIsCameraRotateLock = false;
+	//}
 
-	if (mIsCameraRotateLock) {
-		MainCamera::GetInstance()->SetCameraRotateControll(false);
-		MainCamera::GetInstance()->SetRotate(Vector3(ExponentialInterpolation(mCameraPreDir.x, 0.55f, t, k), mCameraPreDir.y, mCameraPreDir.z));
-	}
-	else {
-		//MainCamera::GetInstance()->SetCameraRotateControll(true);
-	}
+	//if (mIsCameraRotateLock) {
+	//	MainCamera::GetInstance()->SetCameraRotateControll(false);
+	//	//MainCamera::GetInstance()->SetRotate(Vector3(ExponentialInterpolation(mCameraPreDir.x, 0.55f, t, k), mCameraPreDir.y, mCameraPreDir.z));
+	//}
+	//else {
+	//	//MainCamera::GetInstance()->SetCameraRotateControll(true);
+	//}
 
-	// 補間後の数値を計算
-	Vector3 cVel = ExponentialInterpolation(s, e, t, k);
-
+	
 	// 操作変更
 	if (mInput->GetPused(Gamepad::Button::X)) {
 		MainCamera::GetInstance()->SetCameraRotarionToSearchTarget();
-	}
-
-	// メインカメラに追加の平行移動値を与える
-	MainCamera::GetInstance()->SetAddTranslation(TransformNomal(cVel, MainCamera::GetInstance()->mWorldTransform->GetWorldMatrix()));
-
-	
+	}	
 
 }
 
@@ -877,7 +892,7 @@ void Player::SpecialAtkRB()
 
 		// 突進攻撃(仮)
 		if (mInput->GetGamepad()->getButton(Gamepad::Button::RIGHT_SHOULDER)) {
-			mChargeStatus.pushingFrame += 1.0f / 60.0f;
+			mChargeStatus.pushingFrame += (1.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetBattleSpeed();
 
 			// 入力時間が一定まで達していたら 攻撃方向を指定できるようにする
 			if (mChargeStatus.pushingFrame >= 1.0f)
@@ -897,20 +912,20 @@ void Player::SpecialAtkRB()
 				// 溜めフラグをtrueに
 				mChargeStatus.isCastMode = true;
 
-				// 右スティックで方向を指定
+				// 左スティックで方向を指定
 				const static int stickValue = 6000;
 				// いずれかの数値が、以上(以下)であれば移動処理を行う
-				if (mInput->GetStick(Gamepad::Stick::RIGHT_X) < -stickValue || // 左 
-					mInput->GetStick(Gamepad::Stick::RIGHT_X) > stickValue || // 右
-					mInput->GetStick(Gamepad::Stick::RIGHT_Y) < -stickValue || // 上
-					mInput->GetStick(Gamepad::Stick::RIGHT_Y) > stickValue	  // 下
+				if (mInput->GetStick(Gamepad::Stick::LEFT_X) < -stickValue || // 左 
+					mInput->GetStick(Gamepad::Stick::LEFT_X) > stickValue || // 右
+					mInput->GetStick(Gamepad::Stick::LEFT_Y) < -stickValue || // 上
+					mInput->GetStick(Gamepad::Stick::LEFT_Y) > stickValue	  // 下
 					) {
 
 					// Xの移動量とYの移動量を設定する
 					mDirection = {
-						(float)mInput->GetStick(Gamepad::Stick::RIGHT_X) ,
+						(float)mInput->GetStick(Gamepad::Stick::LEFT_X) ,
 						0.0f,
-						(float)mInput->GetStick(Gamepad::Stick::RIGHT_Y)
+						(float)mInput->GetStick(Gamepad::Stick::LEFT_Y)
 					};
 
 					// 正規化
@@ -937,9 +952,6 @@ void Player::SpecialAtkRB()
 
 				}
 
-				// カメラの回転操作を停止
-				//MainCamera::GetInstance()->SetCameraRotateControll(false);
-				mIsAimMode = true;
 			}
 
 		}
@@ -985,9 +997,11 @@ void Player::SpecialAtkRB()
 			mChargeStatus.moveingTime = 0.0f;
 
 			// モーションを切り替える
-			if (mObject->mSkinning->GetNowSkinCluster()->name != "gatotu0" &&
-				!mObject->mSkinning->SearchToWaitingSkinCluster("gatotu0")) {
-				mObject->mSkinning->SetNextAnimation("gatotu0");
+			if (mObject->mSkinning->GetNowSkinCluster()->name != "thrust" && !mObject->mSkinning->SearchToWaitingSkinCluster("thrust")) 
+			{
+				mObject->mSkinning->SetAnimationPlaySpeed(3.0f);
+				mObject->mSkinning->SetMotionBlendingInterval(30.0f);
+				mObject->mSkinning->SetNextAnimation("thrust");
 			}
 		}
 
@@ -1003,7 +1017,7 @@ void Player::SpecialAtkRB()
 		if (mChargeStatus.moveingTime < 1.0f) {
 
 			// カメラ回転
-			MainCamera::GetInstance()->SetRotate(ExponentialInterpolation(mChargeStatus.cameraStartRot, mChargeStatus.cameraEndRot, mChargeStatus.moveingTime, 1.0f));
+			//MainCamera::GetInstance()->SetRotate(ExponentialInterpolation(mChargeStatus.cameraStartRot, mChargeStatus.cameraEndRot, mChargeStatus.moveingTime, 1.0f));
 
 			// 移動
 			mChargeStatus.moveingTime += 1.0f / 30.0f;
@@ -1020,6 +1034,7 @@ void Player::SpecialAtkRB()
 
 			// 移動終了
 			mBehavior = Behavior::kRoot;
+			mObject->mSkinning->SetAnimationPlaySpeed(1.0f);
 
 			// カメラの回転操作をON
 			MainCamera::GetInstance()->SetCameraRotateControll(true);

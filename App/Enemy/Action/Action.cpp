@@ -1,5 +1,6 @@
 #include "Action.h"
 #include "App/Enemy/BossEnemy.h"
+#include "GameEngine/GameMaster/Framerate.h"
 
 void ACT::MoveToPlayer::Init(BossEnemy* boss)
 {
@@ -14,7 +15,7 @@ void ACT::MoveToPlayer::Init(BossEnemy* boss)
 	mDirection = Normalize(mEndPos - mStartPos);
 	mDirection.y = 0.0f;
 	// 移動速度の設定
-	mMoveSpeed = (1.0f / 60.0f) * 4.0f;
+	mMoveSpeed = (1.0f / Framerate::GetInstance()->GetFramerate()) * 4.0f * Framerate::GetInstance()->GetBattleSpeed();
 	// 移動量の設定
 	mVelocity = Scalar(mMoveSpeed, mDirection);
 	// 追跡までの時間をリセット
@@ -48,7 +49,7 @@ void ACT::MoveToPlayer::Update()
 		mBoss->SetRotation(Vector3(0.0f, rotateY, 0.0f));
 
 		// 一定時間ごとにプレイヤー座標を取得
-		mSearchTime += 1.0f / 60.0f;
+		mSearchTime += (1.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetBattleSpeed();
 		if (mSearchTime>= kSearchCycle) {
 			// 移動の終点
 			mEndPos = mBoss->GetWorldPosForTarget();
@@ -57,7 +58,7 @@ void ACT::MoveToPlayer::Update()
 			mDirection = Normalize(mEndPos - mBoss->GetWorldPos());
 			mDirection.y = 0.0f;
 			// 移動速度の設定
-			mMoveSpeed = (1.0f / 60.0f) * 8.0f;
+			mMoveSpeed = (1.0f / Framerate::GetInstance()->GetFramerate()) * 8.0f;
 			// 移動量の設定
 			mVelocity = Scalar(mMoveSpeed, mDirection);
 
@@ -90,15 +91,19 @@ void ACT::MoveToPlayer::Start()
 	mDirection = Normalize(mEndPos - mStartPos);
 	mDirection.y = 0.0f;
 	// 移動速度の設定
-	mMoveSpeed = (1.0f / 60.0f) * 4.0f;
+	mMoveSpeed = (1.0f / Framerate::GetInstance()->GetFramerate()) * 4.0f * Framerate::GetInstance()->GetBattleSpeed();
 	// 移動量の設定
 	mVelocity = Scalar(mMoveSpeed, mDirection);
 	// 追跡までの時間をリセット
 	mSearchTime = 0.0f;
 
 	// アニメーションの変更
-	mBoss->GetObject3D()->mSkinning->Init("boss", "Run.gltf",
-		mBoss->GetObject3D()->GetModel()->modelData);
+	mBoss->GetObject3D()->mSkinning->SetNextAnimation("Run");
+	//mBoss->GetObject3D()->mSkinning->SetAnimationPlaySpeed(2.0f);
+	//mBoss->GetObject3D()->mSkinning->SetMotionBlendingInterval(30.0f);
+	 
+	//mBoss->GetObject3D()->mSkinning->Init("boss", "Run.gltf",
+	//	mBoss->GetObject3D()->GetModel()->modelData);
 
 	// 実行する
 	mCondition = Condition::RUNNING;
@@ -108,8 +113,9 @@ void ACT::MoveToPlayer::End()
 {
 
 	// アニメーションの変更
-	mBoss->GetObject3D()->mSkinning->Init("boss", "Idle.gltf",
-		mBoss->GetObject3D()->GetModel()->modelData);
+	mBoss->GetObject3D()->mSkinning->SetNextAnimation("Idle");
+	/*mBoss->GetObject3D()->mSkinning->Init("boss", "Idle.gltf",
+		mBoss->GetObject3D()->GetModel()->modelData);*/
 
 	// 行動を終了させる
 	mCondition = Condition::FINISHED;
@@ -132,7 +138,7 @@ void ACT::MoveToPlayer::Reset()
 	mDirection = Normalize(mEndPos - mStartPos);
 	mDirection.y = 0.0f;
 	// 移動速度の設定
-	mMoveSpeed = (1.0f / 60.0f) * 2.0f;
+	mMoveSpeed = (1.0f / Framerate::GetInstance()->GetFramerate()) * 2.0f * Framerate::GetInstance()->GetBattleSpeed();
 	// 移動量の設定
 	mVelocity = Scalar(mMoveSpeed, mDirection);
 }
@@ -156,7 +162,7 @@ void ACT::BackStep::Init(BossEnemy* boss)
 	mDirection = Normalize(mEndPos - mStartPos);
 	mDirection.y = 0.0f;
 	// 移動速度の設定
-	mMoveSpeed = (1.0f / 60.0f) * 4.0f;
+	mMoveSpeed = (1.0f / Framerate::GetInstance()->GetFramerate()) * 4.0f * Framerate::GetInstance()->GetBattleSpeed();
 	// 移動量の設定
 	mVelocity = Scalar(-mMoveSpeed, mDirection);
 
@@ -212,7 +218,7 @@ void ACT::BackStep::Start()
 	mDirection = Normalize(mEndPos - mStartPos);
 	mDirection.y = 0.0f;
 	// 移動速度の設定
-	mMoveSpeed = (1.0f / 60.0f) * 40.0f;
+	mMoveSpeed = (1.0f / Framerate::GetInstance()->GetFramerate()) * 40.0f * Framerate::GetInstance()->GetBattleSpeed();
 	// 移動量の設定
 	mVelocity = Scalar(-mMoveSpeed, mDirection);
 
@@ -220,8 +226,7 @@ void ACT::BackStep::Start()
 	mBoss->Jump(1.0f);
 
 	// アニメーションの変更
-	mBoss->GetObject3D()->mSkinning->Init("boss", "Idle.gltf",
-		mBoss->GetObject3D()->GetModel()->modelData);
+	mBoss->GetObject3D()->mSkinning->SetNextAnimation("backStep");
 
 	// 実行する
 	mCondition = Condition::RUNNING;
@@ -231,6 +236,10 @@ void ACT::BackStep::End()
 {
 	// 行動を終了させる
 	mCondition = Condition::FINISHED;
+
+	// アニメーション変更
+	mBoss->GetObject3D()->mSkinning->SetNextAnimation("Idle");
+
 }
 
 void ACT::BackStep::Reset()
@@ -250,7 +259,7 @@ void ACT::BackStep::Reset()
 	mDirection = Normalize(mEndPos - mStartPos);
 	mDirection.y = 0.0f;
 	// 移動速度の設定
-	mMoveSpeed = (1.0f / 60.0f) * 2.0f;
+	mMoveSpeed = (1.0f / Framerate::GetInstance()->GetFramerate()) * 2.0f * Framerate::GetInstance()->GetBattleSpeed();
 	// 移動量の設定
 	mVelocity = Scalar(-mMoveSpeed, mDirection);
 }

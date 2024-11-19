@@ -120,6 +120,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="App\AI\BehaviorTree\BTAttackAction.cpp" />
     <ClCompile Include="App\AI\BehaviorTree\BTMoveAction.cpp" />
     <ClCompile Include="App\Status\StatusManager.cpp" />
+    <ClCompile Include="GameEngine\Input\Controller.cpp" />
     <ClCompile Include="GameEngine\GameMaster\Framerate.cpp" />
     <ClCompile Include="GameEngine\Effect\Particle\DiffusionToCircleParticle.cpp" />
     <ClCompile Include="App\Enemy\Action\Action.cpp" />
@@ -212,11 +213,13 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="GameEngine\Object\Screen\ShadowMap.cpp" />
     <ClCompile Include="App\Player\Action\Skill.cpp" />
     <ClCompile Include="App\Player\Action\Slash.cpp" />
+    <ClCompile Include="GameEngine\Object\Base\ObjectBase.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App\AI\BehaviorTree\BTAttackAction.h" />
     <ClInclude Include="App\AI\BehaviorTree\BTMoveAction.h" />
     <ClInclude Include="App\Status\StatusManager.h" />
+    <ClInclude Include="GameEngine\Input\Controller.h" />
     <ClInclude Include="GameEngine\GameMaster\Framerate.h" />
     <ClInclude Include="GameEngine\Effect\Particle\DiffusionToCircleParticle.h" />
     <ClInclude Include="App\Enemy\Action\Action.h" />
@@ -315,6 +318,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="GameEngine\Object\Screen\ShadowMap.h" />
     <ClInclude Include="App\Player\Action\Skill.h" />
     <ClInclude Include="App\Player\Action\Slash.h" />
+    <ClInclude Include="GameEngine\Object\Base\ObjectBase.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt" />
