@@ -126,6 +126,7 @@ public: // -- 公開 メンバ関数 -- //
 	Object3d* GetObject3D() { return mObject.get(); }
 	Model* GetModel() { return mObject->mModel; }
 	Collider* GetCollider() { return mObject->mCollider; }
+	const Matrix4x4& GetSwordBoneMatrix(int32_t count) { return mAttackStatus.swordWorldMat.at(count); }
 
 	Vector3 GetWorldPos() { return mObject->GetWorldTransform()->translation; }
 	Reticle3D* GetReticle3D() { return mReticle.get(); }

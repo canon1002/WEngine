@@ -26,7 +26,13 @@ public: // -- public メンバ関数 -- //
 	/// ワールド座標を返す
 	/// </summary>
 	/// <returns></returns>
-	Vector3 GetWorldPosition();
+	Vector3 GetWorldPosition()const;
+
+	/// <summary>
+	/// ワールド回転量の取得
+	/// </summary>
+	/// <returns></returns>
+	Vector3 GetWorldRotatiton()const;
 
 	/// <summary>
 	/// 親となるWorldTrandsfromを登録する

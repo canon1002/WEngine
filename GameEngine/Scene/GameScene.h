@@ -7,8 +7,11 @@
 // ゲーム用
 #include "App/Player/Player.h"
 #include "App/Enemy/BossEnemy.h"
+
 // エフェクト
 #include "GameEngine/Effect/Particle/DiffusionToCircleParticle.h"
+#include "GameEngine/Effect/Particle/TrailEffect.h"
+
 // マネージャー
 #include "GameEngine/Append/Collider/CollisionManager.h"
 #include "GameEngine/Input/InputManager.h"
@@ -93,6 +96,10 @@ private:
 	bool mIsFinishUIDisplayEnd;
 
 	// ヒットストップ
+
+
+	// 軌道パーティクル
+	std::unique_ptr<TrailEffect> mPlayerTrailEffect;
 
 };
 

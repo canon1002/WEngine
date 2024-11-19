@@ -33,7 +33,7 @@ class ParticleCommon{
 
 public: // -- 公開 メンバ変数 -- //
 
-	virtual void Init() = 0;
+	virtual void Init();
 	virtual void Update() = 0;
 	virtual void Draw() = 0;
 	virtual Particle Create(const Vector3& translate, std::mt19937& randomEngine) = 0;
@@ -41,11 +41,11 @@ public: // -- 公開 メンバ変数 -- //
 
 protected: // -- 限定公開 メンバ関数 -- //
 
-	virtual void CreateTransformation() = 0;
-	virtual void CreateVertex() = 0;
-	virtual void CreateIndex() = 0;
-	virtual void CreateMaterial() = 0;
-	virtual void CreateInstancing() = 0;
+	virtual void CreateTransformation();
+	virtual void CreateVertex();
+	virtual void CreateIndex();
+	virtual void CreateMaterial();
+	virtual void CreateInstancing();
 
 protected: // -- 限定公開 メンバ変数 -- //
 
@@ -92,7 +92,7 @@ protected: // -- 限定公開 メンバ変数 -- //
 	UVTransform uvTransform_;
 
 	// インスタンスの数
-	const int32_t kNumMaxInstance = 100;
+	const int32_t kNumMaxInstance = 1024;
 	int32_t instanceCount_;
 
 	// 乱数生成機

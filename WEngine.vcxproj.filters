@@ -450,6 +450,7 @@
       <Filter>GameEngine\Object\Base</Filter>
     </ClCompile>
     <ClCompile Include="GameEngine\Input\Controller.cpp" />
+    <ClCompile Include="GameEngine\Effect\Particle\TrailEffect.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameEngine\Object\Light\DirectionalLight.h">
@@ -759,6 +760,7 @@
       <Filter>GameEngine\Object\Base</Filter>
     </ClInclude>
     <ClInclude Include="GameEngine\Input\Controller.h" />
+    <ClInclude Include="GameEngine\Effect\Particle\TrailEffect.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt">

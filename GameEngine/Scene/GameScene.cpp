@@ -70,6 +70,12 @@ void GameScene::Init() {
 	mDTCParticle = std::make_unique<DiffusionToCircleParticle>();
 	mDTCParticle->Init();
 
+
+	// 軌道パーティクル
+	mPlayerTrailEffect = std::make_unique<TrailEffect>();
+	mPlayerTrailEffect->Init();
+	mPlayerTrailEffect->SetParentToEmiter(mPlayer->GetSwordBoneMatrix(0));
+
 	// ゲームシーンの段階
 	mPhase = Phase::BEGIN;
 	// 開始前のビネット
@@ -518,6 +524,7 @@ void GameScene::Update() {
 	// パーティクル
 	ParticleManager::GetInstance()->Update();
 	mDTCParticle->Update();
+	mPlayerTrailEffect->Update();
 
 	mGameOverFadeSprite->Update();
 	mGameOverMessageSprite->Update();
@@ -552,8 +559,9 @@ void GameScene::Draw() {
 	mPlayer->Draw();
 	mBoss->Draw();
 
-	//ParticleManager::GetInstance()->PreDraw();
+	ParticleManager::GetInstance()->PreDraw();
 	//mDTCParticle->Draw();
+	mPlayerTrailEffect->Draw();
 
 }
 

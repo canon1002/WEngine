@@ -14,11 +14,11 @@ public: // -- 公開 メンバ変数 -- //
 
 private: // -- 非公開 メンバ関数 -- //
 
-	virtual void CreateTransformation() override;
+	/*virtual void CreateTransformation() override;
 	virtual void CreateVertex() override;
 	virtual void CreateIndex() override;
 	virtual void CreateMaterial() override;
-	virtual void CreateInstancing() override;
+	virtual void CreateInstancing() override;*/
 
 private: // -- 非公開 メンバ変数 -- //
 

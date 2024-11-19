@@ -214,6 +214,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="App\Player\Action\Skill.cpp" />
     <ClCompile Include="App\Player\Action\Slash.cpp" />
     <ClCompile Include="GameEngine\Object\Base\ObjectBase.cpp" />
+    <ClCompile Include="GameEngine\Effect\Particle\TrailEffect.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App\AI\BehaviorTree\BTAttackAction.h" />
@@ -319,6 +320,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="App\Player\Action\Skill.h" />
     <ClInclude Include="App\Player\Action\Slash.h" />
     <ClInclude Include="GameEngine\Object\Base\ObjectBase.h" />
+    <ClInclude Include="GameEngine\Effect\Particle\TrailEffect.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt" />
