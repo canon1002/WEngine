@@ -35,7 +35,7 @@ void BossEnemy::Init() {
 
 	// モデルを設定
 	mObject->SetModel("boss.gltf");
-	mObject->GetModel()->materialData_->color = { 1.0f,0.7f,0.7f,1.0f };
+	mObject->GetModel()->mMaterialData->color = { 1.0f,0.7f,0.7f,1.0f };
 	// スキニングアニメーションを生成
 	mObject->mSkinning = new Skinnig();
 	mObject->mSkinning->Init("Boss", "Idle.gltf", mObject->GetModel()->modelData);

@@ -92,13 +92,18 @@ protected: // -- 限定公開 メンバ変数 -- //
 	UVTransform uvTransform_;
 
 	// インスタンスの数
-	const int32_t kNumMaxInstance = 1024;
+	const int32_t kNumMaxInstance = 4098;
 	int32_t instanceCount_;
 
 	// 乱数生成機
 	std::random_device seedGenerator_;
 	std::mt19937 randomEngine_;
 
+	// 発生させるか
+	bool mIsActive;
+
+	// ビルボードの有効化
+	bool mIsUseBillboard = true;
 
 };
 

@@ -21,7 +21,7 @@ void SphereCollider::Init() {
 	// モデルを検索してセット
 	mModel = ModelManager::GetInstance()->FindModel("wireSphere.gltf");
 	CreateTransformation();
-	mModel->materialData_->environmentCoefficient = 0.0f;
+	mModel->mMaterialData->environmentCoefficient = 0.0f;
 	// 衝突フラグ保持時間
 	mOnCollisionCount = 0;
 	// フラグをfalseに

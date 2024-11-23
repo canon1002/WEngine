@@ -451,6 +451,7 @@
     </ClCompile>
     <ClCompile Include="GameEngine\Input\Controller.cpp" />
     <ClCompile Include="GameEngine\Effect\Particle\TrailEffect.cpp" />
+    <ClCompile Include="GameEngine\Effect\EffectPixels\EffectPixels.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameEngine\Object\Light\DirectionalLight.h">
@@ -761,6 +762,7 @@
     </ClInclude>
     <ClInclude Include="GameEngine\Input\Controller.h" />
     <ClInclude Include="GameEngine\Effect\Particle\TrailEffect.h" />
+    <ClInclude Include="GameEngine\Effect\EffectPixels\EffectPixels.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt">

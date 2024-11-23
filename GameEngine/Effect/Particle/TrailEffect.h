@@ -1,27 +1,54 @@
 #pragma once
-#include "ParticleCommon.h"
+#include "GameEngine/Math/Math.h"
+#include "GameEngine/Base/DirectX/DirectXCommon.h"
+#include "GameEngine/Resource/Texture/Resource.h"
+#include "GameEngine/Append/Transform/WorldTransform.h"
+#include "GameEngine/Object/Camera/MainCamera.h"
+#include "GameEngine/Effect/EffectPixels/EffectPixels.h"
+
+struct TwoPointVertex {
+	Vector3 top;
+	Vector3 bottom;
+};
 
 // 軌道エフェクト
-class TrailEffect:
-	public ParticleCommon
+class TrailEffect
 {
 public: // -- 公開 メンバ変数 -- //
 
-	virtual void Init() override;
-	virtual void Update() override;
-	virtual void Draw() override;
-	virtual Particle Create(const Vector3& translate, std::mt19937& randomEngine)override;
-	Particle Create(const WorldTransform& world,const uint32_t count);
-	virtual std::list<Particle> Emit(const Emitter& emtter, std::mt19937& randomEngine) override;
+	void Init();
+	void Update();
+	void Draw();
+	void DrawGui();
 
-	inline void SetParentToEmiter(const Matrix4x4& parent) { mEmitter.worldTransform.SetParent(parent); }
+	void Create(const WorldTransform& top,const WorldTransform& bottom);
+
+	bool GetGetPositionFlag() { return mIsPositionSet; }
+
+	//void SetIsActive(bool flag) { mIsActive = flag; }
+	//bool GetIsActive() { return mIsActive; }
 
 private: // -- 非公開 メンバ関数 -- //
 
-	// パーティクル表示時間
-	const float kLifeTimeMidiam = 3.0f;	// 中間
-	const float kLifeTimeHigh = kLifeTimeMidiam * 1.5f;	// 長い
-	const float kLifeTimeLow = kLifeTimeMidiam * 0.5f;	// 短い
+private: // -- 非公開 メンバ変数 -- //
+
+	bool mIsActive;
+
+	// ワールド座標
+	WorldTransform* mWorldTransformTop;
+	WorldTransform* mWorldTransformButtom;
+
+	// 頂点セット
+	std::vector<TwoPointVertex*> mVertices;
+	// オブジェクト部分
+	std::list<EffectPixels*> mEffectModels;
+
+	// カウント
+	float mPositionSetCount;
+	float mPositionSetCountMax;
+
+	// 座標設定の許可フラグ
+	bool mIsPositionSet;
 
 };
 

@@ -120,6 +120,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="App\AI\BehaviorTree\BTAttackAction.cpp" />
     <ClCompile Include="App\AI\BehaviorTree\BTMoveAction.cpp" />
     <ClCompile Include="App\Status\StatusManager.cpp" />
+    <ClCompile Include="GameEngine\Effect\EffectPixels\EffectPixels.cpp" />
     <ClCompile Include="GameEngine\Input\Controller.cpp" />
     <ClCompile Include="GameEngine\GameMaster\Framerate.cpp" />
     <ClCompile Include="GameEngine\Effect\Particle\DiffusionToCircleParticle.cpp" />
@@ -220,6 +221,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="App\AI\BehaviorTree\BTAttackAction.h" />
     <ClInclude Include="App\AI\BehaviorTree\BTMoveAction.h" />
     <ClInclude Include="App\Status\StatusManager.h" />
+    <ClInclude Include="GameEngine\Effect\EffectPixels\EffectPixels.h" />
     <ClInclude Include="GameEngine\Input\Controller.h" />
     <ClInclude Include="GameEngine\GameMaster\Framerate.h" />
     <ClInclude Include="GameEngine\Effect\Particle\DiffusionToCircleParticle.h" />

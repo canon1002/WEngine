@@ -127,12 +127,15 @@ public: // -- 公開 メンバ関数 -- //
 	Model* GetModel() { return mObject->mModel; }
 	Collider* GetCollider() { return mObject->mCollider; }
 	const Matrix4x4& GetSwordBoneMatrix(int32_t count) { return mAttackStatus.swordWorldMat.at(count); }
+	const WorldTransform* GetWorldPositionSword(int32_t count) { return mWorldTransformSword.at(count); }
 
 	Vector3 GetWorldPos() { return mObject->GetWorldTransform()->translation; }
 	Reticle3D* GetReticle3D() { return mReticle.get(); }
 
 	void SetColliderListForArrow(CollisionManager* cManager);
 	void SetColliderList(CollisionManager* cManager);
+
+	Behavior GetBehavior()const { return mBehavior; }
 
 	// 回避
 	void Avoid();
@@ -230,5 +233,11 @@ private: // -- 非公開 メンバ変数 -- //
 
 	// カメラ回転ロックの有無
 	bool mIsCameraRotateLock;
+
+	// -- エフェクト関係 -- //
+
+	// 剣先と根本のワールド座標
+	std::array<WorldTransform*,2> mWorldTransformSword;
+
 };
 

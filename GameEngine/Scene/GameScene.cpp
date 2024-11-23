@@ -71,10 +71,10 @@ void GameScene::Init() {
 	mDTCParticle->Init();
 
 
-	// 軌道パーティクル
+	// 軌道エフェクト
 	mPlayerTrailEffect = std::make_unique<TrailEffect>();
 	mPlayerTrailEffect->Init();
-	mPlayerTrailEffect->SetParentToEmiter(mPlayer->GetSwordBoneMatrix(0));
+	//mPlayerTrailEffect->SetParentToEmiter(mPlayer->GetSwordBoneMatrix(0));
 
 	// ゲームシーンの段階
 	mPhase = Phase::BEGIN;
@@ -329,6 +329,12 @@ void GameScene::Update() {
 		// コライダーリストのクリア
 		mCollisionManager->ClearColliders();
 
+		// エフェクト
+		mPlayerTrailEffect->Update();
+		if (mPlayerTrailEffect->GetGetPositionFlag()) {
+			mPlayerTrailEffect->Create(*mPlayer->GetWorldPositionSword(0), *mPlayer->GetWorldPositionSword(1));
+		}
+
 		break;
 	case Phase::LOSE:
 		if (mIsGameOverSelect == false) {
@@ -491,6 +497,7 @@ void GameScene::Update() {
 	skybox_->DrawGUI("Skybox");
 	mPlayer->DrawGUI();
 	mBoss->DrawGUI();
+	mPlayerTrailEffect->DrawGui();
 #endif // _DEBUG
 
 	// カメラ
@@ -524,6 +531,8 @@ void GameScene::Update() {
 	// パーティクル
 	ParticleManager::GetInstance()->Update();
 	mDTCParticle->Update();
+
+	
 	mPlayerTrailEffect->Update();
 
 	mGameOverFadeSprite->Update();
@@ -553,20 +562,27 @@ void GameScene::Draw() {
 	mPlayer->ColliderDraw();
 	mBoss->ColliderDraw();
 
+	mPlayerTrailEffect->Draw();
+
 	// Object3D(Skinning)の描画前処理
 	ModelManager::GetInstance()->PreDrawForSkinning();
 
 	mPlayer->Draw();
 	mBoss->Draw();
 
-	ParticleManager::GetInstance()->PreDraw();
-	//mDTCParticle->Draw();
-	mPlayerTrailEffect->Draw();
+
+	
 
 }
 
 void GameScene::DrawUI()
 {
+
+	//ParticleManager::GetInstance()->PreDraw();
+	//mDTCParticle->Draw();
+	
+
+
 	// 2DSprite(画像)の描画前処理
 	SpriteAdministrator::GetInstance()->PreDraw();
 

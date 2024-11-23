@@ -152,6 +152,17 @@ void Player::Init() {
 	mStatus = new Status();
 	StatusManager::GetInstance()->GetPlayerStatus(*mStatus);
 
+	// -- エフェクト関係 -- //
+
+	// 剣先と根本のワールド座標
+	for (size_t i = 0; i < mWorldTransformSword.size(); i++) {
+		mWorldTransformSword[i] = new WorldTransform();
+		mWorldTransformSword[i]->Init();
+	}
+	// ペアレントを設定(後にワールド座標を取得する)
+	mWorldTransformSword[0]->SetParent(mAttackStatus.swordWorldMat[0]);
+	mWorldTransformSword[1]->SetParent(mAttackStatus.swordWorldMat[4]);
+
 }
 
 void Player::Update() {
@@ -317,9 +328,6 @@ void Player::UpdateObject()
 		collider->Update();
 	}
 
-
-
-
 }
 
 void Player::Draw() {
@@ -331,6 +339,8 @@ void Player::DrawGUI() {
 
 	// メニューバーを表示する
 	ImGui::Begin("Player");
+
+	mObject->DrawGuiTree();
 
 	ImGui::DragFloat3("Direction", &mDirection.x);
 

@@ -237,6 +237,7 @@ PixelShaderOutput main(VertexShaderOutput input) {
         float32_t4 enviromentColor = gEnvironmentTexture.Sample(gSampler, refrectedVector);
         // 計算結果を適用する
         output.color.rgb += enviromentColor.rgb * gMaterial.environmentCoefficient;
+        output.color.a = gMaterial.color.a * textureColor.a;
     }
     else// Lightingしない場合
     {
