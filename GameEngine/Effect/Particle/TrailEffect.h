@@ -25,6 +25,9 @@ public: // -- 公開 メンバ変数 -- //
 
 	bool GetGetPositionFlag() { return mIsPositionSet; }
 
+	// 色を設定
+	void SetColor(Color color) { mEffectColor = color; }
+
 	//void SetIsActive(bool flag) { mIsActive = flag; }
 	//bool GetIsActive() { return mIsActive; }
 
@@ -49,6 +52,9 @@ private: // -- 非公開 メンバ変数 -- //
 
 	// 座標設定の許可フラグ
 	bool mIsPositionSet;
+
+	// エフェクトの色
+	Color mEffectColor;
 
 };
 

@@ -74,7 +74,20 @@ void GameScene::Init() {
 	// 軌道エフェクト
 	mPlayerTrailEffect = std::make_unique<TrailEffect>();
 	mPlayerTrailEffect->Init();
-	//mPlayerTrailEffect->SetParentToEmiter(mPlayer->GetSwordBoneMatrix(0));
+	mPlayerTrailEffect->SetColor(Color(0.1f, 0.1f, 1.0f, 0.8f));
+
+	//mBossTrailEffect = std::make_unique<TrailEffect>();
+	//mBossTrailEffect->Init();
+	//mBossTrailEffect->SetColor(Color(0.1f, 0.1f, 1.0f, 0.8f));
+
+	// ダッシュ煙
+	mPlayerDashSmoke = std::make_unique<DashSmoke>();
+	mPlayerDashSmoke->Init();
+	mPlayerDashSmoke->SetEmitterWorldTransform(mPlayer->GetObject3D()->mWorldTransform);
+
+	//mBossDashSmoke = std::make_unique<DashSmoke>();
+	//mBossDashSmoke->Init();
+	//mBossDashSmoke->SetEmitterWorldTransform(mBoss->GetObject3D()->mWorldTransform);
 
 	// ゲームシーンの段階
 	mPhase = Phase::BEGIN;
@@ -329,11 +342,43 @@ void GameScene::Update() {
 		// コライダーリストのクリア
 		mCollisionManager->ClearColliders();
 
-		// エフェクト
+		// 斬撃エフェクト
 		mPlayerTrailEffect->Update();
-		if (mPlayerTrailEffect->GetGetPositionFlag()) {
-			mPlayerTrailEffect->Create(*mPlayer->GetWorldPositionSword(0), *mPlayer->GetWorldPositionSword(1));
+		if (mPlayer->GetBehavior() == Behavior::kAttack) {
+			if (mPlayerTrailEffect->GetGetPositionFlag()) {
+				mPlayerTrailEffect->Create(*mPlayer->GetWorldPositionSword(0), *mPlayer->GetWorldPositionSword(1));
+			}
 		}
+	/*	mBossTrailEffect->Update();
+		if (mBossTrailEffect->GetGetPositionFlag()) {
+			mBossTrailEffect->Create(*mBoss->GetWorldPositionSword(0), *mBoss->GetWorldPositionSword(1));
+		}*/
+
+
+		// ダッシュ煙
+		if (mPlayer->GetBehavior() == Behavior::kMove) {
+			if (!mPlayerDashSmoke->GetActive()) {
+				mPlayerDashSmoke->SetActive(true);
+			}
+		}
+		else {
+			if (mPlayerDashSmoke->GetActive()) {
+				mPlayerDashSmoke->SetActive(false);
+			}
+		}
+		mPlayerDashSmoke->Update();
+
+		//if (mBoss->GetObject3D()->mSkinning->GetIsActiveAnimation("Run")) {
+		//	if (!mBossDashSmoke->GetActive()) {
+		//		mBossDashSmoke->SetActive(true);
+		//	}
+		//}
+		//else {
+		//	if (mBossDashSmoke->GetActive()) {
+		//		mBossDashSmoke->SetActive(false);
+		//	}
+		//}
+		//mBossDashSmoke->Update();
 
 		break;
 	case Phase::LOSE:
@@ -380,7 +425,7 @@ void GameScene::Update() {
 					RenderCopyImage::GetInstance()->SetRedViggnetMultiplier(ExponentialInterpolation(0.0f, 0.5f, mViggnetTime, 1.0f));
 					RenderCopyImage::GetInstance()->SetRedViggnetIndex(ExponentialInterpolation(0.0f, 0.5f, mViggnetTime, 1.0f));
 				}
-				else if (mViggnetTime >= 1.0f){
+				else if (mViggnetTime >= 1.0f) {
 					RenderCopyImage::GetInstance()->SetRedViggnetEnable(false);
 					RenderCopyImage::GetInstance()->SetRedViggnetMultiplier(0.0f);
 					RenderCopyImage::GetInstance()->SetRedViggnetIndex(0.0f);
@@ -415,7 +460,7 @@ void GameScene::Update() {
 	case Phase::WIN:
 
 		if (mFinishUI.isActive) {
-			
+
 			// 終了時のUI表示が終了していない場合
 			if (!mIsFinishUIDisplayEnd) {
 
@@ -532,7 +577,7 @@ void GameScene::Update() {
 	ParticleManager::GetInstance()->Update();
 	mDTCParticle->Update();
 
-	
+
 	mPlayerTrailEffect->Update();
 
 	mGameOverFadeSprite->Update();
@@ -557,12 +602,13 @@ void GameScene::Draw() {
 	// Object3D(3DModel)の描画前処理
 	ModelManager::GetInstance()->PreDraw();
 
-	mGroundShadow[0]->Draw();
+	//mGroundShadow[0]->Draw();
 
 	mPlayer->ColliderDraw();
 	mBoss->ColliderDraw();
 
 	mPlayerTrailEffect->Draw();
+	//mBossTrailEffect->Draw();
 
 	// Object3D(Skinning)の描画前処理
 	ModelManager::GetInstance()->PreDrawForSkinning();
@@ -570,18 +616,18 @@ void GameScene::Draw() {
 	mPlayer->Draw();
 	mBoss->Draw();
 
-
-	
-
 }
 
 void GameScene::DrawUI()
 {
 
-	//ParticleManager::GetInstance()->PreDraw();
-	//mDTCParticle->Draw();
-	
+	ParticleManager::GetInstance()->PreDraw();
 
+	// mDTCParticle->Draw();
+
+	// ダッシュ煙
+	mPlayerDashSmoke->Draw();
+	//mBossDashSmoke->Draw();
 
 	// 2DSprite(画像)の描画前処理
 	SpriteAdministrator::GetInstance()->PreDraw();

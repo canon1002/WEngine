@@ -99,11 +99,6 @@ void ACT::MoveToPlayer::Start()
 
 	// アニメーションの変更
 	mBoss->GetObject3D()->mSkinning->SetNextAnimation("Run");
-	//mBoss->GetObject3D()->mSkinning->SetAnimationPlaySpeed(2.0f);
-	//mBoss->GetObject3D()->mSkinning->SetMotionBlendingInterval(30.0f);
-	 
-	//mBoss->GetObject3D()->mSkinning->Init("boss", "Run.gltf",
-	//	mBoss->GetObject3D()->GetModel()->modelData);
 
 	// 実行する
 	mCondition = Condition::RUNNING;
@@ -111,11 +106,9 @@ void ACT::MoveToPlayer::Start()
 
 void ACT::MoveToPlayer::End()
 {
-
 	// アニメーションの変更
 	mBoss->GetObject3D()->mSkinning->SetNextAnimation("Idle");
-	/*mBoss->GetObject3D()->mSkinning->Init("boss", "Idle.gltf",
-		mBoss->GetObject3D()->GetModel()->modelData);*/
+	
 
 	// 行動を終了させる
 	mCondition = Condition::FINISHED;
@@ -194,7 +187,7 @@ void ACT::BackStep::Update()
 		mBoss->SetRotation(Vector3(0.0f, rotateY, 0.0f));
 
 		// 終了処理
-		if (mBoss->InvokeFarDistance()) {
+		if (mBoss->GetObject3D()->mSkinning->IsAnimationFinished()) {
 			mCondition = Condition::FINISHED;
 		}
 	}

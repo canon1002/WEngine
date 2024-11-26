@@ -452,6 +452,8 @@
     <ClCompile Include="GameEngine\Input\Controller.cpp" />
     <ClCompile Include="GameEngine\Effect\Particle\TrailEffect.cpp" />
     <ClCompile Include="GameEngine\Effect\EffectPixels\EffectPixels.cpp" />
+    <ClCompile Include="App\Enemy\Action\AttackDash.cpp" />
+    <ClCompile Include="GameEngine\Effect\Particle\DashSmoke.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameEngine\Object\Light\DirectionalLight.h">
@@ -763,6 +765,9 @@
     <ClInclude Include="GameEngine\Input\Controller.h" />
     <ClInclude Include="GameEngine\Effect\Particle\TrailEffect.h" />
     <ClInclude Include="GameEngine\Effect\EffectPixels\EffectPixels.h" />
+    <ClInclude Include="App\Enemy\Action\AttackDash.h" />
+    <ClInclude Include="App\Enemy\Action\ActionList.h" />
+    <ClInclude Include="GameEngine\Effect\Particle\DashSmoke.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt">

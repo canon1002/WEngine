@@ -15,7 +15,8 @@ void ParticleCommon::Init(){
 
 	// エミッター初期設定
 	mEmitter = {};
-	mEmitter.worldTransform.Init();
+	mEmitter.worldTransform = new WorldTransform();
+	mEmitter.worldTransform->Init();
 	mEmitter.count = 3;
 	mEmitter.frequency = 1.5f;// 1.5秒ごとに発生
 	mEmitter.frequencyTime = 0.0f;// 発生頻度用の時刻 0で初期化

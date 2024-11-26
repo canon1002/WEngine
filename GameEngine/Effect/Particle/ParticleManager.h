@@ -1,5 +1,23 @@
 #pragma once
 #include "ParticleCommon.h"
+#include <unordered_map>
+
+// パーティクルグループ
+struct ParticleGroup {
+	// マテリアルデータ
+	Material* materialData;
+	// パーティクルのリスト
+	//std::list<ParticleCommon> particleList;
+	// インスタンシングデータ用SRVインデックス
+	int32_t mInstancingHandle;
+	// インスタンシングリソース
+	Microsoft::WRL::ComPtr<ID3D12Resource> mInstancingResource;
+	// データを書き込む
+	// インスタンス数
+	int32_t instanceCount;
+	// インスタンシングデータを書き込むためのポインタ
+	ParticleForGPU* instancingData;
+};
 
 class ParticleManager{
 
@@ -13,7 +31,7 @@ public: // -- 公開 メンバ変数 -- //
 	void PreDraw();
 	void Draw();
 	
-	void CreateParticle();
+	void CreateParticleGroupe(const std::string name,const std::string textureFilePath);
 
 private: // -- 非公開 メンバ関数 -- //
 
@@ -27,8 +45,8 @@ private: // -- 非公開 メンバ変数 -- //
 
 	// インスタンス
 	static ParticleManager* instance;
-	// パーティクルのリスト
-	std::list<ParticleCommon*> mParticles;
+	// パーティクルグループのコンテナ
+	std::unordered_map<std::string,ParticleGroup> mParticleGroups;
 
 	// グラフィックパイプライン
 	Microsoft::WRL::ComPtr <ID3D12PipelineState> mGraphicsPipelineState = nullptr;

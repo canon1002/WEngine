@@ -32,6 +32,7 @@ void Player::Init() {
 
 	mObject = std::make_unique<Object3d>();
 	mObject->Init("PlayerObj");
+	mObject->SetScale({ 1.2f,1.2f,1.2f });
 	mObject->SetTranslate({ 1.0f,1.0f,7.0f });
 	
 	// モデルを設定
@@ -107,7 +108,7 @@ void Player::Init() {
 	mAttackStatus.sword = std::make_unique<Object3d>();
 	mAttackStatus.sword->Init("sword");
 	mAttackStatus.sword->SetModel("sword.gltf");
-	mAttackStatus.sword->mWorldTransform->scale = { 0.1f,0.1f,0.1f };
+	mAttackStatus.sword->mWorldTransform->scale = { 0.1f,0.1f,0.15f };
 	mAttackStatus.sword->mWorldTransform->rotation = { 1.7f,-0.3f,0.0f };
 	mAttackStatus.sword->mSkinning = new Skinnig();
 	mAttackStatus.sword->mSkinning->Init("Weapons", "sword.gltf",
@@ -428,21 +429,22 @@ void Player::DrawGUI() {
 void Player::ColliderDraw() {
 #ifdef _DEBUG
 	mObject->mCollider->Draw();
-#endif // _DEBUG
-	mReticle->Draw3DReticle();
 
-	// 剣
-	mAttackStatus.sword->Draw();
-	if (mBehavior == Behavior::kAttack || mBehavior == Behavior::kChargeAttack)
-	{
-		if (mAttackStatus.isOperating || mChargeStatus.isCharge)
-		{
+	if (mBehavior == Behavior::kAttack || mBehavior == Behavior::kChargeAttack){
+		if (mAttackStatus.isOperating || mChargeStatus.isCharge){
 			// 武器のコライダー 描画
 			for (Collider* collider : mAttackStatus.swordColliders) {
 				collider->Draw();
 			}
 		}
 	}
+
+#endif // _DEBUG
+	mReticle->Draw3DReticle();
+
+	// 剣
+	mAttackStatus.sword->Draw();
+
 
 	for (const auto& arrow : mArrows) {
 		arrow->GetCollider()->Draw();

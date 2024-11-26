@@ -19,7 +19,8 @@ void SRV::CreateShaderResourceView() {
 	// STV用ディスクリプタヒープの生成
 	// タンスの部分
 	srvDescriptorHeap = mDxCommon->CreateDescriptorHeap(mDxCommon->device_, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 128, true);
-	defaultTexId_ = LoadTexture("uvChecker.png");
+	//defaultTexId_ = LoadTexture("uvChecker.png");
+	defaultTexId_ = LoadTexture("white2x2.png");
 
 }
 

@@ -11,6 +11,7 @@
 // エフェクト
 #include "GameEngine/Effect/Particle/DiffusionToCircleParticle.h"
 #include "GameEngine/Effect/Particle/TrailEffect.h"
+#include "GameEngine/Effect/Particle/DashSmoke.h"
 
 // マネージャー
 #include "GameEngine/Append/Collider/CollisionManager.h"
@@ -99,7 +100,11 @@ private:
 
 
 	// 軌道パーティクル
-	std::unique_ptr<TrailEffect> mPlayerTrailEffect;
+	std::unique_ptr<TrailEffect> mPlayerTrailEffect;// プレイヤー用
+	std::unique_ptr<TrailEffect> mBossTrailEffect;
+	// ダッシュ煙
+	std::unique_ptr<DashSmoke> mPlayerDashSmoke; // プレイヤー用
+	std::unique_ptr<DashSmoke> mBossDashSmoke; // ボス用
 
 };
 

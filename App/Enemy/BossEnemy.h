@@ -100,6 +100,9 @@ public: // -- 公開 メンバ関数 -- //
 
 	Vector3 GetWorldPos();
 	Vector3 GetWorldPosForTarget();
+	
+	const WorldTransform* GetWorldPositionSword(int32_t count) { return mWorldTransformSword.at(count); }
+
 
 	// -- ActionNodeの実行条件を設定する関数 -- //
 
@@ -169,8 +172,16 @@ private: // -- 非公開 メンバ変数 -- //
 	// 能力値
 	Status* mStatus;
 
+	// -- エフェクト関係 -- //
+
+	// 剣先と根本のワールド座標
+	std::array<WorldTransform*, 2> mWorldTransformSword;
+
 	// 武器の各パーツの座標
 	std::array<Matrix4x4, 5> mWeaponWorldMat;
+
+
+	// 被弾シェイク
 
 
 };

@@ -9,7 +9,9 @@ void TrailEffect::Init()
 	// カウント
 	mPositionSetCountMax = 0.01f;
 	mPositionSetCount = 0.0f;
-	
+
+	// 色の設定
+	mEffectColor = { 1.0f, 0.1f, 0.1f, 0.8f };
 }
 
 void TrailEffect::Update() {
@@ -134,6 +136,7 @@ void TrailEffect::Create(const WorldTransform& top, const WorldTransform& bottom
 	EffectPixels* newEffectModel = new EffectPixels();
 	newEffectModel->Init();
 	newEffectModel->SetVertices(mVertices[0]->top, mVertices[1]->top, mVertices[0]->bottom, mVertices[1]->bottom);
+	newEffectModel->SetColor(mEffectColor);
 
 	// 前に登録した頂点を配列から削除
 	mVertices.erase(mVertices.begin());

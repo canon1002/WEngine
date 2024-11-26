@@ -17,10 +17,10 @@ void EffectPixels::Init() {
 	mWorldTransform->scale = { 1.0f,1.0f,1.0f };
 
 	// テクスチャの設定
-	mTextureHandle = mDxCommon->srv_->LoadTexture("white2x2.png");
+	mTextureHandle = mDxCommon->srv_->LoadTexture("TrailWhite.png");
 
 	// 生存時間
-	mActiveCountMax = 0.75f;
+	mActiveCountMax = 0.05f;
 	mActiveCount = mActiveCountMax;
 	
 

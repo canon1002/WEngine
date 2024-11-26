@@ -12,10 +12,13 @@ ParticleManager* ParticleManager::GetInstance()
 }
 
 void ParticleManager::Init(){
+
 	// dxCommonのポインタ取得
 	mDxCommon = DirectXCommon::GetInstance();
 	// PipelineStateObjectを生成する
 	CreatePipelineState();
+
+
 }
 
 void ParticleManager::Update(){

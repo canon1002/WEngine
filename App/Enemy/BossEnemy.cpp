@@ -10,6 +10,8 @@
 #include "App/AI/BehaviorTree/BTAttackAction.h"
 #include "GameEngine/Object/Model/Skybox/Skybox.h"
 
+#include "App/Enemy/Action/ActionList.h"
+
 void BossEnemy::Init() {
 	
 	// モデル読み込み
@@ -112,6 +114,17 @@ void BossEnemy::Init() {
 
 	mReloadBTCount = 30.0f;
 
+	// -- エフェクト関係 -- //
+
+	// 剣先と根本のワールド座標
+	for (size_t i = 0; i < mWorldTransformSword.size(); i++) {
+		mWorldTransformSword[i] = new WorldTransform();
+		mWorldTransformSword[i]->Init();
+	}
+	// ペアレントを設定(後にワールド座標を取得する)
+	mWorldTransformSword[0]->SetParent(mWeaponWorldMat[0]);
+	mWorldTransformSword[1]->SetParent(mWeaponWorldMat[4]);
+
 }
 
 void BossEnemy::InitBehavior() {
@@ -123,6 +136,7 @@ void BossEnemy::InitBehavior() {
 
 	// Behavior Treeを構築する 
 	mRoot = std::make_unique<BT::Sequence>();
+
 	// 接近 -> 近接攻撃
 	BT::Sequence* newSequence = new BT::Sequence();
 	BT::Selector* ReafOneSelector = new BT::Selector();
@@ -131,6 +145,7 @@ void BossEnemy::InitBehavior() {
 	newSequence->SetChild(new BT::MoveToPlayer(this));
 	newSequence->SetChild(new BT::AttackClose(this));
 	ReafOneSelector->SetChild(newSequence);
+
 
 	// 接近状態だったら
 	BT::Sequence* startNear = new BT::Sequence();
@@ -162,6 +177,10 @@ void BossEnemy::InitActions()
 	// 刺突攻撃
 	mActions["AttackThrust"] = new ACT::AttackThrust();
 	mActions["AttackThrust"]->Init(this);
+
+	// ダッシュ攻撃
+	/*mActions["AttackDash"] = new ACT::AttackDash();
+	mActions["AttackDash"]->Init(this);*/
 
 	// 初期は行動しない
 	mActiveAction = nullptr;

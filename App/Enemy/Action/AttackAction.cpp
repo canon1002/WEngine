@@ -14,10 +14,6 @@ void ACT::AttackClose::Init(BossEnemy* boss)
 	mCondition = Condition::IDOL;
 
 
-	/*mColliders.push_back(new SphereCollider(mWeapon->mWorldTransform, 0.25f));
-	mColliders.push_back(new SphereCollider(mWeapon->mWorldTransform, 0.25f));
-	mColliders.push_back(new SphereCollider(mWeapon->mWorldTransform, 0.25f));*/
-
 	mActiveColliderCount = 0.0f;
 
 

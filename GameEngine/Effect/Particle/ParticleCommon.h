@@ -20,7 +20,7 @@ struct Particle {
 
 // エミッター(パーティクル発生装置)
 struct Emitter {
-	WorldTransform worldTransform;// エミッターの座標
+	WorldTransform* worldTransform;// エミッターの座標
 	uint32_t count;// 発生数
 	float frequency;// 発生頻度
 	float frequencyTime;// 頻度用時刻
@@ -38,6 +38,14 @@ public: // -- 公開 メンバ変数 -- //
 	virtual void Draw() = 0;
 	virtual Particle Create(const Vector3& translate, std::mt19937& randomEngine) = 0;
 	virtual std::list<Particle> Emit(const Emitter& emtter,std::mt19937& randomEngine) = 0;
+
+	// 実行状況切り替え
+	virtual void SetActive(bool flag) { mIsActive = flag; }
+	// 実行状況の取得
+	virtual bool GetActive() { return mIsActive; }
+
+	// エミッターの座標変更
+	inline void SetEmitterWorldTransform(WorldTransform* world) { mEmitter.worldTransform = world; }
 
 protected: // -- 限定公開 メンバ関数 -- //
 
@@ -92,7 +100,7 @@ protected: // -- 限定公開 メンバ変数 -- //
 	UVTransform uvTransform_;
 
 	// インスタンスの数
-	const int32_t kNumMaxInstance = 4098;
+	const int32_t kNumMaxInstance = 400;
 	int32_t instanceCount_;
 
 	// 乱数生成機
