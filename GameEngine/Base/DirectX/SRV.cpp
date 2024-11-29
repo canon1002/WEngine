@@ -34,7 +34,7 @@ int SRV::LoadTexture(const std::string filePath) {
 	// 新たにデータを登録する
 	TextureData textureData;
 	textureData.filePath = filePath;
-	++textureId_;
+	++mTextureId;
 
 	// テクスチャを読んで転送する
 	DirectX::ScratchImage mipImages = Resource::LoadTextrue(filePath);
@@ -61,20 +61,22 @@ int SRV::LoadTexture(const std::string filePath) {
 	//const uint32_t descriptorSizeRTV = dx_->device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 	//const uint32_t descriptorSizeDSV = dx_->device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
 
-	textureData.textureSrvHandleCPU = mDxCommon->GetCPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, textureId_);
-	textureData.textureSrvHandleGPU = mDxCommon->GetGPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, textureId_);
+	textureData.textureSrvHandleCPU = mDxCommon->GetCPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, mTextureId);
+	textureData.textureSrvHandleGPU = mDxCommon->GetGPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, mTextureId);
 
-	textureData_.insert(std::make_pair(textureId_, textureData));
+	mTextureData.insert(std::make_pair(mTextureId, textureData));
 
 	mDxCommon->device_->CreateShaderResourceView(textureData.textureResource.Get(), &srvDesc, textureData.textureSrvHandleCPU);
 
-	return textureId_;
+	return mTextureId;
 
 }
 
 int SRV::SetStructuredBuffer(int32_t kNumInstance, Microsoft::WRL::ComPtr<ID3D12Resource> instancingResource) {
 
-	++textureId_;
+	// 新たにデータを登録する
+	TextureData instaicingData;
+	++mParticleId;
 
 	// SRVの設定をおこなう
 	D3D12_SHADER_RESOURCE_VIEW_DESC instancingSrvDesc{};
@@ -87,11 +89,14 @@ int SRV::SetStructuredBuffer(int32_t kNumInstance, Microsoft::WRL::ComPtr<ID3D12
 	instancingSrvDesc.Buffer.StructureByteStride = sizeof(ParticleForGPU);
 	// デスクリプタサイズを取得
 	const uint32_t descriptorSizeSRV = mDxCommon->device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	instancingSrvHandleCPU = mDxCommon->GetCPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, textureId_);
-	instancingSrvHandleGPU = mDxCommon->GetGPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, textureId_);
-	mDxCommon->device_->CreateShaderResourceView(instancingResource.Get(), &instancingSrvDesc, instancingSrvHandleCPU);
 
-	return  textureId_;
+	instaicingData.textureSrvHandleCPU = mDxCommon->GetCPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, mParticleId);
+	instaicingData.textureSrvHandleGPU = mDxCommon->GetGPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, mParticleId);
+	mDxCommon->device_->CreateShaderResourceView(instancingResource.Get(), &instancingSrvDesc, instaicingData.textureSrvHandleCPU);
+
+	mTextureData.insert(std::make_pair(mParticleId, instaicingData));
+
+	return  mParticleId;
 
 }
 
@@ -99,7 +104,7 @@ int32_t SRV::CreateRenderTextureSRV(ID3D12Resource* pResource){
 
 	// 新たにデータを登録する
 	TextureData textureData;
-	++textureId_;
+	++mTextureId;
 
 	// SRVの設定をおこなう
 	D3D12_SHADER_RESOURCE_VIEW_DESC renderTextureSrvDesc{};
@@ -113,48 +118,48 @@ int32_t SRV::CreateRenderTextureSRV(ID3D12Resource* pResource){
 	//const uint32_t descriptorSizeRTV = dx_->device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 	//const uint32_t descriptorSizeDSV = dx_->device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
 
-	textureData.textureSrvHandleCPU = mDxCommon->GetCPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, textureId_);
-	textureData.textureSrvHandleGPU = mDxCommon->GetGPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, textureId_);
+	textureData.textureSrvHandleCPU = mDxCommon->GetCPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, mTextureId);
+	textureData.textureSrvHandleGPU = mDxCommon->GetGPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, mTextureId);
 
-	textureData_.insert(std::make_pair(textureId_, textureData));
+	mTextureData.insert(std::make_pair(mTextureId, textureData));
 
 	// SRVの生成
 	mDxCommon->device_->CreateShaderResourceView(pResource,
 		&renderTextureSrvDesc, textureData.textureSrvHandleCPU);
 
-	return textureId_;
+	return mTextureId;
 
 }
 
 const DirectX::TexMetadata& SRV::GetMetaData(uint32_t textureId)
 {
-	TextureData& textureData = textureData_.at(textureId);
+	TextureData& textureData = mTextureData.at(textureId);
 	return textureData.metadata;
 }
 
 int32_t SRV::GetEmptyIndex(){
 	// 新たにデータを登録する
 	TextureData textureData;
-	++textureId_;
+	++mTextureId;
 
 	// デスクリプタサイズを取得
 	const uint32_t descriptorSizeSRV = mDxCommon->device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
 	// CPUとGPUを取得/確保しておく
-	textureData.textureSrvHandleCPU = mDxCommon->GetCPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, textureId_);
-	textureData.textureSrvHandleGPU = mDxCommon->GetGPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, textureId_);
+	textureData.textureSrvHandleCPU = mDxCommon->GetCPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, mTextureId);
+	textureData.textureSrvHandleGPU = mDxCommon->GetGPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, mTextureId);
 
 	// 一応mapに追加しておく
-	textureData_.insert(std::make_pair(textureId_, textureData));
+	mTextureData.insert(std::make_pair(mTextureId, textureData));
 
-	return textureId_;
+	return mTextureId;
 }
 
 int32_t SRV::CreateDepthSRV(Microsoft::WRL::ComPtr<ID3D12Resource> depthStencilResource)
 {
 	// 新たにデータを登録する
 	TextureData textureData;
-	++textureId_;
+	++mTextureId;
 
 	// SRVの設定をおこなう
 	D3D12_SHADER_RESOURCE_VIEW_DESC depthTextureSrvDesc{};
@@ -173,15 +178,15 @@ int32_t SRV::CreateDepthSRV(Microsoft::WRL::ComPtr<ID3D12Resource> depthStencilR
 	//const uint32_t descriptorSizeRTV = dx_->device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 	//const uint32_t descriptorSizeDSV = dx_->device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
 
-	textureData.textureSrvHandleCPU = mDxCommon->GetCPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, textureId_);
-	textureData.textureSrvHandleGPU = mDxCommon->GetGPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, textureId_);
+	textureData.textureSrvHandleCPU = mDxCommon->GetCPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, mTextureId);
+	textureData.textureSrvHandleGPU = mDxCommon->GetGPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, mTextureId);
 
-	textureData_.insert(std::make_pair(textureId_, textureData));
+	mTextureData.insert(std::make_pair(mTextureId, textureData));
 
 	// SRVの生成
 	mDxCommon->device_->CreateShaderResourceView(depthStencilResource.Get(),
 		&depthTextureSrvDesc, textureData.textureSrvHandleCPU);
 
-	return textureId_;
+	return mTextureId;
 }
 

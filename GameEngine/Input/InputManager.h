@@ -78,6 +78,9 @@ public: // -- 公開 メンバ関数 -- //
 	unsigned char GetTriger(const Gamepad::Triger& type);
 	// スティックの倒した量を取得
 	short GetStick(const Gamepad::Stick& type);
+	// スティックの入力量を引数(0.0f)~最大値(1.0f)の間で返す関数
+	float GetStickRatio(const Gamepad::Stick& type, const short min);
+
 
 private:
 

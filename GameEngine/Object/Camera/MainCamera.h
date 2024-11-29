@@ -85,5 +85,12 @@ private: // -- private メンバ変数 -- //
 	// カメラの回転操作を有効にするか
 	bool mIsControll;
 
+	// カメラ回転操作の感度
+	float mCameraSensitivity;
+
+	// カメラ回転操作の入力経過時間
+	Vector2 mCameraInputCounts;
+	const float mCamerainputCountMax = 1.0f;
+
 };
 

@@ -145,7 +145,7 @@ void DiffusionToCircleParticle::Draw() {
 
 		mDxCommon->mCommandList->SetGraphicsRootDescriptorTable(1, mDxCommon->srv_->instancingSrvHandleGPU);
 		// テクスチャをセット
-		mDxCommon->mCommandList->SetGraphicsRootDescriptorTable(2, mDxCommon->srv_->textureData_.at(mDxCommon->srv_->defaultTexId_).textureSrvHandleGPU);
+		mDxCommon->mCommandList->SetGraphicsRootDescriptorTable(2, mDxCommon->srv_->mTextureData.at(mDxCommon->srv_->defaultTexId_).textureSrvHandleGPU);
 		// ドローコール
 		mDxCommon->mCommandList->DrawInstanced(6, instanceCount_, 0, 0);
 	}

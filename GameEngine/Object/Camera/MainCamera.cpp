@@ -7,14 +7,14 @@
 MainCamera* MainCamera::instance = nullptr;
 
 
-MainCamera* MainCamera::GetInstance(){
+MainCamera* MainCamera::GetInstance() {
 	if (instance == nullptr) {
 		instance = new MainCamera();
 	}
 	return instance;
 }
 
-void MainCamera::Initialize(){
+void MainCamera::Initialize() {
 	winApp_ = WinAPI::GetInstance();
 	// 入力を取得する
 	mInput = InputManager::GetInstance();
@@ -42,6 +42,12 @@ void MainCamera::Initialize(){
 	mIsRotationEasing = false;
 	mRotaionEasingTime = 0.0f;
 
+	// カメラ回転操作の感度
+	mCameraSensitivity = 0.05f;
+	// カメラ回転操作の入力経過時間
+	mCameraInputCounts = { 0.0f ,0.0f };
+
+
 }
 void MainCamera::Update()
 {
@@ -56,6 +62,7 @@ void MainCamera::Update()
 		ImGui::DragFloat3("AddTransform", &mAddTranslation.x, 0.1f, -1000.0f, 1000.0f);
 		ImGui::DragFloat("NearClip", &nearClip_, 0.01f, 0.0f, 100.0f);
 		ImGui::DragFloat("FarClip", &farClip_, 0.1f, 1.0f, 1000.0f);
+		ImGui::DragFloat("Sensitivity", &mCameraSensitivity, 0.01f, 0.0f, 10.0f);
 		ImGui::End();
 	}
 #endif // DEBUG
@@ -68,7 +75,7 @@ void MainCamera::Update()
 		offset = TransformNomal(offset, mWorldTransform->GetWorldMatrix());
 		// オフセット分ずらす
 		mWorldTransform->translation = mFollowTarget->translation + offset;
-		
+
 		// 追加で平行移動値が設定されていれば更にずらす
 		mWorldTransform->translation += mAddTranslation;
 
@@ -80,27 +87,23 @@ void MainCamera::Update()
 			// スティック入力の量
 			const static int stickValue = 8000;
 
-			// 入力量に応じた回転を行う
-			if (mInput->GetStick(Gamepad::Stick::RIGHT_X) < -stickValue || // 左 
-				mInput->GetStick(Gamepad::Stick::RIGHT_X) > stickValue || // 右
-				mInput->GetStick(Gamepad::Stick::RIGHT_Y) < -stickValue || // 上
-				mInput->GetStick(Gamepad::Stick::RIGHT_Y) > stickValue	  // 下
-				) {
+			if (mInput->GetStickRatio(Gamepad::Stick::RIGHT_Y, stickValue) != 0.0f ||
+				mInput->GetStickRatio(Gamepad::Stick::RIGHT_X, stickValue) != 0.0f) {
 
 				// Xの移動量とYの移動量を設定する
 				Vector3 direction = {
-					(float)mInput->GetStick(Gamepad::Stick::RIGHT_Y),
-					(float)mInput->GetStick(Gamepad::Stick::RIGHT_X),
+					mInput->GetStickRatio(Gamepad::Stick::RIGHT_Y, stickValue),
+					mInput->GetStickRatio(Gamepad::Stick::RIGHT_X, stickValue),
 					0.0f,
 				};
 				// 念のために正規化
-				direction = Normalize(direction);
+				//direction = Normalize(direction);
 				// スティック上に倒すと下をみるようにする
 				direction.x *= (-1.0f);
 
-				// 回転の速度 // メンバ変数にしても良さそう
-				float rotateSpeed = 0.05f;
-				mWorldTransform->rotation += direction * rotateSpeed;
+				// 回転の速度 (感度値を乗算)
+				mWorldTransform->rotation.x += direction.x * mCameraSensitivity;
+				mWorldTransform->rotation.y += direction.y * mCameraSensitivity;
 
 				// x軸の回転は制限する
 				if (mWorldTransform->rotation.x < -0.2f) {
@@ -114,12 +117,14 @@ void MainCamera::Update()
 				if (mWorldTransform->rotation.y > 3.14f) {
 					mWorldTransform->rotation.y = -3.14f;
 				}
-				
-				if(mWorldTransform->rotation.y < -3.14f){
+
+				if (mWorldTransform->rotation.y < -3.14f) {
 					mWorldTransform->rotation.y = 3.14f;
 				}
 
+
 			}
+			
 
 		}
 
@@ -162,7 +167,7 @@ void MainCamera::UpdateRotationEasing()
 		mEasedRotation.y = atan2f(direction.x, direction.z);
 	}
 
-	mWorldTransform->rotation.y = ExponentialInterpolation(mEaseBeforeRotation.y,mEasedRotation.y, mRotaionEasingTime, 1.0f);
+	mWorldTransform->rotation.y = ExponentialInterpolation(mEaseBeforeRotation.y, mEasedRotation.y, mRotaionEasingTime, 1.0f);
 	//mWorldTransform->rotation.x = ExponentialInterpolation(mEaseBeforeRotation.x,0.0f, mRotaionEasingTime, 1.0f);
 }
 
@@ -182,7 +187,7 @@ void MainCamera::SetCameraRotarionToSearchTarget()
 
 		mEasedRotation.y = atan2f(direction.x, direction.z);
 	}
-	
+
 	// X軸の計算
 	if (Length(mSearchTarget->translation - mWorldTransform->translation) != 0.0f) {
 		Vector3 direction = Normalize(mSearchTarget->translation - mWorldTransform->translation);

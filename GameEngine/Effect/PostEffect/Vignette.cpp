@@ -57,7 +57,7 @@ void Vignette::Draw(){
 	// ポストエフェクトのパラメータのCBufferの場所を指定
 	mDxCommon->mCommandList->SetGraphicsRootConstantBufferView(0, mEffectResource->GetGPUVirtualAddress());
 	// SRVのDescriptorTableの先頭を設定
-	mDxCommon->mCommandList->SetGraphicsRootDescriptorTable(1, mDxCommon->srv_->textureData_.at(textureHandle_).textureSrvHandleGPU);
+	mDxCommon->mCommandList->SetGraphicsRootDescriptorTable(1, mDxCommon->srv_->mTextureData.at(textureHandle_).textureSrvHandleGPU);
 	// インスタンス生成
 	mDxCommon->mCommandList->DrawInstanced(3, 1, 0, 0);
 }

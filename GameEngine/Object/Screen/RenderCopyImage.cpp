@@ -122,9 +122,9 @@ void RenderCopyImage::Draw() {
 	//wvp用のCBufferの場所を指定
 	mDxCommon->mCommandList->SetGraphicsRootConstantBufferView(1, mWvpResource->GetGPUVirtualAddress());
 	// テクスチャをセット
-	mDxCommon->mCommandList->SetGraphicsRootDescriptorTable(2, mDxCommon->srv_->textureData_.at(mTextureHandle).textureSrvHandleGPU);
+	mDxCommon->mCommandList->SetGraphicsRootDescriptorTable(2, mDxCommon->srv_->mTextureData.at(mTextureHandle).textureSrvHandleGPU);
 	// DepthTextureを設定
-	mDxCommon->mCommandList->SetGraphicsRootDescriptorTable(3, mDxCommon->srv_->textureData_.at(mDepthStencilHandle).textureSrvHandleGPU);
+	mDxCommon->mCommandList->SetGraphicsRootDescriptorTable(3, mDxCommon->srv_->mTextureData.at(mDepthStencilHandle).textureSrvHandleGPU);
 
 	// インスタンス生成
 	mDxCommon->mCommandList->DrawInstanced(3, 1, 0, 0);

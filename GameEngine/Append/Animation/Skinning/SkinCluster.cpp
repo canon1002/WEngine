@@ -13,8 +13,8 @@ SkinCluster SkinCluster::Create(const Microsoft::WRL::ComPtr<ID3D12Device>& devi
 	skinCluster.paletteResource_->Map(0, nullptr, reinterpret_cast<void**>(&mappedPalette));
 	skinCluster.mappedPallete_ = { mappedPalette,skeleton.joints.size() };// spanを使ってアクセスできるようにする
 	int32_t indexNum = mDxCommon->srv_->GetEmptyIndex();
-	skinCluster.paletteSrvHandle_.first = mDxCommon->srv_->textureData_.at(indexNum).textureSrvHandleCPU;
-	skinCluster.paletteSrvHandle_.second = mDxCommon->srv_->textureData_.at(indexNum).textureSrvHandleGPU;
+	skinCluster.paletteSrvHandle_.first = mDxCommon->srv_->mTextureData.at(indexNum).textureSrvHandleCPU;
+	skinCluster.paletteSrvHandle_.second = mDxCommon->srv_->mTextureData.at(indexNum).textureSrvHandleGPU;
 
 	// -- Palette用のsrvを作成 -- //
 
