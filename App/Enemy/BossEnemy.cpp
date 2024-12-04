@@ -10,6 +10,7 @@
 #include "App/AI/BehaviorTree/BTAttackAction.h"
 #include "GameEngine/Object/Model/Skybox/Skybox.h"
 
+#include "GameEngine/GameMaster/Framerate.h"
 #include "App/Enemy/Action/ActionList.h"
 
 void BossEnemy::Init() {
@@ -141,15 +142,26 @@ void BossEnemy::InitBehavior() {
 	BT::Sequence* newSequence = new BT::Sequence();
 	BT::Selector* ReafOneSelector = new BT::Selector();
 
+
 	newSequence->SetChild(new BT::Condition(std::bind(&BossEnemy::InvokeFarDistance, this)));
-	newSequence->SetChild(new BT::MoveToPlayer(this));
-	newSequence->SetChild(new BT::AttackClose(this));
+	newSequence->SetChild(new BT::MoveToPlayer(this));// 接近
+	newSequence->SetChild(new BT::AttackClose(this));// 近接攻撃
+
+	// ジャンプ攻撃orダッシュ攻撃
+	BT::Selector* atkSelector = new BT::Selector();
+	atkSelector->SetChild(new BT::Decorator(std::bind(&BossEnemy::InvokeFarDistance, this), new BT::AttackDash(this))); // Playerが遠い場合、ダッシュ攻撃
+	atkSelector->SetChild(new BT::AttackJump(this));
+	
+
+	// 構築
+	newSequence->SetChild(atkSelector);
 	ReafOneSelector->SetChild(newSequence);
 
 
 	// 接近状態だったら
 	BT::Sequence* startNear = new BT::Sequence();
 	startNear->SetChild(new BT::AttackThrust(this));	// 刺突
+	startNear->SetChild(new BT::Condition(std::bind(&BossEnemy::InvokeNearDistance, this))); // プレイヤーが近くにいたら下の行動を実行
 	startNear->SetChild(new BT::BackStep(this));		// 後退
 	ReafOneSelector->SetChild(startNear);
 
@@ -179,8 +191,12 @@ void BossEnemy::InitActions()
 	mActions["AttackThrust"]->Init(this);
 
 	// ダッシュ攻撃
-	/*mActions["AttackDash"] = new ACT::AttackDash();
-	mActions["AttackDash"]->Init(this);*/
+	mActions["AttackDash"] = new ACT::AttackDash();
+	mActions["AttackDash"]->Init(this);
+
+	// ジャンプ攻撃
+	mActions["AttackJump"] = new ACT::AttackJump();
+	mActions["AttackJump"]->Init(this);
 
 	// 初期は行動しない
 	mActiveAction = nullptr;
@@ -217,12 +233,14 @@ void BossEnemy::Update() {
 		this->UpdateState();
 
 		// BehaviorTreeの更新処理を行う
-		mReloadBTCount -= (1.0f / 5.0f);
+		mReloadBTCount -= Framerate::GetInstance()->GetBattleSpeed() * 6.0f / (Framerate::GetInstance()->GetFramerate());
 		if (mReloadBTCount <= 0.0f) {
 			mReloadBTCount = 1.0f;
 			mBTStatus = mRoot->Tick();
+
+			// 結果が帰ってきたら初期化処理
 			if (mBTStatus == BT::NodeStatus::SUCCESS || mBTStatus == BT::NodeStatus::FAILURE) {
-				// 結果が帰ってきたら初期化処理
+				
 				mRoot->Reset();
 
 				// 各アクションの初期化もしておく
@@ -344,6 +362,17 @@ void BossEnemy::DrawGUI() {
 	}
 
 	ImGui::Begin("BossEnemy");
+	if (ImGui::CollapsingHeader("Animation")) {
+
+		std::string strAnimeT = "AnimationTime : " + std::to_string(mObject->mSkinning->GetNowSkinCluster()->animationTime/ mObject->mSkinning->GetDurationTime());
+		ImGui::ProgressBar(mObject->mSkinning->GetNowSkinCluster()->animationTime / mObject->mSkinning->GetDurationTime(), ImVec2(-1.0f, 0.0f), strAnimeT.c_str());
+
+		std::string strNormalT = "MotionBlendingTime : " + std::to_string(mObject->mSkinning->GetMotionBlendingTime());
+		ImGui::ProgressBar(mObject->mSkinning->GetMotionBlendingTime(), ImVec2(-1.0f, 0.0f), strNormalT.c_str());
+
+		// Skinning
+		mObject->mSkinning->DrawGui();
+	}
 	ImGui::ListBox("State", &currentItem, behaviorState, IM_ARRAYSIZE(behaviorState), 3);
 	ImGui::DragInt("HP", &mStatus->HP, 1.0f, 0, 100);
 	ImGui::DragInt("STR", &mStatus->STR, 1.0f, 0, 100);
@@ -435,6 +464,18 @@ void BossEnemy::AttackThrust()
 	mActiveAction->Start();
 }
 
+void BossEnemy::AttackDash(){
+	// 現行アクションを設定
+	mActiveAction = mActions["AttackDash"];
+	mActiveAction->Start();
+}
+
+void BossEnemy::AttackJump(){
+	// 現行アクションを設定
+	mActiveAction = mActions["AttackJump"];
+	mActiveAction->Start();
+}
+
 void BossEnemy::MoveToPlayer()
 {
 	//// 前回の行動を終了
@@ -492,7 +533,7 @@ bool BossEnemy::InvokeFarDistance() {
 		GetWorldPos().x - GetWorldPosForTarget().x,
 		GetWorldPos().y - GetWorldPosForTarget().y,
 		GetWorldPos().z - GetWorldPosForTarget().z))
-		>= 10.0f) {
+		> (mObject->mWorldTransform->scale.x + mObject->mWorldTransform->scale.z) / 0.8f) {
 		return true;
 	}
 	return false;

@@ -1,16 +1,13 @@
 #pragma once
 #include "Action.h"
 
-// ----------------------------------------------------
-// ダッシュ攻撃
-// ----------------------------------------------------
+// 行動
 namespace ACT {
-	class AttackDash :
-		public IAction
-	{
-	public:
-		AttackDash() = default;
-		~AttackDash() = default;
+    class Seartch :
+        public IAction
+    {
+		Seartch() = default;
+		~Seartch() = default;
 
 		// 初期化
 		virtual void Init(BossEnemy* boss) override;
@@ -34,11 +31,18 @@ namespace ACT {
 
 	private:
 
-		std::vector<Collider*> mColliders;
-		float mActiveColliderCount;
-		const Vector2 kActiveColliderCount = { 0.8f,1.4f };
-		
-		
-
-	};
+		// 移動の始点
+		Vector3 mStartPos;
+		// 移動の終点
+		Vector3 mEndPos;
+		// 始点から終点への移動方向
+		Vector3 mDirection;
+		// それぞれの軸の移動量
+		Vector3 mVelocity;
+		// 移動速度
+		float mMoveSpeed;
+		// 追跡周期
+		float mSearchTime;
+		const float kSearchCycle = 3.0f;
+    };
 }

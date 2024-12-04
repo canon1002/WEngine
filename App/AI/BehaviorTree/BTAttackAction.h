@@ -44,6 +44,46 @@ namespace BT {
 		}
 	};
 
+	/// --------------------------------------------------
+	/// ダッシュ攻撃
+	/// --------------------------------------------------
+	class AttackDash : public Action
+	{
+	public:
+
+		AttackDash(BossEnemy* boss);
+		virtual ~AttackDash() = default;
+
+		// 実行
+		virtual BT::NodeStatus Tick()override;
+
+		// 再起動
+		virtual void Reset() override {
+			// 待機状態にする
+			this->mCondition = NodeCondition::IDOL;
+		}
+	};
+
+	/// --------------------------------------------------
+	/// ジャンプ攻撃
+	/// --------------------------------------------------
+	class AttackJump : public Action
+	{
+	public:
+
+		AttackJump(BossEnemy* boss);
+		virtual ~AttackJump() = default;
+
+		// 実行
+		virtual BT::NodeStatus Tick()override;
+
+		// 再起動
+		virtual void Reset() override {
+			// 待機状態にする
+			this->mCondition = NodeCondition::IDOL;
+		}
+	};
+
 }
 
 

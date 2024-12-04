@@ -730,17 +730,17 @@ void Player::Move()
 
 		// 上下移動の可否
 		if (mInput->GetPushKey(DIK_W)) {
-			mDirection.z += 1.0f;
+			mDirection.z += 1.0f / Framerate::GetInstance()->GetFramerate() * Framerate::GetInstance()->GetBattleSpeed();
 		}
 		if (mInput->GetPushKey(DIK_S)) {
-			mDirection.z -= 1.0f;
+			mDirection.z -= 1.0f / Framerate::GetInstance()->GetFramerate() * Framerate::GetInstance()->GetBattleSpeed();
 		}
 		// 左右移動の可否
 		if (mInput->GetPushKey(DIK_A)) {
-			mDirection.x -= 1.0f;
+			mDirection.x -= 1.0f / Framerate::GetInstance()->GetFramerate() * Framerate::GetInstance()->GetBattleSpeed();
 		}
 		if (mInput->GetPushKey(DIK_D)) {
-			mDirection.x += 1.0f;
+			mDirection.x += 1.0f / Framerate::GetInstance()->GetFramerate() * Framerate::GetInstance()->GetBattleSpeed();
 		}
 
 		// スティック入力の量

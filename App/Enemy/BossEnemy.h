@@ -71,6 +71,10 @@ public: // -- 公開 メンバ関数 -- //
 	void AttackClose();
 	// 刺突攻撃
 	void AttackThrust();
+	// ダッシュ攻撃
+	void AttackDash();
+	// ジャンプ攻撃
+	void AttackJump();
 
 	// 移動関連行動
 	// 命名規則 (行動分類  + 方向or対象 )

@@ -2,15 +2,15 @@
 #include "Action.h"
 
 // ----------------------------------------------------
-// ダッシュ攻撃
+// ジャンプ攻撃
 // ----------------------------------------------------
 namespace ACT {
-	class AttackDash :
+	class AttackJump :
 		public IAction
 	{
 	public:
-		AttackDash() = default;
-		~AttackDash() = default;
+		AttackJump() = default;
+		~AttackJump() = default;
 
 		// 初期化
 		virtual void Init(BossEnemy* boss) override;

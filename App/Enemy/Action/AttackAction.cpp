@@ -12,11 +12,8 @@ void ACT::AttackClose::Init(BossEnemy* boss)
 	mBoss = boss;
 	// 初期化する
 	mCondition = Condition::IDOL;
-
-
+	// コライダー表示期間の初期化
 	mActiveColliderCount = 0.0f;
-
-
 
 }
 
@@ -43,9 +40,10 @@ void ACT::AttackClose::Update()
 		}
 
 		// 終了処理
-		if (mBoss->GetObject3D()->mSkinning->IsAnimationFinished() == true) {
+		if (mBoss->GetObject3D()->mSkinning->IsAnimationFinished("Slash")) {
 			mCondition = Condition::FINISHED;
 		}
+
 
 	}
 }
@@ -84,7 +82,7 @@ void ACT::AttackClose::End()
 	mCondition = Condition::FINISHED;
 
 	// アニメーションの変更
-	mBoss->GetObject3D()->mSkinning->SetNextAnimation("Idle");
+	//mBoss->GetObject3D()->mSkinning->SetNextAnimation("Idle");
 }
 
 void ACT::AttackClose::Reset()
@@ -114,12 +112,6 @@ void ACT::AttackThrust::Init(BossEnemy* boss)
 	// 初期化する
 	mCondition = Condition::IDOL;
 
-
-
-	/*mColliders.push_back(new SphereCollider(mWeapon->mWorldTransform, 0.25f));
-	mColliders.push_back(new SphereCollider(mWeapon->mWorldTransform, 0.25f));
-	mColliders.push_back(new SphereCollider(mWeapon->mWorldTransform, 0.25f));*/
-
 	mActiveColliderCount = 0.0f;
 }
 
@@ -145,9 +137,10 @@ void ACT::AttackThrust::Update()
 		}
 
 		// 終了処理
-		if (mBoss->GetObject3D()->mSkinning->IsAnimationFinished() == true) {
+		if (mBoss->GetObject3D()->mSkinning->IsAnimationFinished("Thrust")) {
 			mCondition = Condition::FINISHED;
 		}
+
 
 	}
 }
@@ -176,7 +169,7 @@ void ACT::AttackThrust::Start()
 	mActiveColliderCount = 0.0f;
 
 	// プレイヤーの方を向く
-	
+
 	// ここから回転処理
 	// 方向の設定
 	Vector3 direction = Normalize(mBoss->GetWorldPosForTarget() - mBoss->GetWorldPos());
@@ -207,7 +200,7 @@ void ACT::AttackThrust::End()
 	mCondition = Condition::FINISHED;
 
 	// アニメーションの変更
-	mBoss->GetObject3D()->mSkinning->SetNextAnimation("Idle");
+	//mBoss->GetObject3D()->mSkinning->SetNextAnimation("Idle");
 
 	// 終わったら戻す
 	mBoss->mWeapon->mWorldTransform->SetParent(mBoss->mRightHandWorldMat);

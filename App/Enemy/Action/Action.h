@@ -56,7 +56,14 @@ namespace ACT {
 
 		// 駆動状態
 		Condition mCondition;
+
+		// アニメーション再生時間
+		float mAnimationTime;
+		// アニメーション終了時間
+		float mAnimationEndTime;
+
 	};
+
 
 
 	// ----------------------------------------------------

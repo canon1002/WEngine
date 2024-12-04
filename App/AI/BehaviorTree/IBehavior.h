@@ -63,8 +63,12 @@ namespace BT {
 			}
 
 			for (auto child : children) {
+
+				// 子ノードの処理を実行する
+				BT::NodeStatus status = child->Tick();
+
 				// 失敗したら
-				if (child->Tick() == BT::NodeStatus::FAILURE) {
+				if (status == BT::NodeStatus::FAILURE) {
 					// 終了状態にする
 					this->mCondition = NodeCondition::FINISHED;
 					// 一つでも失敗したら失敗
@@ -72,7 +76,7 @@ namespace BT {
 					return mResultStatus;
 				}
 				// 実行中
-				else if (child->Tick() == BT::NodeStatus::RUNNING) {
+				else if (status == BT::NodeStatus::RUNNING) {
 					// 実行中状態にする
 					this->mCondition = NodeCondition::RUN;
 					// 実行中
@@ -125,15 +129,18 @@ namespace BT {
 			}
 
 			for (auto child : children) {
+				// 子ノードの処理を実行する
+				BT::NodeStatus status = child->Tick();
+
 				// 成功したら
-				if (child->Tick() == BT::NodeStatus::SUCCESS) {
+				if (status == BT::NodeStatus::SUCCESS) {
 					// 終了状態にする
 					this->mCondition = NodeCondition::FINISHED;
 					// 
 					return BT::NodeStatus::SUCCESS;
 				}
 				// 実行中
-				else if (child->Tick() == BT::NodeStatus::RUNNING) {
+				else if (status == BT::NodeStatus::RUNNING) {
 					// 実行中状態にする
 					this->mCondition = NodeCondition::RUN;
 					return BT::NodeStatus::RUNNING;
@@ -197,9 +204,9 @@ namespace BT {
 	public:
 
 		// コンストラクタ // 条件分岐用の関数を引数として渡す
-		Condition(std::function<bool()> func)
-		{
+		Condition(std::function<bool()> func) {
 			this->func = func;
+			//mResultStatus = BT::NodeStatus::FAILURE;
 		};
 
 		// 実行 // ⚠RUNNINGを返してはならない⚠
@@ -247,24 +254,89 @@ namespace BT {
 	class Decorator : public INode {
 	public:
 
-		// 
+		// コンストラクタ // 条件分岐用の関数を引数として渡す
+		Decorator(std::function<bool()> func, BT::INode* child) {
+			// 子ノードのセット
+			this->child = child;
+			// 条件用関数ポインタのセット
+			this->func = func;
+			// 待機状態にする
+			this->mCondition = NodeCondition::IDOL;
+			//mResultStatus = BT::NodeStatus::FAILURE;
+			mHoldcondition = false;
+
+		};
+
+		// 実行
 		virtual BT::NodeStatus Tick()override {
 
+			// 実行終了状態であれば早期リターンする
+			if (this->mCondition == NodeCondition::FINISHED) {
+				return mResultStatus;
+			}
+
+			if (mHoldcondition!=true) {
+				// 条件関数の結果を保持
+				mHoldcondition = func();
+			}
+
+			// 条件用の関数ポインタの結果がtureの場合
+			if (mHoldcondition==true) {
+
+				// 条件成功したら子ノードの処理を実行する
+				BT::NodeStatus status = child->Tick();
+
+				// 成功したら
+				if (status == BT::NodeStatus::SUCCESS) {
+					// 終了状態にする
+					this->mCondition = NodeCondition::FINISHED;
+					// 
+					return BT::NodeStatus::SUCCESS;
+				}
+				// 失敗したら
+				else if (status == BT::NodeStatus::FAILURE) {
+					// 終了状態にする
+					this->mCondition = NodeCondition::FINISHED;
+					// 一つでも失敗したら失敗
+					mResultStatus = BT::NodeStatus::FAILURE;
+					return mResultStatus;
+				}
+				// 実行中
+				else if (status == BT::NodeStatus::RUNNING) {
+					// 実行中状態にする
+					this->mCondition = NodeCondition::RUN;
+					return BT::NodeStatus::RUNNING;
+				}
+
+
+			}
 			// 終了状態にする
 			this->mCondition = NodeCondition::FINISHED;
-			return BT::NodeStatus::SUCCESS;
+			// 失敗
+			mResultStatus = BT::NodeStatus::FAILURE;
+			return mResultStatus;
 		}
 
 		// 再起動
 		virtual void Reset() override {
 			// 待機状態にする
 			this->mCondition = NodeCondition::IDOL;
+			mHoldcondition = false;
 		}
 
 	public:
 
 		// 条件用 関数ポインタ
+		std::function<bool()> func;
 
+		// 実行結果を保持する
+		BT::NodeStatus mResultStatus;
+
+		// 子ノード
+		INode* child;
+
+		// 条件関数の結果保持
+		bool mHoldcondition;
 
 	};
 

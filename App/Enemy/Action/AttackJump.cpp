@@ -1,4 +1,4 @@
-#include "AttackDash.h"
+#include "AttackJump.h"
 #include "App/Enemy/BossEnemy.h"
 #include "GameEngine/Append/Collider/SphereCollider.h"
 #include "GameEngine/Object/Model/Skybox/Skybox.h"
@@ -6,7 +6,7 @@
 #include "GameEngine/Append/Collider/CollisionManager.h"
 #include "GameEngine/GameMaster/Framerate.h"
 
-void ACT::AttackDash::Init(BossEnemy* boss)
+void ACT::AttackJump::Init(BossEnemy* boss)
 {
 	// ボスのポインタを取得
 	mBoss = boss;
@@ -20,7 +20,7 @@ void ACT::AttackDash::Init(BossEnemy* boss)
 
 }
 
-void ACT::AttackDash::Update()
+void ACT::AttackJump::Update()
 {
 	// 実行時のみ処理を行う
 	if (mCondition == Condition::RUNNING) {
@@ -43,14 +43,14 @@ void ACT::AttackDash::Update()
 		}
 
 		// 終了処理
-		if (mBoss->GetObject3D()->mSkinning->IsAnimationFinished("SlashDash")) {
+		if (mBoss->GetObject3D()->mSkinning->IsAnimationFinished("SlashJamp")) {
 			mCondition = Condition::FINISHED;
 		}
 
 	}
 }
 
-void ACT::AttackDash::Draw() {
+void ACT::AttackJump::Draw() {
 
 	if (kActiveColliderCount.x < mActiveColliderCount &&
 		mActiveColliderCount < kActiveColliderCount.y) {
@@ -65,12 +65,12 @@ void ACT::AttackDash::Draw() {
 
 }
 
-void ACT::AttackDash::Start()
+void ACT::AttackJump::Start()
 {
 	// パラメータの初期化
 
 	// アニメーションの変更
-	mBoss->GetObject3D()->mSkinning->SetNextAnimation("SlashDash");
+	mBoss->GetObject3D()->mSkinning->SetNextAnimation("SlashJamp");
 
 	mActiveColliderCount = 0.0f;
 
@@ -78,7 +78,7 @@ void ACT::AttackDash::Start()
 	mCondition = Condition::RUNNING;
 }
 
-void ACT::AttackDash::End()
+void ACT::AttackJump::End()
 {
 	// 行動を終了させる
 	mCondition = Condition::FINISHED;
@@ -87,13 +87,13 @@ void ACT::AttackDash::End()
 	//mBoss->GetObject3D()->mSkinning->SetNextAnimation("Idle");
 }
 
-void ACT::AttackDash::Reset()
+void ACT::AttackJump::Reset()
 {
 	// 初期化する
 	mCondition = Condition::IDOL;
 }
 
-void ACT::AttackDash::SetCollider(CollisionManager* cManager)
+void ACT::AttackJump::SetCollider(CollisionManager* cManager)
 {
 	if (kActiveColliderCount.x < mActiveColliderCount &&
 		mActiveColliderCount < kActiveColliderCount.y) {

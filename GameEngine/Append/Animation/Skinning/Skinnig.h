@@ -38,6 +38,7 @@ public: // -- 公開 メンバ関数 -- //
 
 	// スキンクラスターの取得
 	SkinCluster GetSkinCluster() { return mNowSkincluster->skinCluster;}
+	SkinningStatus* GetSkinCluster(std::string name) { return mSkinClusterMap.at(name).get(); }
 
 	// スケルトンの取得
 	Skeleton GetSkeleton() { return mSkeleton;}
@@ -55,7 +56,7 @@ public: // -- 公開 メンバ関数 -- //
 	void SetLoopMode(bool isLoop) { mNowSkincluster->isLoop = isLoop; }
 	void ResetTime() { mNowSkincluster->animationTime = 0.0f; }
 	bool IsAnimationFinished()const  {
-		if (mNowSkincluster->animationTime >= (mNowSkincluster->animation.duration/2.0f)) {
+		if (mNowSkincluster->animationTime >= (mNowSkincluster->animation.duration)) {
 			return true;
 		}
 		return false;
@@ -63,6 +64,20 @@ public: // -- 公開 メンバ関数 -- //
 
 	bool GetIsActive() { return mNowSkincluster->isActive; }
 	void IsInactive() { mNowSkincluster->isActive = false; }
+
+	// 指定したアニメーションの再生が終了したかを取得する
+	inline bool IsAnimationFinished(std::string name) {
+		// アニメーションが存在するか確認する
+		if (mSkinClusterMap.find(name) == mSkinClusterMap.end()) {
+			return false;
+		}
+
+		// 再生時間と全体の尺を比較する
+		if (mSkinClusterMap.at(name)->animationTime >= mSkinClusterMap.at(name)->animation.duration) {
+			return true;
+		}
+		return false;
+	}
 
 
 	// -- モーションブレンド関連 -- //

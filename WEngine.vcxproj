@@ -119,6 +119,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   <ItemGroup>
     <ClCompile Include="App\AI\BehaviorTree\BTAttackAction.cpp" />
     <ClCompile Include="App\AI\BehaviorTree\BTMoveAction.cpp" />
+    <ClCompile Include="App\Enemy\Action\AttackJump.cpp" />
     <ClCompile Include="App\Status\StatusManager.cpp" />
     <ClCompile Include="App\Enemy\Action\AttackDash.cpp" />
     <ClCompile Include="GameEngine\Effect\EffectPixels\EffectPixels.cpp" />
@@ -218,11 +219,13 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="App\Player\Action\Slash.cpp" />
     <ClCompile Include="GameEngine\Object\Base\ObjectBase.cpp" />
     <ClCompile Include="GameEngine\Effect\Particle\TrailEffect.cpp" />
+    <ClCompile Include="App\Enemy\Action\Seartch.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App\AI\BehaviorTree\BTAttackAction.h" />
     <ClInclude Include="App\AI\BehaviorTree\BTMoveAction.h" />
     <ClInclude Include="App\Enemy\Action\ActionList.h" />
+    <ClInclude Include="App\Enemy\Action\AttackJump.h" />
     <ClInclude Include="App\Status\StatusManager.h" />
     <ClInclude Include="App\Enemy\Action\AttackDash.h" />
     <ClInclude Include="GameEngine\Effect\EffectPixels\EffectPixels.h" />
@@ -328,6 +331,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="App\Player\Action\Slash.h" />
     <ClInclude Include="GameEngine\Object\Base\ObjectBase.h" />
     <ClInclude Include="GameEngine\Effect\Particle\TrailEffect.h" />
+    <ClInclude Include="App\Enemy\Action\Seartch.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt" />

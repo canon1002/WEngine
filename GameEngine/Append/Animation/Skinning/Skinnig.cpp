@@ -45,7 +45,11 @@ void Skinnig::Update()
 {
 	// 時刻を進める
 	if (mNowSkincluster->isPause == false) {
-		mNowSkincluster->animationTime += (mAnimationPlaySpeed / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetBattleSpeed();
+
+		// アニメーション全体の尺を超えていた場合、加算しない	
+		if (mNowSkincluster->animationTime < mNowSkincluster->animation.duration) {
+			mNowSkincluster->animationTime += (mAnimationPlaySpeed / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetBattleSpeed();
+		}
 	}
 	// 最後まで行ったら最初からリピート再生する(しなくてもいいし、フラグで変更しても良さそう)
 	if (mNowSkincluster->isLoop == true) {

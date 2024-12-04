@@ -107,7 +107,7 @@ void ACT::MoveToPlayer::Start()
 void ACT::MoveToPlayer::End()
 {
 	// アニメーションの変更
-	mBoss->GetObject3D()->mSkinning->SetNextAnimation("Idle");
+	//mBoss->GetObject3D()->mSkinning->SetNextAnimation("Idle");
 	
 
 	// 行動を終了させる
@@ -155,7 +155,7 @@ void ACT::BackStep::Init(BossEnemy* boss)
 	mDirection = Normalize(mEndPos - mStartPos);
 	mDirection.y = 0.0f;
 	// 移動速度の設定
-	mMoveSpeed = (1.0f / Framerate::GetInstance()->GetFramerate()) * 4.0f * Framerate::GetInstance()->GetBattleSpeed();
+	mMoveSpeed = 6.0f / (Framerate::GetInstance()->GetFramerate() * Framerate::GetInstance()->GetBattleSpeed());
 	// 移動量の設定
 	mVelocity = Scalar(-mMoveSpeed, mDirection);
 
@@ -187,7 +187,7 @@ void ACT::BackStep::Update()
 		mBoss->SetRotation(Vector3(0.0f, rotateY, 0.0f));
 
 		// 終了処理
-		if (mBoss->GetObject3D()->mSkinning->IsAnimationFinished()) {
+		if (mBoss->GetObject3D()->mSkinning->IsAnimationFinished("backStep")) {
 			mCondition = Condition::FINISHED;
 		}
 	}
@@ -206,20 +206,21 @@ void ACT::BackStep::Start()
 	mStartPos.y = 0.0f;
 	// 移動の終点
 	mEndPos = mBoss->GetWorldPosForTarget();
-	mEndPos.y = 4.0f;
+	mEndPos.y = 0.0f;
 	// 方向の設定
 	mDirection = Normalize(mEndPos - mStartPos);
 	mDirection.y = 0.0f;
 	// 移動速度の設定
-	mMoveSpeed = (1.0f / Framerate::GetInstance()->GetFramerate()) * 40.0f * Framerate::GetInstance()->GetBattleSpeed();
+	mMoveSpeed = 6.0f / (Framerate::GetInstance()->GetFramerate() * Framerate::GetInstance()->GetBattleSpeed());
 	// 移動量の設定
 	mVelocity = Scalar(-mMoveSpeed, mDirection);
 
 	// 少しジャンプさせる
-	mBoss->Jump(1.0f);
+	//mBoss->Jump(1.0f);
 
 	// アニメーションの変更
 	mBoss->GetObject3D()->mSkinning->SetNextAnimation("backStep");
+	//mBoss->GetObject3D()->mSkinning->SetMotionBlendingInterval(30.0f);
 
 	// 実行する
 	mCondition = Condition::RUNNING;
@@ -231,7 +232,8 @@ void ACT::BackStep::End()
 	mCondition = Condition::FINISHED;
 
 	// アニメーション変更
-	mBoss->GetObject3D()->mSkinning->SetNextAnimation("Idle");
+	//mBoss->GetObject3D()->mSkinning->SetNextAnimation("Idle");
+	//mBoss->GetObject3D()->mSkinning->SetMotionBlendingInterval(10.0f);
 
 }
 
