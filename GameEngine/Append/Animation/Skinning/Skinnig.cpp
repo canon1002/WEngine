@@ -7,7 +7,7 @@
 #include "GameEngine/Base/Debug/ImGuiManager.h"
 #include "GameEngine/GameMaster/Framerate.h"
 
-void Skinnig::Init(const std::string& directorypath, const std::string& filepath, ModelData modelData)
+void Skinning::Init(const std::string& directorypath, const std::string& filepath, ModelData modelData)
 {
 	mDxCommon = DirectXCommon::GetInstance();
 
@@ -41,7 +41,7 @@ void Skinnig::Init(const std::string& directorypath, const std::string& filepath
 
 }
 
-void Skinnig::Update()
+void Skinning::Update()
 {
 	// 時刻を進める
 	if (mNowSkincluster->isPause == false) {
@@ -86,7 +86,7 @@ void Skinnig::Update()
 
 }
 
-void Skinnig::ApplyAniation() {
+void Skinning::ApplyAniation() {
 
 	// モーションブレンド中
 	if (mIsMotionBrending)
@@ -146,7 +146,7 @@ void Skinnig::ApplyAniation() {
 	}
 }
 
-void Skinnig::DrawGui()
+void Skinning::DrawGui()
 {
 #ifdef _DEBUG
 
@@ -221,7 +221,7 @@ void Skinnig::DrawGui()
 #endif // _DEBUG
 }
 
-void Skinnig::CreateSkinningData(const std::string& directorypath, const std::string& filename, const std::string& filrExt, ModelData modelData, bool isLoop)
+void Skinning::CreateSkinningData(const std::string& directorypath, const std::string& filename, const std::string& filrExt, ModelData modelData, bool isLoop)
 {
 	// 新規にスキンクラスターを含めたデータを生成
 	std::shared_ptr<SkinningStatus> newSkinning = std::make_shared<SkinningStatus>();
@@ -248,7 +248,7 @@ void Skinnig::CreateSkinningData(const std::string& directorypath, const std::st
 	// 上記のshared_ptrはローカルなのでこの時点で参照が外れるのでそのままにしておく
 }
 
-void Skinnig::SetNextAnimation(std::string name)
+void Skinning::SetNextAnimation(std::string name)
 {
 	// アニメーションが存在するか検索する
 	std::map<std::string, std::shared_ptr<SkinningStatus>>::iterator it = mSkinClusterMap.find(name);
@@ -262,7 +262,7 @@ void Skinnig::SetNextAnimation(std::string name)
 	StartMotionBrend();
 }
 
-void Skinnig::StartMotionBrend()
+void Skinning::StartMotionBrend()
 {
 	// 各パラメータの初期化
 	mMotionBrendingTime = 0.0f; // モーションブレンド移行時間を0.0fに
@@ -273,7 +273,7 @@ void Skinnig::StartMotionBrend()
 
 }
 
-void Skinnig::EndMotionBrend()
+void Skinning::EndMotionBrend()
 {
 	// 各パラメータの設定
 	mIsMotionBrending = false; // モーションブレンドのフラグをfalseに
@@ -287,7 +287,7 @@ void Skinnig::EndMotionBrend()
 
 }
 
-bool Skinnig::GetIsActiveAnimation(std::string name)
+bool Skinning::GetIsActiveAnimation(std::string name)
 {
 	if (mNowSkincluster->name.c_str() == name.c_str()) {
 		return true;
@@ -296,7 +296,7 @@ bool Skinnig::GetIsActiveAnimation(std::string name)
 	return false;
 }
 
-bool Skinnig::SearchToWaitingSkinCluster(std::string name)
+bool Skinning::SearchToWaitingSkinCluster(std::string name)
 {
 	for (auto& skinCluster : mWaitingSkinClusters) {
 		if (skinCluster->name == name) {

@@ -24,6 +24,7 @@ public: // -- 公開 メンバ関数 -- //
 	void InitActions();
 	// 更新
 	void Update();
+	void UpdateBehaviorTree();
 	void UpdateObject();
 	// 描画
 	void Draw();

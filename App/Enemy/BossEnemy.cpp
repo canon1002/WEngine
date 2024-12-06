@@ -15,7 +15,7 @@
 
 void BossEnemy::Init() {
 	
-	// モデル読み込み
+	// モデルの読み込み
 	//ModelManager::GetInstance()->LoadModel("Boss", "boss.gltf");
 	ModelManager::GetInstance()->LoadModel("Boss", "Idle.gltf");
 	ModelManager::GetInstance()->LoadModel("Boss", "Run.gltf");
@@ -39,8 +39,8 @@ void BossEnemy::Init() {
 	// モデルを設定
 	mObject->SetModel("boss.gltf");
 	mObject->GetModel()->mMaterialData->color = { 1.0f,0.7f,0.7f,1.0f };
-	// スキニングアニメーションを生成
-	mObject->mSkinning = new Skinnig();
+	// スキニングアニメーションの生成
+	mObject->mSkinning = new Skinning();
 	mObject->mSkinning->Init("Boss", "Idle.gltf", mObject->GetModel()->modelData);
 	mObject->mSkinning->SetMotionBlendingInterval(30.0f);
 	// 使用するアニメーションを登録しておく
@@ -58,6 +58,9 @@ void BossEnemy::Init() {
 	mObject->mSkinning->CreateSkinningData("Boss", "magic", ".gltf", mObject->GetModel()->modelData);
 	mObject->mSkinning->CreateSkinningData("Boss", "kick", ".gltf", mObject->GetModel()->modelData);
 	
+	// アニメーションの再生速度を1.5倍速に変更
+	mObject->mSkinning->SetAnimationPlaySpeed(1.5f);
+
 	// 移動量を初期化
 	mVelocity = { 0.0f,0.0f ,0.002f };
 	// 重力の影響を受ける
@@ -76,7 +79,7 @@ void BossEnemy::Init() {
 	// コライダーの宣言
 	mObject->mCollider = new SphereCollider(mObject->mWorldTransform, mObject->GetWorldTransform()->scale.x);
 	mObject->mCollider->Init();
-	mObject->mCollider->SetAddtranslation(Vector3(0.0f, mObject->GetWorldTransform()->scale.y, 0.0f));
+	mObject->mCollider->SetAddTranslation(Vector3(0.0f, mObject->GetWorldTransform()->scale.y, 0.0f));
 	mObject->mCollider->SetCollisionAttribute(kCollisionAttributeEnemy);
 	mObject->mCollider->SetCollisionMask(kCollisionAttributePlayerBullet);
 
@@ -86,7 +89,7 @@ void BossEnemy::Init() {
 	mWeapon = std::make_unique<Object3d>();
 	mWeapon->Init("Weapon");
 	mWeapon->SetModel("sword.gltf");
-	mWeapon->mSkinning = new Skinnig();
+	mWeapon->mSkinning = new Skinning();
 	mWeapon->GetModel()->SetCubeTexture(Skybox::GetInstance()->mTextureHandle);
 	mWeapon->mSkinning->Init("Weapons", "sword.gltf",
 		mWeapon->GetModel()->modelData);
@@ -113,7 +116,7 @@ void BossEnemy::Init() {
 		mWeaponColliders.push_back(newCollider);
 	}
 
-	mReloadBTCount = 30.0f;
+	mReloadBTCount = 10.0f;
 
 	// -- エフェクト関係 -- //
 
@@ -233,25 +236,7 @@ void BossEnemy::Update() {
 		this->UpdateState();
 
 		// BehaviorTreeの更新処理を行う
-		mReloadBTCount -= Framerate::GetInstance()->GetBattleSpeed() * 6.0f / (Framerate::GetInstance()->GetFramerate());
-		if (mReloadBTCount <= 0.0f) {
-			mReloadBTCount = 1.0f;
-			mBTStatus = mRoot->Tick();
-
-			// 結果が帰ってきたら初期化処理
-			if (mBTStatus == BT::NodeStatus::SUCCESS || mBTStatus == BT::NodeStatus::FAILURE) {
-				
-				mRoot->Reset();
-
-				// 各アクションの初期化もしておく
-				for (auto& action : mActions) {
-					action.second->End();
-					action.second->Reset();
-				}
-				// nullを代入しておく
-				mActiveAction = nullptr;
-			}
-		}
+		this->UpdateBehaviorTree();
 
 		
 	}
@@ -261,8 +246,40 @@ void BossEnemy::Update() {
 
 }
 
-void BossEnemy::UpdateObject()
-{
+void BossEnemy::UpdateBehaviorTree(){
+
+	// リロードカウントを減らす
+	mReloadBTCount -= (6.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetBattleSpeed();
+	
+	// リロードカウントが0以下になったら行動を実行
+	if (mReloadBTCount <= 0.0f) {
+
+		// リロードカウントをリセット
+		mReloadBTCount = 1.0f;
+
+		// ビヘイビアツリーの実行
+		mBTStatus = mRoot->Tick();
+
+		// ビヘイビアツリーの実行結果が成功か失敗だったら
+		if (mBTStatus == BT::NodeStatus::SUCCESS || mBTStatus == BT::NodeStatus::FAILURE) {
+
+			// ビヘイビアツリーをリセット
+			mRoot->Reset();
+
+			// 各アクションの初期化もしておく
+			for (auto& action : mActions) {
+				action.second->End();
+				action.second->Reset();
+			}
+			
+			// 行動クラスのポインタをnullptrにする
+			mActiveAction = nullptr;
+		}
+	}
+}
+
+void BossEnemy::UpdateObject(){
+
 	if (mActiveAction != nullptr) {
 		mActiveAction->Update();
 	}
@@ -312,9 +329,6 @@ void BossEnemy::UpdateObject()
 
 	// UI更新
 	mStatus->Update(mObject->GetWorldTransform());
-
-	
-
 
 }
 

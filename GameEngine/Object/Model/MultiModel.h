@@ -80,7 +80,7 @@ public:
 	// -- Animation 関連 -- //
 
 	// スキニング アニメーション
-	Skinnig* mSkinning = nullptr;
+	Skinning* mSkinning = nullptr;
 
 };
 

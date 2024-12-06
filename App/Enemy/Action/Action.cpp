@@ -187,7 +187,7 @@ void ACT::BackStep::Update()
 		mBoss->SetRotation(Vector3(0.0f, rotateY, 0.0f));
 
 		// 終了処理
-		if (mBoss->GetObject3D()->mSkinning->IsAnimationFinished("backStep")) {
+		if (mBoss->GetObject3D()->mSkinning->GetIsAnimationFinished("backStep")) {
 			mCondition = Condition::FINISHED;
 		}
 	}

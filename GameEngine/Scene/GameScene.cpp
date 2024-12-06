@@ -509,7 +509,7 @@ void GameScene::Update() {
 		}
 
 		if (mIsFinishUIDisplayEnd && mFinishUI.t <= 0.0f) {
-			if (mBoss->GetObject3D()->mSkinning->IsAnimationFinished()) {
+			if (mBoss->GetObject3D()->mSkinning->GetIsNowAnimationFinished()) {
 				if (mViggnetTime < 1.0f) {
 					mViggnetTime += (1.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetGameSpeed();
 				}

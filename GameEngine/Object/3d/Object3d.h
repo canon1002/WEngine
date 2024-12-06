@@ -62,7 +62,7 @@ public: // メンバ変数
 	Material material;
 
 	// スキニング アニメーション
-	Skinnig* mSkinning = nullptr;
+	Skinning* mSkinning = nullptr;
 	// スケルトン
 	Skeleton mSkeleton;
 

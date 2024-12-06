@@ -8,18 +8,45 @@ class SphereCollider :
 {
 public:
 
+    /// <summary>
+    /// コンストラクタ
+    /// </summary>
+    /// <param name="worldtransform"> ワールド座標のポインタ </param>
+    /// <param name="radius"> コライダーの半径 </param>
     SphereCollider(WorldTransform* worldtransform, float radius);
 
+    /// <summary>
+    /// 仮想デストラクタ
+    /// </summary>
+    virtual ~SphereCollider() {};
+
+    /// <summary>
+    /// 初期化
+    /// </summary>
     void Init()override;
+    
+    /// <summary>
+    /// 更新処理
+    /// </summary>
     void Update()override;
+
+    /// <summary>
+    /// 描画処理(デバッグ用)
+    /// </summary>
     void Draw()override;
 
-    // 衝突判定関数
+    //
+    // -- 衝突判定関数 -- //
+    //
+
+    // マネージャーからの呼び出し用
     virtual bool IsCollision(Collider* c)override;
+	// AABBとの衝突判定
     virtual bool IsCollision(AABBCollider* c);
+	// 球体との衝突判定
     virtual bool IsCollision(SphereCollider* c);
 
-    // 衝突時
+    // 衝突時の処理
     virtual void OnCollision()override {};
     virtual void OnCollision(Collider* collider) override {
         collider;
@@ -29,25 +56,25 @@ public:
         }
     }
 
-    // ワールド座標
+    // ワールド座標の取得
     Vector3 GetWorldPos()const override { return pWorldTransform->GetWorldPosition(); }
-    // 半径の設定
+    
+    // 半径を設定
     float GetRadius()const { return mRadius; }
 
    
 
 private: // -- 非公開 メンバ関数 -- //
 
+    /// <summary>
+    /// デバッグ用の座標リソースの生成
+    /// </summary>
     void CreateTransformation()override;
 
 
 protected:
 
-    // ワールド座標系のポインタ
-    //WorldTransform* pWorldTransform;
-
     // 球体の半径
     float mRadius;
- 
 
 };

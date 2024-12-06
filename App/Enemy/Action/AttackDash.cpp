@@ -43,7 +43,7 @@ void ACT::AttackDash::Update()
 		}
 
 		// 終了処理
-		if (mBoss->GetObject3D()->mSkinning->IsAnimationFinished("SlashDash")) {
+		if (mBoss->GetObject3D()->mSkinning->GetIsAnimationFinished("SlashDash")) {
 			mCondition = Condition::FINISHED;
 		}
 

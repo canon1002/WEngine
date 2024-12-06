@@ -40,7 +40,7 @@ void ACT::AttackClose::Update()
 		}
 
 		// 終了処理
-		if (mBoss->GetObject3D()->mSkinning->IsAnimationFinished("Slash")) {
+		if (mBoss->GetObject3D()->mSkinning->GetIsAnimationFinished("Slash")) {
 			mCondition = Condition::FINISHED;
 		}
 
@@ -137,7 +137,7 @@ void ACT::AttackThrust::Update()
 		}
 
 		// 終了処理
-		if (mBoss->GetObject3D()->mSkinning->IsAnimationFinished("Thrust")) {
+		if (mBoss->GetObject3D()->mSkinning->GetIsAnimationFinished("Thrust")) {
 			mCondition = Condition::FINISHED;
 		}
 

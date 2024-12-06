@@ -33,22 +33,51 @@ class Collider
 {
 public: // -- 公開 メンバ関数 -- //
 
+	// コンストラクタ
+	Collider() = default;
 
+	// 仮想デストラクタ
+	virtual ~Collider() = default;
+
+	/// <summary>
+	/// 初期化
+	/// </summary>
 	virtual void Init() = 0;
-	virtual void Update() = 0;
-	virtual void Draw() = 0;
-	virtual void CreateTransformation() = 0;
-
-	// 衝突時の処理
-	virtual void OnCollision() = 0;
-	// 衝突時の処理 
-	virtual void OnCollision(Collider* collider) = 0;
 	
+	/// <summary>
+	/// 更新処理
+	/// </summary>
+	virtual void Update() = 0;
+	
+	/// <summary>
+	/// 描画処理(デバッグ用)
+	/// </summary>
+	virtual void Draw() = 0;
+
+	/// <summary>
+	/// 衝突時の処理
+	/// </summary>
+	virtual void OnCollision() = 0;
+	
+	/// <summary>
+	/// 衝突時の処理 
+	/// </summary>
+	/// <param name="collider">衝突対象</param>
+	virtual void OnCollision(Collider* collider) = 0;
 
 
-	// ワールド座標の取得
+	/// <summary>
+	/// ワールド座標の取得
+	/// </summary>
+	/// <returns>ワールド座標</returns>
 	virtual Vector3 GetWorldPos() const  = 0;
 	
+	/// <summary>
+	/// ワールドトランスフォームの取得
+	/// </summary>
+	/// <returns>ワールドトランスフォームのポインタ</returns>
+	WorldTransform* GetWorld() { return pWorldTransform; }
+
 	// 衝突属性の変更・取得
 	inline uint32_t GetCollisionAttribute() { return mCollisionAttribute; }
 	inline void SetCollisionAttribute(uint32_t collisionAttribute) { mCollisionAttribute = collisionAttribute; }
@@ -60,7 +89,7 @@ public: // -- 公開 メンバ関数 -- //
 	virtual bool IsCollision(AABBCollider* c) = 0;
 	virtual bool IsCollision(SphereCollider* c) = 0;
 
-	WorldTransform* GetWorld() { return pWorldTransform; }
+	
 	Model* GetModel() const{ return mModel; }
 	void DebugDraw(std::string label) { mModel->DrawGUI(label); }
 
@@ -68,8 +97,15 @@ public: // -- 公開 メンバ関数 -- //
 	virtual bool GetOnCollisionFlag()const { return mIsOnCollision; }
 
 	void SetWorld(WorldTransform* world) { pWorldTransform = world; }
-	void SetAddtranslation(Vector3 translation) { mAddtranslation = translation; }
+	void SetAddTranslation(Vector3 translation) { mAddtranslation = translation; }
 	
+protected: // -- 限定公開 メンバ関数 -- //
+
+	/// <summary>
+	/// デバッグ用の座標リソースの生成
+	/// </summary>
+	virtual void CreateTransformation() = 0;
+
 
 protected: // -- 限定公開 メンバ変数 -- //
 

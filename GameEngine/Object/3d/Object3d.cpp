@@ -70,12 +70,12 @@ void Object3d::Draw() {
 	vbvs[0] = mModel->mVertexBufferView;// VertexDataのVBV
 	if (mSkinning != nullptr && mSkinning->GetIsActive()) {
 
-		vbvs[1] = mSkinning->GetSkinCluster().influenceBufferView_; // influenceのVBV
+		vbvs[1] = mSkinning->GetNowSkinCluster()->skinCluster.influenceBufferView_; // influenceのVBV
 
 		// 配列を渡す(開始スロット番号、使用スロット数、VBV配列へのポインタ)
 		mDxCommon->mCommandList->IASetVertexBuffers(0, 2, vbvs);
 		mDxCommon->mCommandList->SetGraphicsRootDescriptorTable(6,
-			mSkinning->GetSkinCluster().paletteSrvHandle_.second);
+			mSkinning->GetNowSkinCluster()->skinCluster.paletteSrvHandle_.second);
 	}
 	else {
 		// 配列を渡す(開始スロット番号、使用スロット数、VBV配列へのポインタ)

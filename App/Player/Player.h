@@ -169,6 +169,19 @@ public: // -- 公開 メンバ関数 -- //
 	// ボスクラスのポインタ
 	BossEnemy* mBoss;
 
+private: // -- 非公開 メンバ関数 -- //
+
+	// -- 初期化関連 -- //
+
+	/// <summary>
+	///  部位コライダー生成
+	/// </summary>
+	/// <param name="name">部位の名称</param>
+	/// <param name="perent">ボーンのワールド行列</param>
+	void CreateBodyPartCollider(std::string name,const Matrix4x4& perent);
+
+
+
 public: // -- 公開 メンバ変数 & 定数 -- //
 
 	// 最大コンボ回数
@@ -185,6 +198,11 @@ private: // -- 非公開 メンバ変数 -- //
 
 	// オブジェクトクラス
 	std::unique_ptr<Object3d> mObject;
+
+    // 身体の各部位のコライダーを管理するマップ
+    std::unordered_map<std::string, std::unique_ptr<Collider>> mBodyPartColliders;
+	// 身体の各部位のワールド座標を管理するマップ
+    std::unordered_map<std::string, std::unique_ptr<WorldTransform>> mBodyPartWorldTransforms;
 
 	// 自機の振る舞い
 	Behavior mBehavior;
@@ -225,7 +243,6 @@ private: // -- 非公開 メンバ変数 -- //
 	GuardStatus mGuardStatus;
 	// 回避関連パラメータ
 	AvoidStatus mAvoidStatus;
-
 	// 突進攻撃 パラメータ
 	ChargeStatus mChargeStatus;
 

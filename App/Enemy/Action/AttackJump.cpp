@@ -43,7 +43,7 @@ void ACT::AttackJump::Update()
 		}
 
 		// 終了処理
-		if (mBoss->GetObject3D()->mSkinning->IsAnimationFinished("SlashJamp")) {
+		if (mBoss->GetObject3D()->mSkinning->GetIsAnimationFinished("SlashJamp")) {
 			mCondition = Condition::FINISHED;
 		}
 
