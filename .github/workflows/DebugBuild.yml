@@ -16,7 +16,7 @@ env:
 # ワークフローの処理を記述
 jobs:
   build:
-    runs-on: windws-2022
+    runs-on: windows-2022
 
     # 処理を複数のステップに区切って記載する
     steps:
@@ -30,5 +30,4 @@ jobs:
 
       - name: Build
         run:  |
-          msbuild ${{env.SOLUTION_FILE_PATH}} /p:Platform=x64,Configuration=${{env.CONFIGURATION}}
-          
+          msbuild ${{env.SOLUTION_FILE_PATH}} /p:Platform=x64 /p:Configuration=${{env.CONFIGURATION}}
