@@ -1,5 +1,6 @@
 #pragma once
 #include "IScene.h"
+#include "GameEngine/Input/InputManager.h"
 
 class ResultScene :
     public IScene
@@ -11,7 +12,21 @@ public:
 	void Init() override;
 	void Update() override;
 	void Draw() override;
+	void DrawUI() override;
+
 public:
 	
+	// 入力マネージャー
+	InputManager* mInput;
+
+	UISet mTitleOne;
+	UISet mTitleLogo;
+
+	// フェード中か
+	bool mIsFading;
+	bool mIsFadingSceneEnd;
+	// 開始前のビネット
+	float mViggnetTime;
+
 };
 

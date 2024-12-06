@@ -1,5 +1,7 @@
 #pragma once
 #include "GameEngine/Base/DirectX/DirectXCommon.h"
+#include "Object/Base/ObjectBase.h"
+
 #include "GameEngine/Object/3d/Object3d.h"
 #include "GameEngine/Object/Model/ModelManager.h"
 #include "GameEngine/Object/Sprite/SpriteAdministrator.h"
@@ -11,14 +13,14 @@
 /// <para> PostDarwやPreDrawなどの呼び出しや、オブジェクトの登録に必要なDXCommonクラスのポインタ保持、</para>
 /// <para> Objectをstd::list(またはstd::vector)で登録してDrawCallするなどの役割をもたせる </para> 
 /// </summary>
-class ObjectAdministrator{
+class ObjectManager{
 public: // -- public メンバ関数 -- //
 
 	static std::shared_ptr<Object3d> CreateObject(const std::string& directrypath, const std::string& filename);
-	static ObjectAdministrator* GetInstance();
+	static ObjectManager* GetInstance();
 
-	ObjectAdministrator() = default;
-	~ObjectAdministrator() = default;
+	ObjectManager() = default;
+	~ObjectManager() = default;
 	void Init(DirectXCommon* dxCommon);
 	void Update();
 	void Draw();
@@ -31,12 +33,12 @@ private: // -- private メンバ関数 -- //
 public: // -- public メンバ変数 -- //
 
 	// Object3Dのリスト
-	std::list<std::shared_ptr<Object3d>> objectList_;
+	std::list<std::shared_ptr<ObjectBase>> objectList_;
 
 	// モデル管理者クラス
 	ModelManager* modelAdmin_ = nullptr;
 	// スプライト管理者クラス
-	std::unique_ptr<SpriteAdministrator> spriteAdmin_ = nullptr;
+	SpriteAdministrator* spriteAdmin_ = nullptr;
 	// パーティクル管理者クラス
 	//std::unique_ptr<> particleAdmin_ = nullptr;
 
@@ -44,9 +46,9 @@ public: // -- public メンバ変数 -- //
 private: // -- private メンバ変数 -- //
 
 	// DXCommonのポインタ
-	DirectXCommon* dxCommon_ = nullptr;
+	DirectXCommon* mDxCommon = nullptr;
 	
-	static ObjectAdministrator* instance;
+	static ObjectManager* instance;
 	
 
 };

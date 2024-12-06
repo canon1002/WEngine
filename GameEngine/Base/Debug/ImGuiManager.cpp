@@ -3,10 +3,10 @@
 #ifdef _DEBUG
 void ImGuiManager::Initialize(WinAPI* winApp, DirectXCommon* dxCommon){
 	winApp_ = winApp;
-	dxCommon_ = dxCommon;
+	mDxCommon = dxCommon;
 
 	DXGI_SWAP_CHAIN_DESC1 swapChain;
-	dxCommon_->swapChain->GetDesc1(&swapChain);
+	mDxCommon->swapChain->GetDesc1(&swapChain);
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	// フォントを変更
@@ -17,12 +17,12 @@ void ImGuiManager::Initialize(WinAPI* winApp, DirectXCommon* dxCommon){
 	
 	ImGui::StyleColorsDark();
 	ImGui_ImplWin32_Init(winApp_->GetHWND());
-	ImGui_ImplDX12_Init(dxCommon_->device_.Get(),
+	ImGui_ImplDX12_Init(mDxCommon->device_.Get(),
 		swapChain.BufferCount,
-		dxCommon_->rtv_->rtvDesc.Format,
-		dxCommon_->srv_->srvDescriptorHeap.Get(),
-		dxCommon_->srv_->srvDescriptorHeap->GetCPUDescriptorHandleForHeapStart(),
-		dxCommon_->srv_->srvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
+		mDxCommon->rtv_->rtvDesc.Format,
+		mDxCommon->srv_->srvDescriptorHeap.Get(),
+		mDxCommon->srv_->srvDescriptorHeap->GetCPUDescriptorHandleForHeapStart(),
+		mDxCommon->srv_->srvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
 
 }
 
@@ -40,7 +40,7 @@ void ImGuiManager::End(){
 
 void ImGuiManager::Draw(){
 	// ImGuiの描画
-	ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), dxCommon_->commandList.Get());
+	ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), mDxCommon->mCommandList.Get());
 }
 
 void ImGuiManager::ReleseProcess(){

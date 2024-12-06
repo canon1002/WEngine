@@ -1,4 +1,14 @@
 #include "SceneManager.h"
+#include "GameEngine/Editor/GlobalVariables.h"
+#include "GameEngine/Editor/LevelEditor.h"
+#include "App/Reaction/DamageReaction.h"
+
+#include <thread>
+#include <queue>
+#include <condition_variable>
+#include <mutex>
+
+#include "GameEngine/GameMaster/Framerate.h"
 
 // コンストラクタ
 SceneManager::SceneManager() {}
@@ -9,7 +19,7 @@ SceneManager::~SceneManager() {}
 void SceneManager::Init(WinAPI* winApp, DirectXCommon* dxCommon){
 	// ポインタを取得
 	winApp_ = winApp;
-	dxCommon_ = dxCommon;
+	mDxCommon = dxCommon;
 
 #ifdef _DEBUG
 	// ImGuiManager
@@ -22,21 +32,33 @@ void SceneManager::Init(WinAPI* winApp, DirectXCommon* dxCommon){
 	audio_ = Audio::GetInstance();
 	// メインカメラ
 	mainCamera_ = std::make_unique<MainCamera>();
-	
+	mainCamera_->Initialize();
+
 	// オブジェクト管理者クラス
-	objectAdmin_ = ObjectAdministrator::GetInstance();
+	objectAdmin_ = ObjectManager::GetInstance();
+	objectAdmin_->Init(mDxCommon);
+
+	// モデル管理クラス
+	ModelManager::GetInstance()->Initialize(dxCommon, mainCamera_.get());
+
+	// グローバル変数読み込み
+	GlobalVariables::GetInstance()->LoadFiles();
+	// レベルデータ読み込み
+	LevelEditor::GetInstance()->CheckLevelEditorFile();
+	DamageReaction::GetInstance()->Init();
 
 	// 各シーンの配列
+	sceneArr_[START] = std::make_unique<StartScene>();
 	sceneArr_[TITLE] = std::make_unique<TitleScene>();
 	sceneArr_[STAGE] = std::make_unique<GameScene>();
-	sceneArr_[CLEAR] = std::make_unique<ResultScene>();
-	//sceneArr_[OVER] = std::make_unique<ResultScene>();
+	sceneArr_[RESULT] = std::make_unique<ResultScene>();
+	sceneArr_[OVER] = std::make_unique<OverScene>();
 
-	// 初期シーン
-	currentSceneNo_ = STAGE;
+	// フレームレート
+	Framerate::GetInstance()->Init();
 
 	//
-	copyImage_ = std::make_unique<RenderCopyImage>();
+	copyImage_ = RenderCopyImage::GetInstance();
 	copyImage_->Initialize(DirectXCommon::GetInstance(), MainCamera::GetInstance());
 }
 
@@ -45,17 +67,33 @@ int SceneManager::Run() {
 	
 
 #ifdef _DEBUG
-	imGuiManager_->Initialize(winApp_, dxCommon_);
+	imGuiManager_->Initialize(winApp_, mDxCommon);
 #endif // _DEBUG
 
-
-	inputManager_->Initialize(winApp_);
+	inputManager_->Init(winApp_);
 	audio_->Initialize();
-	mainCamera_->Initialize(winApp_);
-	//mainCamera_->worldTransform_->translation = { 0.0f,0.0f,-6.0f };
-	
-	objectAdmin_->Init(dxCommon_);
 
+	// 非同期処理
+	//std::mutex mutex;
+	//std::condition_variable condition; // 条件変数
+	//std::queue<int> q;
+	//bool exit = false;
+
+	// バックグラウンドループ
+	//std::thread th([&]() {
+	//	while (!exit){
+	//		std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+
+	//		// 以下 排他処理範囲を示す
+	//		{
+	//			std::unique_lock<std::mutex> uniqueLock(mutex);
+	//			// qに何かしらのデータが入っていればq.popを実行する
+	//			condition.wait(uniqueLock, [&]() {return !q.empty(); });
+	//			q.pop();
+	//		}
+	//	}
+
+	//	});
 
 	// Windowsのメッセージ処理があればゲームループを抜ける
 	while (!winApp_->ProcessMessage())	{
@@ -64,54 +102,91 @@ int SceneManager::Run() {
 #ifdef _DEBUG
 		imGuiManager_->Begin();
 #endif // _DEBUG
+
 		// 入力処理の更新を行う
 		inputManager_->Update();
+		// グローバル変数の更新
+		GlobalVariables::GetInstance()->Update();
 		// シーンのチェック
 		currentSceneNo_ = sceneArr_[currentSceneNo_]->GetSceneNo();
 		// シーン変更チェック
-		if (prevSceneNo_ != currentSceneNo_) {
-			sceneArr_[currentSceneNo_]->Init();
-		}
+		if (prevSceneNo_ != currentSceneNo_) { sceneArr_[currentSceneNo_]->Init(); }
 		// 前回のシーン番号を上書き
 		prevSceneNo_ = currentSceneNo_;
-
-		// カメラの更新
-		//mainCamera_->Update();
-		// 入力結果をImGuiで表示する
-		//inputManager_->DrawGUI();
 
 		///
 		/// 更新処理(推定)
 		///
 
-		/// 更新処理
-		sceneArr_[currentSceneNo_]->Update();
-		copyImage_->Update();
-		#ifdef _DEBUG
+
+		// コマ送り時に設定した経過フレームになっていない場合、
+		// 更新処理をスキップする
+		Framerate::GetInstance()->DrawGui();
+		if (Framerate::GetInstance()->GetIsFrameAdvance()&&
+			!Framerate::GetInstance()->IsActiveFrame()) {
+		
+		}
+		else {
+			/// 更新処理
+			sceneArr_[currentSceneNo_]->Update();
+			// ポストエフェクト
+			copyImage_->Update();
+			// ダメージ表記の更新
+			DamageReaction::GetInstance()->UpdateSprite();
+
+		}
+		Framerate::GetInstance()->Update();
+
 		// 開発用UIの表示
-		//ImGui::ShowDemoWindow();
+#ifdef _DEBUG
+
+		// 画面上部にメインメニューバーを追加
+		ImGui::BeginMainMenuBar();
 		// フレームレートの表示
-		ImGui::Text("FPS : %.2f", ImGui::GetIO().Framerate);
+		//ImGui::Text("FPS : %.2f", ImGui::GetIO().Framerate);
+		// レベルエディタ
+		if(ImGui::Button("LoadLevelEditor")) {
+			// ボタンを押すとファイルの再読み込みを行う
+			LevelEditor::GetInstance()->CheckLevelEditorFile();
+		}
+		
+		// ポストエフェクトのImGui
+		copyImage_->Debug();
+
+		// バックグラウンド処理
+		//if (ImGui::Button("Q")) {
+		//	// ボタンを押すとバックグラウンド処理を行う
+		//	std::unique_lock<std::mutex> uniquelock(mutex);
+		//	q.push(1);
+		//	// 通知を送る
+		//	condition.notify_all();
+		//}
+
+		ImGui::EndMainMenuBar();
 		imGuiManager_->End();
-		#endif // _DEBUG
+#endif // _DEBUG
+
+		
 
 		///
 		/// 描画処理(推定) 
 		/// 
 
 		// 描画前処理 -- RenderTexture --
-		dxCommon_->PreDrawForRenderTarget();
-
+		mDxCommon->PreDrawForRenderTarget();
 		/// 描画処理
 		sceneArr_[currentSceneNo_]->Draw();
+
 		// 描画後処理 -- RenderTexture --
-		dxCommon_->PostDrawForRenderTarget();
-
+		mDxCommon->PostDrawForRenderTarget();
 		// 描画前処理
-		dxCommon_->DrawBegin();
-
+		mDxCommon->PreDraw();
+		
 		copyImage_->PreDraw();
 		copyImage_->Draw();
+
+		// UI描画
+		sceneArr_[currentSceneNo_]->DrawUI();
 
 #ifdef _DEBUG
 		// ImGuiの描画
@@ -119,7 +194,7 @@ int SceneManager::Run() {
 #endif // _DEBUG
 
 		// 描画後処理
-		dxCommon_->DrawEnd();
+		mDxCommon->PostDraw();
 
 		// ESCキーが押されたらループを抜ける
 		if (inputManager_->GetKey()->GetTriggerKey(DIK_ESCAPE)) {
@@ -128,19 +203,27 @@ int SceneManager::Run() {
 
 	}
 
+	// ゲームを抜けたらスレッドの占有を止める
+	/*exit = true;
+	th.join();*/
+
 	// Comの終了処理
 	CoUninitialize();
 
 	// 解放処理
+	sceneArr_[START]->Finalize();
 	sceneArr_[TITLE]->Finalize();
 	sceneArr_[STAGE]->Finalize();
-	sceneArr_[CLEAR]->Finalize();
+	sceneArr_[RESULT]->Finalize();
+	sceneArr_[OVER]->Finalize();
+
 	sceneArr_[TITLE].reset();
 	sceneArr_[STAGE].reset();
-	sceneArr_[CLEAR].reset();
+	sceneArr_[RESULT].reset();
 	
-	inputManager_->Finalize();
+	inputManager_->Final();
 	audio_->Finalize();
+	copyImage_->Finalize();
 
 	return 0;
 }

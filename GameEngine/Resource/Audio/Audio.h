@@ -62,8 +62,9 @@ public: // ** 静的メンバ関数 ** //
 	SoundData LoadWave(const char* filename);
 	void UnLoadWave(SoundData* soundData);
 
-	void PlayWave(const SoundData& soundData);
+	void PlayWave(const SoundData& soundData,bool isLoop);
 	void StopWave(const SoundData& soundData);
+	void SetVolume(const SoundData& soundData, float volume);
 
 public:
 

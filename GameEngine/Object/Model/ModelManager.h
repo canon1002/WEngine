@@ -3,6 +3,7 @@
 #include <map>
 #include <sstream>
 #include "Model.h"
+#include "MultiModel.h"
 
 class ModelManager{
 public: // -- public メンバ関数 -- //
@@ -15,7 +16,9 @@ public: // -- public メンバ関数 -- //
 	void Finalize();
 	void Initialize(DirectXCommon* dxCommon, CameraCommon* camera);
 	void LoadModel(const std::string& directoryPath,const std::string& filepath);
+	void LoadMultiModel(const std::string& directoryPath,const std::string& filepath);
 	Model* FindModel(const std::string filepath);
+	MultiModel* FindMultiModel(const std::string filepath);
 
 	static std::shared_ptr<Model> Create(const std::string& filepath, const std::string filename);
 
@@ -28,6 +31,9 @@ public: // -- public メンバ関数 -- //
 	/// Skinning用描画前処理
 	/// </summary>
 	void PreDrawForSkinning();
+
+
+	void PreDrawForShadow();
 	
 	/// <summary>
 	///  描画処理
@@ -57,6 +63,10 @@ private: // -- private メンバ関数 -- //
 	/// </summary>
 	void CreateGraphicsPipelineForSkinning();
 
+	void CreateRootSignatureForShadow();
+	void CreateGraphicsPipelineForShadow();
+
+
 	// コピーコンストラクタと演算子オーバーロードの禁止
 	ModelManager(const ModelManager& obj) = delete;
 	ModelManager& operator=(const ModelManager& obj) = delete;
@@ -67,18 +77,21 @@ private: // -- private メンバ変数 -- //
 	static std::map<std::string, std::shared_ptr<Model>> sModels_;
 
 	// ポインタ
-	DirectXCommon* dxCommon_ = nullptr;
-	CameraCommon* camera_ = nullptr;
+	DirectXCommon* mDxCommon = nullptr;
+	CameraCommon* mCamera = nullptr;
 
 	// モデルデータ
 	std::unordered_map<std::string, std::unique_ptr<Model>> models;
+	std::unordered_map<std::string, std::unique_ptr<MultiModel>> multiModels;
 
 	// グラフィックパイプライン
 	Microsoft::WRL::ComPtr <ID3D12PipelineState> graphicsPipelineState = nullptr;
 	Microsoft::WRL::ComPtr <ID3D12PipelineState> graphicsPipelineStateForSkinning = nullptr;
+	Microsoft::WRL::ComPtr <ID3D12PipelineState> graphicsPipelineStateForShadow = nullptr;
 	// ルートシグネチャー
 	Microsoft::WRL::ComPtr <ID3D12RootSignature> rootSignature = nullptr;
 	Microsoft::WRL::ComPtr <ID3D12RootSignature> rootSignatureForSkinning = nullptr;
+	Microsoft::WRL::ComPtr <ID3D12RootSignature> rootSignatureForForShadow = nullptr;
 
 	// インスタンス
 	static ModelManager* instance;

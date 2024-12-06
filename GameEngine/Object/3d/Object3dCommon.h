@@ -11,15 +11,15 @@ class Object3dCommon
 	void Init(DirectXCommon* dxCommon);
 	void Update();
 	void Draw();
-	void SetCamera(CameraCommon* camera) { camera_ = camera; }
+	void SetCamera(CameraCommon* camera) { mCamera = camera; }
 
 private:
 
 	// 外部ポインタ
-	CameraCommon* camera_ = nullptr;
-	DirectXCommon* dxCommon_ = nullptr;
+	CameraCommon* mCamera = nullptr;
+	DirectXCommon* mDxCommon = nullptr;
 
-	//WorldTransform* worldTransform_ = nullptr;
+	//WorldTransform* mWorldTransform = nullptr;
 	//WorldTransform* cameraWorldTransform_ = nullptr;
 	//Matrix4x4 cameraM, viewM, projectM, pespectiveM, wvpM;
 	//// 半径
@@ -27,19 +27,19 @@ private:
 
 	//// VertexResourceを生成する(P.42)
 	//// 実際に頂点リソースを作る
-	//Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource = nullptr;
+	//Microsoft::WRL::ComPtr<ID3D12Resource> mVertexResource = nullptr;
 	//// マテリアル用のResourceを作る
 	//Microsoft::WRL::ComPtr<ID3D12Resource> materialResource = nullptr;
 	//// Transformation用のResourceを作る
-	//Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource = nullptr;
+	//Microsoft::WRL::ComPtr<ID3D12Resource> mWvpResource = nullptr;
 	//// Light用のリソースデータを作る
 	//Microsoft::WRL::ComPtr<ID3D12Resource> directionalLightResource = nullptr;
 	//// データを書き込む
-	//TransformationMatrix* wvpData = nullptr;
+	//TransformationMatrix* mWvpData = nullptr;
 	//// 頂点リソースにデータを書き込む
-	//VertexData* vertexData = nullptr;
+	//VertexData* mVertexData = nullptr;
 	//// 頂点バッファビューを作成する
-	//D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
+	//D3D12_VERTEX_BUFFER_VIEW mVertexBufferView{};
 	//// マテリアルデータ
 	//Material* materialData_ = nullptr;
 	//// 平行光源　
@@ -48,7 +48,7 @@ private:
 	//// テクスチャ切り替え
 	//bool useBall = true;
 	//// テクスチャハンドル
-	//int32_t textureHandle_;
+	//int32_t mTextureHandle;
 	//// モデルデータ
 	//ModelData modelData;
 	//// UVTransform用の変数

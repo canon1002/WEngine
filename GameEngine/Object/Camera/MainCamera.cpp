@@ -2,47 +2,207 @@
 #include "GameEngine/Base/WinApp/WinAPI.h"
 #include "GameEngine/Base/DirectX/DirectXCommon.h"
 #include "GameEngine/Base/Debug/ImGuiManager.h"
-
+#include "GameEngine/GameMaster/Framerate.h"
 
 MainCamera* MainCamera::instance = nullptr;
 
 
-MainCamera* MainCamera::GetInstance(){
+MainCamera* MainCamera::GetInstance() {
 	if (instance == nullptr) {
 		instance = new MainCamera();
 	}
 	return instance;
 }
 
-void MainCamera::Initialize(WinAPI* winApp){
-	winApp_ = winApp;
-	worldTransform_ = new WorldTransform();
+void MainCamera::Initialize() {
+	winApp_ = WinAPI::GetInstance();
+	// 入力を取得する
+	mInput = InputManager::GetInstance();
+	mWorldTransform = new WorldTransform();
 	verticalFOV_ = 0.45f;
-	aspectRatio_ = (float(winApp->kClientWidth) / float(winApp->kClientHeight));
-	nearClip_ = 0.01f;
+	aspectRatio_ = (float(winApp_->kClientWidth) / float(winApp_->kClientHeight));
+	nearClip_ = 0.1f;
 	farClip_ = 1000.0f;
-	viewMatrix_ = Inverse(worldTransform_->GetWorldMatrix());
+	viewMatrix_ = Inverse(mWorldTransform->GetWorldMatrix());
 	projectionMatrix_ = MakePerspectiveMatrix(verticalFOV_, aspectRatio_, nearClip_, farClip_);
 	viewprojectionMatrix_ = Multiply(viewMatrix_, projectionMatrix_);
+
+	// ターゲット
+	mFollowTarget = nullptr;
+	mSearchTarget = nullptr;
+
+	// 遷移後回転量
+	mEaseBeforeRotation = mWorldTransform->rotation;
+	mEasedRotation = mWorldTransform->rotation;
+	// 追加平行移動値
+	mAddTranslation = { 0.0f,0.0f,0.0f };
+
+	// カメラ回転操作
+	mIsControll = true;
+	mIsRotationEasing = false;
+	mRotaionEasingTime = 0.0f;
+
+	// カメラ回転操作の感度
+	mCameraSensitivity = 0.05f;
+	// カメラ回転操作の入力経過時間
+	mCameraInputCounts = { 0.0f ,0.0f };
+
+
 }
 void MainCamera::Update()
 {
-	ImGui::Begin("MainCamera");
-	ImGui::SliderAngle("RotateX", &worldTransform_->rotation.x);
-	ImGui::SliderAngle("RotateY", &worldTransform_->rotation.y);
-	ImGui::SliderAngle("RotateZ", &worldTransform_->rotation.z);
-	ImGui::DragFloat3("Rotate", &worldTransform_->rotation.x, 0.1f, -1000.0f, 1000.0f);
-	ImGui::DragFloat3("Transform", &worldTransform_->translation.x, 0.1f, -1000.0f, 1000.0f);
-	ImGui::DragFloat("NearClip", &nearClip_, 0.01f, 0.0f, 100.0f);
-	ImGui::DragFloat("FarClip", &farClip_, 0.1f, 1.0f, 1000.0f);
-	ImGui::End();
+#ifdef _DEBUG
+	if (mWorldTransform != nullptr) {
+		ImGui::Begin("MainCamera");
+		ImGui::SliderAngle("RotateX", &mWorldTransform->rotation.x);
+		ImGui::SliderAngle("RotateY", &mWorldTransform->rotation.y);
+		ImGui::SliderAngle("RotateZ", &mWorldTransform->rotation.z);
+		ImGui::DragFloat3("Rotate", &mWorldTransform->rotation.x, 0.1f, -1000.0f, 1000.0f);
+		ImGui::DragFloat3("Transform", &mWorldTransform->translation.x, 0.1f, -1000.0f, 1000.0f);
+		ImGui::DragFloat3("AddTransform", &mAddTranslation.x, 0.1f, -1000.0f, 1000.0f);
+		ImGui::DragFloat("NearClip", &nearClip_, 0.01f, 0.0f, 100.0f);
+		ImGui::DragFloat("FarClip", &farClip_, 0.1f, 1.0f, 1000.0f);
+		ImGui::DragFloat("Sensitivity", &mCameraSensitivity, 0.01f, 0.0f, 10.0f);
+		ImGui::End();
+	}
+#endif // DEBUG
+
+	// フォロー対象がいれば追従を行う
+	if (mFollowTarget) {
+		// 追従対象からカメラまでの距離
+		Vector3 offset = { 0.0f,1.2f,0.5f };
+		// オフセットをカメラの回転に合わせて回転させる
+		offset = TransformNomal(offset, mWorldTransform->GetWorldMatrix());
+		// オフセット分ずらす
+		mWorldTransform->translation = mFollowTarget->translation + offset;
+
+		// 追加で平行移動値が設定されていれば更にずらす
+		mWorldTransform->translation += mAddTranslation;
+
+		Matrix4x4 matW = mWorldTransform->GetWorldMatrix();
+
+		// 回転操作可能であれば回転できるようにする
+		if (mIsControll) {
+
+			// スティック入力の量
+			const static int stickValue = 8000;
+
+			if (mInput->GetStickRatio(Gamepad::Stick::RIGHT_Y, stickValue) != 0.0f ||
+				mInput->GetStickRatio(Gamepad::Stick::RIGHT_X, stickValue) != 0.0f) {
+
+				// Xの移動量とYの移動量を設定する
+				Vector3 direction = {
+					mInput->GetStickRatio(Gamepad::Stick::RIGHT_Y, stickValue),
+					mInput->GetStickRatio(Gamepad::Stick::RIGHT_X, stickValue),
+					0.0f,
+				};
+				// 念のために正規化
+				//direction = Normalize(direction);
+				// スティック上に倒すと下をみるようにする
+				direction.x *= (-1.0f);
+
+				// 回転の速度 (感度値を乗算)
+				mWorldTransform->rotation.x += direction.x * mCameraSensitivity;
+				mWorldTransform->rotation.y += direction.y * mCameraSensitivity;
+
+				// x軸の回転は制限する
+				if (mWorldTransform->rotation.x < -0.2f) {
+					mWorldTransform->rotation.x = -0.2f;
+				}
+				if (mWorldTransform->rotation.x > 0.2f) {
+					mWorldTransform->rotation.x = 0.2f;
+				}
+
+				// y軸の数値修正
+				if (mWorldTransform->rotation.y > 3.14f) {
+					mWorldTransform->rotation.y = -3.14f;
+				}
+
+				if (mWorldTransform->rotation.y < -3.14f) {
+					mWorldTransform->rotation.y = 3.14f;
+				}
+
+
+			}
+			
+
+		}
+
+	}
+	UpdateRotationEasing();
+
 
 	// ビュー行列の更新
-	viewMatrix_ = Inverse(worldTransform_->GetWorldMatrix());
+	viewMatrix_ = Inverse(mWorldTransform->GetWorldMatrix());
 	// プロジェクション行列の更新
 	projectionMatrix_ = MakePerspectiveMatrix(verticalFOV_, aspectRatio_, nearClip_, farClip_);
 	// 上記２つをビュープロジェクション行列に合成
 	viewprojectionMatrix_ = Multiply(viewMatrix_, projectionMatrix_);
 
 
+}
+
+void MainCamera::UpdateRotationEasing()
+{
+	if (!mIsRotationEasing) {
+		return;
+	}
+
+	if (mRotaionEasingTime >= 1.0f) {
+		mIsRotationEasing = false;
+		return;
+	}
+
+	if (mRotaionEasingTime < 1.0f) {
+		mRotaionEasingTime += (3.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetBattleSpeed();
+		if (mRotaionEasingTime > 1.0f) {
+			mRotaionEasingTime = 1.0f;
+		}
+	}
+
+	// Y軸の計算
+	if (Length(mSearchTarget->translation - mFollowTarget->translation) != 0.0f) {
+		Vector3 direction = Normalize(mSearchTarget->translation - mFollowTarget->translation);
+
+		mEasedRotation.y = atan2f(direction.x, direction.z);
+	}
+
+	mWorldTransform->rotation.y = ExponentialInterpolation(mEaseBeforeRotation.y, mEasedRotation.y, mRotaionEasingTime, 1.0f);
+	//mWorldTransform->rotation.x = ExponentialInterpolation(mEaseBeforeRotation.x,0.0f, mRotaionEasingTime, 1.0f);
+}
+
+void MainCamera::SetCameraRotarionToSearchTarget()
+{
+	// 追跡対象のポインタ未所持なら 早期リターン
+	if (mSearchTarget == nullptr) {
+		return;
+	}
+
+	// 開始地点の設定
+	mEaseBeforeRotation = mWorldTransform->rotation;
+
+	// Y軸の計算
+	if (Length(mSearchTarget->translation - mFollowTarget->translation) != 0.0f) {
+		Vector3 direction = Normalize(mSearchTarget->translation - mFollowTarget->translation);
+
+		mEasedRotation.y = atan2f(direction.x, direction.z);
+	}
+
+	// X軸の計算
+	if (Length(mSearchTarget->translation - mWorldTransform->translation) != 0.0f) {
+		Vector3 direction = Normalize(mSearchTarget->translation - mWorldTransform->translation);
+		mEasedRotation.x = -atan2f(direction.y, direction.z);
+	}
+
+	mRotaionEasingTime = 0.0f;
+	mIsRotationEasing = true;
+
+}
+
+void MainCamera::SetCameraRotationToDirection(const Vector3 direction)
+{
+	mEaseBeforeRotation = mWorldTransform->rotation;
+	mEasedRotation.y = atan2f(direction.x, direction.z);
+	mRotaionEasingTime = 0.0f;
+	mIsRotationEasing = true;
 }

@@ -11,30 +11,39 @@ public:
 	Sprite() = default;
 	~Sprite() = default;
 
-	void Initialize(DirectXCommon* dxCommon,CameraCommon* camera);
+	void Init();
 	void Update();
 	void Draw();
 
 	void CreateVertexResource();
 	void CreateIndexResource();
-	void CreateTransformationRsource();
+	void CreateTransformation();
 	void CreateBufferView();
 
-	const D3D12_VERTEX_BUFFER_VIEW& GetVBV() const { return vertexBufferView; }
+	const D3D12_VERTEX_BUFFER_VIEW& GetVBV() const { return mVertexBufferView; }
 	auto* GetMaterial() { return  materialResourceSprite.Get(); }
-	auto* GetWVP() { return wvpResource.Get(); }
+	auto* GetWVP() { return mWvpResource.Get(); }
 	void SetTexture(std::string filepath){
-		textureHandle_ = dxCommon_->srv_->LoadTexture(filepath); 
+		mTextureHandle = mDxCommon->srv_->LoadTexture(filepath); 
 		AdjustTextureSize();
 	}
-	void SetColor(Color color) { materialData->color = color; }
-	void SetTextureSize(Vec2 size) { textureSize_ = size; }
-	void SetSpriteSize(Vec2 size) { spriteSize = size; }
-	void SetPos(Vec2 pos) {
-		worldTransform_.translation.x = pos.x;
-		worldTransform_.translation.y = pos.y;
+	void SetTexture(int32_t textureHandle) {
+		mTextureHandle = textureHandle;
+		AdjustTextureSize();
 	}
-	void SetAnchorPoint(Vec2 point) { anchorPoint = point; }
+
+	void SetColor(Color color) { materialData->color = color; }
+	void SetTextureSize(Vector2 size) { textureSize_ = size; }
+	void SetSpriteSize(Vector2 size) { spriteSize = size; }
+	void SetPos(Vector2 pos) {
+		mWorldTransform.translation.x = pos.x;
+		mWorldTransform.translation.y = pos.y;
+	}
+	void SetAnchorPoint(Vector2 point) { anchorPoint = point; }
+	void SetScale(Vector2 scale) { 
+		mWorldTransform.scale.x = scale.x;
+		mWorldTransform.scale.y = scale.y;
+	}
 
 private:
 
@@ -44,30 +53,30 @@ private:
 private:
 
 	// 外部ポインタ
-	CameraCommon* camera_ = nullptr;
-	DirectXCommon* dxCommon_ = nullptr;
+	CameraCommon* mCamera = nullptr;
+	DirectXCommon* mDxCommon = nullptr;
 
-	WorldTransform worldTransform_;
+	WorldTransform mWorldTransform;
 	Matrix4x4 worldM, cameraM, viewM, projectM, wvpM;
 	Vector4 translate_;
 	// テクスチャハンドル
-	int32_t textureHandle_ = 0;
+	int32_t mTextureHandle = 0;
 
 	// VertexResourceを生成する(P.42)
 	// 実際に頂点リソースを作る
-	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12Resource> mVertexResource = nullptr;
 	// マテリアル用のResourceを作る
 	Microsoft::WRL::ComPtr<ID3D12Resource> materialResourceSprite = nullptr;
 	// Transformation用のResourceを作る
-	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12Resource> mWvpResource = nullptr;
 	// Index用リソースデータの生成
 	Microsoft::WRL::ComPtr<ID3D12Resource> indexResource = nullptr;
 	// データを書き込む
-	TransformationMatrix* wvpData = nullptr;
+	TransformationMatrix* mWvpData = nullptr;
 	// 頂点リソースにデータを書き込む
-	VertexData2D* vertexData = nullptr;
+	VertexData2D* mVertexData = nullptr;
 	// 頂点バッファビューを作成する
-	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
+	D3D12_VERTEX_BUFFER_VIEW mVertexBufferView{};
 	//　インデックスはuint32_tとする
 	D3D12_INDEX_BUFFER_VIEW indexBufferView{};
 	// マテリアルデータ(LightingはしないのでColorとuvTransformのみ)
@@ -76,17 +85,17 @@ private:
 	UVTransform uvTransform_;
 
 	// アンカーポイント
-	Vec2 anchorPoint = { 0.0f,0.0f };
+	Vector2 anchorPoint = { 0.0f,0.0f };
 
 	// スプライトのサイズ
-	Vec2 spriteSize = { 256.0f,256.0f };
+	Vector2 spriteSize = { 256.0f,256.0f };
 
 	// テクスチャ左上座標
-	Vec2 textureLeftTop_ = { 0.0f,0.0f };
+	Vector2 textureLeftTop_ = { 0.0f,0.0f };
 	// テクスチャ全体サイズ
-	Vec2 textureFullSize_ = { 64.0f,64.0f };
+	Vector2 textureFullSize_ = { 64.0f,64.0f };
 	// テクスチャ切り出しサイズ
-	Vec2 textureSize_ = { 64.0f,64.0f };
+	Vector2 textureSize_ = { 64.0f,64.0f };
 
 };
 

@@ -8,6 +8,7 @@
 // アニメーション
 #include "GameEngine/Append/Animation/Skinning/Skinnig.h"
 
+
 // モデルデータ
 struct ModelData {
 	std::map<std::string, JointWeightData>skinClusterData;
@@ -37,61 +38,62 @@ public:
 	void CreateMaterialResource();
 
 	// カメラ座標を設定
-	void SetCameraPosition(CameraCommon camera) { cameraData->worldPosition = camera.GetTranslate(); }
+	inline void SetCameraPosition(CameraCommon camera) { mCameraData->worldPosition = camera.GetTranslate(); }
+	inline void SetCubeTexture(const int32_t& textureHandle) { mTextureHandleCubeMap = textureHandle; }
 
-public:
 
-	// ModelCommonのポインタ
-	//ModelCommon* modelCommon_ = nullptr;
-	// DirectXのポインタ
-	DirectXCommon* dxCommon_ = nullptr;
-	CameraCommon* camera_ = nullptr;
+public: // -- 公開 メンバ変数 -- //
 
 	// モデルデータ
 	ModelData modelData;
 	// テクスチャハンドル
-	int32_t textureHandle_;
+	int32_t mTextureHandle;
+	int32_t mTextureHandleCubeMap;
+
+	// -- Vertex -- //
+	Microsoft::WRL::ComPtr<ID3D12Resource> mVertexResource = nullptr;
+	VertexData* mVertexData = nullptr;
+	D3D12_VERTEX_BUFFER_VIEW mVertexBufferView{};
 
 
-	// 頂点リソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource = nullptr;
-	// 頂点バッファビュー
-	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
-	// 頂点データ
-	VertexData* vertexData = nullptr;
-	
-	// Indexリソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> indexResource = nullptr;
-	// Indexバッファビュー
-	D3D12_INDEX_BUFFER_VIEW indexBufferView{};
-	
+	// -- Material -- //
+	Microsoft::WRL::ComPtr<ID3D12Resource> mMaterialResource = nullptr;
+	Material* mMaterialData = nullptr;
 
-	// マテリアル用のResourceを作る
-	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource = nullptr;
 
-public:
+	// -- Transfomation -- //
+	Microsoft::WRL::ComPtr<ID3D12Resource> mWvpResource = nullptr;
+	TransformationMatrix* mWvpData = nullptr;
 
-	// マテリアルデータ
-	Material* materialData_ = nullptr;
 
-	// Light用のリソースデータを作る
-	Microsoft::WRL::ComPtr<ID3D12Resource> directionalLightResource = nullptr;
-	// 平行光源　
-	DirectionalLight* directionalLightDate = nullptr;
-	// 平行光線の適用をImGuiで操作する用のフラグ
-	bool isLighting_ = true;
+	// -- Index -- //
+	Microsoft::WRL::ComPtr<ID3D12Resource> mIndexResource = nullptr;
+	D3D12_INDEX_BUFFER_VIEW mIndexBufferView{};
 
-	// 鏡面反射用のリソースを作る
-	Microsoft::WRL::ComPtr<ID3D12Resource> CameraResource = nullptr;
-	CameraForGPU* cameraData = nullptr;
+
+	// -- Light -- //
+
+	Microsoft::WRL::ComPtr<ID3D12Resource> mDirectionalLightResource = nullptr;
+	DirectionalLight* mDirectionalLightData = nullptr; // 平行光源　
+	bool mIsLighting = true;
+
+	// -- 鏡面反射 -- //
+
+	// -- カメラ -- // 
+	Microsoft::WRL::ComPtr<ID3D12Resource> mCameraResource = nullptr;
+	CameraForGPU* mCameraData = nullptr;
 
 	// UVTransform用の変数
-	UVTransform uvTransform_;
+	UVTransform mUvTransform;
 
-	// -- Animation 関連 -- //
 
-	// スキニング アニメーション
-	Skinnig* skinning_ = nullptr;
+private: // --  非公開 メンバ変数 -- //
+
+	// DirectXのポインタ
+	DirectXCommon* mDxCommon = nullptr;
+	CameraCommon* mCamera = nullptr;
+
+	
 
 };
 

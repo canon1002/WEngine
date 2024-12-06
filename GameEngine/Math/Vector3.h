@@ -56,7 +56,7 @@ Vector3 CatmullRomPosition(const std::vector<Vector3>& points, float t);
 /// </summary>
 /// <param name="v"></param>
 /// <returns></returns>
-static float Length(const Vector3& v);
+float Length(const Vector3& v);
 
 /// <summary>
 /// 正規化
@@ -104,3 +104,11 @@ Vector3 Project(const Vector3& v1, const Vector3& v2);
 /// <returns></returns>
 Vector3 Perpendicular(const Vector3& v);
 
+
+Vector3 Min(const Vector3& a, const Vector3& b);
+Vector3 Max(const Vector3& a, const Vector3& b);
+
+Vector3 ExponentialInterpolation(Vector3 a, Vector3 b, float t,float k);
+float ExponentialInterpolation(float a, float b, float t,float k);
+
+float clamp(float num, float max, float min);

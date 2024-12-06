@@ -19,15 +19,18 @@ SamplerState gSampler : register(s0);
 PixelShaderOutput main(VertexShaderOutput input)
 {
     PixelShaderOutput output;
+    
+    // PixelShaderでTextureの宣言を行う
     float4 transformedUV = mul(float32_t4(input.texcoord, 0.0f, 1.0f), gMaterial.uvTransform);
     float32_t4 textureColor = gTexture.Sample(gSampler, transformedUV.xy);
-    output.color = gMaterial.color * textureColor * input.color;
-    
-    if (output.color.a == 0.0)
-    {   
-        discard;
-    }
-    output.color = gMaterial.color * textureColor * input.color;
+   
+    //if (textureColor.a <= 0.5f)
+    //{
+    //    discard;
+    //}
+    // Samplingしたtextureの色とmaterialの色を乗算して合成する
+    output.color.rgb = gMaterial.color.rgb * textureColor.rgb * input.color.rgb;
+    output.color.a = input.color.a * textureColor.a;
     
     return output;
 }

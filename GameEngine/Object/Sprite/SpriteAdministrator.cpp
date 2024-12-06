@@ -1,12 +1,25 @@
 #include "SpriteAdministrator.h"
 
-void SpriteAdministrator::Finalize(){
-	graphicsPipelineState.Reset();
-	rootSignature.Reset();
+// staticメンバ変数で宣言したインスタンスを初期化
+SpriteAdministrator* SpriteAdministrator::instance = nullptr;
+
+// インスタンスを取得
+SpriteAdministrator* SpriteAdministrator::GetInstance() {
+	// 関数内staticは初めて通ったときのみ実行される
+	//static DirectXCommon* instance = nullptr;
+	if (instance == nullptr) {
+		instance = new SpriteAdministrator;
+	}
+	return instance;
 }
 
-void SpriteAdministrator::Initialize(DirectXCommon* dxComoon){
-	dxCommon_ = dxComoon;
+void SpriteAdministrator::Finalize(){
+	mGraphicsPipelineState.Reset();
+	mRootSignature.Reset();
+}
+
+void SpriteAdministrator::Init(DirectXCommon* dxComoon){
+	mDxCommon = dxComoon;
 	CreateGraphicsPipeline();
 }
 
@@ -71,8 +84,8 @@ void SpriteAdministrator::CreateRootSignature()
 	}
 
 	// バイナリを元に
-	hr = dxCommon_->device_->CreateRootSignature(0, signatureBlob->GetBufferPointer(),
-		signatureBlob->GetBufferSize(), IID_PPV_ARGS(&rootSignature));
+	hr = mDxCommon->device_->CreateRootSignature(0, signatureBlob->GetBufferPointer(),
+		signatureBlob->GetBufferSize(), IID_PPV_ARGS(&mRootSignature));
 	assert(SUCCEEDED(hr));
 }
 
@@ -119,22 +132,22 @@ void SpriteAdministrator::CreateGraphicsPipeline()
 	// RasterizerStateの設定を行う(P.36)
 	D3D12_RASTERIZER_DESC rasterizerDesc{};
 	// 裏面を表示しない
-	rasterizerDesc.CullMode = D3D12_CULL_MODE_NONE;
+	rasterizerDesc.CullMode = D3D12_CULL_MODE_BACK;
 	// 三角形の中を塗りつぶす
 	rasterizerDesc.FillMode = D3D12_FILL_MODE_SOLID;
 
 	// Shaderをcompileする(P.37)
 	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob = WinAPI::CompileShader(L"Shaders/Sprite2d.VS.hlsl",
-		L"vs_6_0", dxCommon_->dxcUtils, dxCommon_->dxcCompiler, dxCommon_->includeHandler);
+		L"vs_6_0", mDxCommon->dxcUtils, mDxCommon->dxcCompiler, mDxCommon->includeHandler);
 	assert(vertexShaderBlob != nullptr);
 
 	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob = WinAPI::CompileShader(L"Shaders/Sprite2d.PS.hlsl",
-		L"ps_6_0", dxCommon_->dxcUtils, dxCommon_->dxcCompiler, dxCommon_->includeHandler);
+		L"ps_6_0", mDxCommon->dxcUtils, mDxCommon->dxcCompiler, mDxCommon->includeHandler);
 	assert(pixelShaderBlob != nullptr);
 
 	// PSOを生成する(P.38)
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsPipelineStateDesc{};
-	graphicsPipelineStateDesc.pRootSignature = rootSignature.Get();
+	graphicsPipelineStateDesc.pRootSignature = mRootSignature.Get();
 	graphicsPipelineStateDesc.InputLayout = inputLayoutDesc;
 	graphicsPipelineStateDesc.VS = { vertexShaderBlob->GetBufferPointer(),
 		vertexShaderBlob->GetBufferSize() };
@@ -164,8 +177,9 @@ void SpriteAdministrator::CreateGraphicsPipeline()
 	graphicsPipelineStateDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
 
 	// 実際に生成
-	HRESULT hr = dxCommon_->device_->CreateGraphicsPipelineState(&graphicsPipelineStateDesc,
-		IID_PPV_ARGS(&graphicsPipelineState));
+	HRESULT hr;
+	hr = mDxCommon->device_->CreateGraphicsPipelineState(&graphicsPipelineStateDesc,
+		IID_PPV_ARGS(&mGraphicsPipelineState));
 	assert(SUCCEEDED(hr));
 
 
@@ -174,6 +188,6 @@ void SpriteAdministrator::CreateGraphicsPipeline()
 void SpriteAdministrator::PreDraw()
 {
 	// RootSignatureを設定。PSOに設定しているが、別途設定が必要
-	dxCommon_->commandList->SetGraphicsRootSignature(rootSignature.Get());
-	dxCommon_->commandList->SetPipelineState(graphicsPipelineState.Get());
+	mDxCommon->mCommandList->SetGraphicsRootSignature(mRootSignature.Get());
+	mDxCommon->mCommandList->SetPipelineState(mGraphicsPipelineState.Get());
 }

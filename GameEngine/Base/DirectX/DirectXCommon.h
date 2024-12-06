@@ -8,6 +8,9 @@
 #include <chrono>
 #include <thread>
 
+// シャドウで使う
+#include <DirectXMath.h>
+
 // 前方宣言
 struct Vector4;
 struct ModelData;
@@ -31,32 +34,67 @@ class DirectXCommon
 {
 public:
 	
-	// 外部からの呼び出し禁止
 	DirectXCommon() = default;
 	~DirectXCommon() = default;
 
 	// シングルトン インスタンス取得
 	static DirectXCommon* GetInstance();
 
-
 	// FPS固定初期化
 	void InitFixFPS();
 	// FPS固定更新
 	void UpdateFixFPS();
 
-private: // ** 静的メンバ関数 ** //
+private: // -- 静的メンバ関数 -- //
 
 	// コピーコンストラクタと演算子オーバーロードの禁止
 	DirectXCommon(const DirectXCommon& obj) = delete;
 	DirectXCommon& operator=(const DirectXCommon& obj) = delete;
 
-public: // ** メンバ関数 ** //
+public: // -- 公開 メンバ関数 -- //
 
 	/// 初期化
-	void Initialize(WinAPI* win);
+	void Init(WinAPI* win);
 
 	/// 終了処理
-	void Finalize();
+	void Final();
+
+	// 描画前処理
+	void PreDrawForRenderTarget();
+	void PreDraw();
+	
+	// 描画後処理
+	void PostDrawForRenderTarget();
+	void PostDraw();
+
+	/// バッファリソースの生成
+	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(ID3D12Device* device, size_t sizeInBytes);
+
+	/// ディスクリプタヒープの生成
+	Microsoft::WRL::ComPtr <ID3D12DescriptorHeap> CreateDescriptorHeap(
+		Microsoft::WRL::ComPtr <ID3D12Device> device, D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors, bool shaderVisible);
+
+
+	inline D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDescriptorHandle(Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap,
+		uint32_t descriptorSize, uint32_t index) {
+		D3D12_CPU_DESCRIPTOR_HANDLE handleCPU = descriptorHeap->GetCPUDescriptorHandleForHeapStart();
+		handleCPU.ptr += (descriptorSize * index);
+		return handleCPU;
+	}
+
+	inline D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap,
+		uint32_t descriptorSize, uint32_t index) {
+		D3D12_GPU_DESCRIPTOR_HANDLE handleGPU = descriptorHeap->GetGPUDescriptorHandleForHeapStart();
+		handleGPU.ptr += (descriptorSize * index);
+		return handleGPU;
+	}
+
+	
+
+
+private: // --非公開 メンバ関数 -- //
+
+	// -- 生成・初期化関数 -- //
 
 	/// <summary>
 	/// DXGIデバイス初期化
@@ -82,54 +120,35 @@ public: // ** メンバ関数 ** //
 	/// 
 	/// </summary>
 	void InitializeDXC();
+
+	void InitViewPort();
+
 	
-	/// <summary>
-	/// 
-	/// </summary>
-	void InitializePSOP();
-	
-	/// <summary>
-	/// 
-	/// </summary>
-	void InitializeViewPort();
 
-	/// <summary>
-	/// 
-	/// </summary>
-	void DrawBegin();
+	void SetResourceBarrier(
+		ID3D12GraphicsCommandList* commandList,ID3D12Resource* resource,
+		D3D12_RESOURCE_STATES stateBefore,D3D12_RESOURCE_STATES stateAfter);
 
-	void PreDrawForRenderTarget();
-	void PostDrawForRenderTarget();
-
-	void DrawPariticleBegin();
-
-	/// <summary>
-	/// 
-	/// </summary>
-	void DrawEnd();
-
-
-
-	D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDescriptorHandle(Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap,
-		uint32_t descriptorSize,uint32_t index){
-		D3D12_CPU_DESCRIPTOR_HANDLE handleCPU = descriptorHeap->GetCPUDescriptorHandleForHeapStart();
-		handleCPU.ptr += (descriptorSize * index);
-		return handleCPU;
+	void ClearRenderTargetView(ID3D12GraphicsCommandList* commandList, D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle, const float clearColor[4]) {
+		commandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
 	}
 
-	D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap,
-		uint32_t descriptorSize,uint32_t index){
-		D3D12_GPU_DESCRIPTOR_HANDLE handleGPU = descriptorHeap->GetGPUDescriptorHandleForHeapStart();
-		handleGPU.ptr += (descriptorSize * index);
-		return handleGPU;
+	void ClearDepthStencilView(ID3D12GraphicsCommandList* commandList, D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle, float depth, UINT8 stencil) {
+		commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, depth, stencil, 0, nullptr);
 	}
 
-	/// バッファリソースの生成
-	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(ID3D12Device* device, size_t sizeInBytes);
+	void SetRenderTargets(ID3D12GraphicsCommandList* commandList, UINT numRenderTargets, const D3D12_CPU_DESCRIPTOR_HANDLE* rtvHandles, D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle) {
+		commandList->OMSetRenderTargets(numRenderTargets, rtvHandles, FALSE, &dsvHandle);
+	}
 
-	/// ディスクリプタヒープの生成
-	Microsoft::WRL::ComPtr <ID3D12DescriptorHeap> CreateDescriptorHeap(
-		Microsoft::WRL::ComPtr <ID3D12Device> device, D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors, bool shaderVisible);
+	void SetDescriptorHeaps(ID3D12GraphicsCommandList* commandList, UINT numDescriptorHeaps, ID3D12DescriptorHeap* const* descriptorHeaps) {
+		commandList->SetDescriptorHeaps(numDescriptorHeaps, descriptorHeaps);
+	}
+
+
+	void CreateRenderTargetForShadow() {}
+
+
 
 public: // ** メンバ変数 ** //
 	
@@ -148,7 +167,7 @@ public: // ** メンバ変数 ** //
 	// コマンドキュー
 	Microsoft::WRL::ComPtr < ID3D12CommandQueue> commandQueue = nullptr;
 	// コマンドリスト
-	Microsoft::WRL::ComPtr < ID3D12GraphicsCommandList> commandList = nullptr;
+	Microsoft::WRL::ComPtr < ID3D12GraphicsCommandList> mCommandList = nullptr;
 	// スワップチェイン
 	Microsoft::WRL::ComPtr < IDXGISwapChain4> swapChain = nullptr;
 	// スワップチェーンデスク
@@ -156,8 +175,10 @@ public: // ** メンバ変数 ** //
 	// SwapChainResource
 	Microsoft::WRL::ComPtr < ID3D12Resource> swapChainResources[2] = { nullptr };
 
-	// TransitionBarrierの設定
-	D3D12_RESOURCE_BARRIER barrier{};
+	// TransitionBarrier
+	D3D12_RESOURCE_BARRIER mBarrier{};
+	// 現在のBarrierState
+	D3D12_RESOURCE_STATES mCurrentBarrierState;
 
 	// ビューポート
 	D3D12_VIEWPORT viewport = {};
@@ -167,12 +188,6 @@ public: // ** メンバ変数 ** //
 	// 返す用の変数を宣言
 	Microsoft::WRL::ComPtr<ID3D12Resource> result_ = nullptr;
 
-
-	// グラフィックパイプライン
-	Microsoft::WRL::ComPtr <ID3D12PipelineState> pGraphicsPipelineState = nullptr;
-	// ルートシグネチャー
-	Microsoft::WRL::ComPtr < ID3D12RootSignature> particleRootSignature = nullptr;
-
 	// dxCompilerを初期化
 	Microsoft::WRL::ComPtr < IDxcUtils> dxcUtils = nullptr;
 	Microsoft::WRL::ComPtr < IDxcCompiler3> dxcCompiler = nullptr;
@@ -180,16 +195,25 @@ public: // ** メンバ変数 ** //
 	Microsoft::WRL::ComPtr < IDxcIncludeHandler> includeHandler = nullptr;
 
 	// フェンス
-	Microsoft::WRL::ComPtr < ID3D12Fence> fence = nullptr;
-	uint64_t fenceValue = 0;
-	HANDLE fenceEvent;
+	Microsoft::WRL::ComPtr < ID3D12Fence> mFence = nullptr;
+	uint64_t mFenceValue = 0;
+	HANDLE mFenceEvent;
 
 	// 記録時間(FPS固定用)
-	std::chrono::steady_clock::time_point reference_;
+	std::chrono::steady_clock::time_point mReference;
 
 private:
 
 	// インスタンス
 	static DirectXCommon* instance;
+
+#ifdef _DEBUG
+
+	
+	//ID3D12Debug1* mDebugController;
+	ID3D12Debug1* mDebugController;
+
+#endif // _DEBUG
+
 
 };

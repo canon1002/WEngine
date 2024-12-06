@@ -2,13 +2,19 @@
 #include"Collider.h"
 #include"CollisionConfig.h"
 
+#include "AABBCollider.h"
+#include "OBBCollider.h"
+#include "RayCollider.h"
+#include "SphereCollider.h"
+#include "PlaneCollider.h"
+
 class CollisionManager 
 {
 public:
 
 	CollisionManager();
 	~CollisionManager();
-	void Initialize();
+	void Init();
 	void Update();
 	void Draw();
 
@@ -19,6 +25,7 @@ public:
 
 private:
 
+	// コライダー同士の衝突判定を行う
 	void CheckCollisionPair(Collider* colliderA, Collider* colliderB);
 
 private:

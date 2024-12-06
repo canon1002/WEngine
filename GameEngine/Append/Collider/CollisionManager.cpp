@@ -1,10 +1,10 @@
 #include "CollisionManager.h"
 
-CollisionManager::CollisionManager() { this->Initialize(); }
+CollisionManager::CollisionManager() { this->Init(); }
 
 CollisionManager::~CollisionManager() {}
 
-void CollisionManager::Initialize() {}
+void CollisionManager::Init() {}
 
 void CollisionManager::Update() { this->CheckAllCollisions(); }
 
@@ -43,26 +43,11 @@ void CollisionManager::CheckCollisionPair(Collider* colliderA, Collider* collide
 		return;
 	}
 
-	// コライダーのワールド座標を取得
-	Vector3 posA = colliderA->GetWorldPos();
-	float radA = colliderA->GetRadius();
-	Vector3 posB = colliderB->GetWorldPos();
-	float radB = colliderB->GetRadius();
-
-	// 距離の判定
-	if ((posA.x + radA) > (posB.x - radB) && (posA.x - radA) < (posB.x + radB) &&
-	    (posA.y + radA) > (posB.y - radB) && (posA.y - radA) < (posB.y + radB) &&
-	    (posA.z + radA) > (posB.z - radB) && (posA.z - radA) < (posB.z + radB)) {
-
+	// 衝突判定を行う
+	if (colliderA->IsCollision(colliderB)) {
+		// 衝突していたら衝突時の処理を呼び出す
 		colliderA->OnCollision(colliderB);
 		colliderB->OnCollision(colliderA);
-
-		// エフェクトを生成し、初期化
-		// Effect* newEffect = new Effect();
-		// newEffect->Initialize(EFFECT_TYPE::DISCRETE, { quadA.rightTop.x - (quadA.rightTop.x -
-		// quadA.leftTop.x),quadA.leftTop.y });
-
-		// エフェクトを登録
-		// m_effects.push_back(newEffect);
 	}
+
 }

@@ -5,6 +5,8 @@ class Skybox{
 
 public:	// -- public メンバ関数 -- //
 
+	static Skybox* GetInstance();
+
 	~Skybox();
 	void Init(const std::string& directrypath, const std::string& filename);
 	void Update();
@@ -28,7 +30,7 @@ private: // -- private メンバ関数 -- //
 	/// <summary>
 	/// 座標関連の要素を作成する
 	/// </summary>
-	void CreateTransformationRsource();
+	void CreateTransformation();
 
 	/// <summary>
 	/// 3Dモデル用のルートシグネチャを生成
@@ -42,34 +44,37 @@ private: // -- private メンバ関数 -- //
 
 public: // -- public メンバ変数 -- //
 
+	// インスタンス
+	static Skybox* instance;
+
 	// ModelCommonのポインタ
 	//ModelCommon* modelCommon_ = nullptr;
 	// DirectXのポインタ
-	DirectXCommon* dxCommon_ = nullptr;
-	CameraCommon* camera_ = nullptr;
+	DirectXCommon* mDxCommon = nullptr;
+	CameraCommon* mCamera = nullptr;
 
 	// -- Object3Dの要素 -- //
 
 	Matrix4x4 cameraM, viewM, projectM, pespectiveM, wvpM;
 	// Transformation用のResourceを作る
-	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12Resource> mWvpResource = nullptr;
 	// データを書き込む
-	TransformationMatrix* wvpData = nullptr;
-	WorldTransform* worldTransform_;
+	TransformationMatrix* mWvpData = nullptr;
+	WorldTransform* mWorldTransform;
 
 
 	// -- Model 部分 -- //
 
 	
 	// ddsのテクスチャハンドル
-	int32_t textureHandle_;
+	int32_t mTextureHandle;
 
 	// 実際に頂点リソースを作る
-	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12Resource> mVertexResource = nullptr;
 	// 頂点バッファビューを作成する
-	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
+	D3D12_VERTEX_BUFFER_VIEW mVertexBufferView{};
 	// 頂点リソースにデータを書き込む
-	VertexData* vertexData = nullptr;
+	VertexData* mVertexData = nullptr;
 
 	// Index用リソースデータ
 	Microsoft::WRL::ComPtr<ID3D12Resource> indexResource = nullptr;

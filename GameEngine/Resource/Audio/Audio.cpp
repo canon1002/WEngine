@@ -96,7 +96,7 @@ void Audio::UnLoadWave(SoundData* soundData)
 	soundData->wfex = {};
 }
 
-void Audio::PlayWave(const SoundData& soundData)
+void Audio::PlayWave(const SoundData& soundData, bool isLoop)
 {
 	HRESULT hr;
 
@@ -109,8 +109,14 @@ void Audio::PlayWave(const SoundData& soundData)
 	XAUDIO2_BUFFER buf{};
 	buf.pAudioData = soundData.pBuffer;
 	buf.AudioBytes = soundData.bufferSize;
+	if (isLoop == true) {
+		buf.LoopCount = XAUDIO2_LOOP_INFINITE;
+	}
+	else {
+		buf.LoopCount = XAUDIO2_NO_LOOP_REGION;
+	}
 	buf.Flags = XAUDIO2_END_OF_STREAM;
-
+	
 	// 波形データの再生
 	hr = pSoundVoice->SubmitSourceBuffer(&buf);
 	hr = pSoundVoice->Start();
@@ -125,4 +131,16 @@ void Audio::StopWave(const SoundData& soundData) {
 	assert(SUCCEEDED(hr));
 
 	hr = pSoundVoice->Stop();
+}
+
+void Audio::SetVolume(const SoundData& soundData, float volume)
+{
+	HRESULT hr;
+
+	// 波形フォーマットデータをもとにSourceVoiceの生成
+	IXAudio2SourceVoice* pSoundVoice = nullptr;
+	hr = xAudio2_->CreateSourceVoice(&pSoundVoice, &soundData.wfex);
+	assert(SUCCEEDED(hr));
+
+	pSoundVoice->SetVolume(volume);
 }

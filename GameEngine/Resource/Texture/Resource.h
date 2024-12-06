@@ -23,20 +23,25 @@
 // 頂点データ
 struct VertexData {
 	Vector4 position;
-	Vec2 texcoord;
+	Vector2 texcoord;
 	Vector3 normal;
 };
 
 // 2D用 頂点データ
 struct VertexData2D {
 	Vector4 position;
-	Vec2 texcoord;
+	Vector2 texcoord;
 };
 // 
 struct TransformationMatrix {
 	Matrix4x4 WVP;
 	Matrix4x4 World;
 	Matrix4x4 InverseTransposeWorld;
+};
+
+struct TransformationMatrixForGrid3D {
+	Matrix4x4 WVP;
+	Matrix4x4 World;
 };
 // パーティクル用
 struct ParticleForGPU {
@@ -51,12 +56,13 @@ struct CameraForGPU
 };
 // マテリアルデータ
 struct MaterialData {
-	std::string textureFilePath;
+	std::string textureFilePath; 
 };
 
 
 struct Animation;
 struct ModelData;
+struct MultiModelData;
 struct JointWeightData;
 
 /// <summary>
@@ -105,6 +111,7 @@ namespace Resource // ここから関数の宣言と定義を行う
 	/// <param name="filename">読み込むモデルのファイル名</param>
 	/// <returns>読み込んだモデルデータを返す</returns>
 	ModelData LoadModelFile(const std::string& directoryPath, const std::string& filename);
+	MultiModelData LoadMultiModelFile(const std::string& directoryPath, const std::string& filename);
 
 
 

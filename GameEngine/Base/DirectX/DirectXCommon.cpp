@@ -16,18 +16,18 @@ DirectXCommon* DirectXCommon::GetInstance() {
 	return instance;
 }
 
-void DirectXCommon::Initialize(WinAPI* win) {
+void DirectXCommon::Init(WinAPI* win) {
 
 	// FPS固定
 	InitFixFPS();
 
-	// デバッグレイヤーでエラーと警告を受け取る
+	// デバッグレイヤーでエラーと警告を受け取る // ComPtrにも反応するので一旦コメントアウト
 	#ifdef _DEBUG
-	//if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController)))) {
+	//if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&mDebugController)))) {
 	//	// デバッグレイヤーを有効化する
-	//	debugController->EnableDebugLayer();
+	//	mDebugController->EnableDebugLayer();
 	//	// さらにGPU側でもチェックを行うようにする
-	//	debugController->SetEnableGPUBasedValidation(TRUE);
+	//	mDebugController->SetEnableGPUBasedValidation(TRUE);
 	//}	
 	#endif // _DEBUG
 
@@ -78,8 +78,6 @@ void DirectXCommon::Initialize(WinAPI* win) {
 	// レンダーターゲットビュー
 	// dxCompiler
 	InitializeDXC();
-	// pipelineStateObject
-	InitializePSOP();
 
 	// レンダーターゲットを生成
 	rtv_->Initialize(this);
@@ -88,15 +86,15 @@ void DirectXCommon::Initialize(WinAPI* win) {
 	// ディープステンシルの生成
 	dsv_->Initialize(this);
 
-	InitializeViewPort();
+	InitViewPort();
 	// 深度バッファ生成
 	//CreateDepthBuffer();
 	// フェンスの生成
 	CreateFence();
 }
 
-void DirectXCommon::Finalize() {
-	CloseHandle(fenceEvent);
+void DirectXCommon::Final() {
+	CloseHandle(mFenceEvent);
 }
 
 /// DXGIデバイス初期化
@@ -204,7 +202,7 @@ void DirectXCommon::InitializeCommand() {
 
 	// コマンドリスト生成する
 	hr = device_->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, commandAllocator.Get(), nullptr,
-		IID_PPV_ARGS(&commandList));
+		IID_PPV_ARGS(&mCommandList));
 	// コマンドリストの生成がうまく行かなかったら起動できない
 	assert(SUCCEEDED(hr));
 	WinAPI::Log("Complete create CommandList!!!\n");// 生成完了のログをだす
@@ -231,166 +229,40 @@ void DirectXCommon::InitializeDXC() {
 
 };
 
-/// PipelineStateObjectの初期化
-void DirectXCommon::InitializePSOP() {
+void DirectXCommon::SetResourceBarrier(
+	ID3D12GraphicsCommandList* commandList,
+	ID3D12Resource* resource,
+	D3D12_RESOURCE_STATES stateBefore,
+	D3D12_RESOURCE_STATES stateAfter) {
 
-	// RootSignatureを生成する(P.30)
+	D3D12_RESOURCE_BARRIER barrier = {};
 	
-	///////////////////////////////////////////////////////////////
-	///	パーティクル用 ルートシグネチャ
-	///////////////////////////////////////////////////////////////
+	// Transition Barrier
+	barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+	
+	// Flag
+	barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+	
+	// バリアを張る対象のリソース。現在のバックバッファに対して行う
+	barrier.Transition.pResource = resource;
+	
+	// 遷移前(現在)のResourceState
+	barrier.Transition.StateBefore = stateBefore;
+	
+	// 遷移後のResourceState
+	barrier.Transition.StateAfter = stateAfter;
+	
+	// サブリソース
+	barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+	
+	// リソースバリアを張る
+	commandList->ResourceBarrier(1, &barrier);
+};
 
-		// 宣言する
-	D3D12_ROOT_SIGNATURE_DESC particleRootSignatureDesc{};
-	particleRootSignatureDesc.Flags =
-		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
-
-	// RootSignatureの変更 -- パーティクル
-	D3D12_DESCRIPTOR_RANGE descriptorRangeForInstancing[1] = {};
-	descriptorRangeForInstancing[0].BaseShaderRegister = 0;
-	descriptorRangeForInstancing[0].NumDescriptors = 1;
-	descriptorRangeForInstancing[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
-	descriptorRangeForInstancing[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;// offset自動計算
-
-	// RootParamenter作成
-	D3D12_ROOT_PARAMETER paticleRootParameters[3] = {};
-
-	paticleRootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; // CBVを使う // b0のbと一致
-	paticleRootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
-	paticleRootParameters[0].Descriptor.ShaderRegister = 0; // レジスタ番号とバインド // b0のと一致
-
-	paticleRootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE; //DescriptorTableを使う
-	paticleRootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX; // VertexShaderで使う
-	paticleRootParameters[1].DescriptorTable.pDescriptorRanges = descriptorRangeForInstancing; // Tableの中身の配列を指定
-	paticleRootParameters[1].DescriptorTable.NumDescriptorRanges = _countof(descriptorRangeForInstancing); // Tableの中身の配列を指定
-
-	paticleRootParameters[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE; //DescriptorTableを使う
-	paticleRootParameters[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
-	paticleRootParameters[2].DescriptorTable.pDescriptorRanges = descriptorRangeForInstancing;
-	paticleRootParameters[2].DescriptorTable.NumDescriptorRanges = _countof(descriptorRangeForInstancing);
-
-	particleRootSignatureDesc.pParameters = paticleRootParameters; // ルートパラメータ配列へのポインタ
-	particleRootSignatureDesc.NumParameters = _countof(paticleRootParameters); // 配列の長さ
-
-	// Samplerの設定
-	D3D12_STATIC_SAMPLER_DESC pStaticSamplers[1] = {};
-	pStaticSamplers[0].Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;// バイナリフィルタ
-	pStaticSamplers[0].AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;//0~1の範囲外をリピート
-	pStaticSamplers[0].AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
-	pStaticSamplers[0].AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
-	pStaticSamplers[0].ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER;// 比較しない
-	pStaticSamplers[0].MaxLOD = D3D12_FLOAT32_MAX;	// ありったけのMipMapを使う
-	pStaticSamplers[0].ShaderRegister = 0;// レジスタ番号0を使う
-	pStaticSamplers[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;// PixelShaderで使う
-	particleRootSignatureDesc.pStaticSamplers = pStaticSamplers;
-	particleRootSignatureDesc.NumStaticSamplers = _countof(pStaticSamplers);
-
-	// シリアライズしてバイナリにする
-	Microsoft::WRL::ComPtr<ID3DBlob> particleSignatureBlob = nullptr;
-	Microsoft::WRL::ComPtr<ID3DBlob> particleErrorBlob = nullptr;
-	HRESULT hr = D3D12SerializeRootSignature(&particleRootSignatureDesc,
-		D3D_ROOT_SIGNATURE_VERSION_1,
-		&particleSignatureBlob,
-		&particleErrorBlob
-	);
-	if (FAILED(hr)) {
-		WinAPI::Log(reinterpret_cast<char*>(particleErrorBlob->GetBufferPointer()));
-		assert(false);
-	}
-	// バイナリを元に作成
-	hr = device_->CreateRootSignature(0, particleSignatureBlob->GetBufferPointer(),
-		particleSignatureBlob->GetBufferSize(), IID_PPV_ARGS(&particleRootSignature));
-	assert(SUCCEEDED(hr));
-
-	// InputLayoutの設定を行う(P.32)
-	D3D12_INPUT_ELEMENT_DESC pInputElementDescs[3] = {};
-	pInputElementDescs[0].SemanticName = "POSITION";
-	pInputElementDescs[0].SemanticIndex = 0;
-	pInputElementDescs[0].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-	pInputElementDescs[0].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
-	pInputElementDescs[1].SemanticName = "TEXCOORD";
-	pInputElementDescs[1].SemanticIndex = 0;
-	pInputElementDescs[1].Format = DXGI_FORMAT_R32G32_FLOAT;
-	pInputElementDescs[1].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
-	pInputElementDescs[2].SemanticName = "COLOR";
-	pInputElementDescs[2].SemanticIndex = 0;
-	pInputElementDescs[2].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-	pInputElementDescs[2].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
-
-	D3D12_INPUT_LAYOUT_DESC pInputLayoutDesc{};
-	pInputLayoutDesc.pInputElementDescs = pInputElementDescs;
-	pInputLayoutDesc.NumElements = _countof(pInputElementDescs);
-
-	// BlendStateの設定を行う(P.34)
-	D3D12_BLEND_DESC pBlendDesc{};
-	// すべての色要素を書き込む
-	pBlendDesc.RenderTarget[0].RenderTargetWriteMask =D3D12_COLOR_WRITE_ENABLE_ALL;
-	pBlendDesc.RenderTarget[0].BlendEnable = TRUE;
-	pBlendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
-	pBlendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
-	pBlendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
-	pBlendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
-	pBlendDesc.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
-	pBlendDesc.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
-	pBlendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;
-	// RasterizerStateの設定を行う(P.36)
-	D3D12_RASTERIZER_DESC pRasterizerDesc{};
-	// 裏面を表示しない
-	pRasterizerDesc.CullMode = D3D12_CULL_MODE_NONE;
-	// 三角形の中を塗りつぶす
-	pRasterizerDesc.FillMode = D3D12_FILL_MODE_SOLID;
-
-	// パーティクル用
-	Microsoft::WRL::ComPtr<IDxcBlob> particleVSBlob = WinAPI::CompileShader(L"Shaders/Particle.VS.hlsl",
-		L"vs_6_0", dxcUtils, dxcCompiler, includeHandler);
-	assert(particleVSBlob != nullptr);
-
-	Microsoft::WRL::ComPtr<IDxcBlob> particlePSBlob = WinAPI::CompileShader(L"Shaders/Particle.PS.hlsl",
-		L"ps_6_0", dxcUtils, dxcCompiler, includeHandler);
-	assert(particlePSBlob != nullptr);
-
-	// PSOを生成する(P.38)
-	D3D12_GRAPHICS_PIPELINE_STATE_DESC particleGraphicsPipelineStateDesc{};
-	particleGraphicsPipelineStateDesc.pRootSignature = particleRootSignature.Get();
-	particleGraphicsPipelineStateDesc.InputLayout = pInputLayoutDesc;
-	particleGraphicsPipelineStateDesc.VS = { particleVSBlob->GetBufferPointer(),
-		particleVSBlob->GetBufferSize() };
-	particleGraphicsPipelineStateDesc.PS = { particlePSBlob->GetBufferPointer(),
-		particlePSBlob->GetBufferSize() };
-	particleGraphicsPipelineStateDesc.BlendState = pBlendDesc;
-	particleGraphicsPipelineStateDesc.RasterizerState = pRasterizerDesc;
-	// 書き込むRTVの情報
-	particleGraphicsPipelineStateDesc.NumRenderTargets = 1;
-	particleGraphicsPipelineStateDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
-	// 利用するトポロジ(形状)のタイプ 三角
-	particleGraphicsPipelineStateDesc.PrimitiveTopologyType =
-		D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
-	// どのように色を打ち込むかの設定(気にしなくていい)
-	particleGraphicsPipelineStateDesc.SampleDesc.Count = 1;
-	particleGraphicsPipelineStateDesc.SampleMask = D3D12_DEFAULT_SAMPLE_MASK;
-	//  DepthStencilの設定を行う
-	D3D12_DEPTH_STENCIL_DESC particleDepthStencilDesc{};
-	// Depthの機能を有効化
-	particleDepthStencilDesc.DepthEnable = true;
-	// 書き込みを行わないようにする
-	particleDepthStencilDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
-	// 比較関数はLessEqual。つまり、近ければ描画される
-	particleDepthStencilDesc.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
-	//  DepthStencilの設定
-	particleGraphicsPipelineStateDesc.DepthStencilState = particleDepthStencilDesc;
-	particleGraphicsPipelineStateDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
-
-	// 実際に生成
-	hr = device_->CreateGraphicsPipelineState(&particleGraphicsPipelineStateDesc,
-		IID_PPV_ARGS(&pGraphicsPipelineState));
-	assert(SUCCEEDED(hr));
-
-
-}
 
 
 ///
-void DirectXCommon::InitializeViewPort() {
+void DirectXCommon::InitViewPort() {
 
 	// ビューポート
 	// クライアント領域のサイズと一緒にして画面全体に表示
@@ -413,169 +285,112 @@ void DirectXCommon::InitializeViewPort() {
 void DirectXCommon::CreateFence() {
 
 	// 初期値0でFenceを作る
-	fenceValue = 0;
-	HRESULT hr = device_->CreateFence(fenceValue, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence));
+	mFenceValue = 0;
+	HRESULT hr;
+	hr = device_->CreateFence(mFenceValue, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&mFence));
 	assert(SUCCEEDED(hr));
 	// FenceのSignalを待つためのイベントを作成する
-	fenceEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
-	assert(fenceEvent != nullptr);
+	mFenceEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
+	assert(mFenceEvent != nullptr);
 
 }
 
 /// 描画前処理
-void DirectXCommon::DrawBegin() {
-
-	// これから書き込むバックバッファのインデックスを取得
+void DirectXCommon::PreDraw() {
 	UINT backBufferIndex = swapChain->GetCurrentBackBufferIndex();
 
-	// TransitionBarrierの設定
-	// 今回のバリアはトランジション
-	barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-	// Noneにしておく
-	barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-	// バリアを張る対象のリソース。現在のバックバッファに対して行う
-	barrier.Transition.pResource = swapChainResources[backBufferIndex].Get();
-	// 遷移前(現在)のResourceState
-	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
-	// 遷移後のResourceState
-	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
-	// TransitionBarrierを張る
-	commandList->ResourceBarrier(1, &barrier);
+	// バリアの設定
+	SetResourceBarrier(mCommandList.Get(), swapChainResources[backBufferIndex].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
 
+	// 描画対象の設定
+	SetRenderTargets(mCommandList.Get(), 1, &rtv_->rtvHandles[backBufferIndex], dsv_->mDsvHandle);
 
-	// 描画先のRTVとDSVを設定する
-	commandList->OMSetRenderTargets(1, &rtv_->rtvHandles[backBufferIndex], false, &dsv_->dsvHandle);
+	// クリア処理
+	float clearColor[] = { 0.1f,0.25f,0.5f,1.0f }; // 青っぽい色 RGBAの順
+	ClearRenderTargetView(mCommandList.Get(), rtv_->rtvHandles[backBufferIndex], clearColor);
+	// ClearDepthStencilView(mCommandList.Get(), dsv_->mDsvHandle, 1.0f, 0); // 必要に応じて
 
-	// 指定した深度で画面全体をクリアにする
-	// フレームの最初に最も遠く(1.0)でクリアする
-	//commandList->ClearDepthStencilView(dsv_->dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
-
-	// 指定した色で画面全体をクリアにする
-	float clearColor[] = { 0.1f,0.25f,0.5f,1.0f };	// 青っぽい色 RGBAの順
-	commandList->ClearRenderTargetView(rtv_->rtvHandles[backBufferIndex], clearColor, 0, nullptr);
-
-	// 描画用のディスクリプタヒープの設定
+	// ディスクリプタヒープの設定
 	ID3D12DescriptorHeap* descriptorHeaps[] = { srv_->srvDescriptorHeap.Get() };
-	commandList->SetDescriptorHeaps(1, descriptorHeaps);
+	SetDescriptorHeaps(mCommandList.Get(), 1, descriptorHeaps);
 
 	// コマンドを積み込む
-	commandList->RSSetViewports(1, &viewport);
-	commandList->RSSetScissorRects(1, &scissorRect);
+	mCommandList->RSSetViewports(1, &viewport);
+	mCommandList->RSSetScissorRects(1, &scissorRect);
 }
 
-void DirectXCommon::PreDrawForRenderTarget(){
+void DirectXCommon::PreDrawForRenderTarget() {
+	// バリアの設定
+	SetResourceBarrier(mCommandList.Get(), rtv_->mRenderTextureResource.Get(), D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
 
-	// これから書き込むバックバッファのインデックスを取得
-	//UINT backBufferIndex = swapChain->GetCurrentBackBufferIndex();
+	// 描画対象の設定
+	SetRenderTargets(mCommandList.Get(), 1, &rtv_->rtvHandles[2], dsv_->mDsvHandle);
 
-	// TransitionBarrierの設定
-	barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-	// Noneにしておく
-	barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-	// バリアを張る対象のリソース。現在のバックバッファに対して行う
-	barrier.Transition.pResource = rtv_->renderTextureResource.Get();
-	// 遷移前(現在)のResourceState
-	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
-	// 遷移後のResourceState
-	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
-	// TransitionBarrierを張る
-	commandList->ResourceBarrier(1, &barrier);
+	// クリア処理
+	ClearRenderTargetView(mCommandList.Get(), rtv_->rtvHandles[2], rtv_->kRenderTargetColor);
 
-	// 描画先のRTVとDSVを設定する
-	commandList->OMSetRenderTargets(1, &rtv_->rtvHandles[2],
-		false, &dsv_->dsvHandle);
+	// 深度情報のクリア
+	ClearDepthStencilView(mCommandList.Get(), dsv_->mDsvHandle, 1.0f, 0);
+	
+	//mCommandList->OMSetRenderTargets(
+	//	0, nullptr, FALSE,
+	//	&dsv_->mDsvHandle);
+	// デプスの描画先をセット
 
-	// 指定した色で画面全体をクリアにする
-	commandList->ClearRenderTargetView(rtv_->rtvHandles[2],
-		rtv_->kRenderTargetColor, 0, nullptr);
 
-	// 指定した深度で画面全体をクリアにする
-	// フレームの最初に最も遠く(1.0)でクリアする
-	commandList->ClearDepthStencilView(dsv_->dsvHandle,
-		D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
-
-	// 描画用のディスクリプタヒープの設定
+	// ディスクリプタヒープの設定
 	ID3D12DescriptorHeap* descriptorHeaps[] = { srv_->srvDescriptorHeap.Get() };
-	commandList->SetDescriptorHeaps(1, descriptorHeaps);
+	SetDescriptorHeaps(mCommandList.Get(), 1, descriptorHeaps);
 
 	// コマンドを積み込む
-	commandList->RSSetViewports(1, &viewport);
-	commandList->RSSetScissorRects(1, &scissorRect);
+	mCommandList->RSSetViewports(1, &viewport);
+	mCommandList->RSSetScissorRects(1, &scissorRect);
+}
+
+void DirectXCommon::PostDrawForRenderTarget() {
+	// バリアの設定
+	SetResourceBarrier(mCommandList.Get(), rtv_->mRenderTextureResource.Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 
 }
 
-void DirectXCommon::PostDrawForRenderTarget(){
+void DirectXCommon::PostDraw() {
+	UINT backBufferIndex = swapChain->GetCurrentBackBufferIndex();
 
-	// TransitionBarrierの設定
-	barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-	// Noneにしておく
-	barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-	// バリアを張る対象のリソース。現在のバックバッファに対して行う
-	barrier.Transition.pResource = rtv_->renderTextureResource.Get();
-	// 遷移前(現在)のResourceState
-	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
-	// 遷移後のResourceState
-	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
-	// TransitionBarrierを張る
-	commandList->ResourceBarrier(1, &barrier);
-
-}
-
-void DirectXCommon::DrawPariticleBegin()
-{
-
-	// RootSignatureを設定。PSOに設定しているが、別途設定が必要
-	commandList->SetGraphicsRootSignature(particleRootSignature.Get());
-	commandList->SetPipelineState(pGraphicsPipelineState.Get());
-
-}
-
-/// 描画後処理
-void DirectXCommon::DrawEnd() {
-
-	// 画面に描く処理は全て終わり、画面に映すので状態を遷移
-	// 今回はRenderTargetからPresentにする
-	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
-	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
-
-	// TransitionBarrierを張る
-	commandList->ResourceBarrier(1, &barrier);
+	// バリアの設定
+	SetResourceBarrier(mCommandList.Get(), swapChainResources[backBufferIndex].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
 
 	// コマンドリストの内容を確定させる。すべてのコマンドを積んでからCloseすること
-	HRESULT hr = commandList->Close();
+	HRESULT hr = mCommandList->Close();
 	assert(SUCCEEDED(hr));
 
 	// GPUにコマンドリストの実行を行わせる
-	ID3D12CommandList* commandlists[] = { commandList.Get() };
+	ID3D12CommandList* commandlists[] = { mCommandList.Get() };
 	commandQueue->ExecuteCommandLists(1, commandlists);
+
 	// GPUとOSに画面の交換を行うように通知する
 	swapChain->Present(1, 0);
 
 	// コマンドの実行完了を待つ
-	commandQueue->Signal(fence.Get(), ++fenceValue);
+	commandQueue->Signal(mFence.Get(), ++mFenceValue);
 
 	// FPS固定
 	UpdateFixFPS();
 
 	// Fenceの値が指定したsignal値にたどりついているか確認する
-	// GetCompletedValueの初期値はFence作成時に渡した初期値
-	if (fence->GetCompletedValue() != fenceValue)
-	{
+	if (mFence->GetCompletedValue() != mFenceValue) {
 		HANDLE event = CreateEvent(nullptr, false, false, nullptr);
-		// 指定したSignalにたどり着いていないので、たどり着くまで待つようにイベントを設定する
-		fence->SetEventOnCompletion(fenceValue, fenceEvent);
-		// イベントを待つ
-		WaitForSingleObject(fenceEvent, INFINITE);
+		mFence->SetEventOnCompletion(mFenceValue, mFenceEvent);
+		WaitForSingleObject(mFenceEvent, INFINITE);
 		CloseHandle(event);
 	}
 
 	// 次のフレーム用のコマンドリストを準備
 	hr = commandAllocator->Reset();
 	assert(SUCCEEDED(hr));
-	hr = commandList->Reset(commandAllocator.Get(), nullptr);
+	hr = mCommandList->Reset(commandAllocator.Get(), nullptr);
 	assert(SUCCEEDED(hr));
-
 }
+
 
 /// バッファリソースの生成
 Microsoft::WRL::ComPtr<ID3D12Resource> DirectXCommon::CreateBufferResource(ID3D12Device* device, size_t sizeInBytes) {
@@ -598,7 +413,8 @@ Microsoft::WRL::ComPtr<ID3D12Resource> DirectXCommon::CreateBufferResource(ID3D1
 	// バッファの場合はこれにする決まり
 	vertexResouceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
 
-	HRESULT hr = device->CreateCommittedResource(&uploadHeapProperties, D3D12_HEAP_FLAG_NONE,
+	HRESULT hr;
+	hr = device->CreateCommittedResource(&uploadHeapProperties, D3D12_HEAP_FLAG_NONE,
 		&vertexResouceDesc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr,
 		IID_PPV_ARGS(&result_));
 	assert(SUCCEEDED(hr));
@@ -615,7 +431,8 @@ Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> DirectXCommon::CreateDescriptorHeap
 	descriptorHeapDesc.Type = heapType;
 	descriptorHeapDesc.NumDescriptors = numDescriptors;
 	descriptorHeapDesc.Flags = shaderVisible ? D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE : D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-	HRESULT hr = device->CreateDescriptorHeap(&descriptorHeapDesc, IID_PPV_ARGS(&resultDescriptorHeap));
+	HRESULT hr;
+	hr = device->CreateDescriptorHeap(&descriptorHeapDesc, IID_PPV_ARGS(&resultDescriptorHeap));
 	// ディスクリプタヒープが生成できなかったら起動できない
 	assert(SUCCEEDED(hr));
 	// 生成完了のログをだす
@@ -627,7 +444,7 @@ Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> DirectXCommon::CreateDescriptorHeap
 // FPS固定初期化
 void DirectXCommon::InitFixFPS() {
 	// 現在時間を記録
-	reference_ = std::chrono::steady_clock::now();
+	mReference = std::chrono::steady_clock::now();
 }
 
 // FPS固定更新
@@ -641,18 +458,18 @@ void DirectXCommon::UpdateFixFPS() {
 	std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
 	// 前回記録からの経過時間を取得
 	std::chrono::microseconds elapsed =
-		std::chrono::duration_cast<std::chrono::microseconds>(now - reference_);
+		std::chrono::duration_cast<std::chrono::microseconds>(now - mReference);
 
 	// 1/60秒 (よりわずかに短い時間) 立っていない場合
 	if (elapsed < kMinCheckTime) {
 		// 1/60	秒経過するまで微小なスリープを繰り返す
-		while (std::chrono::steady_clock::now() - reference_ < kMinTime)
+		while (std::chrono::steady_clock::now() - mReference < kMinTime)
 		{
 			// 1マイクロ秒スリープ
 			std::this_thread::sleep_for(std::chrono::microseconds(1));
 		}
 	}
 	// 現在時間を記録
-	reference_ = std::chrono::steady_clock::now();
+	mReference = std::chrono::steady_clock::now();
 
 }

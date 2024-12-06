@@ -7,68 +7,72 @@ Line::Line() {}
 
 Line::~Line()
 {
-	//delete wvpData;
+	//delete mWvpData;
 	//delete vertexData;
 	//delete materialData;
 }
 
-void Line::Initialize(DirectXCommon* dxCommon, CameraCommon* camera) {
+void Line::Init() {
 
-	dxCommon_ = dxCommon;
-	camera_ = camera;
+	mDxCommon = DirectXCommon::GetInstance();
 
 	// CopyImage用のPSO及びRootSignatureを生成する
 	CreateGraphicsPipeline();
 
 	CreateVertexResource();
-	CreateTransformationRsource();
+	CreateTransformation();
 	CreateBufferView();
 
-	textureHandle_ = dxCommon_->srv_->LoadTexture("white2x2.png");
-	textureHandle_ = dxCommon_->srv_->CreateRenderTextureSRV(dxCommon_->rtv_->renderTextureResource.Get());
+	mTextureHandle = mDxCommon->srv_->LoadTexture("white2x2.png");
+	//mTextureHandle = dxCommon_->srv_->CreateRenderTextureSRV(dxCommon_->rtv_->mRenderTextureResource.Get());
 }
 
 
 void Line::Update() {
 
-	// カメラのワールド行列
-	cameraM = MakeAffineMatrix(Vector3{ 1.0f,1.0f,1.0f },
-		Vector3{ 0.0f,0.0f,0.0f }, Vector3{ 0.0f,0.0f,-5.0f });
+	MainCamera* camera = MainCamera::GetInstance();
 	// カメラ行列のビュー行列(カメラのワールド行列の逆行列)
-	viewM = Inverse(cameraM);
-	// 正規化デバイス座標系(NDC)に変換(正射影行列をかける)
-	pespectiveM = MakePerspectiveMatrix(0.45f, (1280.0f / 720.0f), 0.1f, 100.0f);
+	viewM = camera->GetViewMatrix();
 	// WVPにまとめる
-	wvpM = Multiply(viewM, pespectiveM);
+	wvpM = camera->GetViewProjectionMatrix();
 	// 三角形のワールド行列とWVP行列を掛け合わした行列を代入
-	*wvpData = Multiply(worldTransform_.GetWorldMatrix(), wvpM);
+	*mWvpData = Multiply(mWorldTransform.GetWorldMatrix(), wvpM);
+	
+#ifdef _DEBUG
+	ImGui::Begin("Line");
+	ImGui::DragFloat3("Start", &mVertexData[0].position.x, 0.01f, -100.0f, 100.0f);
+	ImGui::DragFloat3("end", &mVertexData[1].position.x, 0.01f, -100.0f, 100.0f);
+	mVertexData[2] = mVertexData[1];
+	ImGui::End();
+#endif // _DEBUG
+
 
 }
 
 void Line::PreDraw() {
 	// RootSignatureを設定。PSOに設定しているが、別途設定が必要
-	dxCommon_->commandList->SetGraphicsRootSignature(rootSignature.Get());
-	dxCommon_->commandList->SetPipelineState(graphicsPipelineState.Get());
+	mDxCommon->mCommandList->SetGraphicsRootSignature(rootSignature.Get());
+	mDxCommon->mCommandList->SetPipelineState(graphicsPipelineState.Get());
 }
 
 void Line::Draw() {
 
 
-	dxCommon_->commandList->IASetVertexBuffers(0, 1, &vertexBufferView);
+	mDxCommon->mCommandList->IASetVertexBuffers(0, 1, &mVertexBufferView);
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけばいい
-	dxCommon_->commandList->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_LINELIST);
+	mDxCommon->mCommandList->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_LINELIST);
 
 	/// CBV設定
 
 	// マテリアルのCBufferの場所を指定
-	dxCommon_->commandList->SetGraphicsRootConstantBufferView(0, materialResource->GetGPUVirtualAddress());
+	mDxCommon->mCommandList->SetGraphicsRootConstantBufferView(0, materialResource->GetGPUVirtualAddress());
 	//wvp用のCBufferの場所を指定
-	dxCommon_->commandList->SetGraphicsRootConstantBufferView(1, wvpResource->GetGPUVirtualAddress());
+	mDxCommon->mCommandList->SetGraphicsRootConstantBufferView(1, mWvpResource->GetGPUVirtualAddress());
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である
-	dxCommon_->commandList->SetGraphicsRootDescriptorTable(2, dxCommon_->srv_->textureData_.at(textureHandle_).textureSrvHandleGPU);
+	mDxCommon->mCommandList->SetGraphicsRootDescriptorTable(2, mDxCommon->srv_->mTextureData.at(mTextureHandle).textureSrvHandleGPU);
 
 	// インスタンス生成
-	dxCommon_->commandList->DrawInstanced(3, 1, 0, 0);
+	mDxCommon->mCommandList->DrawInstanced(3, 1, 0, 0);
 
 }
 
@@ -130,7 +134,7 @@ void Line::CreateRootSignature() {
 	}
 
 	// バイナリを元に
-	hr = dxCommon_->device_->CreateRootSignature(0, signatureBlob->GetBufferPointer(),
+	hr = mDxCommon->device_->CreateRootSignature(0, signatureBlob->GetBufferPointer(),
 		signatureBlob->GetBufferSize(), IID_PPV_ARGS(&rootSignature));
 	assert(SUCCEEDED(hr));
 
@@ -168,11 +172,11 @@ void Line::CreateGraphicsPipeline() {
 
 	// Shaderをcompileする(P.37)
 	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob = WinAPI::CompileShader(L"Shaders/CopyImage.VS.hlsl",
-		L"vs_6_0", dxCommon_->dxcUtils, dxCommon_->dxcCompiler, dxCommon_->includeHandler);
+		L"vs_6_0", mDxCommon->dxcUtils, mDxCommon->dxcCompiler, mDxCommon->includeHandler);
 	assert(vertexShaderBlob != nullptr);
 
 	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob = WinAPI::CompileShader(L"Shaders/CopyImage.PS.hlsl",
-		L"ps_6_0", dxCommon_->dxcUtils, dxCommon_->dxcCompiler, dxCommon_->includeHandler);
+		L"ps_6_0", mDxCommon->dxcUtils, mDxCommon->dxcCompiler, mDxCommon->includeHandler);
 	assert(pixelShaderBlob != nullptr);
 
 	// PSOを生成する(P.38)
@@ -205,7 +209,8 @@ void Line::CreateGraphicsPipeline() {
 	graphicsPipelineStateDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
 
 	// 実際に生成
-	HRESULT hr = dxCommon_->device_->CreateGraphicsPipelineState(&graphicsPipelineStateDesc,
+	HRESULT hr;
+	hr = mDxCommon->device_->CreateGraphicsPipelineState(&graphicsPipelineStateDesc,
 		IID_PPV_ARGS(&graphicsPipelineState));
 	assert(SUCCEEDED(hr));
 
@@ -217,10 +222,10 @@ void Line::CreateVertexResource() {
 
 	// VertexResourceを生成する(P.42)
 	// 実際に頂点リソースを作る
-	vertexResource = dxCommon_->CreateBufferResource(dxCommon_->device_.Get(), sizeof(VertexData) * 3);
+	mVertexResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(VertexData) * 3);
 
 	// マテリアル用のResourceを作る
-	materialResource = dxCommon_->CreateBufferResource(dxCommon_->device_.Get(), sizeof(VertexData));
+	materialResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(VertexData));
 	// マテリアルにデータを書き込む
 	materialData = nullptr;
 	// 書き込むためのアドレスを取得
@@ -231,15 +236,15 @@ void Line::CreateVertexResource() {
 }
 
 //
-void Line::CreateTransformationRsource() {
+void Line::CreateTransformation() {
 
 	// Transformation用のResourceを作る
-	wvpResource = dxCommon_->CreateBufferResource(dxCommon_->device_.Get(), sizeof(Matrix4x4));
+	mWvpResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(Matrix4x4));
 	// データを書き込む
 	// 書き込むためのアドレスを取得
-	wvpResource->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
+	mWvpResource->Map(0, nullptr, reinterpret_cast<void**>(&mWvpData));
 	// 単位行列を書き込む
-	*wvpData = camera_->GetViewProjectionMatrix();
+	*mWvpData = MainCamera::GetInstance()->GetViewProjectionMatrix();
 
 }
 
@@ -248,26 +253,26 @@ void Line::CreateBufferView() {
 
 	// VertexBufferViewを作成する(P.43)
 	// 頂点バッファビューを作成する
-	vertexBufferView = {};
+	mVertexBufferView = {};
 	// リソースの先頭のアドレスから使う
-	vertexBufferView.BufferLocation = vertexResource->GetGPUVirtualAddress();
+	mVertexBufferView.BufferLocation = mVertexResource->GetGPUVirtualAddress();
 	// 使用するリソースサイズは頂点3つ分のサイズ
-	vertexBufferView.SizeInBytes = sizeof(VertexData) * 3;
+	mVertexBufferView.SizeInBytes = sizeof(VertexData) * 3;
 	// 1頂点あたりのサイズ
-	vertexBufferView.StrideInBytes = sizeof(VertexData);
+	mVertexBufferView.StrideInBytes = sizeof(VertexData);
 
 	// Resourceにデータを書き込む
 
 	// 書き込むためのアドレスを取得
-	vertexResource->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
+	mVertexResource->Map(0, nullptr, reinterpret_cast<void**>(&mVertexData));
 	// 左下
-	vertexData[0].position = { -0.5f,-0.5f,0.0f,1.0f };
-	vertexData[0].texcoord = { 0.0f,1.0f };
+	mVertexData[0].position = { -0.5f,-0.5f,0.0f,1.0f };
+	mVertexData[0].texcoord = { 0.0f,1.0f };
 	// 上
-	vertexData[1].position = { 0.0f,0.5f,0.0f,1.0f };
-	vertexData[1].texcoord = { 0.5f,0.0f };
+	mVertexData[1].position = { 0.0f,0.5f,0.0f,1.0f };
+	mVertexData[1].texcoord = { 0.5f,0.0f };
 	// 右下
-	vertexData[2].position = { 0.5f,-0.5f,0.0f,1.0f };
-	vertexData[2].texcoord = { 1.0f,1.0f };
+	mVertexData[2].position = { 0.5f,-0.5f,0.0f,1.0f };
+	mVertexData[2].texcoord = { 1.0f,1.0f };
 
 }

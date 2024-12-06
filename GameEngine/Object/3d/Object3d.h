@@ -1,4 +1,6 @@
 #pragma once
+#include "GameEngine/Object/Base/ObjectBase.h"
+
 #include "GameEngine/Math/Math.h"
 #include "GameEngine/Append/Transform/WorldTransform.h"
 #include "GameEngine/Resource/Texture/Resource.h"
@@ -6,17 +8,19 @@
 #include "GameEngine/Object/Camera/CameraCommon.h"
 #include "GameEngine/Append/Animation/Skinning/Skinnig.h"
 
+#include "GameEngine/Append/Collider/Collider.h"
+
 class Object3dCommon;
 class Model;
 class CameraCommon;
 class ModelManager;
 
-class Object3d
+class Object3d : public ObjectBase 
 {
 
 public: // メンバ関数
 
-	Object3d();
+	Object3d() = default;
 	Object3d(const std::string objname);
 	~Object3d();
 
@@ -27,46 +31,44 @@ public: // メンバ関数
 	/// 描画
 	void Draw();
 	void DrawGUI();
+	void DrawGuiTree();
 
-	void CreateTransformationRsource();
+	void CreateTransformation();
 	void SetModel(const std::string& filepath);
-	void SetScale(Vector3 scale) { worldTransform_->scale = scale; }
-	void SetRotate(Vector3 rotate) { worldTransform_->rotation = rotate; }
-	void SetTranslate(Vector3 translate) { worldTransform_->translation = translate; }
-	void SetWorldTransform(WorldTransform* w) { worldTransform_ = w; }
-	const WorldTransform* GetWorldTransform()const  { return worldTransform_; }
+	void SetScale(Vector3 scale) { mWorldTransform->scale = scale; }
+	void SetRotate(Vector3 rotate) { mWorldTransform->rotation = rotate; }
+	void SetTranslate(Vector3 translate) { mWorldTransform->translation = translate; }
+	void SetWorldTransform(WorldTransform* w) { mWorldTransform = w; }
+	const WorldTransform* GetWorldTransform()const  { return mWorldTransform; }
 
-	Model* GetModel() { return model_; }
-
+	Model* GetModel() { return mModel; }
+	
 public: // メンバ変数
 
-	// オブジェクトの名称
-	std::string objname_;
-
 	// 外部ポインタ
-	DirectXCommon* dxCommon_ = nullptr;
-	Object3dCommon* object3dCommon_ = nullptr;
-	Model* model_ = nullptr;
-	ModelManager* modelManager_;
+	DirectXCommon* mDxCommon = nullptr;
+	Object3dCommon* mObject3dCommon = nullptr;
+	Model* mModel = nullptr;
+	ModelManager* mModelManager;
 	Matrix4x4 cameraM, viewM, projectM, pespectiveM, wvpM;
 
 	// Transformation用のResourceを作る
-	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12Resource> mWvpResource = nullptr;
 	// データを書き込む
-	TransformationMatrix* wvpData = nullptr;
-	WorldTransform* worldTransform_;
+	TransformationMatrix* mWvpData = nullptr;
+	//WorldTransform* mWorldTransform;
 
-	// -- Animation 関連 -- //
+	// マテリアル
+	Material material;
 
-	// アニメーションデータを保有しているか
-	bool isHavingAnimation_ = false;
+	// スキニング アニメーション
+	Skinning* mSkinning = nullptr;
+	// スケルトン
+	Skeleton mSkeleton;
 
-	// アニメーション再生中の時刻
-	float animationTime_ = 0.0f;
+	// コライダー
+	Collider* mCollider;
 
-	// スケルトン 仮置き
-	Skeleton skeleton_;
-	// スキンクラスター 仮置き
-	SkinCluster skinCluster_;
+
 };
 

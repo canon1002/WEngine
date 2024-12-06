@@ -1,9 +1,12 @@
 #pragma once
 #include <memory>
 #include "IScene.h"
+#include "StartScene.h"
 #include "TitleScene.h"
 #include "GameScene.h"
 #include "ResultScene.h"
+#include "OverScene.h"
+#include "MenuScene.h"
 
 #include "GameEngine/Base/DirectX/DirectXCommon.h"
 #include "GameEngine/Base/Debug/ImGuiManager.h"
@@ -13,7 +16,6 @@
 #include "GameEngine/Resource/Texture/Resource.h"
 #include "GameEngine/Object/Sprite/Sphere.h"
 
-#include "GameEngine/Object/Particle/VoxelParticle.h"
 #include "GameEngine/Input/InputManager.h"
 #include "GameEngine/Resource/Audio/Audio.h"
 
@@ -26,7 +28,7 @@ class SceneManager
 private:
 
 	// シーンを保持するメンバ変数
-	std::unique_ptr<IScene> sceneArr_[3];
+	std::array<std::unique_ptr<IScene>, 6> sceneArr_;
 
 	// どのシーンを呼び出すかを管理する変数
 	int32_t currentSceneNo_;// 現在のシーン
@@ -38,7 +40,7 @@ private:
 	// WindowsAPI
 	WinAPI* winApp_;
 	// DirectX
-	DirectXCommon* dxCommon_;
+	DirectXCommon* mDxCommon;
 
 #ifdef _DEBUG
 	// ImGuiManager
@@ -53,7 +55,10 @@ private:
 	std::unique_ptr<MainCamera> mainCamera_ = nullptr;
 	
 	// オブジェクト管理者クラス
-	ObjectAdministrator* objectAdmin_;
+	ObjectManager* objectAdmin_;
+
+	// ポストエフェクト
+	RenderCopyImage* copyImage_;
 
 public:
 
@@ -63,7 +68,8 @@ public:
 	void Init(WinAPI* winApp, DirectXCommon* dxCommon);
 	int Run();//　この関数でゲームループを呼び出す
 
-	std::unique_ptr<RenderCopyImage> copyImage_;
+	
+
 
 };
 

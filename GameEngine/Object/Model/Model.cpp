@@ -4,14 +4,14 @@
 #include "GameEngine/Base/Debug/ImGuiManager.h"
 
 Model::~Model() {
-	vertexResource.Reset();
-	CameraResource.Reset();
+	mVertexResource.Reset();
+	mCameraResource.Reset();
 }
 
 void Model::Initialize(DirectXCommon* dxCommon,CameraCommon* camera,const std::string& directrypath,const std::string& filename)
 {
-	dxCommon_ = dxCommon;
-	camera_ = camera;
+	mDxCommon = dxCommon;
+	mCamera = camera;
 
 	// モデル読み込み
 	modelData = Resource::LoadModelFile(directrypath,filename);
@@ -27,9 +27,10 @@ void Model::Initialize(DirectXCommon* dxCommon,CameraCommon* camera,const std::s
 
 void Model::Initialize(const std::string& directrypath, const std::string& filename){
 
-	dxCommon_ = DirectXCommon::GetInstance();
-	camera_ = MainCamera::GetInstance();
+	mDxCommon = DirectXCommon::GetInstance();
+	mCamera = MainCamera::GetInstance();
 	
+	mTextureHandleCubeMap = 0;
 
 	// モデル読み込み
 	modelData = Resource::LoadModelFile(directrypath, filename);
@@ -47,45 +48,54 @@ void Model::Update()
 void Model::Draw()
 {
 	// 配列を渡す(開始スロット番号、使用スロット数、VBV配列へのポインタ)
-	dxCommon_->commandList->IASetVertexBuffers(0, 1, &vertexBufferView);
+	mDxCommon->mCommandList->IASetVertexBuffers(0, 1, &mVertexBufferView);
 	// IndexBufferViewをセット
-	dxCommon_->commandList->IASetIndexBuffer(&indexBufferView);
+	mDxCommon->mCommandList->IASetIndexBuffer(&mIndexBufferView);
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけばいい
-	dxCommon_->commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	mDxCommon->mCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	// マテリアルのCBufferの場所を指定
-	dxCommon_->commandList->SetGraphicsRootConstantBufferView(0, materialResource->GetGPUVirtualAddress());
-	dxCommon_->commandList->SetGraphicsRootConstantBufferView(3, directionalLightResource->GetGPUVirtualAddress());
-	dxCommon_->commandList->SetGraphicsRootConstantBufferView(4, CameraResource->GetGPUVirtualAddress());
+	mDxCommon->mCommandList->SetGraphicsRootConstantBufferView(0, mMaterialResource->GetGPUVirtualAddress());
+	mDxCommon->mCommandList->SetGraphicsRootConstantBufferView(3, mDirectionalLightResource->GetGPUVirtualAddress());
+	mDxCommon->mCommandList->SetGraphicsRootConstantBufferView(4, mCameraResource->GetGPUVirtualAddress());
 
-	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である
-	dxCommon_->commandList->SetGraphicsRootDescriptorTable(2, dxCommon_->srv_->textureData_.at(textureHandle_).textureSrvHandleGPU);
+	// テクスチャをセット
+	mDxCommon->mCommandList->SetGraphicsRootDescriptorTable(2, mDxCommon->srv_->mTextureData.at(mTextureHandle).textureSrvHandleGPU);
+	// CueMapのテクスチャをセット
+	if (mTextureHandleCubeMap != 0) {
+		mDxCommon->mCommandList->SetGraphicsRootDescriptorTable(5, mDxCommon->srv_->mTextureData.at(mTextureHandleCubeMap).textureSrvHandleGPU);
+	}
+
 	// インデックスを使用してドローコール
-	dxCommon_->commandList->DrawIndexedInstanced(UINT(modelData.indices.size()), 1, 0, 0, 0);
+	mDxCommon->mCommandList->DrawIndexedInstanced(UINT(modelData.indices.size()), 1, 0, 0, 0);
 }
 
 void Model::DrawGUI(const std::string& label){
+	label;
 #ifdef _DEBUG
+	if (ImGui::TreeNode(label.c_str())) {
+		// マテリアル
+		if (ImGui::TreeNode("マテリアル")) {
+			ImGui::DragFloat4("Color", &mMaterialData->color.r, 0.01f, 0.0f, 1.0f);
+			ImGui::TreePop();// ノードを閉じる(この場合は "マテリアル" を閉じる)
+		}
+		if (ImGui::TreeNode("平行光源")) {
+			ImGui::Checkbox("Lighting Flag", &mIsLighting);
+			// Lightingの設定を変更できるように
+			mMaterialData->enableLighting = mIsLighting;
+			ImGui::DragFloat("Shininess", &mMaterialData->shininess, 0.05f, 0.0f, 1.0f);
+			ImGui::DragFloat4("Color", &mDirectionalLightData->color.r);
+			ImGui::DragFloat3("Directon", &mDirectionalLightData->direction.x, 0.1f, 0.0f, 1.0f);
+			ImGui::DragFloat("Intensity", &mDirectionalLightData->intensity, 0.1f, 0.0f, 1.0f);
+			ImGui::TreePop();
+		}
+		if (ImGui::TreeNode("環境マップ")) {
+			ImGui::DragFloat("EnvironmentCoefficient", &mMaterialData->environmentCoefficient, 0.01f, 0.0f, 1.0f);
+			ImGui::TreePop();// ノードを閉じる(この場合は "マテリアル" を閉じる)
+		}
 
-	/// デバック情報を描画
-	ImGui::BeginChild(label.c_str());
-	// マテリアル
-	if (ImGui::TreeNode("マテリアル")) {
-		ImGui::DragFloat4("Color", &materialData_->color.r,0.01f,0.0f,1.0f);
-		ImGui::TreePop();// ノードを閉じる(この場合は "マテリアル" を閉じる)
-	}
-	if (ImGui::TreeNode("平行光源")) {
-		ImGui::Checkbox("Lighting Flag",&isLighting_);
-		// Lightingの設定を変更できるように
-		materialData_->enableLighting = isLighting_;
-		ImGui::DragFloat("Shininess", &materialData_->shininess, 0.05f, 0.0f, 1.0f);
-		ImGui::DragFloat4("Color", &directionalLightDate->color.r);
-		ImGui::DragFloat3("Directon", &directionalLightDate->direction.x,0.1f,0.0f,1.0f);
-		ImGui::DragFloat("Intensity", &directionalLightDate->intensity, 0.1f, 0.0f, 1.0f);
 		ImGui::TreePop();
 	}
-	
-	ImGui::EndChild();
 
 #endif // _DEBUG
 }
@@ -95,34 +105,34 @@ void Model::CreateVertexResource() {
 
 
 	// 実際に頂点リソースを作る
-	vertexResource = dxCommon_->CreateBufferResource(
-		dxCommon_->device_.Get(), sizeof(VertexData) * modelData.vertices.size());
+	mVertexResource = mDxCommon->CreateBufferResource(
+		mDxCommon->device_.Get(), sizeof(VertexData) * modelData.vertices.size());
 
 	// リソースの先頭のアドレスから使う
-	vertexBufferView.BufferLocation = vertexResource->GetGPUVirtualAddress();
+	mVertexBufferView.BufferLocation = mVertexResource->GetGPUVirtualAddress();
 	// 使用するリソースサイズは頂点分のサイズ
-	vertexBufferView.SizeInBytes = UINT(sizeof(VertexData) * modelData.vertices.size());
+	mVertexBufferView.SizeInBytes = UINT(sizeof(VertexData) * modelData.vertices.size());
 	// 1頂点あたりのサイズ
-	vertexBufferView.StrideInBytes = sizeof(VertexData);
+	mVertexBufferView.StrideInBytes = sizeof(VertexData);
 
 	// 頂点リソースにデータを書き込む
-	vertexResource->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));// 書き込むためのアドレスを取得
-	std::memcpy(vertexData, modelData.vertices.data(), sizeof(VertexData) * modelData.vertices.size());
+	mVertexResource->Map(0, nullptr, reinterpret_cast<void**>(&mVertexData));// 書き込むためのアドレスを取得
+	std::memcpy(mVertexData, modelData.vertices.data(), sizeof(VertexData) * modelData.vertices.size());
 
 }
 
 void Model::CreateIndexResource(){
 
 	// Indexは <uint32_t * Indexデータのサイズ> 分だけ確保する
-	indexResource = dxCommon_->CreateBufferResource(dxCommon_->device_.Get(), sizeof(uint32_t) * modelData.indices.size());
+	mIndexResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(uint32_t) * modelData.indices.size());
 	// GPUアドレスを取得
-	indexBufferView.BufferLocation = indexResource->GetGPUVirtualAddress();
+	mIndexBufferView.BufferLocation = mIndexResource->GetGPUVirtualAddress();
 	// Byte数は <uint32_t * Indexデータのサイズ>分
-	indexBufferView.SizeInBytes = sizeof(uint32_t) * (uint32_t)modelData.indices.size();
-	indexBufferView.Format = DXGI_FORMAT_R32_UINT;
+	mIndexBufferView.SizeInBytes = sizeof(uint32_t) * (uint32_t)modelData.indices.size();
+	mIndexBufferView.Format = DXGI_FORMAT_R32_UINT;
 	// Rsourceに対してIndexの内容をコピーする
 	uint32_t* mappedIndex = nullptr;
-	indexResource->Map(0, nullptr, reinterpret_cast<void**>(&mappedIndex));
+	mIndexResource->Map(0, nullptr, reinterpret_cast<void**>(&mappedIndex));
 	std::memcpy(mappedIndex, modelData.indices.data(), sizeof(uint32_t) * modelData.indices.size());
 
 }
@@ -130,42 +140,42 @@ void Model::CreateIndexResource(){
 void Model::CreateMaterialResource()
 {
 	// マテリアル用のResourceを作る
-	materialResource = dxCommon_->
-		CreateBufferResource(dxCommon_->
+	mMaterialResource = mDxCommon->
+		CreateBufferResource(mDxCommon->
 			device_.Get(), sizeof(Material));
 
 	// マテリアルにデータを書き込む
-	materialData_ = nullptr;
+	mMaterialData = nullptr;
 	// 書き込むためのアドレスを取得
-	materialResource->Map(0, nullptr, reinterpret_cast<void**>(&materialData_));
+	mMaterialResource->Map(0, nullptr, reinterpret_cast<void**>(&mMaterialData));
 	// テクスチャの情報を転送
 	if (modelData.material.textureFilePath.empty()) {
-		textureHandle_ = dxCommon_->srv_->defaultTexId_;
+		mTextureHandle = mDxCommon->srv_->defaultTexId_;
 	}
 	else {
-		textureHandle_ = dxCommon_->srv_->LoadTexture(modelData.material.textureFilePath);
+		mTextureHandle = mDxCommon->srv_->LoadTexture(modelData.material.textureFilePath);
 	}
 	// 色の書き込み・Lightingの無効化
-	materialData_->color = { 1.0f, 1.0f, 1.0f, 1.0f };
-	materialData_->enableLighting = true;
+	mMaterialData->color = { 1.0f, 1.0f, 1.0f, 1.0f };
+	mMaterialData->enableLighting = true;
 	// UVTransformを設定
-	materialData_->uvTransform = MakeIdentity();
-	uvTransform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
-	materialData_->shininess = 100.0f;
+	mMaterialData->uvTransform = MakeIdentity();
+	mUvTransform = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
+	mMaterialData->shininess = 100.0f;
 
 	// Light
-	directionalLightResource = dxCommon_->CreateBufferResource(dxCommon_->device_.Get(), sizeof(DirectionalLight));
+	mDirectionalLightResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(DirectionalLight));
 	// データを書き込む
-	directionalLightResource->Map(0, nullptr, reinterpret_cast<void**>(&directionalLightDate));
-	directionalLightDate->color = { 1.0f, 1.0f, 1.0f, 1.0f };
-	directionalLightDate->direction = { 0.0f,-1.0f,0.0f };
-	directionalLightDate->intensity = 1.0f;
+	mDirectionalLightResource->Map(0, nullptr, reinterpret_cast<void**>(&mDirectionalLightData));
+	mDirectionalLightData->color = { 1.0f, 1.0f, 1.0f, 1.0f };
+	mDirectionalLightData->direction = { 0.0f,-1.0f,0.0f };
+	mDirectionalLightData->intensity = 1.0f;
 
 	// カメラデータ
-	CameraResource = dxCommon_->CreateBufferResource(dxCommon_->device_.Get(), sizeof(CameraForGPU));
+	mCameraResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(CameraForGPU));
 	// データを書き込む
-	CameraResource->Map(0, nullptr, reinterpret_cast<void**>(&cameraData));
-	camera_->Initialize(dxCommon_->win_);
-	cameraData->worldPosition = camera_->GetTranslate();
+	mCameraResource->Map(0, nullptr, reinterpret_cast<void**>(&mCameraData));
+	mCamera->Initialize();
+	mCameraData->worldPosition = mCamera->GetTranslate();
 
 }

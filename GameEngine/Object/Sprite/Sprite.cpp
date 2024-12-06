@@ -1,13 +1,14 @@
 #include "Sprite.h"
 #include "GameEngine/Base/Debug/ImGuiManager.h"
+#include "GameEngine/Object/Camera/MainCamera.h"
 
-void Sprite::Initialize(DirectXCommon* dxCommon, CameraCommon* camera) {
+void Sprite::Init() {
 
-	dxCommon_ = dxCommon;
-	camera_ = camera;
+	mDxCommon = DirectXCommon::GetInstance();
+	mCamera = MainCamera::GetInstance();
 	CreateVertexResource();
 	CreateIndexResource();
-	CreateTransformationRsource();
+	CreateTransformation();
 	CreateBufferView();
 
 	// テクスチャサイズをイメージに合わせる
@@ -19,20 +20,21 @@ void Sprite::Update() {
 
 #ifdef _DEBUG
 
-	/*ImGui::Begin("Sprite");
-	ImGui::DragFloat3("Scale", &worldTransform_.scale.x, 0.1f, 0.1f, 2.0f);
-	ImGui::DragFloat3("Rotate", &worldTransform_.rotate.x);
-	ImGui::DragFloat3("Tranlate", &worldTransform_.translate.x);
-	ImGui::Spacing();
-	ImGui::DragFloat2("UVScale", &uvTransform_.scale.x, 0.01f, -10.0f, 10.0f);
-	ImGui::DragFloat2("UVTranlate", &uvTransform_.translate.x, 0.01f, -10.0f, 10.0f);
-	ImGui::SliderAngle("UVRotate", &uvTransform_.rotate.z);
-	ImGui::ColorEdit4("Color", &materialData->color.r);
-	ImGui::End();*/
+	//ImGui::Begin("Sprite");
+	//ImGui::DragFloat3("Scale", &mWorldTransform.scale.x, 0.1f, 0.1f, 2.0f);
+	//ImGui::DragFloat3("Rotate", &mWorldTransform.rotation.x);
+	//ImGui::DragFloat3("Tranlate", &mWorldTransform.translation.x);
+	//ImGui::Spacing();
+	//ImGui::DragFloat2("UVScale", &uvTransform_.scale.x, 0.01f, -10.0f, 10.0f);
+	//ImGui::DragFloat2("UVTranlate", &uvTransform_.translation.x, 0.01f, -10.0f, 10.0f);
+	//ImGui::SliderAngle("UVRotate", &uvTransform_.rotation.z);
+	//ImGui::ColorEdit4("Color", &materialData->color.r);
+	//ImGui::End();
 
 #endif // _DEBUG
 
-	//worldTransform_.rotate.z += 0.05f;
+	mWorldTransform.translation.z = 0.1f;
+
 
 	// カメラのワールド行列
 	cameraM = MakeAffineMatrix(Vector3(1.0f,1.0f,1.0f),Vector3(0.0f,0.0f,0.0f),Vector3(0.0f,0.0f,0.0f));
@@ -43,8 +45,8 @@ void Sprite::Update() {
 	// WVPにまとめる
 	wvpM = Multiply(viewM, projectM);
 	// 矩形のワールド行列とWVP行列を掛け合わした行列を代入
-	wvpData->WVP = Multiply(worldTransform_.GetWorldMatrix(), wvpM);
-	wvpData->World = worldTransform_.GetWorldMatrix();
+	mWvpData->WVP = Multiply(mWorldTransform.GetWorldMatrix(), wvpM);
+	mWvpData->World = mWorldTransform.GetWorldMatrix();
 
 	/// マテリアル・UVTransform
 	Matrix4x4 uvTransformMatrix = MakeAffineMatrix(
@@ -61,10 +63,10 @@ void Sprite::Update() {
 	float top = (0.0f - anchorPoint.y) * spriteSize.y;
 	float bottom = (1.0f - anchorPoint.y) * spriteSize.y;
 
-	vertexData[0].position = { left,top,0.0f,1.0f };
-	vertexData[1].position = { right,top,0.0f,1.0f };
-	vertexData[2].position = { left,bottom,0.0f,1.0f };
-	vertexData[3].position = { right,bottom,0.0f,1.0f };
+	mVertexData[0].position = { left,top,1.0f,1.0f };
+	mVertexData[1].position = { right,top,1.0f,1.0f };
+	mVertexData[2].position = { left,bottom,1.0f,1.0f };
+	mVertexData[3].position = { right,bottom,1.0f,1.0f };
 
 	
 
@@ -76,32 +78,32 @@ void Sprite::Update() {
 	float tex_bottom = (textureLeftTop_.y + textureSize_.y) / textureFullSize_.y;
 
 	// 頂点リソースにデータを書き込む
-	vertexData[0].texcoord = { tex_left,tex_top };
-	vertexData[1].texcoord = { tex_right,tex_top };
-	vertexData[2].texcoord = { tex_left,tex_bottom };
-	vertexData[3].texcoord = { tex_right,tex_bottom };
+	mVertexData[0].texcoord = { tex_left,tex_top };
+	mVertexData[1].texcoord = { tex_right,tex_top };
+	mVertexData[2].texcoord = { tex_left,tex_bottom };
+	mVertexData[3].texcoord = { tex_right,tex_bottom };
 
 }
 
 void Sprite::Draw() {
 
-	dxCommon_->commandList->IASetVertexBuffers(0, 1, &vertexBufferView);
-	dxCommon_->commandList->IASetIndexBuffer(&indexBufferView);
+	mDxCommon->mCommandList->IASetVertexBuffers(0, 1, &mVertexBufferView);
+	mDxCommon->mCommandList->IASetIndexBuffer(&indexBufferView);
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけばいい
-	dxCommon_->commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	mDxCommon->mCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	/// CBV設定
 
 	// マテリアルのCBufferの場所を指定
-	dxCommon_->commandList->SetGraphicsRootConstantBufferView(0, materialResourceSprite->GetGPUVirtualAddress());
+	mDxCommon->mCommandList->SetGraphicsRootConstantBufferView(0, materialResourceSprite->GetGPUVirtualAddress());
 	//wvp用のCBufferの場所を指定
-	dxCommon_->commandList->SetGraphicsRootConstantBufferView(1, wvpResource->GetGPUVirtualAddress());
+	mDxCommon->mCommandList->SetGraphicsRootConstantBufferView(1, mWvpResource->GetGPUVirtualAddress());
 	
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である
-	dxCommon_->commandList->SetGraphicsRootDescriptorTable(2, dxCommon_->srv_->textureData_.at(textureHandle_).textureSrvHandleGPU);
+	mDxCommon->mCommandList->SetGraphicsRootDescriptorTable(2, mDxCommon->srv_->mTextureData.at(mTextureHandle).textureSrvHandleGPU);
 
 	// インデックスを使用してドローコール
-	dxCommon_->commandList->DrawIndexedInstanced(6, 1, 0, 0, 0);
+	mDxCommon->mCommandList->DrawIndexedInstanced(6, 1, 0, 0, 0);
 
 }
 
@@ -115,15 +117,15 @@ void Sprite::CreateVertexResource() {
 
 	// VertexResourceを生成する(P.42)
 	// 実際に頂点リソースを作る
-	vertexResource = dxCommon_->CreateBufferResource(dxCommon_->device_.Get(), sizeof(VertexData2D) * 6);
+	mVertexResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(VertexData2D) * 6);
 
 	// マテリアル用のResourceを作る
-	materialResourceSprite = dxCommon_->CreateBufferResource(dxCommon_->device_.Get(), sizeof(Material2D));
+	materialResourceSprite = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(Material2D));
 	// マテリアルにデータを書き込む
 	materialData = nullptr;
 	// テクスチャの情報を転送
-	if (textureHandle_ == 0) {
-		textureHandle_ = dxCommon_->srv_->defaultTexId_;
+	if (mTextureHandle == 0) {
+		mTextureHandle = mDxCommon->srv_->defaultTexId_;
 	}
 	// 書き込むためのアドレスを取得
 	materialResourceSprite->Map(0, nullptr, reinterpret_cast<void**>(&materialData));
@@ -136,48 +138,48 @@ void Sprite::CreateVertexResource() {
 }
 
 //
-void Sprite::CreateTransformationRsource() {
+void Sprite::CreateTransformation() {
 
 	// Transformation用のResourceを作る
-	wvpResource = dxCommon_->CreateBufferResource(dxCommon_->device_.Get(), sizeof(TransformationMatrix));
+	mWvpResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(TransformationMatrix));
 	// データを書き込む
 	// 書き込むためのアドレスを取得
-	wvpResource->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
+	mWvpResource->Map(0, nullptr, reinterpret_cast<void**>(&mWvpData));
 	// 単位行列を書き込む
-	wvpData->WVP = camera_->GetViewProjectionMatrix();
-	wvpData->World = MakeIdentity();
+	mWvpData->WVP = mCamera->GetViewProjectionMatrix();
+	mWvpData->World = MakeIdentity();
 }
 
 //
 void Sprite::CreateBufferView() {
 
 	// リソースの先頭のアドレスから使う
-	vertexBufferView.BufferLocation = vertexResource->GetGPUVirtualAddress();
+	mVertexBufferView.BufferLocation = mVertexResource->GetGPUVirtualAddress();
 	// 使用するリソースサイズは頂点6つ分のサイズ
-	vertexBufferView.SizeInBytes = sizeof(VertexData2D) * 4;
+	mVertexBufferView.SizeInBytes = sizeof(VertexData2D) * 4;
 	// 1頂点あたりのサイズ
-	vertexBufferView.StrideInBytes = sizeof(VertexData2D);
+	mVertexBufferView.StrideInBytes = sizeof(VertexData2D);
 
 	// Resourceにデータを書き込む
 
 	// 書き込むためのアドレスを取得
-	vertexResource->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
+	mVertexResource->Map(0, nullptr, reinterpret_cast<void**>(&mVertexData));
 	
 	/// 1枚目
 	//　左上
-	vertexData[0].position = { 0.0f,0.0f,0.0f,1.0f };
-	vertexData[0].texcoord = { 0.0f,0.0f };
+	mVertexData[0].position = { 0.0f,0.0f,0.1f,1.0f };
+	mVertexData[0].texcoord = { 0.0f,0.0f };
 	//　右上
-	vertexData[1].position = { 360.0f,0.0f,0.0f,1.0f };
-	vertexData[1].texcoord = { 1.0f,0.0f };
+	mVertexData[1].position = { 360.0f,0.0f,0.1f,1.0f };
+	mVertexData[1].texcoord = { 1.0f,0.0f };
 	// 左下
-	vertexData[2].position = { 0.0f,360.0f,0.0f,1.0f };
-	vertexData[2].texcoord = { 0.0f,1.0f };
+	mVertexData[2].position = { 0.0f,360.0f,0.1f,1.0f };
+	mVertexData[2].texcoord = { 0.0f,1.0f };
 	// 右下
-	vertexData[3].position = { 360.0f,360.0f,0.0f,1.0f };
-	vertexData[3].texcoord = { 1.0f,1.0f };
+	mVertexData[3].position = { 360.0f,360.0f,0.1f,1.0f };
+	mVertexData[3].texcoord = { 1.0f,1.0f };
 
-	indexResource = dxCommon_->CreateBufferResource(dxCommon_->device_.Get(), sizeof(uint32_t) * 6);
+	indexResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(uint32_t) * 6);
 	indexBufferView.BufferLocation = indexResource->GetGPUVirtualAddress();
 	indexBufferView.SizeInBytes = sizeof(uint32_t) * 6;
 	indexBufferView.Format = DXGI_FORMAT_R32_UINT;
@@ -192,7 +194,7 @@ void Sprite::CreateBufferView() {
 void Sprite::AdjustTextureSize()
 {
 	// テクスチャメタデータ取得
-	const DirectX::TexMetadata& metadata = dxCommon_->srv_->GetMetaData(textureHandle_);
+	const DirectX::TexMetadata& metadata = mDxCommon->srv_->GetMetaData(mTextureHandle);
 	textureFullSize_.x = static_cast<float>(metadata.width);
 	textureFullSize_.y = static_cast<float>(metadata.height);
 

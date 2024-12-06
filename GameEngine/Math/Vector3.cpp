@@ -1,11 +1,10 @@
 #include "Vector3.h"
 #define _USE_MATH_DEFINES
-#include<cmath>
-#include<algorithm>
+#include <cmath>
+#include <algorithm>
+#include <functional>
 #include <cassert>
-#ifdef _DEBUG
-#include "GameEngine/Base/Debug/ImGuiManager.h"
-#endif // _DEBUG
+
 
 #pragma region グローバル算術演算子のオーバーロード
 
@@ -317,4 +316,54 @@ Vector3 Perpendicular(const Vector3& v) {
 	}
 
 	return{ 0.0f,-v.z,v.y };
+}
+
+Vector3 Min(const Vector3& a, const Vector3& b)
+{
+	Vector3 result{};
+
+	result.x = std::min(a.x, b.x);
+	result.y = std::min(a.y, b.y);
+	result.z = std::min(a.z, b.z);
+	return result;
+}
+
+Vector3 Max(const Vector3& a, const Vector3& b)
+{
+	Vector3 result{};
+	result.x = std::max(a.x, b.x);
+	result.y = std::max(a.y, b.y);
+	result.z = std::max(a.z, b.z);
+	return result;
+}
+
+Vector3 ExponentialInterpolation(Vector3 a, Vector3 b, float t, float k) {
+	Vector3 result = {};
+	result.x = a.x + ((b.x - a.x) * k * t);
+	result.y = a.y + ((b.y - a.y) * k * t);
+	result.z = a.z + ((b.z - a.z) * k * t);
+	return result;
+}
+
+float ExponentialInterpolation(float a, float b, float t, float k) {
+	float result = 0.0f;
+	result = a + ((b - a) * k * t);
+	
+	return result;
+}
+
+float clamp(float num, float max, float min)
+{
+	if (num > max)
+	{
+		return max;
+	}
+	else if (num < min)
+	{
+		return max;
+	}
+	else
+	{
+		return num;
+	}
 }

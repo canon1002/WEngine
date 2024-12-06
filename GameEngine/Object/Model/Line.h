@@ -13,7 +13,7 @@ public:
 	Line();
 	~Line();
 
-	void Initialize(DirectXCommon* dxCommon, CameraCommon* camera);
+	void Init();
 	void Update();
 	void PreDraw();
 	void Draw();
@@ -33,7 +33,7 @@ private:	// -- private メンバ関数 -- //
 	void CreateGraphicsPipeline();
 
 	void CreateVertexResource();
-	void CreateTransformationRsource();
+	void CreateTransformation();
 	void CreateBufferView();
 
 public:
@@ -43,7 +43,7 @@ public:
 	/// </summary>
 	/// <param name="pos">座標</param>
 	void SetTransform(Vector3 pos) {
-		worldTransform_.translation = pos;
+		mWorldTransform.translation = pos;
 	}
 
 	/// <summary>
@@ -51,9 +51,9 @@ public:
 	/// </summary>
 	/// <param name="t">移動量</param>
 	void Transform(Vector3 t) {
-		worldTransform_.translation.x += t.x;
-		worldTransform_.translation.y += t.y;
-		worldTransform_.translation.z += t.z;
+		mWorldTransform.translation.x += t.x;
+		mWorldTransform.translation.y += t.y;
+		mWorldTransform.translation.z += t.z;
 	}
 
 	/// <summary>
@@ -61,9 +61,9 @@ public:
 	/// </summary>
 	/// <param name="r">回転量</param>
 	void Rotation(Vector3 r) {
-		worldTransform_.rotation.x += r.x;
-		worldTransform_.rotation.y += r.y;
-		worldTransform_.rotation.z += r.z;
+		mWorldTransform.rotation.x += r.x;
+		mWorldTransform.rotation.y += r.y;
+		mWorldTransform.rotation.z += r.z;
 	}
 
 	/// <summary>
@@ -75,42 +75,42 @@ public:
 		*materialData = Color(color.r, color.g, color.b, color.a);
 	}
 
-	const D3D12_VERTEX_BUFFER_VIEW& GetVBV() const { return vertexBufferView; }
+	const D3D12_VERTEX_BUFFER_VIEW& GetVBV() const { return mVertexBufferView; }
 	auto* GetMaterial() { return  materialResource.Get(); }
-	auto* GetWVP() { return wvpResource.Get(); }
+	auto* GetWVP() { return mWvpResource.Get(); }
 
 private:
 
 	// 外部ポインタ
-	CameraCommon* camera_ = nullptr;
-	DirectXCommon* dxCommon_ = nullptr;
+	CameraCommon* mCamera = nullptr;
+	DirectXCommon* mDxCommon = nullptr;
 
 	// グラフィックパイプライン
 	Microsoft::WRL::ComPtr <ID3D12PipelineState> graphicsPipelineState = nullptr;
 	// ルートシグネチャー
 	Microsoft::WRL::ComPtr <ID3D12RootSignature> rootSignature = nullptr;
 
-	WorldTransform worldTransform_;
+	WorldTransform mWorldTransform;
 	Matrix4x4 worldM, cameraM, viewM, projectM, pespectiveM, wvpM;
 	Vector4 translate_;
 
 	// VertexResourceを生成する(P.42)
 	// 実際に頂点リソースを作る
-	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12Resource> mVertexResource = nullptr;
 	// マテリアル用のResourceを作る
 	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource = nullptr;
 	// Transformation用のResourceを作る
-	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12Resource> mWvpResource = nullptr;
 	// データを書き込む
-	Matrix4x4* wvpData = nullptr;
+	Matrix4x4* mWvpData = nullptr;
 	// 頂点リソースにデータを書き込む
-	VertexData* vertexData = nullptr;
+	VertexData* mVertexData = nullptr;
 	// 頂点バッファビューを作成する
-	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
+	D3D12_VERTEX_BUFFER_VIEW mVertexBufferView{};
 	// マテリアルデータ
 	Color* materialData = nullptr;
 	// テクスチャハンドル
-	int32_t textureHandle_;
+	int32_t mTextureHandle;
 
 };
 

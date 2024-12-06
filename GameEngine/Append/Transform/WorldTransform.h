@@ -26,18 +26,26 @@ public: // -- public メンバ関数 -- //
 	/// ワールド座標を返す
 	/// </summary>
 	/// <returns></returns>
-	Vector3 GetWorldPosition();
+	Vector3 GetWorldPosition()const;
+
+	/// <summary>
+	/// ワールド回転量の取得
+	/// </summary>
+	/// <returns></returns>
+	Vector3 GetWorldRotatiton()const;
 
 	/// <summary>
 	/// 親となるWorldTrandsfromを登録する
 	/// </summary>
-	void SetParent(WorldTransform* parent);
+	void SetParent(const Matrix4x4& parent);
+
+	const Matrix4x4* GetParent() { return parent_; }
 
 public: // -- public メンバ変数 -- //
 
 	// 拡大
 	Vector3 scale;
-	// 縮小
+	// 回転
 	Vector3 rotation;
 	// 平行移動
 	Vector3 translation;
@@ -45,7 +53,7 @@ public: // -- public メンバ変数 -- //
 private: // -- private メンバ変数 -- //
 
 	// 親となるワールド変換へのポインタ（読み取り専用）
-	WorldTransform* parent_ = nullptr;
+	const Matrix4x4* parent_ = nullptr;
 
 };
 

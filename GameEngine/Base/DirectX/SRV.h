@@ -34,6 +34,9 @@ public: // -- public メンバ関数 -- //
 	// 空きIndexを取得する関数
 	int32_t GetEmptyIndex();
 
+	// Depth用のSRVを生成する
+	int32_t CreateDepthSRV(Microsoft::WRL::ComPtr<ID3D12Resource> depthStencilResource);
+
 private: // -- private メンバ関数 -- // 
 
 
@@ -49,12 +52,12 @@ public: // -- public メンバ変数 -- //
 	Microsoft::WRL::ComPtr <ID3D12DescriptorHeap> srvDescriptorHeap = nullptr;
 
 	// テクスチャデータのマップ
-	std::unordered_map<int32_t, TextureData> textureData_;
+	std::unordered_map<int32_t, TextureData> mTextureData;
 	// 次に使用可能なテクスチャデータの番地
-	int32_t textureId_ = 0;
+	int32_t mTextureId = 0;
 	int32_t defaultTexId_;
 	// パーティクルの使用する番地を1000~にする
-	int32_t particleId_ = 1000;
+	int32_t mParticleId = 1000;
 
 	// インスタンシング
 	D3D12_CPU_DESCRIPTOR_HANDLE instancingSrvHandleCPU;
@@ -62,11 +65,11 @@ public: // -- public メンバ変数 -- //
 
 	// -- RenderTexture用 -- //
 
-	Microsoft::WRL::ComPtr<ID3D12Resource> renderTextureResource = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12Resource> mRenderTextureResource = nullptr;
 
 private: // -- private メンバ変数 -- // 
 
 	// ポインタ
-	DirectXCommon* dxCommon_;
+	DirectXCommon* mDxCommon;
 
 };
