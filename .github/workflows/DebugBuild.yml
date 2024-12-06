@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - master
+      - ActionGame
 
 # 環境変数をまとめる
 env:
