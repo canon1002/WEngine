@@ -9,7 +9,7 @@ on:
 # 環境変数をまとめる
 env:
   # リポジトリのルートディレクトリを起点としたソリューションファイルのパス
-  SOLUTION_FILE_PATH: project/WEngine.sln
+  SOLUTION_FILE_PATH: WEngine.sln
   # Visual Stdio の構成(Debug / Release)
   CONFIGURATION: Debug
 
