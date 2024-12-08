@@ -46,6 +46,12 @@ public:
 	void Draw() override;
 	void DrawUI() override;
 
+	// ヒットストップの開始
+	void StartHitStop(float duration);
+
+	// ヒットストップの更新
+	void UpdateHitStop();
+
 private:
 
 	// 入力マネージャー
@@ -96,7 +102,10 @@ private:
 	const float kFinithUIDisplsyTimeMax = 4.0f;
 	bool mIsFinishUIDisplayEnd;
 
-	// ヒットストップ
+	// ヒットストップ関連のメンバ変数
+	bool mIsHitStopActive = false;
+	float mHitStopDuration = 0.0f;
+	float mHitStopTimer = 0.0f;
 
 
 	// 軌道パーティクル

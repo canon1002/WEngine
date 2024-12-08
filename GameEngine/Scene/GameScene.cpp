@@ -308,6 +308,14 @@ void GameScene::Update() {
 		break;
 	case Phase::BATTLE:
 
+		// ヒットストップの更新
+		UpdateHitStop();
+
+		// ヒットストップ中は他の更新処理をスキップ
+		if (mIsHitStopActive) {
+			return;
+		}
+
 		// プレイヤーのHPが0になったら
 		if (mPlayer->GetStatus()->HP <= 0.0f) {
 			mPhase = Phase::LOSE;
@@ -331,10 +339,10 @@ void GameScene::Update() {
 		mBoss->Update();
 
 		// コライダーリストへの追加処理
-		mCollisionManager->SetCollider(mPlayer->GetObject3D()->mCollider);
-		mCollisionManager->SetCollider(mBoss->GetObject3D()->mCollider);
+		mPlayer->SetCollider(mCollisionManager.get());
 		mPlayer->SetColliderList(mCollisionManager.get());
 		mBoss->SetCollider(mCollisionManager.get());
+		mBoss->SetAttackCollider(mCollisionManager.get());
 
 		// 衝突判定を行う
 		mCollisionManager->Update();
@@ -346,7 +354,7 @@ void GameScene::Update() {
 		mPlayerTrailEffect->Update();
 		if (mPlayer->GetBehavior() == Behavior::kAttack) {
 			if (mPlayerTrailEffect->GetGetPositionFlag()) {
-				mPlayerTrailEffect->Create(*mPlayer->GetWorldPositionSword(0), *mPlayer->GetWorldPositionSword(1));
+				//mPlayerTrailEffect->Create(*mPlayer->GetWorldPositionSword(0), *mPlayer->GetWorldPositionSword(1));
 			}
 		}
 	/*	mBossTrailEffect->Update();
@@ -671,4 +679,35 @@ void GameScene::DrawUI()
 		break;
 	}
 
+}
+
+void GameScene::StartHitStop(float duration)
+{
+	mIsHitStopActive = true;
+	mHitStopDuration = duration;
+	mHitStopTimer = 0.0f;
+}
+
+void GameScene::UpdateHitStop() {
+
+	// プレイヤーまたは敵がHitStopをリクエストしているとき
+	if (mPlayer->GetHitStopDuration() != 0.0f) {
+		StartHitStop(mPlayer->GetHitStopDuration());
+		mPlayer->SetHitStopDuration(0.0f);
+	}
+
+	if (mBoss->GetHitStopDuration() != 0.0f) {
+		StartHitStop(mBoss->GetHitStopDuration());
+		mBoss->SetHitStopDuration(0.0f);
+	}
+
+	// HitStop中の処理
+	if (mIsHitStopActive) {
+
+		// タイマーを更新
+		mHitStopTimer += 1.0f / Framerate::GetInstance()->GetFramerate();
+		if (mHitStopTimer >= mHitStopDuration) {
+			mIsHitStopActive = false;
+		}
+	}
 }

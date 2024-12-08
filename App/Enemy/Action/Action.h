@@ -62,6 +62,11 @@ namespace ACT {
 		// アニメーション終了時間
 		float mAnimationEndTime;
 
+		// 動作中であるか(攻撃判定フラグとしても扱う)
+		bool mIsOperating;	
+		// 攻撃が命中したか
+		bool mIsHit;			
+
 	};
 
 

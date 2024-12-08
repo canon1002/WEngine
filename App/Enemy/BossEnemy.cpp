@@ -83,6 +83,23 @@ void BossEnemy::Init() {
 	mObject->mCollider->SetCollisionAttribute(kCollisionAttributeEnemy);
 	mObject->mCollider->SetCollisionMask(kCollisionAttributePlayerBullet);
 
+	// 身体の部位に合わせたコライダーを生成
+	CreateBodyPartCollider("Head", 0.15f, kCollisionAttributeEnemy, kCollisionAttributePlayerBullet);
+	CreateBodyPartCollider("Neck", 0.3f, kCollisionAttributeEnemy, kCollisionAttributePlayerBullet);
+	CreateBodyPartCollider("Spine", 0.4f, kCollisionAttributeEnemy, kCollisionAttributePlayerBullet);
+	CreateBodyPartCollider("Spine1", 0.4f, kCollisionAttributeEnemy, kCollisionAttributePlayerBullet);
+	CreateBodyPartCollider("Spine2", 0.4f, kCollisionAttributeEnemy, kCollisionAttributePlayerBullet);
+	CreateBodyPartCollider("LeftUpLeg", 0.15f, kCollisionAttributeEnemy, kCollisionAttributePlayerBullet);
+	CreateBodyPartCollider("LeftLeg", 0.15f, kCollisionAttributeEnemy, kCollisionAttributePlayerBullet);
+	CreateBodyPartCollider("LeftFoot", 0.15f, kCollisionAttributeEnemy, kCollisionAttributePlayerBullet);
+	CreateBodyPartCollider("RightUpLeg", 0.15f, kCollisionAttributeEnemy, kCollisionAttributePlayerBullet);
+	CreateBodyPartCollider("RightLeg", 0.15f, kCollisionAttributeEnemy, kCollisionAttributePlayerBullet);
+	CreateBodyPartCollider("RightFoot", 0.15f, kCollisionAttributeEnemy, kCollisionAttributePlayerBullet);
+	CreateBodyPartCollider("LeftForeArm", 0.15f, kCollisionAttributeEnemy, kCollisionAttributePlayerBullet);
+	CreateBodyPartCollider("LeftHand", 0.1f, kCollisionAttributeEnemy, kCollisionAttributePlayerBullet);
+	CreateBodyPartCollider("RightForeArm", 0.15f, kCollisionAttributeEnemy, kCollisionAttributePlayerBullet);
+	CreateBodyPartCollider("RightHand", 0.1f, kCollisionAttributeEnemy, kCollisionAttributePlayerBullet);
+
 	mRightHandWorldMat = MakeAffineMatrix(Vector3{ 0.0f,0.0f,0.0f }, Vector3{ 0.0f,0.0f,0.0f }, Vector3{ 0.0f,0.0f,0.0f });
 	mRightHandsWorldMat = MakeAffineMatrix(Vector3{ 0.0f,0.0f,0.0f }, Vector3{ 0.0f,0.0f,0.0f }, Vector3{ 0.0f,0.0f,0.0f });
 
@@ -105,7 +122,7 @@ void BossEnemy::Init() {
 	for (int32_t i = 0; i < 5; i++) {
 		mWeaponWorldMat[i] = MakeAffineMatrix(Vector3{ 0.0f,0.0f,0.0f }, Vector3{ 0.0f,0.0f,0.0f }, Vector3{ 0.0f,0.0f,0.0f });
 		// コライダー 宣言
-		SphereCollider* newCollider = new SphereCollider(new WorldTransform(), 0.2f);
+		SphereCollider* newCollider = new SphereCollider(new WorldTransform(), 0.25f);
 		// 初期化
 		newCollider->Init();
 		newCollider->SetCollisionAttribute(kCollisionAttributeEnemyBullet);
@@ -241,6 +258,9 @@ void BossEnemy::Update() {
 		
 	}
 
+	// シェイクの更新
+	ShakeUpdate();
+
 	// オブジェクト更新
 	UpdateObject();
 
@@ -317,6 +337,14 @@ void BossEnemy::UpdateObject(){
 	mWeaponWorldMat[4] = Multiply(
 		mWeapon->mSkinning->GetSkeleton().joints[mWeapon->mSkinning->GetSkeleton().jointMap["Blade4"]
 		].skeletonSpaceMatrix, mWeapon->GetWorldTransform()->GetWorldMatrix());
+
+	// 身体の部位のワールド行列を更新
+	UpdateBodyMatrix();
+
+	// 身体の部位に合わせたコライダーを更新
+	for (auto& collider : mBodyPartColliders) {
+		collider.second->Update();
+	}
 
 	// 武器のコライダー 更新
 	for (Collider* collider : mWeaponColliders) {
@@ -406,10 +434,10 @@ void BossEnemy::DrawGUI() {
 #endif // _DEBUG
 }
 
-void BossEnemy::SetCollider(CollisionManager* cManager)
-{
-	mActions["AttackClose"]->SetCollider(cManager);
-	mActions["AttackThrust"]->SetCollider(cManager);
+void BossEnemy::SetAttackCollider(CollisionManager* cManager){
+	if (mActiveAction != nullptr) {
+		mActiveAction->SetCollider(cManager);
+	}
 }
 
 void BossEnemy::UpdateState() {
@@ -553,6 +581,29 @@ bool BossEnemy::InvokeFarDistance() {
 	return false;
 }
 
+
+void BossEnemy::SetShake(float duration, float power) {
+	mShakeDuration = duration;
+	mShakePower = power;
+	mShakeTime = 0.0f;
+}
+
+void BossEnemy::ShakeUpdate() {
+
+	// シェイク処理
+	if (mShakeTime < mShakeDuration) {
+		
+		// シェイク時間を加算
+		mShakeTime += (1.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetBattleSpeed();
+		
+		// シェイクの振幅をX方向とZ方向をそれぞれ計算
+		float shakeOffsetX = (rand() % 100 / 100.0f - 0.5f) * mShakePower;
+		float shakeOffsetZ = (rand() % 100 / 100.0f - 0.5f) * mShakePower;
+		mObject->mWorldTransform->translation.x += shakeOffsetX;
+		mObject->mWorldTransform->translation.z += shakeOffsetZ;
+	}
+}
+
 void BossEnemy::ColliderDraw() {
 	mWeapon->Draw();
 
@@ -562,7 +613,10 @@ void BossEnemy::ColliderDraw() {
 		mActiveAction->Draw();
 	}
 
-	mObject->mCollider->Draw();
+	// 身体の部位に合わせたコライダーを描画
+	for (auto& collider : mBodyPartColliders) {
+		collider.second->Draw();
+	}
 	
 #endif // _DEBUG
 }

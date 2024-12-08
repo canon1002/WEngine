@@ -1,5 +1,5 @@
 #pragma once
-#include "GameEngine/Object/3d/Object3d.h"
+#include "App/Actor/Actor.h"
 #include "App/AI/State/IBossState.h"
 #include "App/AI/State/VitalityBossState.h"
 #include "App/AI/BehaviorTree/IBehavior.h"
@@ -9,7 +9,7 @@
 // 前方宣言
 class Player;
 
-class BossEnemy
+class BossEnemy : public Actor
 {
 public: // -- 公開 メンバ関数 -- //
 
@@ -37,7 +37,7 @@ public: // -- 公開 メンバ関数 -- //
 	Model* GetModel() { return mObject->mModel; }
 	Collider* GetCollider() { return mObject->mCollider; }
 
-	void SetCollider(CollisionManager* cManager);
+	void SetAttackCollider(CollisionManager* cManager);
 
 	// プレイヤーのポインタをセットする
 	void SetPlayer(Player* player) { pPlayer = player; }
@@ -117,6 +117,12 @@ public: // -- 公開 メンバ関数 -- //
 	// 距離が遠い場合に実行
 	bool InvokeFarDistance();
 
+	// シェイク処理
+	void SetShake(float duration, float power);
+
+	// シェイク実行処理
+	void ShakeUpdate();
+
 #pragma endregion
 
 	// 右手のワールド座標
@@ -134,9 +140,6 @@ private: // -- 非公開 メンバ変数 -- //
 
 	// プレイヤー(ターゲット)のポインタ
 	Player* pPlayer;
-
-	// オブジェクトクラス
-	std::unique_ptr<Object3d> mObject;
 
 	// 移動量
 	Vector3 mVelocity;
@@ -186,7 +189,10 @@ private: // -- 非公開 メンバ変数 -- //
 	std::array<Matrix4x4, 5> mWeaponWorldMat;
 
 
-	// 被弾シェイク
+	// シェイク関連のメンバ変数
+	float mShakeDuration;
+	float mShakePower;
+	float mShakeTime;
 
 
 };

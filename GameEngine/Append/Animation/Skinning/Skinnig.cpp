@@ -287,6 +287,24 @@ void Skinning::EndMotionBrend()
 
 }
 
+std::string Skinning::ConvertMixamoName(std::string name)
+{
+	// 入力された名称に応じた部位のmixamo名称を返す
+	for (auto& joint: mSkeleton.jointMap) {
+		
+		// 入力された名称がジョイントマップに登録された中に存在した場合はその名称を返す
+		if (joint.first.find(name.c_str()) != std::string::npos) {
+			return joint.first;
+		}
+	}
+
+	// 一致しなかった場合はassertを発生させる
+	// また、何が原因でassertが発生したかを確認するために、assertの引数に文字列を渡す
+	assert(false && "入力された名称はJointMapに登録されていません");
+
+	return std::string();
+}
+
 bool Skinning::GetIsActiveAnimation(std::string name)
 {
 	if (mNowSkincluster->name.c_str() == name.c_str()) {

@@ -135,6 +135,20 @@ public: // -- 公開 メンバ関数 -- //
 	Skeleton GetSkeleton() { return mSkeleton;}
 
 	/// <summary>
+	/// 指定したボーンの行列を取得
+	/// </summary>
+	/// <param name="name"></param>
+	/// <returns></returns>
+	Matrix4x4 GetBoneMatrix(std::string name) { return mSkeleton.joints[mSkeleton.jointMap[name]].skeletonSpaceMatrix; }
+
+	/// <summary>
+	/// Mixsmoのボーン名を一般的な名称に変換する
+	/// </summary>
+	/// <param name="name"></param>
+	/// <returns></returns>
+	std::string ConvertMixamoName(std::string name);
+
+	/// <summary>
 	/// アニメーションが設定されているか取得(=ボーンのみ使用かの判別)
 	/// </summary>
 	/// <returns>ボーンのみ使用している場合は"false"を、それ以外は"true"を返す</returns>

@@ -117,6 +117,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="App\Actor\Actor.cpp" />
     <ClCompile Include="App\AI\BehaviorTree\BTAttackAction.cpp" />
     <ClCompile Include="App\AI\BehaviorTree\BTMoveAction.cpp" />
     <ClCompile Include="App\Enemy\Action\AttackJump.cpp" />
@@ -222,6 +223,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="App\Enemy\Action\Seartch.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="App\Actor\Actor.h" />
     <ClInclude Include="App\AI\BehaviorTree\BTAttackAction.h" />
     <ClInclude Include="App\AI\BehaviorTree\BTMoveAction.h" />
     <ClInclude Include="App\Enemy\Action\ActionList.h" />

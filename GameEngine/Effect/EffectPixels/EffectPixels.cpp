@@ -20,7 +20,7 @@ void EffectPixels::Init() {
 	mTextureHandle = mDxCommon->srv_->LoadTexture("TrailWhite.png");
 
 	// 生存時間
-	mActiveCountMax = 0.05f;
+	mActiveCountMax = 0.03f;
 	mActiveCount = mActiveCountMax;
 	
 

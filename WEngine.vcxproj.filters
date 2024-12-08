@@ -456,6 +456,7 @@
     <ClCompile Include="GameEngine\Effect\Particle\DashSmoke.cpp" />
     <ClCompile Include="App\Enemy\Action\Seartch.cpp" />
     <ClCompile Include="App\Enemy\Action\AttackJump.cpp" />
+    <ClCompile Include="App\Actor\Actor.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameEngine\Object\Light\DirectionalLight.h">
@@ -772,6 +773,7 @@
     <ClInclude Include="GameEngine\Effect\Particle\DashSmoke.h" />
     <ClInclude Include="App\Enemy\Action\Seartch.h" />
     <ClInclude Include="App\Enemy\Action\AttackJump.h" />
+    <ClInclude Include="App\Actor\Actor.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt">

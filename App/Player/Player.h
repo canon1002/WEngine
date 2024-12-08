@@ -1,12 +1,11 @@
 #pragma once
-#include "GameEngine/Object/3d/Object3d.h"
+#include "App/Actor/Actor.h"
 #include "GameEngine/Input/InputManager.h"
 #include "App/Reticle/Reticle3D.h"
 #include "App/Player/Arrow.h"
 #include "App/Status/StatusManager.h"
 
 // 前方宣言
-class CollisionManager;
 class BossEnemy;
 
 // 振る舞い
@@ -97,7 +96,7 @@ struct ChargeStatus {
 	Vector3 cameraEndRot;
 };
 
-class Player {
+class Player : public Actor {
 
 public: // -- 公開 メンバ関数 -- //
 
@@ -171,16 +170,7 @@ public: // -- 公開 メンバ関数 -- //
 
 private: // -- 非公開 メンバ関数 -- //
 
-	// -- 初期化関連 -- //
-
-	/// <summary>
-	///  部位コライダー生成
-	/// </summary>
-	/// <param name="name">部位の名称</param>
-	/// <param name="perent">ボーンのワールド行列</param>
-	void CreateBodyPartCollider(std::string name,const Matrix4x4& perent);
-
-
+	
 
 public: // -- 公開 メンバ変数 & 定数 -- //
 
@@ -195,15 +185,6 @@ private: // -- 非公開 メンバ変数 -- //
 	// 入力を取得
 	InputManager* mInput;
 	
-
-	// オブジェクトクラス
-	std::unique_ptr<Object3d> mObject;
-
-    // 身体の各部位のコライダーを管理するマップ
-    std::unordered_map<std::string, std::unique_ptr<Collider>> mBodyPartColliders;
-	// 身体の各部位のワールド座標を管理するマップ
-    std::unordered_map<std::string, std::unique_ptr<WorldTransform>> mBodyPartWorldTransforms;
-
 	// 自機の振る舞い
 	Behavior mBehavior;
 

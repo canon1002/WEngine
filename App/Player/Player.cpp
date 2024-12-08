@@ -82,7 +82,19 @@ void Player::Init() {
 
 
 	// 身体の部位に合わせたコライダーを生成
-	CreateBodyPartCollider("Head", mObject->mSkinning->GetSkeleton().joints[mObject->mSkinning->GetSkeleton().jointMap["neck"]].skeletonSpaceMatrix);
+	CreateBodyPartCollider("Head", 0.15f, kCollisionAttributePlayer, kCollisionAttributeEnemyBullet);
+	CreateBodyPartCollider("Hips", 0.15f, kCollisionAttributePlayer, kCollisionAttributeEnemyBullet);
+	CreateBodyPartCollider("LeftLeg", 0.1f, kCollisionAttributePlayer, kCollisionAttributeEnemyBullet);
+	CreateBodyPartCollider("LeftFoot", 0.1f, kCollisionAttributePlayer, kCollisionAttributeEnemyBullet);
+	CreateBodyPartCollider("RightLeg", 0.1f, kCollisionAttributePlayer, kCollisionAttributeEnemyBullet);
+	CreateBodyPartCollider("RightFoot", 0.1f, kCollisionAttributePlayer, kCollisionAttributeEnemyBullet);
+	CreateBodyPartCollider("LeftForeArm", 0.1f, kCollisionAttributePlayer, kCollisionAttributeEnemyBullet);
+	CreateBodyPartCollider("LeftHand", 0.1f, kCollisionAttributePlayer, kCollisionAttributeEnemyBullet);
+	CreateBodyPartCollider("RightForeArm", 0.1f, kCollisionAttributePlayer, kCollisionAttributeEnemyBullet);
+	CreateBodyPartCollider("RightHand", 0.1f, kCollisionAttributePlayer, kCollisionAttributeEnemyBullet);
+
+	// 頭部のコライダーの座標を調整
+	mBodyPartColliders["Head"]->SetAddTranslation({ 0.0f,0.05f,0.0f });
 
 	// レティクルの初期化
 	mReticle = std::make_unique<Reticle3D>();
@@ -131,7 +143,7 @@ void Player::Init() {
 	for (int32_t i = 0; i < 5; i++) {
 		mAttackStatus.swordWorldMat[i] = MakeAffineMatrix(Vector3{ 0.0f,0.0f,0.0f }, Vector3{ 0.0f,0.0f,0.0f }, Vector3{ 0.0f,0.0f,0.0f });
 		// コライダー 宣言
-		SphereCollider* newCollider = new SphereCollider(new WorldTransform(), 0.1f);
+		SphereCollider* newCollider = new SphereCollider(new WorldTransform(), 0.2f);
 		// 初期化
 		newCollider->Init();
 		newCollider->SetCollisionAttribute(kCollisionAttributePlayerBullet);
@@ -167,6 +179,8 @@ void Player::Init() {
 	// ペアレントを設定(後にワールド座標を取得する)
 	mWorldTransformSword[0]->SetParent(mAttackStatus.swordWorldMat[0]);
 	mWorldTransformSword[1]->SetParent(mAttackStatus.swordWorldMat[4]);
+
+	
 
 }
 
@@ -303,11 +317,13 @@ void Player::UpdateObject()
 	mObject->mSkinning->GetSkeleton().joints;
 	mObject->mCollider->Update();
 
-	
+	// 身体の部位のワールド行列を更新
+	UpdateBodyMatrix();
+
 	// 身体の部位に合わせたコライダーを更新
-	//for (auto& collider : mBodyPartColliders) {
-	//	collider.second->Draw();
-	//}
+	for (auto& collider : mBodyPartColliders) {
+		collider.second->Update();
+	}
 
 
 	// 右手のワールド行列を更新
@@ -379,7 +395,30 @@ void Player::DrawGUI() {
 		mObject->mSkinning->DrawGui();
 	}
 
-	//mObject->DrawGuiTree();
+	// コライダー
+	if (ImGui::CollapsingHeader("Collider")) {
+
+		// コライダーのデバッグ表示
+		for (auto& collider : mBodyPartColliders) {
+
+			if (ImGui::TreeNode(collider.first.c_str())) {
+
+				// ワールドトランスフォームのデバッグ表示
+				ImGui::DragFloat3("Scale", &collider.second->GetWorld()->scale.x);
+				ImGui::DragFloat3("Rotate", &collider.second->GetWorld()->rotation.x);
+				ImGui::DragFloat3("Translate", &collider.second->GetWorld()->translation.x);
+				
+				// ワールド行列の表示
+				for (int i = 0; i < 4; ++i) {
+					// Floatの4x4行列内の数値を表示
+					ImGui::DragFloat4(("Row " + std::to_string(i)).c_str(), collider.second->GetWorld()->GetWorldMatrix().m[i]);
+				}
+				
+				ImGui::TreePop();
+			}
+		}		
+	}
+
 	// プレイヤー ステータス
 	if (ImGui::CollapsingHeader("Status")) {
 		ImGui::DragInt("HP", &mStatus->HP, 1.0f, 0, 100);
@@ -440,12 +479,12 @@ void Player::DrawGUI() {
 void Player::ColliderDraw() {
 #ifdef _DEBUG
 
-	mObject->mCollider->Draw();
+	//mObject->mCollider->Draw();
 
 	// 身体の部位に合わせたコライダーを描画
-	//for (auto& collider : mBodyPartColliders) {
-	//	collider.second->Draw();
-	//}
+	for (auto& collider : mBodyPartColliders) {
+		collider.second->Draw();
+	}
 
 
 	if (mBehavior == Behavior::kAttack || mBehavior == Behavior::kChargeAttack){
@@ -726,9 +765,15 @@ void Player::Attack()
 		mAttackStatus.motionTime += (2.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetBattleSpeed();
 
 		// 攻撃が命中していない場合、攻撃フラグをtrueにする
-		if (mAttackStatus.motionTime > 0.2f && !mAttackStatus.isHit && !mAttackStatus.isOperating){
-
-			mAttackStatus.isOperating = true;
+		if (mAttackStatus.comboCount != 3) {
+			if (mAttackStatus.motionTime > 0.4f && !mAttackStatus.isHit && !mAttackStatus.isOperating) {
+				mAttackStatus.isOperating = true;
+			}
+		}
+		else {
+			if (mAttackStatus.motionTime > 0.5f && !mAttackStatus.isHit && !mAttackStatus.isOperating) {
+				mAttackStatus.isOperating = true;
+			}
 		}
 
 	}
@@ -1123,41 +1168,11 @@ void Player::ReciveDamageToBoss(float power)
 {
 	// ボスにダメージを与える
 	StatusManager::GetInstance()->ReceiveDamage(mStatus, power, mBoss->GetStatus());
-}
 
-void Player::CreateBodyPartCollider(std::string name, const Matrix4x4& perent){
+	// シェイクを発生させる
+	mBoss->SetShake(0.25f, 0.25f);
 
-	// 名称が重複している場合は処理を行わない
-	if (mBodyPartColliders.find(name) != mBodyPartColliders.end()) {
-		return;
-	}
+	// ヒットストップの時間を設定
+	SetHitStopDuration(0.05f);
 
-	//
-	// -- ワールド座標の設定 -- //
-	//
-
-	// ワールド座標の生成と初期化を行う
-	std::unique_ptr<WorldTransform> newWorld = std::make_unique<WorldTransform>();
-	newWorld->Init();
-	// 親行列を設定
-	newWorld->SetParent(perent);
-	// 生成したワールド座標をリストに追加
-	mBodyPartWorldTransforms[name] = std::move(newWorld);
-
-	//
-	// -- コライダー生成 -- //
-	//
-
-	// 新規コライダーの宣言
-	std::unique_ptr<Collider> newCollider = std::make_unique<SphereCollider>(mObject->mWorldTransform, 0.5f);
-	// 初期化
-	newCollider->Init();
-	// コライダーの衝突属性を設定
-	newCollider->SetCollisionAttribute(kCollisionAttributePlayer);
-	// コライダーの衝突対象を設定
-	newCollider->SetCollisionMask(kCollisionAttributeEnemyBullet);
-	// コライダーに親となる行列を設定
-	newCollider->GetWorld()->SetParent(mBodyPartWorldTransforms[name]->GetWorldMatrix());
-	// コライダーの名称を設定し、リストに追加
-	mBodyPartColliders[name] = std::move(newCollider);
 }

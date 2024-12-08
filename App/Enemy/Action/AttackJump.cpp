@@ -30,12 +30,11 @@ void ACT::AttackJump::Update()
 
 
 		// 各コライダーの衝突判定を確認
-		if (kActiveColliderCount.x < mActiveColliderCount &&
-			mActiveColliderCount < kActiveColliderCount.y) {
+		if (!mIsHit && mIsOperating) {
 			for (Collider* collider : mBoss->mWeaponColliders) {
 				if (collider->GetOnCollisionFlag() == true) {
 					mBoss->ReciveDamageTolayer(1.0f);
-					mActiveColliderCount += 2.0f;
+					mIsHit = true;
 					// どれか１つでも命中したらループを抜ける
 					break;
 				}
@@ -52,11 +51,7 @@ void ACT::AttackJump::Update()
 
 void ACT::AttackJump::Draw() {
 
-	if (kActiveColliderCount.x < mActiveColliderCount &&
-		mActiveColliderCount < kActiveColliderCount.y) {
-
-		//mBoss->mWeapon->mCollider->Draw();
-
+	if (!mIsHit && mIsOperating) {
 		// 武器のコライダー 描画
 		for (Collider* collider : mBoss->mWeaponColliders) {
 			collider->Draw();
@@ -72,6 +67,8 @@ void ACT::AttackJump::Start()
 	// アニメーションの変更
 	mBoss->GetObject3D()->mSkinning->SetNextAnimation("SlashJamp");
 
+	mIsHit = false;
+	mIsOperating = true;
 	mActiveColliderCount = 0.0f;
 
 	// 実行する
@@ -93,14 +90,10 @@ void ACT::AttackJump::Reset()
 	mCondition = Condition::IDOL;
 }
 
-void ACT::AttackJump::SetCollider(CollisionManager* cManager)
-{
-	if (kActiveColliderCount.x < mActiveColliderCount &&
-		mActiveColliderCount < kActiveColliderCount.y) {
+void ACT::AttackJump::SetCollider(CollisionManager* cManager){
 
-		// 未ヒット時にのみコライダーセット
-		for (Collider* collider : mBoss->mWeaponColliders) {
-			cManager->SetCollider(collider);
-		}
+	// 未ヒット時にのみコライダーセット
+	for (Collider* collider : mBoss->mWeaponColliders) {
+		cManager->SetCollider(collider);
 	}
 }
