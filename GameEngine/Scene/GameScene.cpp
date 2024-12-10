@@ -211,26 +211,21 @@ void GameScene::Update() {
 	{
 	case Phase::BEGIN:
 
-
+		// ビネットでフェードインする
 		if (mViggnetTime < 1.0f) {
 
-			// 初期化
+			// プレイヤーの初期位置を設定
 			if (mViggnetTime == 0.0f) {
 
-				mPlayer->GetObject3D()->mWorldTransform->translation = ExponentialInterpolation(mPlayerStartAndEnd.start, mPlayerStartAndEnd.end, mPlayerStartAndEnd.t, mPlayerStartAndEnd.k);
-
-				// フォローターゲット解除
-				/*MainCamera::GetInstance()->EraseFollowTarget();
-				MainCamera::GetInstance()->SetTransform(
-					Vector3(1.0f, 1.0f, 1.0f),
-					Vector3((3.14f/4.0f), 0.0f, 0.0f),
-					Vector3(0.0f, 32.0f, 0.0f)
-				);*/
-
+				// プレイヤーの初期位置を設定
+				mPlayer->GetObject3D()->mWorldTransform->translation = ExponentialInterpolation(
+					mPlayerStartAndEnd.start, mPlayerStartAndEnd.end, mPlayerStartAndEnd.t, mPlayerStartAndEnd.k);
 			}
 
+			// ビネットの時間を進める
 			mViggnetTime += (1.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetGameSpeed();
 		}
+		// ビネットの時間が1.0fを超えたら1.0fに設定
 		else if (mViggnetTime >= 1.0f) {
 			mViggnetTime = 1.0f;
 		}
@@ -311,11 +306,6 @@ void GameScene::Update() {
 		// ヒットストップの更新
 		UpdateHitStop();
 
-		// ヒットストップ中は他の更新処理をスキップ
-		if (mIsHitStopActive) {
-			return;
-		}
-
 		// プレイヤーのHPが0になったら
 		if (mPlayer->GetStatus()->HP <= 0.0f) {
 			mPhase = Phase::LOSE;
@@ -354,7 +344,7 @@ void GameScene::Update() {
 		mPlayerTrailEffect->Update();
 		if (mPlayer->GetBehavior() == Behavior::kAttack) {
 			if (mPlayerTrailEffect->GetGetPositionFlag()) {
-				//mPlayerTrailEffect->Create(*mPlayer->GetWorldPositionSword(0), *mPlayer->GetWorldPositionSword(1));
+				mPlayerTrailEffect->Create(*mPlayer->GetWorldPositionSword(0), *mPlayer->GetWorldPositionSword(1));
 			}
 		}
 	/*	mBossTrailEffect->Update();
@@ -693,11 +683,13 @@ void GameScene::UpdateHitStop() {
 	// プレイヤーまたは敵がHitStopをリクエストしているとき
 	if (mPlayer->GetHitStopDuration() != 0.0f) {
 		StartHitStop(mPlayer->GetHitStopDuration());
+		Framerate::GetInstance()->SetBattleSpeed(0.25f);
 		mPlayer->SetHitStopDuration(0.0f);
 	}
 
 	if (mBoss->GetHitStopDuration() != 0.0f) {
 		StartHitStop(mBoss->GetHitStopDuration());
+		Framerate::GetInstance()->SetBattleSpeed(0.5f);
 		mBoss->SetHitStopDuration(0.0f);
 	}
 
@@ -708,6 +700,7 @@ void GameScene::UpdateHitStop() {
 		mHitStopTimer += 1.0f / Framerate::GetInstance()->GetFramerate();
 		if (mHitStopTimer >= mHitStopDuration) {
 			mIsHitStopActive = false;
+			Framerate::GetInstance()->SetBattleSpeed(1.0f);
 		}
 	}
 }

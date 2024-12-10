@@ -17,10 +17,10 @@ void EffectPixels::Init() {
 	mWorldTransform->scale = { 1.0f,1.0f,1.0f };
 
 	// テクスチャの設定
-	mTextureHandle = mDxCommon->srv_->LoadTexture("TrailWhite.png");
+	mTextureHandle = mDxCommon->srv_->LoadTexture("white2x2.dds");
 
 	// 生存時間
-	mActiveCountMax = 0.03f;
+	mActiveCountMax = 0.1f;
 	mActiveCount = mActiveCountMax;
 	
 
@@ -90,6 +90,7 @@ void EffectPixels::CreateVertexResource() {
 	// VertexResourceを生成する(P.42)
 	// 実際に頂点リソースを作る
 	mVertexResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(VertexData) * 4);
+	
 
 	// リソースの先頭のアドレスから使う
 	mVertexBufferView.BufferLocation = mVertexResource->GetGPUVirtualAddress();
@@ -98,7 +99,10 @@ void EffectPixels::CreateVertexResource() {
 	// 1頂点あたりのサイズ
 	mVertexBufferView.StrideInBytes = sizeof(VertexData);
 	// 書き込むためのアドレスを取得
-	mVertexResource->Map(0, nullptr, reinterpret_cast<void**>(&mVertexData));
+	HRESULT hr=mVertexResource->Map(0, nullptr, reinterpret_cast<void**>(&mVertexData));
+	if (FAILED(hr)) {
+		throw std::runtime_error("Failed to map vertex buffer resource.");
+	}
 
 	/// 1枚目
 	//　左上

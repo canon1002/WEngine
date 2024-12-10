@@ -33,7 +33,7 @@ void BossEnemy::Init() {
 
 	mObject = std::make_unique<Object3d>();
 	mObject->Init("BossEnemyObj");
-	mObject->mWorldTransform->scale = { 1.0f,1.0f,1.0f };
+	mObject->mWorldTransform->scale = { 1.25f,1.25f,1.25f };
 	mObject->mWorldTransform->translation = { 0.0f,0.0f,20.0f };
 
 	// モデルを設定

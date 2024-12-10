@@ -7,7 +7,7 @@
 void TrailEffect::Init()
 {
 	// カウント
-	mPositionSetCountMax = 0.05f;
+	mPositionSetCountMax = 0.02f;
 	mPositionSetCount = 0.0f;
 
 	// 色の設定

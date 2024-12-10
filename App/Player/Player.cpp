@@ -32,7 +32,7 @@ void Player::Init() {
 
 	mObject = std::make_unique<Object3d>();
 	mObject->Init("PlayerObj");
-	mObject->SetScale({ 1.2f,1.2f,1.2f });
+	mObject->SetScale({ 1.5f,1.5f,1.5f });
 	mObject->SetTranslate({ 1.0f,1.0f,7.0f });
 	
 	// モデルを設定
@@ -110,7 +110,7 @@ void Player::Init() {
 	// 回避時の無敵状態であるか
 	mAvoidStatus.mIsAvoidInvincible = false;
 	// 回避距離
-	mAvoidStatus.mAvoidRange = 10.0f;
+	mAvoidStatus.mAvoidRange = 5.0f;
 	// 回避速度
 	mAvoidStatus.mAvoidSpeed = 0.0f;
 	// 回避経過時間( 0.0f ~ 1.0f )
@@ -124,8 +124,9 @@ void Player::Init() {
 	mAttackStatus.sword = std::make_unique<Object3d>();
 	mAttackStatus.sword->Init("sword");
 	mAttackStatus.sword->SetModel("sword.gltf");
-	mAttackStatus.sword->mWorldTransform->scale = { 0.1f,0.1f,0.15f };
-	mAttackStatus.sword->mWorldTransform->rotation = { 1.7f,-0.3f,0.0f };
+	mAttackStatus.sword->mWorldTransform->scale = { 0.1f,0.1f,0.175f };
+	mAttackStatus.sword->mWorldTransform->rotation = { 2.0f,-0.6f,1.4f };
+	mAttackStatus.sword->mWorldTransform->translation = { 0.05f,0.0f,0.05f };
 	mAttackStatus.sword->mSkinning = new Skinning();
 	mAttackStatus.sword->mSkinning->Init("Weapons", "sword.gltf",
 		mAttackStatus.sword->GetModel()->modelData);
@@ -577,7 +578,7 @@ void Player::Avoid()
 
 			// アニメーション変更
 			mObject->mSkinning->SetNextAnimation("avoid");
-			mObject->mSkinning->SetAnimationPlaySpeed(1.5f);
+			mObject->mSkinning->SetAnimationPlaySpeed(2.0f);
 
 		}
 		// スティック入力がなければバックステップを行う
@@ -591,7 +592,7 @@ void Player::Avoid()
 			mBehavior = Behavior::kAvoid;
 			// アニメーション変更
 			mObject->mSkinning->SetNextAnimation("backStep");
-			mObject->mSkinning->SetAnimationPlaySpeed(2.0f);
+			mObject->mSkinning->SetAnimationPlaySpeed(2.5f);
 		}
 
 	}
@@ -694,6 +695,33 @@ void Player::Attack()
 
 			// コンボ有効
 			mAttackStatus.isComboRequest = true;
+
+			// 敵が近くにいる場合、敵の方を向く
+			if (mAttackStatus.isComboRequest)
+			{
+				// 敵の座標を取得
+				Vector3 enemyPos = mBoss->GetObject3D()->GetWorldTransform()->translation;
+				// プレイヤーの座標を取得
+				Vector3 playerPos = mObject->GetWorldTransform()->translation;
+				// プレイヤーの方向を更新
+				mDirection = Normalize(enemyPos - playerPos);
+				mDirection.y = 0.0f;
+
+				// 移動方向への回転を行う
+				// ここから回転処理
+				const float PI = 3.14f;
+				float rotateY = std::atan2f(mDirection.x, mDirection.z);
+				rotateY = std::fmodf(rotateY, 2.0f * PI);
+				if (rotateY > PI) {
+					rotateY -= 2.0f * PI;
+				}
+				if (rotateY < -PI) {
+					rotateY += 2.0f * PI;
+				}
+				// プレイヤーの向きを変更
+				mObject->mWorldTransform->rotation.y = rotateY;
+			}
+
 		}
 	}
 	if (mBehavior != Behavior::kAttack) { return; }
@@ -1170,9 +1198,9 @@ void Player::ReciveDamageToBoss(float power)
 	StatusManager::GetInstance()->ReceiveDamage(mStatus, power, mBoss->GetStatus());
 
 	// シェイクを発生させる
-	mBoss->SetShake(0.25f, 0.25f);
+	//mBoss->SetShake(0.25f, 0.1f);
 
 	// ヒットストップの時間を設定
-	SetHitStopDuration(0.05f);
+	SetHitStopDuration(0.5f);
 
 }

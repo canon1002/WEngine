@@ -9,12 +9,22 @@ public: // -- 公開 メンバ関数 -- //
 
 	// 初期化
 	void Init() {
-		mSprite = std::make_unique<Sprite>();
-		mSprite->Init();
-		mSprite->SetTexture(DirectXCommon::GetInstance()->srv_->LoadTexture("white2x2.png"));
-		mSprite->SetSpriteSize(Vector2(200.0f,40.0f));
-		mSprite->SetColor({0.0f,0.7f,0.0f,1.0f});
 
+		mSprites.resize(3);
+
+		// スプライトの初期化
+		for (auto& sprite : mSprites) {
+			sprite = std::make_unique<Sprite>();
+			sprite->Init();
+			sprite->SetColor({ 0.0f,0.7f,0.0f,1.0f });
+		}
+		mSprites[0]->SetTexture(DirectXCommon::GetInstance()->srv_->LoadTexture("hpBarBase.png"));
+		mSprites[1]->SetTexture(DirectXCommon::GetInstance()->srv_->LoadTexture("hpBarMidle.png"));
+		mSprites[2]->SetTexture(DirectXCommon::GetInstance()->srv_->LoadTexture("hpBarTop.png"));
+
+		mSprites[0]->SetSpriteSize(Vector2(200.0f, 40.0f));
+		mSprites[1]->SetSpriteSize(Vector2(200.0f, 40.0f));
+		mSprites[2]->SetSpriteSize(Vector2(200.0f, 40.0f));
 
 		HP = 10;
 		MAXHP = 10;
@@ -29,30 +39,38 @@ public: // -- 公開 メンバ関数 -- //
 		Vector3 newPos = world->translation;
 		newPos.x -= 0.0f;
 		newPos.y += 2.0f;
-		mSprite->SetAnchorPoint({0.5f,0.5f});
-		mSprite->SetPos(DamageReaction::GetInstance()->GetScreenPos(newPos,MainCamera::GetInstance()));
-		
-		// スケール更新
-		float hpUIScale = ((float)HP / (float)MAXHP);
-		mSprite->SetScale({ hpUIScale,1.0f });
+		for (auto& sprite : mSprites) {
+			sprite->SetAnchorPoint({ 0.5f,0.5f });
+			sprite->SetPos(DamageReaction::GetInstance()->GetScreenPos(newPos, MainCamera::GetInstance()));
 
-		mSprite->Update();
+			// スケール更新
+			if (sprite == mSprites[1]) {
+				float hpUIScale = ((float)HP / (float)MAXHP);
+				sprite->SetScale({ hpUIScale,1.0f });
+			}
+			sprite->Update();
+		}
 	}	
 
 	void Update() {
-		
-		// 座標を設定
-		mSprite->SetPos(Vector2{10.0f,30.0f});
-		// スケール更新
-		float hpUIScale = ((float)HP / (float)MAXHP);
-		mSprite->SetScale({ hpUIScale,1.0f });
-		// 更新
-		mSprite->Update();
+		for (auto& sprite : mSprites) {
+			// 座標を設定
+			sprite->SetPos(Vector2{ 10.0f,30.0f });
+			// スケール更新
+			if (sprite == mSprites[1]) {
+				float hpUIScale = ((float)HP / (float)MAXHP);
+				sprite->SetScale({ hpUIScale,1.0f });
+			}
+			// 更新
+			sprite->Update();
+		}
 	}
 
 	// 描画
 	void Draw() {
-		mSprite->Draw();
+		for (auto& sprite : mSprites) {
+			sprite->Draw();
+		}
 	}
 
 public: // -- 公開 メンバ変数 -- //
@@ -61,7 +79,7 @@ public: // -- 公開 メンバ変数 -- //
 	int32_t STR;// 筋力
 	int32_t VIT;// 生命力
 	int32_t AGI;// 素早さ
-	std::unique_ptr<Sprite> mSprite;
+	std::vector<std::unique_ptr<Sprite>> mSprites;
 
 };
 
@@ -88,7 +106,7 @@ public:
 		st.STR = mPlayerStatus->STR;
 		st.VIT = mPlayerStatus->VIT;
 		st.AGI = mPlayerStatus->AGI;
-		st.mSprite = std::move(mPlayerStatus->mSprite);
+		st.mSprites = std::move(mPlayerStatus->mSprites);
 	}
 	Status* GetBossStatus() { return mBossStatus; }
 	

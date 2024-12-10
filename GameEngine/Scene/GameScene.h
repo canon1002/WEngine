@@ -102,7 +102,7 @@ private:
 	const float kFinithUIDisplsyTimeMax = 4.0f;
 	bool mIsFinishUIDisplayEnd;
 
-	// ヒットストップ関連のメンバ変数
+	// ヒットストップ・スロー関連のメンバ変数
 	bool mIsHitStopActive = false;
 	float mHitStopDuration = 0.0f;
 	float mHitStopTimer = 0.0f;
