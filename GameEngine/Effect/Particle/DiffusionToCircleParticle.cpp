@@ -28,7 +28,7 @@ void DiffusionToCircleParticle::Init() {
 	CreateMaterial();
 	CreateInstancing();
 
-	mDxCommon->srv_->SetStructuredBuffer(kNumMaxInstance, mInstancingResource);
+	mDxCommon->srv_->SetInstancingBuffer(kNumMaxInstance, mInstancingResource);
 
 }
 

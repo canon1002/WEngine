@@ -30,6 +30,13 @@ void SRV::CreateSRVDescriptorHeap() {
 
 int SRV::LoadTexture(const std::string filePath) {
 
+	// テクスチャデータの登録があるか確認
+	for (auto& texture : mTextureData) {
+		if (texture.second.filePath == filePath) {
+			return texture.first;
+		}
+	}
+
 
 	// 新たにデータを登録する
 	TextureData textureData;
@@ -72,8 +79,7 @@ int SRV::LoadTexture(const std::string filePath) {
 
 }
 
-int SRV::SetStructuredBuffer(int32_t kNumInstance, Microsoft::WRL::ComPtr<ID3D12Resource> instancingResource) {
-
+int SRV::SetInstancingBuffer(int32_t kNumInstance, Microsoft::WRL::ComPtr<ID3D12Resource> instancingResource) {
 	// 新たにデータを登録する
 	TextureData instaicingData;
 	++mParticleId;
@@ -89,7 +95,6 @@ int SRV::SetStructuredBuffer(int32_t kNumInstance, Microsoft::WRL::ComPtr<ID3D12
 	instancingSrvDesc.Buffer.StructureByteStride = sizeof(ParticleForGPU);
 	// デスクリプタサイズを取得
 	const uint32_t descriptorSizeSRV = mDxCommon->device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-
 	instaicingData.textureSrvHandleCPU = mDxCommon->GetCPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, mParticleId);
 	instaicingData.textureSrvHandleGPU = mDxCommon->GetGPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, mParticleId);
 	mDxCommon->device_->CreateShaderResourceView(instancingResource.Get(), &instancingSrvDesc, instaicingData.textureSrvHandleCPU);

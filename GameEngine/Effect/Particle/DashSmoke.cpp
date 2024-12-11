@@ -34,7 +34,7 @@ void DashSmoke::Init() {
 	CreateMaterial();
 	CreateInstancing();
 
-	mInstancingHandle=mDxCommon->srv_->SetStructuredBuffer(kNumMaxInstance, mInstancingResource);
+	mInstancingHandle = mDxCommon->srv_->SetInstancingBuffer(kNumMaxInstance, mInstancingResource);
 	
 	// 最初は表示しない
 	mIsActive = false;

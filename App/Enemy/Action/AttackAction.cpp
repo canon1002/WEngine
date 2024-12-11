@@ -180,13 +180,13 @@ void ACT::AttackThrust::Start()
 	mBoss->SetRotation(Vector3(0.0f, rotateY, 0.0f));
 
 	// 刺突のときは武器を 右手 にペアレントする
-	mBoss->mWeapon->mWorldTransform->SetParent(mBoss->mRightHandsWorldMat);
+	//mBoss->mWeapon->mWorldTransform->SetParent(mBoss->mRightHandsWorldMat);
 
 	// 実行する
 	mCondition = Condition::RUNNING;
 }
 
-void ACT::AttackThrust::End()
+void ACT::AttackThrust::End() 
 {
 	// 行動を終了させる
 	mCondition = Condition::FINISHED;
@@ -195,7 +195,7 @@ void ACT::AttackThrust::End()
 	//mBoss->GetObject3D()->mSkinning->SetNextAnimation("Idle");
 
 	// 終わったら戻す
-	mBoss->mWeapon->mWorldTransform->SetParent(mBoss->mRightHandWorldMat);
+	//mBoss->mWeapon->mWorldTransform->SetParent(mBoss->mRightHandWorldMat);
 
 }
 

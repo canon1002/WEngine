@@ -23,8 +23,12 @@ public: // -- public メンバ関数 -- //
 	void Initialize(DirectXCommon* dx);
 	void CreateShaderResourceView();
 	void CreateSRVDescriptorHeap();
+
+	// テクスチャの読み込み
 	int LoadTexture(const std::string filePath);
-	int SetStructuredBuffer(int32_t kNumInstance, Microsoft::WRL::ComPtr<ID3D12Resource> instancingResource);
+
+	// インスタンシング用のSRVを設定する
+	int SetInstancingBuffer(int32_t kNumInstance, Microsoft::WRL::ComPtr<ID3D12Resource> instancingResource);
 	
 	int32_t CreateRenderTextureSRV(ID3D12Resource* pResource);
 

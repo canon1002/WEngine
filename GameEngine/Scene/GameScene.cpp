@@ -76,18 +76,19 @@ void GameScene::Init() {
 	mPlayerTrailEffect->Init();
 	mPlayerTrailEffect->SetColor(Color(0.1f, 0.1f, 1.0f, 0.8f));
 
-	//mBossTrailEffect = std::make_unique<TrailEffect>();
-	//mBossTrailEffect->Init();
-	//mBossTrailEffect->SetColor(Color(0.1f, 0.1f, 1.0f, 0.8f));
+	mBossTrailEffect = std::make_unique<TrailEffect>();
+	mBossTrailEffect->Init();
+	mBossTrailEffect->SetColor(Color(1.0f, 0.1f, 0.1f, 0.8f));
 
 	// ダッシュ煙
 	mPlayerDashSmoke = std::make_unique<DashSmoke>();
 	mPlayerDashSmoke->Init();
 	mPlayerDashSmoke->SetEmitterWorldTransform(mPlayer->GetObject3D()->mWorldTransform);
 
-	//mBossDashSmoke = std::make_unique<DashSmoke>();
-	//mBossDashSmoke->Init();
-	//mBossDashSmoke->SetEmitterWorldTransform(mBoss->GetObject3D()->mWorldTransform);
+	mBossDashSmoke = std::make_unique<DashSmoke>();
+	mBossDashSmoke->Init();
+	mBossDashSmoke->SetEmitterWorldTransform(mBoss->GetObject3D()->mWorldTransform);
+	mBossDashSmoke->SetActive(true);
 
 	// ゲームシーンの段階
 	mPhase = Phase::BEGIN;
@@ -347,10 +348,10 @@ void GameScene::Update() {
 				mPlayerTrailEffect->Create(*mPlayer->GetWorldPositionSword(0), *mPlayer->GetWorldPositionSword(1));
 			}
 		}
-	/*	mBossTrailEffect->Update();
+		mBossTrailEffect->Update();
 		if (mBossTrailEffect->GetGetPositionFlag()) {
 			mBossTrailEffect->Create(*mBoss->GetWorldPositionSword(0), *mBoss->GetWorldPositionSword(1));
-		}*/
+		}
 
 
 		// ダッシュ煙
@@ -366,17 +367,8 @@ void GameScene::Update() {
 		}
 		mPlayerDashSmoke->Update();
 
-		//if (mBoss->GetObject3D()->mSkinning->GetIsActiveAnimation("Run")) {
-		//	if (!mBossDashSmoke->GetActive()) {
-		//		mBossDashSmoke->SetActive(true);
-		//	}
-		//}
-		//else {
-		//	if (mBossDashSmoke->GetActive()) {
-		//		mBossDashSmoke->SetActive(false);
-		//	}
-		//}
-		//mBossDashSmoke->Update();
+		
+		mBossDashSmoke->Update();
 
 		break;
 	case Phase::LOSE:
@@ -540,7 +532,7 @@ void GameScene::Update() {
 	skybox_->DrawGUI("Skybox");
 	mPlayer->DrawGUI();
 	mBoss->DrawGUI();
-	mPlayerTrailEffect->DrawGui();
+	//mPlayerTrailEffect->DrawGui();
 #endif // _DEBUG
 
 	// カメラ
@@ -606,7 +598,7 @@ void GameScene::Draw() {
 	mBoss->ColliderDraw();
 
 	mPlayerTrailEffect->Draw();
-	//mBossTrailEffect->Draw();
+	mBossTrailEffect->Draw();
 
 	// Object3D(Skinning)の描画前処理
 	ModelManager::GetInstance()->PreDrawForSkinning();
@@ -625,7 +617,7 @@ void GameScene::DrawUI()
 
 	// ダッシュ煙
 	mPlayerDashSmoke->Draw();
-	//mBossDashSmoke->Draw();
+	mBossDashSmoke->Draw();
 
 	// 2DSprite(画像)の描画前処理
 	SpriteAdministrator::GetInstance()->PreDraw();
