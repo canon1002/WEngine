@@ -1201,6 +1201,6 @@ void Player::ReciveDamageToBoss(float power)
 	//mBoss->SetShake(0.25f, 0.1f);
 
 	// ヒットストップの時間を設定
-	SetHitStopDuration(0.5f);
+	//SetHitStopDuration(0.5f);
 
 }

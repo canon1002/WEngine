@@ -131,7 +131,7 @@ void MainCamera::Update()
 
 	}
 
-	//SetCameraRotarionToSearchTarget();
+	SetCameraRotarionToSearchTarget();
 	UpdateRotationEasing();
 
 
