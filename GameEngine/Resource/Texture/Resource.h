@@ -16,8 +16,9 @@
 #include "Externals/DirectXTex/DirectXTex.h"
 
 // assimp
-#include <assimp/Importer.hpp>
+#include <assimp/Exporter.hpp>
 #include <assimp/scene.h>
+#include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 
 // 頂点データ
@@ -114,6 +115,7 @@ namespace Resource // ここから関数の宣言と定義を行う
 	MultiModelData LoadMultiModelFile(const std::string& directoryPath, const std::string& filename);
 
 
+	//void ExportModelFile(const std::string& directoryPath, const std::string& filename,Animation* animation);
 
 	// .objの読み込み
 	ModelData LoadObjFile(const std::string& directoryPath, const std::string& filename);
@@ -123,6 +125,12 @@ namespace Resource // ここから関数の宣言と定義を行う
 	// アニメーション読み込み
 	// 現時点では最初のアニメーションのみ対応できる 必要になったら処理を追加すること
 	Animation LoadAnmation(const std::string& directoryPath, const std::string& filePath);
+
+	// アニメーション読み込み
+	// 複数のアニメーションに対応できるようにする
+	Animation LoadAnmation(const std::string& directoryPath, const std::string& filePath, std::string animationName);
+
+	void LoadAnimations(const std::string& directoryPath, const std::string& filePath, std::vector<Animation> vector);
 
 };
 

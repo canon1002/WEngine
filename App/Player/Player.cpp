@@ -131,8 +131,7 @@ void Player::Init() {
 	mAttackStatus.sword->mSkinning->Init("Weapons", "sword.gltf",
 		mAttackStatus.sword->GetModel()->modelData);
 	mAttackStatus.sword->mSkinning->IsInactive();
-	mAttackStatus.sword->mSkeleton = Skeleton::Create(mAttackStatus.sword->GetModel()->modelData.rootNode);
-	//mAttackStatus.sword->mWorldTransform->translation = mObject->GetWorldTransform()->translation;
+
 	mAttackStatus.pos = { 1000.0f,900.0f,0.0f };// 初期位置
 	mAttackStatus.normalRot = { 1.7f,-0.3f,-0.2f };// 初期回転量
 	mAttackStatus.endRot = { 3.8f,-0.3f,1.0f };// 最終回転量

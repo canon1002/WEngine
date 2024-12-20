@@ -63,9 +63,7 @@ public: // メンバ変数
 
 	// スキニング アニメーション
 	Skinning* mSkinning = nullptr;
-	// スケルトン
-	Skeleton mSkeleton;
-
+	
 	// コライダー
 	Collider* mCollider;
 

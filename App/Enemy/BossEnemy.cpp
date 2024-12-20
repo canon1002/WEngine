@@ -111,7 +111,7 @@ void BossEnemy::Init() {
 	mWeapon->mSkinning->Init("Weapons", "sword.gltf",
 		mWeapon->GetModel()->modelData);
 	mWeapon->mSkinning->IsInactive();
-	mWeapon->mSkeleton = Skeleton::Create(mWeapon->GetModel()->modelData.rootNode);
+	
 	// 拡大率を変更
 	mWeapon->mWorldTransform->scale = { 3.0f,3.0f,12.0f };
 

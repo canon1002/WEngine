@@ -34,12 +34,9 @@ void Object3d::Init(std::string name) {
 void Object3d::Update() {
 
 	MainCamera* camera = MainCamera::GetInstance();
-	// カメラ行列のビュー行列(カメラのワールド行列の逆行列)
-	viewM = camera->GetViewMatrix();
-	// WVPにまとめる
-	wvpM = camera->GetViewProjectionMatrix();
+
 	// 矩形のワールド行列とWVP行列を掛け合わした行列を代入
-	mWvpData->WVP = Multiply(mWorldTransform->GetWorldMatrix(), wvpM);
+	mWvpData->WVP = Multiply(mWorldTransform->GetWorldMatrix(), camera->GetViewProjectionMatrix());
 	mWvpData->World = mWorldTransform->GetWorldMatrix();
 	mWvpData->InverseTransposeWorld = Inverse(Transpose(mWorldTransform->GetWorldMatrix()));
 
@@ -262,4 +259,9 @@ void Object3d::SetModel(const std::string& filepath)
 	// モデルを検索してセット
 	//mModelManager->LoadModel(filepath);
 	mModel = mModelManager->FindModel(filepath);
+
+	// モデル内にアニメーションがある場合はアニメーション及びスキンクラスターなどを生成
+	
+
+
 }
