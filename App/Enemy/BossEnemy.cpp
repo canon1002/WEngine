@@ -40,7 +40,7 @@ void BossEnemy::Init() {
 	mObject->SetModel("boss.gltf");
 	mObject->GetModel()->mMaterialData->color = { 1.0f,0.7f,0.7f,1.0f };
 	// スキニングアニメーションの生成
-	mObject->mSkinning = new Skinning();
+	mObject->mSkinning = make_unique<Skinning>();
 	mObject->mSkinning->Init("Boss", "Idle.gltf", mObject->GetModel()->modelData);
 	mObject->mSkinning->SetMotionBlendingInterval(30.0f);
 	// 使用するアニメーションを登録しておく
@@ -106,7 +106,7 @@ void BossEnemy::Init() {
 	mWeapon = std::make_unique<Object3d>();
 	mWeapon->Init("Weapon");
 	mWeapon->SetModel("sword.gltf");
-	mWeapon->mSkinning = new Skinning();
+	mWeapon->mSkinning = make_unique<Skinning>();
 	mWeapon->GetModel()->SetCubeTexture(Skybox::GetInstance()->mTextureHandle);
 	mWeapon->mSkinning->Init("Weapons", "sword.gltf",
 		mWeapon->GetModel()->modelData);
@@ -122,7 +122,7 @@ void BossEnemy::Init() {
 	for (int32_t i = 0; i < 5; i++) {
 		mWeaponWorldMat[i] = MakeAffineMatrix(Vector3{ 0.0f,0.0f,0.0f }, Vector3{ 0.0f,0.0f,0.0f }, Vector3{ 0.0f,0.0f,0.0f });
 		// コライダー 宣言
-		SphereCollider* newCollider = new SphereCollider(new WorldTransform(), 0.25f);
+		SphereCollider* newCollider = new SphereCollider(std::make_shared<WorldTransform>(), 0.25f);
 		// 初期化
 		newCollider->Init();
 		newCollider->SetCollisionAttribute(kCollisionAttributeEnemyBullet);
@@ -139,7 +139,7 @@ void BossEnemy::Init() {
 
 	// 剣先と根本のワールド座標
 	for (size_t i = 0; i < mWorldTransformSword.size(); i++) {
-		mWorldTransformSword[i] = new WorldTransform();
+		mWorldTransformSword[i] = make_unique<WorldTransform>();
 		mWorldTransformSword[i]->Init();
 	}
 	// ペアレントを設定(後にワールド座標を取得する)
@@ -195,31 +195,31 @@ void BossEnemy::InitActions()
 	// 各行動をmap配列に追加していく
 
 	// 接近
-	mActions["MoveToPlayer"] = new ACT::MoveToPlayer();
+	mActions["MoveToPlayer"] = make_shared<ACT::MoveToPlayer>();
 	mActions["MoveToPlayer"]->Init(this);
 
 	// 後退
-	mActions["BackStep"] = new ACT::BackStep();
+	mActions["BackStep"] = make_shared<ACT::BackStep>();
 	mActions["BackStep"]->Init(this);
 
 	// 近接攻撃
-	mActions["AttackClose"] = new ACT::AttackClose();
+	mActions["AttackClose"] = make_shared<ACT::AttackClose>();
 	mActions["AttackClose"]->Init(this);
 
 	// 刺突攻撃
-	mActions["AttackThrust"] = new ACT::AttackThrust();
+	mActions["AttackThrust"] = make_shared<ACT::AttackThrust>();
 	mActions["AttackThrust"]->Init(this);
 
 	// ダッシュ攻撃
-	mActions["AttackDash"] = new ACT::AttackDash();
+	mActions["AttackDash"] = make_shared<ACT::AttackDash>();
 	mActions["AttackDash"]->Init(this);
 
 	// ジャンプ攻撃
-	mActions["AttackJump"] = new ACT::AttackJump();
+	mActions["AttackJump"] = make_shared<ACT::AttackJump>();
 	mActions["AttackJump"]->Init(this);
 
 	// 初期は行動しない
-	mActiveAction = nullptr;
+	mActiveAction.reset();
 
 }
 
@@ -293,15 +293,15 @@ void BossEnemy::UpdateBehaviorTree(){
 			}
 			
 			// 行動クラスのポインタをnullptrにする
-			mActiveAction = nullptr;
+			mActiveAction.reset();
 		}
 	}
 }
 
 void BossEnemy::UpdateObject(){
 
-	if (mActiveAction != nullptr) {
-		mActiveAction->Update();
+	if (!mActiveAction.expired()) {
+		mActiveAction.lock()->Update();
 	}
 
 
@@ -356,7 +356,7 @@ void BossEnemy::UpdateObject(){
 	mObject->mCollider->Update();
 
 	// UI更新
-	mStatus->Update(mObject->GetWorldTransform());
+	mStatus->Update(mObject->GetWorldTransform().get());
 
 }
 
@@ -435,8 +435,8 @@ void BossEnemy::DrawGUI() {
 }
 
 void BossEnemy::SetAttackCollider(CollisionManager* cManager){
-	if (mActiveAction != nullptr) {
-		mActiveAction->SetCollider(cManager);
+	if (!mActiveAction.expired()) {
+		mActiveAction.lock()->SetCollider(cManager);
 	}
 }
 
@@ -474,7 +474,7 @@ ACT::Condition BossEnemy::GetActionCondition(const std::string& key)
 
 ACT::IAction* BossEnemy::GetActionClass(const std::string& key) {
 	// 引数で指定した行動クラスの状態を取得する
-	return mActions[key];
+	return mActions[key].get();
 }
 
 void BossEnemy::ReciveDamageTolayer(float power)
@@ -496,37 +496,32 @@ void BossEnemy::AttackClose()
 	//}
 	// 現行アクションを設定
 	mActiveAction = mActions["AttackClose"];
-	mActiveAction->Start();
+	mActiveAction.lock()->Start();
 }
 
 void BossEnemy::AttackThrust()
 {
 	// 現行アクションを設定
 	mActiveAction = mActions["AttackThrust"];
-	mActiveAction->Start();
+	mActiveAction.lock()->Start();
 }
 
 void BossEnemy::AttackDash(){
 	// 現行アクションを設定
 	mActiveAction = mActions["AttackDash"];
-	mActiveAction->Start();
+	mActiveAction.lock()->Start();
 }
 
 void BossEnemy::AttackJump(){
 	// 現行アクションを設定
 	mActiveAction = mActions["AttackJump"];
-	mActiveAction->Start();
+	mActiveAction.lock()->Start();
 }
 
-void BossEnemy::MoveToPlayer()
-{
-	//// 前回の行動を終了
-	//if (mActiveAction != nullptr) {
-	//	mActiveAction->End();
-	//}
+void BossEnemy::MoveToPlayer(){
 	// 現行アクションを設定
 	mActiveAction = mActions["MoveToPlayer"];
-	mActiveAction->Start();
+	mActiveAction.lock()->Start();
 }
 
 void BossEnemy::EscapeToPlayer()
@@ -539,7 +534,7 @@ void BossEnemy::BackStep()
 {
 	// 現行アクションを設定
 	mActiveAction = mActions["BackStep"];
-	mActiveAction->Start();
+	mActiveAction.lock()->Start();
 }
 
 void BossEnemy::Jump(float JumpPower)
@@ -609,8 +604,8 @@ void BossEnemy::ColliderDraw() {
 
 #ifdef _DEBUG
 
-	if (mActiveAction != nullptr) {
-		mActiveAction->Draw();
+	if (!mActiveAction.expired()) {
+		mActiveAction.lock()->Draw();
 	}
 
 	// 身体の部位に合わせたコライダーを描画

@@ -1,17 +1,17 @@
 #include "WinAPI.h"
 #include "GameEngine/Base/Debug/ImGuiManager.h"
 
-WinAPI* WinAPI::instance = nullptr;
+WinApp* WinApp::instance = nullptr;
 
-WinAPI* WinAPI::GetInstance() {
+WinApp* WinApp::GetInstance() {
 	if (instance == nullptr) {
-		instance = new WinAPI();
+		instance = new WinApp();
 	}
 	return instance;
 }
 
 // 初期化
-void WinAPI::Initialize() {
+void WinApp::Init() {
 
 	// COMの初期化
 	CoInitializeEx(0, COINIT_MULTITHREADED);
@@ -56,19 +56,16 @@ void WinAPI::Initialize() {
 }
 
 // 消去
-void WinAPI::Finalize() {
+void WinApp::Final() {
 	// ウィンドウを消去
 	CloseWindow(hwnd);
-	// インスタンス消去
-	delete instance;
-	instance = nullptr;
 }
 
 
 // システム 及び デバッグメッセージ
 
 // ウィンドウプロシージャ
-LRESULT CALLBACK WinAPI::WindowProc(HWND hwnd, UINT msg,
+LRESULT CALLBACK WinApp::WindowProc(HWND hwnd, UINT msg,
 	WPARAM wparam, LPARAM lparam) {
 
 	// ImGuiにメッセージを渡し、ImGuiが処理していたら早期リターンを行う
@@ -91,12 +88,12 @@ LRESULT CALLBACK WinAPI::WindowProc(HWND hwnd, UINT msg,
 }
 
 // 出力ウィンドウに文字を出す
-void WinAPI::Log(const std::string& messege) {
+void WinApp::Log(const std::string& messege) {
 	OutputDebugStringA(messege.c_str());
 }
 
 // シェーダーをコンパイルする
-Microsoft::WRL::ComPtr <IDxcBlob> WinAPI::CompileShader(
+Microsoft::WRL::ComPtr <IDxcBlob> WinApp::CompileShader(
 	// CompilerするShederファイルへのパス
 	const std::wstring& filePath,
 	// Compilerに使用するProfile
@@ -110,7 +107,7 @@ Microsoft::WRL::ComPtr <IDxcBlob> WinAPI::CompileShader(
 
 
 	// これからシェーダーをコンパイル旨をログに出す
-	WinAPI::Log(WinAPI::ConvertString(std::format(L"Bigin CompileShader,path:{},profile:{}\n", filePath, profile)));
+	WinApp::Log(WinApp::ConvertString(std::format(L"Bigin CompileShader,path:{},profile:{}\n", filePath, profile)));
 	// hlslファイルを読む
 	IDxcBlobEncoding* shaderSource = nullptr;
 	HRESULT hr = dxcUtils->LoadFile(filePath.c_str(), nullptr, &shaderSource);
@@ -151,7 +148,7 @@ Microsoft::WRL::ComPtr <IDxcBlob> WinAPI::CompileShader(
 	IDxcBlobUtf8* shaderError = nullptr;
 	shaderResult->GetOutput(DXC_OUT_ERRORS, IID_PPV_ARGS(&shaderError), nullptr);
 	if (shaderError != nullptr && shaderError->GetStringLength() != 0) {
-		WinAPI::Log(shaderError->GetStringPointer());
+		WinApp::Log(shaderError->GetStringPointer());
 		// 警告・エラーダメゼッタイ
 		assert(false);
 	}
@@ -163,14 +160,14 @@ Microsoft::WRL::ComPtr <IDxcBlob> WinAPI::CompileShader(
 	shaderResult->GetOutput(DXC_OUT_OBJECT, IID_PPV_ARGS(&shaderBlob), nullptr);
 	assert(SUCCEEDED(hr));
 	// 成功したログを出す
-	WinAPI::Log(WinAPI::ConvertString(std::format(L"Compile Succeeded,path:{},profile:{}\n", filePath, profile)));
+	WinApp::Log(WinApp::ConvertString(std::format(L"Compile Succeeded,path:{},profile:{}\n", filePath, profile)));
 
 	// 実行用のバイナリを返却
 	return shaderBlob;
 
 }
 
-bool WinAPI::ProcessMessage()
+bool WinApp::ProcessMessage()
 {
 	if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
 		TranslateMessage(&msg);
@@ -187,7 +184,7 @@ bool WinAPI::ProcessMessage()
 // ** 変換 ** //
 
 // string->wstring
-std::wstring WinAPI::ConvertString(const std::string& str)
+std::wstring WinApp::ConvertString(const std::string& str)
 {
 	if (str.empty())
 	{
@@ -204,7 +201,7 @@ std::wstring WinAPI::ConvertString(const std::string& str)
 	return result;
 }
 // wstring->string
-std::string WinAPI::ConvertString(const std::wstring& str)
+std::string WinApp::ConvertString(const std::wstring& str)
 {
 	if (str.empty())
 	{

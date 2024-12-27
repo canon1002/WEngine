@@ -20,7 +20,7 @@ public: // -- public メンバ関数 -- //
 	SRV() = default;
 	~SRV() = default;
 
-	void Initialize(DirectXCommon* dx);
+	void Init();
 	void CreateShaderResourceView();
 	void CreateSRVDescriptorHeap();
 
@@ -73,7 +73,5 @@ public: // -- public メンバ変数 -- //
 
 private: // -- private メンバ変数 -- // 
 
-	// ポインタ
-	DirectXCommon* mDxCommon;
 
 };

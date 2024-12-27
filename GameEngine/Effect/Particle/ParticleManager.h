@@ -35,16 +35,25 @@ public: // -- 公開 メンバ変数 -- //
 
 private: // -- 非公開 メンバ関数 -- //
 
+	// コンストラクタ
+	ParticleManager() = default;
+	// デストラクタ
+	~ParticleManager();
+	// コピーコンストラクタと演算子オーバーロードの禁止
+	ParticleManager(const ParticleManager& obj) = delete;
+	ParticleManager& operator=(const ParticleManager& obj) = delete;
+
 	void CreateRootSignature();
 	void CreatePipelineState();
 
 private: // -- 非公開 メンバ変数 -- //
 
 	// ポインタ
-	DirectXCommon* mDxCommon;
+	
 
 	// インスタンス
 	static ParticleManager* instance;
+
 	// パーティクルグループのコンテナ
 	std::unordered_map<std::string,ParticleGroup> mParticleGroups;
 

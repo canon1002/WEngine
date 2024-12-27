@@ -10,9 +10,8 @@ Triangle::~Triangle()
 	delete materialData;
 }
 
-void Triangle::Initialize(DirectXCommon* dxCommon,CameraCommon* camera) {
+void Triangle::Init(CameraCommon* camera) {
 
-	mDxCommon = dxCommon;
 	mCamera = camera;
 
 
@@ -44,21 +43,21 @@ void Triangle::Draw() {
 	// 三角形のワールド行列とWVP行列を掛け合わした行列を代入
 	*mWvpData = Multiply(mWorldTransform.GetWorldMatrix(), wvpM);
 
-	mDxCommon->mCommandList->IASetVertexBuffers(0, 1, &mVertexBufferView);
+	DirectXCommon::GetInstance()->mCommandList->IASetVertexBuffers(0, 1, &mVertexBufferView);
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけばいい
-	mDxCommon->mCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	DirectXCommon::GetInstance()->mCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	/// CBV設定
 
 	// マテリアルのCBufferの場所を指定
-	mDxCommon->mCommandList->SetGraphicsRootConstantBufferView(0, materialResource->GetGPUVirtualAddress());
+	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootConstantBufferView(0, materialResource->GetGPUVirtualAddress());
 	//wvp用のCBufferの場所を指定
-	mDxCommon->mCommandList->SetGraphicsRootConstantBufferView(1, mWvpResource->GetGPUVirtualAddress());
+	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootConstantBufferView(1, mWvpResource->GetGPUVirtualAddress());
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である
-	mDxCommon->mCommandList->SetGraphicsRootDescriptorTable(2, mDxCommon->srv_->mTextureData.at(1).textureSrvHandleGPU);
+	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootDescriptorTable(2, DirectXCommon::GetInstance()->mSrv->mTextureData.at(1).textureSrvHandleGPU);
 
 	// インスタンス生成
-	mDxCommon->mCommandList->DrawInstanced(3, 1, 0, 0);
+	DirectXCommon::GetInstance()->mCommandList->DrawInstanced(3, 1, 0, 0);
 
 }
 
@@ -67,10 +66,10 @@ void Triangle::CreateVertexResource() {
 
 	// VertexResourceを生成する(P.42)
 	// 実際に頂点リソースを作る
-	mVertexResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(VertexData) * 3);
+	mVertexResource = DirectXCommon::GetInstance()->CreateBufferResource(DirectXCommon::GetInstance()->mDevice.Get(), sizeof(VertexData) * 3);
 
 	// マテリアル用のResourceを作る
-	materialResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(VertexData));
+	materialResource = DirectXCommon::GetInstance()->CreateBufferResource(DirectXCommon::GetInstance()->mDevice.Get(), sizeof(VertexData));
 	// マテリアルにデータを書き込む
 	materialData = nullptr;
 	// 書き込むためのアドレスを取得
@@ -84,7 +83,7 @@ void Triangle::CreateVertexResource() {
 void Triangle::CreateTransformation() {
 
 	// Transformation用のResourceを作る
-	mWvpResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(Matrix4x4));
+	mWvpResource = DirectXCommon::GetInstance()->CreateBufferResource(DirectXCommon::GetInstance()->mDevice.Get(), sizeof(Matrix4x4));
 	// データを書き込む
 	// 書き込むためのアドレスを取得
 	mWvpResource->Map(0, nullptr, reinterpret_cast<void**>(&mWvpData));

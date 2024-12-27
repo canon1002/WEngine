@@ -1,13 +1,14 @@
 #pragma once
 #include "GameEngine/Object/Model/Model.h"
 
+// スカイボックス
 class Skybox{
 
 public:	// -- public メンバ関数 -- //
 
+	// インスタンス取得
 	static Skybox* GetInstance();
 
-	~Skybox();
 	void Init(const std::string& directrypath, const std::string& filename);
 	void Update();
 	void Draw();
@@ -26,6 +27,14 @@ public:	// -- public メンバ関数 -- //
 	void SetCameraPosition(CameraCommon camera) { cameraData->worldPosition = camera.GetTranslate(); }
 
 private: // -- private メンバ関数 -- //
+
+	// コンストラクタ
+	Skybox();
+	// デストラクタ
+	~Skybox();
+	// コピーコンストラクタと演算子オーバーロードの禁止
+	Skybox(const Skybox& obj) = delete;
+	Skybox& operator=(const Skybox& obj) = delete;
 
 	/// <summary>
 	/// 座標関連の要素を作成する
@@ -50,7 +59,7 @@ public: // -- public メンバ変数 -- //
 	// ModelCommonのポインタ
 	//ModelCommon* modelCommon_ = nullptr;
 	// DirectXのポインタ
-	DirectXCommon* mDxCommon = nullptr;
+	
 	CameraCommon* mCamera = nullptr;
 
 	// -- Object3Dの要素 -- //

@@ -13,10 +13,7 @@ Reticle3D::~Reticle3D()
 {
 }
 
-void Reticle3D::Init()
-{
-	pInput = InputManager::GetInstance();
-	pCamera = MainCamera::GetInstance();
+void Reticle3D::Init(){
 
 	// 3Dレティクル
 	mObject = std::make_unique<Object3d>();
@@ -47,9 +44,9 @@ void Reticle3D::Update()
 {
 
 	// カメラの回転量から3Dレティクルの位置を計算する
-	float pitch = pCamera->GetRotate().x;
-	float yaw = pCamera->GetRotate().y;
-	float roll = pCamera->GetRotate().z;
+	float pitch = MainCamera::GetInstance()->GetRotate().x;
+	float yaw = MainCamera::GetInstance()->GetRotate().y;
+	float roll = MainCamera::GetInstance()->GetRotate().z;
 
 	// ピッチとヨーの回転をクォータニオンに変換
 	Quaternion qPitch = MakeRotateAxisAngleQuaternion({ 1.0f, 0.0f, 0.0f }, pitch);
@@ -63,18 +60,18 @@ void Reticle3D::Update()
 
 	// レティクルの位置を計算 // Y座標をやや高めの位置に
 	mObject->mWorldTransform->translation = {
-		pCamera->GetTranslate().x + cameraDirection.x * mReticleDistance,
-		pCamera->GetTranslate().y + cameraDirection.y * mReticleDistance,
-		pCamera->GetTranslate().z + cameraDirection.z * mReticleDistance
+		MainCamera::GetInstance()->GetTranslate().x + cameraDirection.x * mReticleDistance,
+		MainCamera::GetInstance()->GetTranslate().y + cameraDirection.y * mReticleDistance,
+		MainCamera::GetInstance()->GetTranslate().z + cameraDirection.z * mReticleDistance
 	};
 
 	// 3Dから2Dへの変換を行う
 	const static Matrix4x4 viewPort = MakeViewportMatrix(0, 0,
-		pCamera->GetWindowSize().x, pCamera->GetWindowSize().y, 0.0f, 1.0f);
+		MainCamera::GetInstance()->GetWindowSize().x, MainCamera::GetInstance()->GetWindowSize().y, 0.0f, 1.0f);
 
 
-	Matrix4x4 V = pCamera->GetViewMatrix();
-	Matrix4x4 P = pCamera->GetProjectionMatrix();
+	Matrix4x4 V = MainCamera::GetInstance()->GetViewMatrix();
+	Matrix4x4 P = MainCamera::GetInstance()->GetProjectionMatrix();
 	Matrix4x4 VPV = Multiply(Multiply(V,P), viewPort);
 
 	// スクリーン座標に変換する

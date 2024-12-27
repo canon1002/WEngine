@@ -9,11 +9,8 @@ public: // -- public メンバ関数 -- //
 	DSV() = default;
 	~DSV() = default;
 
-	/// <summary>
 	/// 初期化
-	/// </summary>
-	/// <param name="dxCommon"></param>
-	void Initialize(DirectXCommon* dxCommon);
+	void Init();
 
 private: // -- private メンバ関数 -- //
 
@@ -46,8 +43,5 @@ public: // -- public メンバ変数 -- //
 	Microsoft::WRL::ComPtr<ID3D12Resource> mDepthBuffer;
 
 private: // -- private メンバ変数 -- //
-
-	// ポインタ
-	DirectXCommon* mDxCommon;
 
 };

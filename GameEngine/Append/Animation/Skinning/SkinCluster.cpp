@@ -4,17 +4,16 @@
 SkinCluster SkinCluster::Create(const Microsoft::WRL::ComPtr<ID3D12Device>& device,
 	const Skeleton& skeleton, const ModelData& modelData) {
 	SkinCluster skinCluster;
-	DirectXCommon* mDxCommon = DirectXCommon::GetInstance();
 
 	// -- Palette用のResourceを確保 -- //
 
-	skinCluster.paletteResource_ = mDxCommon->CreateBufferResource(device.Get(), sizeof(WellForGPU) * skeleton.joints.size());
+	skinCluster.paletteResource_ = DirectXCommon::GetInstance()->CreateBufferResource(device.Get(), sizeof(WellForGPU) * skeleton.joints.size());
 	WellForGPU* mappedPalette = nullptr;
 	skinCluster.paletteResource_->Map(0, nullptr, reinterpret_cast<void**>(&mappedPalette));
 	skinCluster.mappedPallete_ = { mappedPalette,skeleton.joints.size() };// spanを使ってアクセスできるようにする
-	int32_t indexNum = mDxCommon->srv_->GetEmptyIndex();
-	skinCluster.paletteSrvHandle_.first = mDxCommon->srv_->mTextureData.at(indexNum).textureSrvHandleCPU;
-	skinCluster.paletteSrvHandle_.second = mDxCommon->srv_->mTextureData.at(indexNum).textureSrvHandleGPU;
+	int32_t indexNum = DirectXCommon::GetInstance()->mSrv->GetEmptyIndex();
+	skinCluster.paletteSrvHandle_.first = DirectXCommon::GetInstance()->mSrv->mTextureData.at(indexNum).textureSrvHandleCPU;
+	skinCluster.paletteSrvHandle_.second = DirectXCommon::GetInstance()->mSrv->mTextureData.at(indexNum).textureSrvHandleGPU;
 
 	// -- Palette用のsrvを作成 -- //
 
@@ -33,7 +32,7 @@ SkinCluster SkinCluster::Create(const Microsoft::WRL::ComPtr<ID3D12Device>& devi
 	// -- influence用のResourceを確保 -- //
 
 	// 頂点ごとにinfluence情報を追加できるようにする
-	skinCluster.influenceResource_ = mDxCommon->CreateBufferResource(device.Get(),
+	skinCluster.influenceResource_ = DirectXCommon::GetInstance()->CreateBufferResource(device.Get(),
 		sizeof(VertexInfluence) * modelData.vertices.size());
 	VertexInfluence* mappedInfluence = nullptr;
 	skinCluster.influenceResource_->Map(0, nullptr,

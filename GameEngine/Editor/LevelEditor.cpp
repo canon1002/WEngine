@@ -97,19 +97,22 @@ void LevelEditor::CheckLevelEditorFile(){
 	// レベルデータからオブジェクトを生成&配置
 	for (auto& objectData : levelData->objects) {
 		// モデルを指定して3Dオブジェクトを生成
-		Object3d* newObject = new Object3d(objectData.objectName);
+		std::unique_ptr<Object3d> newObject = std::make_unique<Object3d>(objectData.objectName);
 		newObject->Init(objectData.objectName);
+		
 		// ファイル拡張子を指定 とりあえずgltfのみ読み込む
 		std::string extension = ".gltf";
 		const std::string& modelFilepath = objectData.fileName + extension;
 		ModelManager::GetInstance()->LoadModel("MapObjects", modelFilepath);
 		newObject->SetModel(modelFilepath);
+		
 		// ワールド座標を設定
 		newObject->mWorldTransform->translation = objectData.worldTransform.translation;
 		newObject->mWorldTransform->rotation = objectData.worldTransform.rotation;
 		newObject->mWorldTransform->scale = objectData.worldTransform.scale;
+		
 		// 配列に登録
-		mObjects.push_back(newObject);
+		mObjects.push_back(std::move(newObject));
 	}
 
 }
@@ -156,17 +159,14 @@ void LevelEditor::Draw(){
 }
 
 
-void LevelEditor::SetTextureCubeMap(const int32_t& trextureHandle)
-{
+void LevelEditor::SetTextureCubeMap(const int32_t& trextureHandle){
 	// テクスチャマップのハンドルをセット
 	for (auto& object : mObjects) {
 		object->GetModel()->SetCubeTexture(trextureHandle);
 	}
 }
 
-float LevelEditor::GetRadian(float degree)
-{
+float LevelEditor::GetRadian(float degree){
 	float radian = degree * (3.14f / 180.0f);
-
 	return radian;
 }

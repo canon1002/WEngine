@@ -71,7 +71,6 @@ public:
 	Microsoft::WRL::ComPtr<IXAudio2> xAudio2_;
 	IXAudio2MasteringVoice* masterVoice_;
 
-
 private:
 
 	// インスタンス

@@ -232,9 +232,6 @@
     <ClCompile Include="GameEngine\Object\3d\Object3d.cpp">
       <Filter>GameEngine\Object\3d</Filter>
     </ClCompile>
-    <ClCompile Include="GameEngine\Object\3d\Object3dCommon.cpp">
-      <Filter>GameEngine\Object\3d</Filter>
-    </ClCompile>
     <ClCompile Include="GameEngine\Scene\GameScene.cpp">
       <Filter>GameEngine\Scene</Filter>
     </ClCompile>
@@ -538,9 +535,6 @@
       <Filter>GameEngine\Object\Model</Filter>
     </ClInclude>
     <ClInclude Include="GameEngine\Object\3d\Object3d.h">
-      <Filter>GameEngine\Object\3d</Filter>
-    </ClInclude>
-    <ClInclude Include="GameEngine\Object\3d\Object3dCommon.h">
       <Filter>GameEngine\Object\3d</Filter>
     </ClInclude>
     <ClInclude Include="GameEngine\Scene\GameScene.h">

@@ -18,9 +18,9 @@ public: // -- 公開 メンバ関数 -- //
 			sprite->Init();
 			sprite->SetColor({ 0.0f,0.7f,0.0f,1.0f });
 		}
-		mSprites[0]->SetTexture(DirectXCommon::GetInstance()->srv_->LoadTexture("hpBarBase.png"));
-		mSprites[1]->SetTexture(DirectXCommon::GetInstance()->srv_->LoadTexture("hpBarMidle.png"));
-		mSprites[2]->SetTexture(DirectXCommon::GetInstance()->srv_->LoadTexture("hpBarTop.png"));
+		mSprites[0]->SetTexture(DirectXCommon::GetInstance()->mSrv->LoadTexture("hpBarBase.png"));
+		mSprites[1]->SetTexture(DirectXCommon::GetInstance()->mSrv->LoadTexture("hpBarMidle.png"));
+		mSprites[2]->SetTexture(DirectXCommon::GetInstance()->mSrv->LoadTexture("hpBarTop.png"));
 
 		mSprites[0]->SetSpriteSize(Vector2(200.0f, 40.0f));
 		mSprites[1]->SetSpriteSize(Vector2(200.0f, 40.0f));
@@ -99,7 +99,7 @@ public:
 	void Init();
 	void Update();
 
-	Status* GetPlayerStatus() { return mPlayerStatus; }
+	std::shared_ptr<Status> GetPlayerStatus() { return mPlayerStatus; }
 	void GetPlayerStatus(Status& st) { 
 		st.HP = mPlayerStatus->HP;
 		st.MAXHP = mPlayerStatus->MAXHP;
@@ -108,18 +108,18 @@ public:
 		st.AGI = mPlayerStatus->AGI;
 		st.mSprites = std::move(mPlayerStatus->mSprites);
 	}
-	Status* GetBossStatus() { return mBossStatus; }
+	std::shared_ptr<Status> GetBossStatus() { return mBossStatus; }
 	
-	void ReceiveDamage(Status* attacker, float power, Status* deffence);
+	void ReceiveDamage(std::shared_ptr<Status> attacker,float power, std::shared_ptr<Status> deffence);
 
 private:
 	// ポインタ
 	GlobalVariables* mGlobalVariables = nullptr;
 
 	// プレイヤー 
-	Status* mPlayerStatus;
+	std::shared_ptr<Status> mPlayerStatus;
 	// ボス
-	Status* mBossStatus;
+	std::shared_ptr<Status> mBossStatus;
 
 };
 

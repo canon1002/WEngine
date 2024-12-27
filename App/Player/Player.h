@@ -123,10 +123,10 @@ public: // -- 公開 メンバ関数 -- //
 	void ColliderDraw();
 
 	Object3d* GetObject3D() { return mObject.get(); }
-	Model* GetModel() { return mObject->mModel; }
+	Model* GetModel() { return mObject->mModel.get(); }
 	Collider* GetCollider() { return mObject->mCollider; }
 	const Matrix4x4& GetSwordBoneMatrix(int32_t count) { return mAttackStatus.swordWorldMat.at(count); }
-	const WorldTransform* GetWorldPositionSword(int32_t count) { return mWorldTransformSword.at(count); }
+	const WorldTransform* GetWorldPositionSword(int32_t count) { return mWorldTransformSword.at(count).get(); }
 
 	Vector3 GetWorldPos() { return mObject->GetWorldTransform()->translation; }
 	Reticle3D* GetReticle3D() { return mReticle.get(); }
@@ -163,7 +163,7 @@ public: // -- 公開 メンバ関数 -- //
 	// ボスにダメージを与える
 	void ReciveDamageToBoss(float power);
 	// 能力値取得関数
-	Status* GetStatus() { return mStatus; }
+	std::shared_ptr<Status> GetStatus() { return mStatus; }
 
 	// ボスクラスのポインタ
 	BossEnemy* mBoss;
@@ -181,9 +181,6 @@ public: // -- 公開 メンバ変数 & 定数 -- //
 	static const std::array<ConstAttack, kComboCountMax> kConstAttacks;
 
 private: // -- 非公開 メンバ変数 -- //
-
-	// 入力を取得
-	InputManager* mInput;
 	
 	// 自機の振る舞い
 	Behavior mBehavior;
@@ -217,7 +214,7 @@ private: // -- 非公開 メンバ変数 -- //
 	std::list<Arrow*> mArrows;
 
 	// 能力値
-	Status* mStatus;
+	std::shared_ptr<Status> mStatus;
 	// 攻撃関連パラメータ
 	AttackStatus mAttackStatus;
 	// 防御関連パラメータ
@@ -235,7 +232,7 @@ private: // -- 非公開 メンバ変数 -- //
 	// -- エフェクト関係 -- //
 
 	// 剣先と根本のワールド座標
-	std::array<WorldTransform*,2> mWorldTransformSword;
+	array<unique_ptr<WorldTransform>,2> mWorldTransformSword;
 
 };
 

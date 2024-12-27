@@ -12,14 +12,12 @@ void TitleScene::Finalize() {}
 
 //　継承した関数
 void TitleScene::Init() {
-	// 入力を取得する
-	mInput = InputManager::GetInstance();
 
 	mObject = std::make_unique<ShadowObject>();
 	mObject->Init("ShadowObject");
 	ModelManager::GetInstance()->LoadModel("box", "box.gltf");
 	mObject->SetModel("box.gltf");
-	mObject->mModel->mTextureHandle = DirectXCommon::GetInstance()->srv_->LoadTexture("uvChecker.dds");
+	mObject->mModel->mTextureHandle = DirectXCommon::GetInstance()->mSrv->LoadTexture("uvChecker.dds");
 	mObject->mWorldTransform->rotation = { 0.5f,0.0f,0.0f };
 
 	// カメラ設定
@@ -134,7 +132,7 @@ void TitleScene::Update() {
 	if (!mIsActiveTransition) {
 
 		// ボタンかキーボード入力でタイトルの選択受付に移行する
-		if (mInput->GetPused(Gamepad::Button::B) || mInput->GetTriggerKey(DIK_RETURN)) {
+		if (InputManager::GetInstance()->GetPused(Gamepad::Button::B) || InputManager::GetInstance()->GetTriggerKey(DIK_RETURN)) {
 
 			// タイトルの選択画面に移行する
 			if (!mIsTransitionTitleSelect) {

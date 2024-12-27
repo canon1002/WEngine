@@ -17,7 +17,7 @@ public:
 public:
 	
 	// 入力マネージャー
-	InputManager* mInput;
+	
 
 	// フェード中か
 	bool mIsFading;

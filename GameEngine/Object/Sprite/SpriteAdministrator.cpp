@@ -5,10 +5,8 @@ SpriteAdministrator* SpriteAdministrator::instance = nullptr;
 
 // インスタンスを取得
 SpriteAdministrator* SpriteAdministrator::GetInstance() {
-	// 関数内staticは初めて通ったときのみ実行される
-	//static DirectXCommon* instance = nullptr;
 	if (instance == nullptr) {
-		instance = new SpriteAdministrator;
+		instance = new SpriteAdministrator();
 	}
 	return instance;
 }
@@ -18,8 +16,7 @@ void SpriteAdministrator::Finalize(){
 	mRootSignature.Reset();
 }
 
-void SpriteAdministrator::Init(DirectXCommon* dxComoon){
-	mDxCommon = dxComoon;
+void SpriteAdministrator::Init(){
 	CreateGraphicsPipeline();
 }
 
@@ -79,12 +76,12 @@ void SpriteAdministrator::CreateRootSignature()
 		&errorBlob
 	);
 	if (FAILED(hr)) {
-		WinAPI::Log(reinterpret_cast<char*>(errorBlob->GetBufferPointer()));
+		WinApp::Log(reinterpret_cast<char*>(errorBlob->GetBufferPointer()));
 		assert(false);
 	}
 
 	// バイナリを元に
-	hr = mDxCommon->device_->CreateRootSignature(0, signatureBlob->GetBufferPointer(),
+	hr = DirectXCommon::GetInstance()->mDevice->CreateRootSignature(0, signatureBlob->GetBufferPointer(),
 		signatureBlob->GetBufferSize(), IID_PPV_ARGS(&mRootSignature));
 	assert(SUCCEEDED(hr));
 }
@@ -137,12 +134,12 @@ void SpriteAdministrator::CreateGraphicsPipeline()
 	rasterizerDesc.FillMode = D3D12_FILL_MODE_SOLID;
 
 	// Shaderをcompileする(P.37)
-	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob = WinAPI::CompileShader(L"Shaders/Sprite2d.VS.hlsl",
-		L"vs_6_0", mDxCommon->dxcUtils, mDxCommon->dxcCompiler, mDxCommon->includeHandler);
+	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob = WinApp::CompileShader(L"Shaders/Sprite2d.VS.hlsl",
+		L"vs_6_0", DirectXCommon::GetInstance()->dxcUtils, DirectXCommon::GetInstance()->dxcCompiler, DirectXCommon::GetInstance()->includeHandler);
 	assert(vertexShaderBlob != nullptr);
 
-	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob = WinAPI::CompileShader(L"Shaders/Sprite2d.PS.hlsl",
-		L"ps_6_0", mDxCommon->dxcUtils, mDxCommon->dxcCompiler, mDxCommon->includeHandler);
+	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob = WinApp::CompileShader(L"Shaders/Sprite2d.PS.hlsl",
+		L"ps_6_0", DirectXCommon::GetInstance()->dxcUtils, DirectXCommon::GetInstance()->dxcCompiler, DirectXCommon::GetInstance()->includeHandler);
 	assert(pixelShaderBlob != nullptr);
 
 	// PSOを生成する(P.38)
@@ -178,7 +175,7 @@ void SpriteAdministrator::CreateGraphicsPipeline()
 
 	// 実際に生成
 	HRESULT hr;
-	hr = mDxCommon->device_->CreateGraphicsPipelineState(&graphicsPipelineStateDesc,
+	hr = DirectXCommon::GetInstance()->mDevice->CreateGraphicsPipelineState(&graphicsPipelineStateDesc,
 		IID_PPV_ARGS(&mGraphicsPipelineState));
 	assert(SUCCEEDED(hr));
 
@@ -188,6 +185,6 @@ void SpriteAdministrator::CreateGraphicsPipeline()
 void SpriteAdministrator::PreDraw()
 {
 	// RootSignatureを設定。PSOに設定しているが、別途設定が必要
-	mDxCommon->mCommandList->SetGraphicsRootSignature(mRootSignature.Get());
-	mDxCommon->mCommandList->SetPipelineState(mGraphicsPipelineState.Get());
+	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootSignature(mRootSignature.Get());
+	DirectXCommon::GetInstance()->mCommandList->SetPipelineState(mGraphicsPipelineState.Get());
 }

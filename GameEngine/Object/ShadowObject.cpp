@@ -31,7 +31,6 @@ void ShadowObject::Init(std::string name){
 	// オブジェクトの名称を設定
 	mObjname = name;
 
-	mDxCommon = DirectXCommon::GetInstance();
 	mWorldTransform = new WorldTransform();
 	mWorldTransform->Init();
 	CreateTransformation();
@@ -68,12 +67,12 @@ void ShadowObject::Draw(){
 	}
 
 	//wvp用のCBufferの場所を指定
-	mDxCommon->mCommandList->SetGraphicsRootConstantBufferView(1, mWvpResource->GetGPUVirtualAddress());
+	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootConstantBufferView(1, mWvpResource->GetGPUVirtualAddress());
 	// 頂点をセット
 	// 配列を渡す(開始スロット番号、使用スロット数、VBV配列へのポインタ)
-	mDxCommon->mCommandList->IASetVertexBuffers(0, 1, &mModel->mVertexBufferView);
+	DirectXCommon::GetInstance()->mCommandList->IASetVertexBuffers(0, 1, &mModel->mVertexBufferView);
 	// シャドウ用のCBVを渡す
-	mDxCommon->mCommandList->SetGraphicsRootConstantBufferView(6,mSceneResource->GetGPUVirtualAddress());
+	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootConstantBufferView(6,mSceneResource->GetGPUVirtualAddress());
 	// 描画
 	mModel->Draw();
 
@@ -128,7 +127,7 @@ void ShadowObject::DrawGUI()
 void ShadowObject::CreateTransformation() {
 
 	// Transformation用のResourceを作る
-	mWvpResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(TransformationMatrix));
+	mWvpResource = DirectXCommon::GetInstance()->CreateBufferResource(DirectXCommon::GetInstance()->mDevice.Get(), sizeof(TransformationMatrix));
 	// データを書き込む
 	// 書き込むためのアドレスを取得
 	mWvpResource->Map(0, nullptr, reinterpret_cast<void**>(&mWvpData));
@@ -141,7 +140,7 @@ void ShadowObject::CreateTransformation() {
 
 void ShadowObject::CreateSceneResource()
 {
-	mSceneResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(SceneMatrix));
+	mSceneResource = DirectXCommon::GetInstance()->CreateBufferResource(DirectXCommon::GetInstance()->mDevice.Get(), sizeof(SceneMatrix));
 	// データを書き込む
 	// 書き込むためのアドレスを取得
 	mSceneResource->Map(0, nullptr, reinterpret_cast<void**>(&mParallelLightVector));

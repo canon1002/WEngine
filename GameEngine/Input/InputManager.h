@@ -3,6 +3,10 @@
 #include "Keyboard.h"
 //#include "Mouse"
 
+#include <memory>
+
+using namespace std;
+
 enum class InputType {
 	KEYBOARD,
 	GAMEPAD,
@@ -27,7 +31,7 @@ public: // -- 公開 メンバ関数 -- //
 	void Final();
 
 	// 初期化
-	void Init(WinAPI* winApp);
+	void Init();
 	// 更新
 	void Update();
 	// デバッグUIの表示
@@ -88,15 +92,10 @@ private:
 
 
 	// キーボード入力クラス
-
+	Keyboard* keyboard;
 
 	// ゲームパッド入力クラス
-
-
-
-	WinAPI* winApp_ = nullptr;
-	Keyboard* keyboard = nullptr;
-	Gamepad* gamepad = nullptr;
+	Gamepad* gamepad;
 
 	// インスタンス
 	static InputManager* instance;

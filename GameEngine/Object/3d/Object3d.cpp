@@ -1,5 +1,4 @@
 #include "Object3d.h"
-#include "Object3dCommon.h"
 #include <assert.h>
 #include <fstream>
 #include <sstream>
@@ -13,9 +12,7 @@ Object3d::Object3d(const std::string objname) {
 }
 
 Object3d::~Object3d() {
-	//delete mWvpData;
-	//delete model_;
-	delete mWorldTransform;
+	delete mCollider;
 }
 
 
@@ -24,9 +21,8 @@ void Object3d::Init(std::string name) {
 	// オブジェクトの名称を設定
 	mObjname = name;
 
-	mDxCommon = DirectXCommon::GetInstance();
-	mModelManager = ModelManager::GetInstance();
-	mWorldTransform = new WorldTransform();
+	// ワールド座標 初期化
+	mWorldTransform = std::make_shared<WorldTransform>();
 	mWorldTransform->Init();
 	CreateTransformation();
 }
@@ -60,7 +56,7 @@ void Object3d::Draw() {
 	}
 
 	//wvp用のCBufferの場所を指定
-	mDxCommon->mCommandList->SetGraphicsRootConstantBufferView(1, mWvpResource->GetGPUVirtualAddress());
+	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootConstantBufferView(1, mWvpResource->GetGPUVirtualAddress());
 	// 頂点をセット
 
 	D3D12_VERTEX_BUFFER_VIEW vbvs[2]{};
@@ -70,13 +66,13 @@ void Object3d::Draw() {
 		vbvs[1] = mSkinning->GetNowSkinCluster()->skinCluster.influenceBufferView_; // influenceのVBV
 
 		// 配列を渡す(開始スロット番号、使用スロット数、VBV配列へのポインタ)
-		mDxCommon->mCommandList->IASetVertexBuffers(0, 2, vbvs);
-		mDxCommon->mCommandList->SetGraphicsRootDescriptorTable(6,
+		DirectXCommon::GetInstance()->mCommandList->IASetVertexBuffers(0, 2, vbvs);
+		DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootDescriptorTable(6,
 			mSkinning->GetNowSkinCluster()->skinCluster.paletteSrvHandle_.second);
 	}
 	else {
 		// 配列を渡す(開始スロット番号、使用スロット数、VBV配列へのポインタ)
-		mDxCommon->mCommandList->IASetVertexBuffers(0, 1, &vbvs[0]);
+		DirectXCommon::GetInstance()->mCommandList->IASetVertexBuffers(0, 1, &vbvs[0]);
 	}
 
 	mModel->Draw();
@@ -243,7 +239,7 @@ void Object3d::DrawGuiTree()
 void Object3d::CreateTransformation() {
 
 	// Transformation用のResourceを作る
-	mWvpResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(TransformationMatrix));
+	mWvpResource = DirectXCommon::GetInstance()->CreateBufferResource(DirectXCommon::GetInstance()->mDevice.Get(), sizeof(TransformationMatrix));
 	// データを書き込む
 	// 書き込むためのアドレスを取得
 	mWvpResource->Map(0, nullptr, reinterpret_cast<void**>(&mWvpData));
@@ -258,10 +254,23 @@ void Object3d::SetModel(const std::string& filepath)
 {
 	// モデルを検索してセット
 	//mModelManager->LoadModel(filepath);
-	mModel = mModelManager->FindModel(filepath);
+	mModel = ModelManager::GetInstance()->FindModelPtr(filepath);
 
 	// モデル内にアニメーションがある場合はアニメーション及びスキンクラスターなどを生成
-	
+	if (0) {
+		mSkinning;
+	}
 
+}
+
+void Object3d::SetModelFullPath(const string& directryPath, const string& filePath){
+
+	// モデルを検索してセット
+	mModel = ModelManager::GetInstance()->FindModelPtr(directryPath+filePath);
+	// モデル内にアニメーションがある場合はアニメーション及びスキンクラスターなどを生成
+	if (!mModel->modelData.skinClusterData.empty()) {
+		mSkinning = std::make_unique<Skinning>();
+		mSkinning->Init(directryPath, filePath, mModel->modelData);
+	}
 
 }

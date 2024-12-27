@@ -17,10 +17,10 @@ void StatusManager::Init()
 	// インスタンス取得
 	mGlobalVariables = GlobalVariables::GetInstance();
 
-	mPlayerStatus = new Status();
+	mPlayerStatus = std::make_shared<Status>();
 	mPlayerStatus->Init();
 	
-	mBossStatus = new Status();
+	mBossStatus = std::make_shared<Status>();
 	mBossStatus->Init();
 
 	mGlobalVariables->CreateGroup("PlayerData");
@@ -56,7 +56,7 @@ void StatusManager::Update()
 
 }
 
-void StatusManager::ReceiveDamage(Status* attacker,float power, Status* deffence)
+void StatusManager::ReceiveDamage(std::shared_ptr<Status> attacker,float power, std::shared_ptr<Status> deffence)
 {
 	//  [(攻撃力/2) * 攻撃倍率] - [防御力/4] でダメージを計算する
 	int32_t damage = int32_t((attacker->STR / 2.0f) * power) - int32_t(deffence->VIT / 4.0f);

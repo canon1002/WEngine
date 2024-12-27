@@ -18,7 +18,7 @@ public: // -- 公開 メンバ関数 -- //
 	// 終了処理
 	void Finalize();
 	
-	void Init(DirectXCommon* dxCommon);
+	void Init();
 	
 	void CreateRootSignature();
 	void CreateGraphicsPipeline();
@@ -27,8 +27,6 @@ public: // -- 公開 メンバ関数 -- //
 
 private: // -- 非公開 メンバ変数 -- //
 
-	// DirectXCommonの外部ポインタ
-	DirectXCommon* mDxCommon = nullptr;
 	// グラフィックパイプライン
 	Microsoft::WRL::ComPtr <ID3D12PipelineState> mGraphicsPipelineState = nullptr;
 	// ルートシグネチャー

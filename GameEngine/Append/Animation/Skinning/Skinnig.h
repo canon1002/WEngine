@@ -42,6 +42,8 @@ public: // -- 公開 メンバ関数 -- //
 	void CreateSkinningData(const std::string& directorypath, const std::string& filename, const std::string& filrExt,
 		ModelData modelData, bool isLoop = false);
 
+	void CreateAnimationData(const std::string& directorypath, const std::string& filename,ModelData modelData);
+
 	/// <summary>
 	/// 更新処理
 	/// </summary>
@@ -246,9 +248,6 @@ private: // -- 非公開 メンバ関数 -- //
 	void ApplyAniation();
 
 private: // -- 非公開 メンバ変数 -- //
-
-	// 外部ポインタ
-	DirectXCommon* mDxCommon;
 
 	// スケルトン
 	Skeleton mSkeleton;

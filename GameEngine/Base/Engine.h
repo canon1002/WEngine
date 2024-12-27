@@ -8,10 +8,13 @@
 /// </summary>
 class Engine{
 public:
+
+	// 実行処理
 	void Run();
-	std::unique_ptr<WinAPI>winApp_ = nullptr;
+
+	WinApp* mWinApp = nullptr;
 	DirectXCommon* mDxCommon = nullptr;
-	std::unique_ptr<SceneManager>sceneManager_ = nullptr;
+	std::unique_ptr<SceneManager> mSceneManager = nullptr;
 
 };
 

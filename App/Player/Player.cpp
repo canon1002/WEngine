@@ -38,7 +38,7 @@ void Player::Init() {
 	// モデルを設定
 	mObject->SetModel("idle.gltf");
 	// スキニングアニメーションを生成
-	mObject->mSkinning = new Skinning();
+	mObject->mSkinning = make_unique<Skinning>();
 	mObject->mSkinning->Init("player", "idle.gltf", mObject->GetModel()->modelData);
 	mObject->mSkinning->SetMotionBlendingInterval(10.0f);
 	// 使用するアニメーションを登録しておく
@@ -127,7 +127,7 @@ void Player::Init() {
 	mAttackStatus.sword->mWorldTransform->scale = { 0.1f,0.1f,0.175f };
 	mAttackStatus.sword->mWorldTransform->rotation = { 2.0f,-0.6f,1.4f };
 	mAttackStatus.sword->mWorldTransform->translation = { 0.05f,0.0f,0.05f };
-	mAttackStatus.sword->mSkinning = new Skinning();
+	mAttackStatus.sword->mSkinning = make_unique<Skinning>();
 	mAttackStatus.sword->mSkinning->Init("Weapons", "sword.gltf",
 		mAttackStatus.sword->GetModel()->modelData);
 	mAttackStatus.sword->mSkinning->IsInactive();
@@ -143,7 +143,7 @@ void Player::Init() {
 	for (int32_t i = 0; i < 5; i++) {
 		mAttackStatus.swordWorldMat[i] = MakeAffineMatrix(Vector3{ 0.0f,0.0f,0.0f }, Vector3{ 0.0f,0.0f,0.0f }, Vector3{ 0.0f,0.0f,0.0f });
 		// コライダー 宣言
-		SphereCollider* newCollider = new SphereCollider(new WorldTransform(), 0.2f);
+		SphereCollider* newCollider = new SphereCollider(std::make_shared<WorldTransform>(), 0.2f);
 		// 初期化
 		newCollider->Init();
 		newCollider->SetCollisionAttribute(kCollisionAttributePlayerBullet);
@@ -166,14 +166,14 @@ void Player::Init() {
 	mGuardStatus.guardPos = { 170.0f,720.0f,0.0f };// 構え位置
 
 	// ステータス取得
-	mStatus = new Status();
+	mStatus = std::make_shared<Status>();
 	StatusManager::GetInstance()->GetPlayerStatus(*mStatus);
 
 	// -- エフェクト関係 -- //
 
 	// 剣先と根本のワールド座標
 	for (size_t i = 0; i < mWorldTransformSword.size(); i++) {
-		mWorldTransformSword[i] = new WorldTransform();
+		mWorldTransformSword[i] = make_unique<WorldTransform>();
 		mWorldTransformSword[i]->Init();
 	}
 	// ペアレントを設定(後にワールド座標を取得する)
@@ -534,7 +534,7 @@ void Player::Avoid()
 {
 	//  非回避状態で Aボタンで回避
 	if (mBehavior != Behavior::kAvoid &&
-		mInput->GetLongPush(Gamepad::Button::A)) {
+		InputManager::GetInstance()->GetLongPush(Gamepad::Button::A)) {
 
 		// パラメータの補正
 
@@ -551,17 +551,17 @@ void Player::Avoid()
 		// スティック入力の量
 		const static int stickValue = 6000;
 		// いずれかの数値が、指定した値以上(以下)であれば移動回避を行う
-		if (mInput->GetStick(Gamepad::Stick::LEFT_X) < -stickValue || // 左 
-			mInput->GetStick(Gamepad::Stick::LEFT_X) > stickValue || // 右
-			mInput->GetStick(Gamepad::Stick::LEFT_Y) < -stickValue || // 上
-			mInput->GetStick(Gamepad::Stick::LEFT_Y) > stickValue	  // 下
+		if (InputManager::GetInstance()->GetStick(Gamepad::Stick::LEFT_X) < -stickValue || // 左 
+			InputManager::GetInstance()->GetStick(Gamepad::Stick::LEFT_X) > stickValue || // 右
+			InputManager::GetInstance()->GetStick(Gamepad::Stick::LEFT_Y) < -stickValue || // 上
+			InputManager::GetInstance()->GetStick(Gamepad::Stick::LEFT_Y) > stickValue	  // 下
 			) {
 
 			// スティックの入力方向を計算
 			Vector3 direction = {
-				(float)mInput->GetStick(Gamepad::Stick::LEFT_X) ,
+				(float)InputManager::GetInstance()->GetStick(Gamepad::Stick::LEFT_X) ,
 				0.0f,
-				(float)mInput->GetStick(Gamepad::Stick::LEFT_Y)
+				(float)InputManager::GetInstance()->GetStick(Gamepad::Stick::LEFT_Y)
 			};
 			// 正規化
 			direction = Normalize(direction);
@@ -625,7 +625,7 @@ void Player::Avoid()
 void Player::Guard()
 {
 	// キー入力取得
-	if (mInput->GetLongPush(Gamepad::Button::RIGHT_SHOULDER)) {
+	if (InputManager::GetInstance()->GetLongPush(Gamepad::Button::RIGHT_SHOULDER)) {
 
 		// 入力中 ガードへ移行
 
@@ -683,7 +683,7 @@ void Player::Attack()
 	// コンボ上限に達していない
 	if (mAttackStatus.comboCount < kComboCountMax) {
 		// Bボタン Triggerで攻撃
-		if (mInput->GetPused(Gamepad::Button::B) || mInput->GetTriggerKey(DIK_RETURN))
+		if (InputManager::GetInstance()->GetPused(Gamepad::Button::B) || InputManager::GetInstance()->GetTriggerKey(DIK_RETURN))
 		{
 			// 初期動作
 			if (mBehavior == Behavior::kRoot || mBehavior == Behavior::kMove)
@@ -814,39 +814,35 @@ void Player::Move()
 	// 通常/防御時に有効
 	if (mBehavior == Behavior::kRoot || mBehavior == Behavior::kMove || mBehavior == Behavior::kGuard) {
 
-		if (mInput == nullptr) {
-			mInput = InputManager::GetInstance();
-		}
-
 		// 上下移動の可否
-		if (mInput->GetPushKey(DIK_W)) {
+		if (InputManager::GetInstance()->GetPushKey(DIK_W)) {
 			mDirection.z += 1.0f / Framerate::GetInstance()->GetFramerate() * Framerate::GetInstance()->GetBattleSpeed();
 		}
-		if (mInput->GetPushKey(DIK_S)) {
+		if (InputManager::GetInstance()->GetPushKey(DIK_S)) {
 			mDirection.z -= 1.0f / Framerate::GetInstance()->GetFramerate() * Framerate::GetInstance()->GetBattleSpeed();
 		}
 		// 左右移動の可否
-		if (mInput->GetPushKey(DIK_A)) {
+		if (InputManager::GetInstance()->GetPushKey(DIK_A)) {
 			mDirection.x -= 1.0f / Framerate::GetInstance()->GetFramerate() * Framerate::GetInstance()->GetBattleSpeed();
 		}
-		if (mInput->GetPushKey(DIK_D)) {
+		if (InputManager::GetInstance()->GetPushKey(DIK_D)) {
 			mDirection.x += 1.0f / Framerate::GetInstance()->GetFramerate() * Framerate::GetInstance()->GetBattleSpeed();
 		}
 
 		// スティック入力の量
 		const static int stickValue = 6000;
 		// いずれかの数値が、以上(以下)であれば移動処理を行う
-		if (mInput->GetStick(Gamepad::Stick::LEFT_X) < -stickValue || // 左 
-			mInput->GetStick(Gamepad::Stick::LEFT_X) > stickValue || // 右
-			mInput->GetStick(Gamepad::Stick::LEFT_Y) < -stickValue || // 上
-			mInput->GetStick(Gamepad::Stick::LEFT_Y) > stickValue	  // 下
+		if (InputManager::GetInstance()->GetStick(Gamepad::Stick::LEFT_X) < -stickValue || // 左 
+			InputManager::GetInstance()->GetStick(Gamepad::Stick::LEFT_X) > stickValue || // 右
+			InputManager::GetInstance()->GetStick(Gamepad::Stick::LEFT_Y) < -stickValue || // 上
+			InputManager::GetInstance()->GetStick(Gamepad::Stick::LEFT_Y) > stickValue	  // 下
 			) {
 
 			// Xの移動量とYの移動量を設定する
 			mDirection = {
-				(float)mInput->GetStick(Gamepad::Stick::LEFT_X) ,
+				(float)InputManager::GetInstance()->GetStick(Gamepad::Stick::LEFT_X) ,
 				0.0f,
-				(float)mInput->GetStick(Gamepad::Stick::LEFT_Y)
+				(float)InputManager::GetInstance()->GetStick(Gamepad::Stick::LEFT_Y)
 			};
 
 			// 正規化
@@ -889,10 +885,10 @@ void Player::Move()
 
 		}
 
-		if (mInput->GetStick(Gamepad::Stick::LEFT_X) >= -stickValue && // 左 
-			mInput->GetStick(Gamepad::Stick::LEFT_X) <= stickValue && // 右
-			mInput->GetStick(Gamepad::Stick::LEFT_Y) >= -stickValue && // 上
-			mInput->GetStick(Gamepad::Stick::LEFT_Y) <= stickValue	  // 下
+		if (InputManager::GetInstance()->GetStick(Gamepad::Stick::LEFT_X) >= -stickValue && // 左 
+			InputManager::GetInstance()->GetStick(Gamepad::Stick::LEFT_X) <= stickValue && // 右
+			InputManager::GetInstance()->GetStick(Gamepad::Stick::LEFT_Y) >= -stickValue && // 上
+			InputManager::GetInstance()->GetStick(Gamepad::Stick::LEFT_Y) <= stickValue	  // 下
 			) {
 
 			if (mBehavior == Behavior::kMove) {
@@ -934,16 +930,16 @@ void Player::DebagCtr()
 	
 
 	//// カメラの回転量を保持
-	//if (mInput->GetPused(Gamepad::Button::LEFT_SHOULDER) && t == 0.0f) {
+	//if (InputManager::GetInstance()->GetPused(Gamepad::Button::LEFT_SHOULDER) && t == 0.0f) {
 	//	mCameraPreDir = MainCamera::GetInstance()->GetRotate();
 	//}
 
 	//// 狙えるようにカメラの移動 
-	//if (mInput->GetLongPush(Gamepad::Button::LEFT_SHOULDER)) {
+	//if (InputManager::GetInstance()->GetLongPush(Gamepad::Button::LEFT_SHOULDER)) {
 
 	//	mIsAimMode = true;
 	//}
-	//else if (mInput->GetReleased(Gamepad::Button::LEFT_SHOULDER)) {
+	//else if (InputManager::GetInstance()->GetReleased(Gamepad::Button::LEFT_SHOULDER)) {
 	//	mIsAimMode = false;
 
 	//}
@@ -981,7 +977,7 @@ void Player::DebagCtr()
 
 	
 	// 操作変更
-	if (mInput->GetPused(Gamepad::Button::X)) {
+	if (InputManager::GetInstance()->GetPused(Gamepad::Button::X)) {
 		MainCamera::GetInstance()->SetCameraRotarionToSearchTarget();
 	}	
 
@@ -993,7 +989,7 @@ void Player::SpecialAtkRB()
 	if (mBehavior == Behavior::kRoot || mBehavior == Behavior::kMove || mBehavior == Behavior::kCharge) {
 
 		// 突進攻撃(仮)
-		if (mInput->GetGamepad()->getButton(Gamepad::Button::RIGHT_SHOULDER)) {
+		if (InputManager::GetInstance()->GetGamepad()->getButton(Gamepad::Button::RIGHT_SHOULDER)) {
 			mChargeStatus.pushingFrame += (1.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetBattleSpeed();
 
 			// 入力時間が一定まで達していたら 攻撃方向を指定できるようにする
@@ -1017,17 +1013,17 @@ void Player::SpecialAtkRB()
 				// 左スティックで方向を指定
 				const static int stickValue = 6000;
 				// いずれかの数値が、以上(以下)であれば移動処理を行う
-				if (mInput->GetStick(Gamepad::Stick::LEFT_X) < -stickValue || // 左 
-					mInput->GetStick(Gamepad::Stick::LEFT_X) > stickValue || // 右
-					mInput->GetStick(Gamepad::Stick::LEFT_Y) < -stickValue || // 上
-					mInput->GetStick(Gamepad::Stick::LEFT_Y) > stickValue	  // 下
+				if (InputManager::GetInstance()->GetStick(Gamepad::Stick::LEFT_X) < -stickValue || // 左 
+					InputManager::GetInstance()->GetStick(Gamepad::Stick::LEFT_X) > stickValue || // 右
+					InputManager::GetInstance()->GetStick(Gamepad::Stick::LEFT_Y) < -stickValue || // 上
+					InputManager::GetInstance()->GetStick(Gamepad::Stick::LEFT_Y) > stickValue	  // 下
 					) {
 
 					// Xの移動量とYの移動量を設定する
 					mDirection = {
-						(float)mInput->GetStick(Gamepad::Stick::LEFT_X) ,
+						(float)InputManager::GetInstance()->GetStick(Gamepad::Stick::LEFT_X) ,
 						0.0f,
-						(float)mInput->GetStick(Gamepad::Stick::LEFT_Y)
+						(float)InputManager::GetInstance()->GetStick(Gamepad::Stick::LEFT_Y)
 					};
 
 					// 正規化
@@ -1059,7 +1055,7 @@ void Player::SpecialAtkRB()
 		}
 
 		// 離すと攻撃する
-		if (mChargeStatus.pushingFrame > 0.0f && mInput->GetReleased(Gamepad::Button::RIGHT_SHOULDER)) {
+		if (mChargeStatus.pushingFrame > 0.0f && InputManager::GetInstance()->GetReleased(Gamepad::Button::RIGHT_SHOULDER)) {
 
 			mIsAimMode = false;
 

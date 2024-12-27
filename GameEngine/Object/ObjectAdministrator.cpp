@@ -3,19 +3,8 @@
 
 ObjectManager* ObjectManager::instance = nullptr;
 
-std::shared_ptr<Object3d> ObjectManager::CreateObject(const std::string& directrypath, const std::string& filename){
-	// オブジェクトをSheard_ptrで生成する
-	std::shared_ptr<Object3d> newObject = std::make_shared<Object3d>();
-	newObject->Init("Object3D");
 
-	// モデル登録チェック
-	newObject->SetModel(filename);
-	newObject->mModel->Initialize(directrypath,filename);
-
-	return newObject;
-}
-
-ObjectManager* ObjectManager::GetInstance(){
+ObjectManager* ObjectManager::GetInstance() {
 	// nullptrであれば新規作成する
 	if (instance == nullptr) {
 		instance = new ObjectManager();
@@ -23,16 +12,25 @@ ObjectManager* ObjectManager::GetInstance(){
 	return instance;
 }
 
-void ObjectManager::Init(DirectXCommon* dxCommon){
-	mDxCommon = dxCommon;
+std::shared_ptr<Object3d> ObjectManager::CreateObject(const std::string& directrypath, const std::string& filename){
+	// オブジェクトをSheard_ptrで生成する
+	std::shared_ptr<Object3d> newObject = std::make_shared<Object3d>();
+	newObject->Init("Object3D");
+
+	// モデル登録チェック
+	newObject->SetModel(filename);
+	newObject->mModel->Init(directrypath,filename);
+
+	return newObject;
+}
+
+void ObjectManager::Init(){
 
 	// モデル管理者クラス
-	modelAdmin_ = ModelManager::GetInstance();
-	modelAdmin_->Initialize(mDxCommon, MainCamera::GetInstance());
+	ModelManager::GetInstance()->Init();
 
 	// スプライト管理者クラス
-	spriteAdmin_ = SpriteAdministrator::GetInstance();
-	spriteAdmin_->Init(mDxCommon);
+	SpriteAdministrator::GetInstance()->Init();
 
 
 }
@@ -87,26 +85,25 @@ void ObjectManager::Draw(){
 		//}
 
 		////wvp用のCBufferの場所を指定
-		//mDxCommon->mCommandList->SetGraphicsRootConstantBufferView(1, object->mWvpResource->GetGPUVirtualAddress());
+		//DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootConstantBufferView(1, object->mWvpResource->GetGPUVirtualAddress());
 		//// VBV
-		//mDxCommon->mCommandList->IASetVertexBuffers(0, 1, &object->GetModel()->mVertexBufferView);
+		//DirectXCommon::GetInstance()->mCommandList->IASetVertexBuffers(0, 1, &object->GetModel()->mVertexBufferView);
 		//// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけばいい
-		//mDxCommon->mCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		//DirectXCommon::GetInstance()->mCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		//// マテリアルのCBufferの場所を指定
-		//mDxCommon->mCommandList->SetGraphicsRootConstantBufferView(0, object->GetModel()->materialResource->GetGPUVirtualAddress());
-		//mDxCommon->mCommandList->SetGraphicsRootConstantBufferView(3, object->GetModel()->directionalLightResource->GetGPUVirtualAddress());
-		//mDxCommon->mCommandList->SetGraphicsRootConstantBufferView(4, object->GetModel()->CameraResource->GetGPUVirtualAddress());
+		//DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootConstantBufferView(0, object->GetModel()->materialResource->GetGPUVirtualAddress());
+		//DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootConstantBufferView(3, object->GetModel()->directionalLightResource->GetGPUVirtualAddress());
+		//DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootConstantBufferView(4, object->GetModel()->CameraResource->GetGPUVirtualAddress());
 		//// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である
-		//mDxCommon->mCommandList->SetGraphicsRootDescriptorTable(2, mDxCommon->srv_->textureData_.at(object->GetModel()->mTextureHandle).textureSrvHandleGPU);
+		//DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootDescriptorTable(2, DirectXCommon::GetInstance()->srv_->textureData_.at(object->GetModel()->mTextureHandle).textureSrvHandleGPU);
 		//// ドローコール
-		//mDxCommon->mCommandList->DrawInstanced(UINT(object->GetModel()->modelData.vertices.size()), 1, 0, 0);
+		//DirectXCommon::GetInstance()->mCommandList->DrawInstanced(UINT(object->GetModel()->modelData.vertices.size()), 1, 0, 0);
 
 	}
 
 }
 
 void ObjectManager::Finalize(){
-	modelAdmin_->Finalize();
-	delete instance;
-	instance = nullptr;
+	ModelManager::GetInstance()->Finalize();
+	SpriteAdministrator::GetInstance()->Finalize();
 }

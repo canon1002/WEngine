@@ -15,9 +15,7 @@
 void GameScene::Finalize() {}
 
 void GameScene::Init() {
-	// 入力を取得する
-	mInput = InputManager::GetInstance();
-
+	
 	// 衝突判定マネージャ
 	mCollisionManager = std::make_unique<CollisionManager>();
 
@@ -38,11 +36,11 @@ void GameScene::Init() {
 	ModelManager::GetInstance()->LoadModel("groundShadow", "groundShadow.gltf");
 
 	// SkyBox 読み込み
-	DirectXCommon::GetInstance()->srv_->LoadTexture("skybox/rostock_laage_airport_4k.dds");
+	DirectXCommon::GetInstance()->mSrv->LoadTexture("skybox/rostock_laage_airport_4k.dds");
 
 	// skyboxの宣言
-	skybox_ = Skybox::GetInstance();
-	skybox_->Init("skybox", "rostock_laage_airport_4k.dds");
+	mSkybox = Skybox::GetInstance();
+	mSkybox->Init("skybox", "rostock_laage_airport_4k.dds");
 
 	// プレイヤー
 	mPlayer = std::make_unique<Player>();
@@ -57,18 +55,18 @@ void GameScene::Init() {
 	mBoss->SetPlayer(mPlayer.get());
 
 	// オブジェクトにCubeMapのテクスチャ番号を渡す
-	mPlayer->GetModel()->SetCubeTexture(skybox_->mTextureHandle);
-	mPlayer->GetCollider()->GetModel()->SetCubeTexture(skybox_->mTextureHandle);
-	mBoss->GetModel()->SetCubeTexture(skybox_->mTextureHandle);
-	mBoss->GetCollider()->GetModel()->SetCubeTexture(skybox_->mTextureHandle);
-	mPlayer->GetReticle3D()->SetCubeMap(skybox_->mTextureHandle);
-	LevelEditor::GetInstance()->SetTextureCubeMap(skybox_->mTextureHandle);
+	mPlayer->GetModel()->SetCubeTexture(mSkybox->mTextureHandle);
+	mPlayer->GetCollider()->GetModel()->SetCubeTexture(mSkybox->mTextureHandle);
+	mBoss->GetModel()->SetCubeTexture(mSkybox->mTextureHandle);
+	mBoss->GetCollider()->GetModel()->SetCubeTexture(mSkybox->mTextureHandle);
+	mPlayer->GetReticle3D()->SetCubeMap(mSkybox->mTextureHandle);
+	LevelEditor::GetInstance()->SetTextureCubeMap(mSkybox->mTextureHandle);
 
 
 	// パーティクル
 	ParticleManager::GetInstance()->Init();
-	mDTCParticle = std::make_unique<DiffusionToCircleParticle>();
-	mDTCParticle->Init();
+	//mDTCParticle = std::make_unique<DiffusionToCircleParticle>();
+	//mDTCParticle->Init();
 
 
 	// 軌道エフェクト
@@ -198,13 +196,13 @@ void GameScene::Update() {
 	// シーン切り替え
 	// 1キーを押したうえで
 	// Bボタンまたは、Enterキーでシーン遷移
-	if (mInput->GetPushKey(DIK_1)) {
-		if (mInput->GetPused(Gamepad::Button::B) || mInput->GetTriggerKey(DIK_RETURN)) {
+	if (InputManager::GetInstance()->GetPushKey(DIK_1)) {
+		if (InputManager::GetInstance()->GetPused(Gamepad::Button::B) || InputManager::GetInstance()->GetTriggerKey(DIK_RETURN)) {
 			sceneNo = SCENE::RESULT;
 		}
 	}
 
-	if (mInput->GetPushKey(DIK_R)) {
+	if (InputManager::GetInstance()->GetPushKey(DIK_R)) {
 		Init();
 	}
 
@@ -277,8 +275,8 @@ void GameScene::Update() {
 			else if (mPlayerStartAndEnd.t >= 1.0f && mCameraTr.k >= 1.0f && mCameraRot.k >= 1.0f) {
 
 				// メインカメラをフォローカメラ仕様にする
-				MainCamera::GetInstance()->SetFollowTarget(mPlayer->GetObject3D()->GetWorldTransform());
-				MainCamera::GetInstance()->SetSearchTarget(mBoss->GetObject3D()->GetWorldTransform());
+				MainCamera::GetInstance()->SetFollowTarget(mPlayer->GetObject3D()->GetWorldTransform().get());
+				MainCamera::GetInstance()->SetSearchTarget(mBoss->GetObject3D()->GetWorldTransform().get());
 
 				// フェーズ移行
 				mPhase = Phase::BATTLE;
@@ -401,7 +399,7 @@ void GameScene::Update() {
 			else if (mMessageFadeTime == 1.0f) {
 
 				if (mViggnetTime == 0.0f) {
-					if (mInput->GetPused(Gamepad::Button::B)) {
+					if (InputManager::GetInstance()->GetPused(Gamepad::Button::B)) {
 						mViggnetTime += (1.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetGameSpeed();
 					}
 				}
@@ -529,7 +527,7 @@ void GameScene::Update() {
 
 
 #ifdef _DEBUG
-	skybox_->DrawGUI("Skybox");
+	mSkybox->DrawGUI("Skybox");
 	mPlayer->DrawGUI();
 	mBoss->DrawGUI();
 	//mPlayerTrailEffect->DrawGui();
@@ -539,7 +537,7 @@ void GameScene::Update() {
 	MainCamera::GetInstance()->Update();
 
 	// スカイボックス
-	skybox_->Update();
+	mSkybox->Update();
 
 	// ステータスマネージャ
 	StatusManager::GetInstance()->Update();
@@ -565,7 +563,7 @@ void GameScene::Update() {
 
 	// パーティクル
 	ParticleManager::GetInstance()->Update();
-	mDTCParticle->Update();
+	//mDTCParticle->Update();
 
 
 	mPlayerTrailEffect->Update();
@@ -583,7 +581,7 @@ void GameScene::Update() {
 void GameScene::Draw() {
 
 	// Skyboxの描画前処理
-	skybox_->PreDraw();
+	mSkybox->PreDraw();
 	//skybox_->Draw();
 
 	// レベルデータ読み込み

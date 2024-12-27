@@ -14,10 +14,11 @@ public: // -- public メンバ関数 -- //
 	static ModelManager* GetInstance();
 
 	void Finalize();
-	void Initialize(DirectXCommon* dxCommon, CameraCommon* camera);
+	void Init();
 	void LoadModel(const std::string& directoryPath,const std::string& filepath);
 	void LoadMultiModel(const std::string& directoryPath,const std::string& filepath);
 	Model* FindModel(const std::string filepath);
+	std::shared_ptr<Model> FindModelPtr(const std::string filepath);
 	MultiModel* FindMultiModel(const std::string filepath);
 
 	static std::shared_ptr<Model> Create(const std::string& filepath, const std::string filename);
@@ -73,15 +74,12 @@ private: // -- private メンバ関数 -- //
 
 private: // -- private メンバ変数 -- //
 
-	//
+	// モデルデータのマップ
 	static std::map<std::string, std::shared_ptr<Model>> sModels_;
 
-	// ポインタ
-	DirectXCommon* mDxCommon = nullptr;
-	CameraCommon* mCamera = nullptr;
-
+	
 	// モデルデータ
-	std::unordered_map<std::string, std::unique_ptr<Model>> models;
+	std::unordered_map<std::string, std::shared_ptr<Model>> models;
 	std::unordered_map<std::string, std::unique_ptr<MultiModel>> multiModels;
 
 	// グラフィックパイプライン

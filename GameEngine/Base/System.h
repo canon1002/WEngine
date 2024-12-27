@@ -41,7 +41,7 @@ void Log(const std::string& messege) {
 	OutputDebugStringA(messege.c_str());
 }
 
-// ** 変換 ** //
+// -- 変換 -- //
 
 // string->wstring
 std::wstring ConvertString(const std::string& str)

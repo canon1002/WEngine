@@ -54,7 +54,7 @@ private: // -- 静的メンバ関数 -- //
 public: // -- 公開 メンバ関数 -- //
 
 	/// 初期化
-	void Init(WinAPI* win);
+	void Init();
 
 	/// 終了処理
 	void Final();
@@ -152,28 +152,26 @@ private: // --非公開 メンバ関数 -- //
 
 public: // ** メンバ変数 ** //
 	
-	// 外部
-	WinAPI* win_ = nullptr;
-	std::unique_ptr<RTV> rtv_ = nullptr;
-	std::unique_ptr<SRV> srv_ = nullptr;
-	std::unique_ptr<DSV> dsv_ = nullptr;
+	std::unique_ptr<RTV> mRtv = nullptr;
+	std::unique_ptr<SRV> mSrv = nullptr;
+	std::unique_ptr<DSV> mDsv = nullptr;
 
 	// DXGIファクトリーの生成
-	Microsoft::WRL::ComPtr <IDXGIFactory7> dxgiFactory = nullptr;
+	Microsoft::WRL::ComPtr<IDXGIFactory7> mDXGIFactory = nullptr;
 	// D3D12Deviceの生成
-	Microsoft::WRL::ComPtr <ID3D12Device> device_ = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12Device> mDevice = nullptr;
 	// コマンドアロケータ
-	Microsoft::WRL::ComPtr < ID3D12CommandAllocator> commandAllocator = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12CommandAllocator> mCommandAllocator = nullptr;
 	// コマンドキュー
-	Microsoft::WRL::ComPtr < ID3D12CommandQueue> commandQueue = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12CommandQueue> mCommandQueue = nullptr;
 	// コマンドリスト
-	Microsoft::WRL::ComPtr < ID3D12GraphicsCommandList> mCommandList = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> mCommandList = nullptr;
 	// スワップチェイン
-	Microsoft::WRL::ComPtr < IDXGISwapChain4> swapChain = nullptr;
+	Microsoft::WRL::ComPtr<IDXGISwapChain4> mSwapChain = nullptr;
 	// スワップチェーンデスク
-	DXGI_SWAP_CHAIN_DESC1 swapChainDesc{};
+	DXGI_SWAP_CHAIN_DESC1 mSwapChainDesc{};
 	// SwapChainResource
-	Microsoft::WRL::ComPtr < ID3D12Resource> swapChainResources[2] = { nullptr };
+	Microsoft::WRL::ComPtr<ID3D12Resource> mSwapChainResources[2] = { nullptr };
 
 	// TransitionBarrier
 	D3D12_RESOURCE_BARRIER mBarrier{};

@@ -5,8 +5,6 @@
 
 void EffectPixels::Init() {
 
-	mDxCommon = DirectXCommon::GetInstance();
-	mCamera = MainCamera::GetInstance();
 	CreateVertexResource();
 	CreateTransformation();
 	CreateMaterial();
@@ -17,7 +15,7 @@ void EffectPixels::Init() {
 	mWorldTransform->scale = { 1.0f,1.0f,1.0f };
 
 	// テクスチャの設定
-	mTextureHandle = mDxCommon->srv_->LoadTexture("white2x2.dds");
+	mTextureHandle = DirectXCommon::GetInstance()->mSrv->LoadTexture("white2x2.dds");
 
 	// 生存時間
 	mActiveCountMax = 0.1f;
@@ -44,28 +42,28 @@ void EffectPixels::Draw() {
 
 
 	// Transfromをセット
-	mDxCommon->mCommandList->SetGraphicsRootConstantBufferView(1, mWvpResource->GetGPUVirtualAddress());
+	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootConstantBufferView(1, mWvpResource->GetGPUVirtualAddress());
 	// Vertexをセット
-	mDxCommon->mCommandList->IASetVertexBuffers(0, 1, &mVertexBufferView);
+	DirectXCommon::GetInstance()->mCommandList->IASetVertexBuffers(0, 1, &mVertexBufferView);
 	// Indexをセット
-	mDxCommon->mCommandList->IASetIndexBuffer(&mIndexBufferView);
+	DirectXCommon::GetInstance()->mCommandList->IASetIndexBuffer(&mIndexBufferView);
 	// 形状を設定
-	mDxCommon->mCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	DirectXCommon::GetInstance()->mCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	// マテリアル
-	mDxCommon->mCommandList->SetGraphicsRootConstantBufferView(0, mMaterialResource->GetGPUVirtualAddress());
-	mDxCommon->mCommandList->SetGraphicsRootConstantBufferView(3, mDirectionalLightResource->GetGPUVirtualAddress());
-	mDxCommon->mCommandList->SetGraphicsRootConstantBufferView(4, mCameraResource->GetGPUVirtualAddress());
+	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootConstantBufferView(0, mMaterialResource->GetGPUVirtualAddress());
+	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootConstantBufferView(3, mDirectionalLightResource->GetGPUVirtualAddress());
+	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootConstantBufferView(4, mCameraResource->GetGPUVirtualAddress());
 
 	// テクスチャをセット
-	mDxCommon->mCommandList->SetGraphicsRootDescriptorTable(2, mDxCommon->srv_->mTextureData.at(mTextureHandle).textureSrvHandleGPU);
+	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootDescriptorTable(2, DirectXCommon::GetInstance()->mSrv->mTextureData.at(mTextureHandle).textureSrvHandleGPU);
 	// CueMapのテクスチャをセット
 	if (mTextureHandleCubeMap != 0) {
-		mDxCommon->mCommandList->SetGraphicsRootDescriptorTable(5, mDxCommon->srv_->mTextureData.at(mTextureHandleCubeMap).textureSrvHandleGPU);
+		DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootDescriptorTable(5, DirectXCommon::GetInstance()->mSrv->mTextureData.at(mTextureHandleCubeMap).textureSrvHandleGPU);
 	}
 
 	// インデックスを使用してドローコール
-	mDxCommon->mCommandList->DrawIndexedInstanced(6, 1, 0, 0, 0);
+	DirectXCommon::GetInstance()->mCommandList->DrawIndexedInstanced(6, 1, 0, 0, 0);
 }
 
 void EffectPixels::DrawGui(std::string name)
@@ -89,7 +87,7 @@ void EffectPixels::CreateVertexResource() {
 
 	// VertexResourceを生成する(P.42)
 	// 実際に頂点リソースを作る
-	mVertexResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(VertexData) * 4);
+	mVertexResource = DirectXCommon::GetInstance()->CreateBufferResource(DirectXCommon::GetInstance()->mDevice.Get(), sizeof(VertexData) * 4);
 	
 
 	// リソースの先頭のアドレスから使う
@@ -122,7 +120,7 @@ void EffectPixels::CreateVertexResource() {
 	mVertexData[3].texcoord = { 1.0f,1.0f };
 	mVertexData[3].normal = { 0.0f,0.0f,1.0f };
 
-	mIndexResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(uint32_t) * 6);
+	mIndexResource = DirectXCommon::GetInstance()->CreateBufferResource(DirectXCommon::GetInstance()->mDevice.Get(), sizeof(uint32_t) * 6);
 	mIndexBufferView.BufferLocation = mIndexResource->GetGPUVirtualAddress();
 	mIndexBufferView.SizeInBytes = sizeof(uint32_t) * 6;
 	mIndexBufferView.Format = DXGI_FORMAT_R32_UINT;
@@ -140,7 +138,7 @@ void EffectPixels::CreateVertexResource() {
 void EffectPixels::CreateTransformation() {
 
 	// Transformation用のResourceを作る
-	mWvpResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(TransformationMatrix));
+	mWvpResource = DirectXCommon::GetInstance()->CreateBufferResource(DirectXCommon::GetInstance()->mDevice.Get(), sizeof(TransformationMatrix));
 	// データを書き込む
 	// 書き込むためのアドレスを取得
 	mWvpResource->Map(0, nullptr, reinterpret_cast<void**>(&mWvpData));
@@ -152,9 +150,9 @@ void EffectPixels::CreateTransformation() {
 void EffectPixels::CreateMaterial() {
 
 	// マテリアル用のResourceを作る
-	mMaterialResource = mDxCommon->
-		CreateBufferResource(mDxCommon->
-			device_.Get(), sizeof(Material));
+	mMaterialResource = DirectXCommon::GetInstance()->
+		CreateBufferResource(DirectXCommon::GetInstance()->
+			mDevice.Get(), sizeof(Material));
 
 	// マテリアルにデータを書き込む
 	mMaterialData = nullptr;
@@ -170,7 +168,7 @@ void EffectPixels::CreateMaterial() {
 	
 
 	// Light
-	mDirectionalLightResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(DirectionalLight));
+	mDirectionalLightResource = DirectXCommon::GetInstance()->CreateBufferResource(DirectXCommon::GetInstance()->mDevice.Get(), sizeof(DirectionalLight));
 	// データを書き込む
 	mDirectionalLightResource->Map(0, nullptr, reinterpret_cast<void**>(&mDirectionalLightData));
 	mDirectionalLightData->color = { 1.0f, 1.0f, 1.0f, 1.0f };
@@ -178,10 +176,10 @@ void EffectPixels::CreateMaterial() {
 	mDirectionalLightData->intensity = 1.0f;
 
 	// カメラデータ
-	mCameraResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(CameraForGPU));
+	mCameraResource = DirectXCommon::GetInstance()->CreateBufferResource(DirectXCommon::GetInstance()->mDevice.Get(), sizeof(CameraForGPU));
 	// データを書き込む
 	mCameraResource->Map(0, nullptr, reinterpret_cast<void**>(&mCameraData));
-	mCameraData->worldPosition = mCamera->GetTranslate();
+	mCameraData->worldPosition = MainCamera::GetInstance()->GetTranslate();
 	
 }
 

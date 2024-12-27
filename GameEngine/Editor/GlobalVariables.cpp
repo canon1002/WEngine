@@ -6,10 +6,8 @@ GlobalVariables* GlobalVariables::instance = nullptr;
 
 // インスタンスを取得
 GlobalVariables* GlobalVariables::GetInstance() {
-	// 関数内staticは初めて通ったときのみ実行される
-	//static GlobalVariables* instance = nullptr;
 	if (instance == nullptr) {
-		instance = new GlobalVariables;
+		instance = new GlobalVariables();
 	}
 	return instance;
 }

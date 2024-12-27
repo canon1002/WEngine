@@ -26,7 +26,7 @@ public:
 	void Finalize();
 
 	// 初期化
-	void Initialize(WinAPI* winApp);
+	void Init();
 	// 更新
 	void Input();
 	// デバッグUIの表示
@@ -42,8 +42,6 @@ public:
 
 
 private:
-
-	WinAPI* winApp_ = nullptr;
 
 	// インスタンス
 	static Keyboard* instance;

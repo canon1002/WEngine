@@ -10,10 +10,10 @@
 
 #include "GameEngine/Append/Collider/Collider.h"
 
-class Object3dCommon;
-class Model;
-class CameraCommon;
-class ModelManager;
+// 前方宣言
+class Model; // モデルクラス
+class CameraCommon; // カメラ基底クラス
+class ModelManager; // モデルマネージャークラス
 
 class Object3d : public ObjectBase 
 {
@@ -35,34 +35,31 @@ public: // メンバ関数
 
 	void CreateTransformation();
 	void SetModel(const std::string& filepath);
+	void SetModelFullPath(const std::string& directryPath, const std::string& filePath);
 	void SetScale(Vector3 scale) { mWorldTransform->scale = scale; }
 	void SetRotate(Vector3 rotate) { mWorldTransform->rotation = rotate; }
 	void SetTranslate(Vector3 translate) { mWorldTransform->translation = translate; }
-	void SetWorldTransform(WorldTransform* w) { mWorldTransform = w; }
-	const WorldTransform* GetWorldTransform()const  { return mWorldTransform; }
+	void SetWorldTransform(std::shared_ptr<WorldTransform> world) { mWorldTransform = world; }
+	const std::shared_ptr<WorldTransform> GetWorldTransform()const  { return mWorldTransform; }
 
-	Model* GetModel() { return mModel; }
+	Model* GetModel() { return mModel.get(); }
+	std::shared_ptr<Model>  GetModelPtr()const { return mModel; }
 	
 public: // メンバ変数
 
-	// 外部ポインタ
-	DirectXCommon* mDxCommon = nullptr;
-	Object3dCommon* mObject3dCommon = nullptr;
-	Model* mModel = nullptr;
-	ModelManager* mModelManager;
-	Matrix4x4 cameraM, viewM, projectM, pespectiveM, wvpM;
-
+	// モデル
+	std::shared_ptr<Model> mModel = nullptr;
+	
 	// Transformation用のResourceを作る
 	Microsoft::WRL::ComPtr<ID3D12Resource> mWvpResource = nullptr;
 	// データを書き込む
-	TransformationMatrix* mWvpData = nullptr;
-	//WorldTransform* mWorldTransform;
+	std::shared_ptr<TransformationMatrix> mWvpData = nullptr;
 
 	// マテリアル
 	Material material;
 
 	// スキニング アニメーション
-	Skinning* mSkinning = nullptr;
+	std::unique_ptr<Skinning> mSkinning = nullptr;
 	
 	// コライダー
 	Collider* mCollider;

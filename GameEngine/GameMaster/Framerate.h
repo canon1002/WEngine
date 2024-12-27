@@ -1,6 +1,7 @@
 #pragma once
 //#include "GameEngine/Base/DirectX/DirectXCommon.h"
 #include <stdint.h>
+#include <memory>
 
 /// <summary>
 /// フレームレート管理クラス

@@ -14,7 +14,7 @@ public:
 	Sphere();
 	~Sphere();
 
-	void Initialize(DirectXCommon* dxCommon,CameraCommon* camera);
+	void Init();
 	void Update();
 	void Draw() const;
 
@@ -68,7 +68,7 @@ private:
 
 	// 外部ポインタ
 	CameraCommon* mCamera = nullptr;
-	DirectXCommon* mDxCommon = nullptr;
+	
 
 	WorldTransform mWorldTransform;
 	Matrix4x4 cameraM, viewM, projectM, pespectiveM, wvpM;

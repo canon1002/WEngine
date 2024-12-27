@@ -8,34 +8,20 @@ Model::~Model() {
 	mCameraResource.Reset();
 }
 
-void Model::Initialize(DirectXCommon* dxCommon,CameraCommon* camera,const std::string& directrypath,const std::string& filename)
-{
-	mDxCommon = dxCommon;
-	mCamera = camera;
+
+void Model::Init(const std::string& directrypath, const std::string& filename){
+
+	// キューブマップのテクスチャ
+	mTextureHandleCubeMap = 0;
 
 	// モデル読み込み
-	modelData = Resource::LoadModelFile(directrypath,filename);
+	modelData = Resource::LoadModelFile(directrypath, filename);
 
 	// 頂点リソース 生成
 	CreateVertexResource();
 	// Indexリソース 生成
 	CreateIndexResource();
 	// マテリアルリソース 生成
-	CreateMaterialResource();
-
-}
-
-void Model::Initialize(const std::string& directrypath, const std::string& filename){
-
-	mDxCommon = DirectXCommon::GetInstance();
-	mCamera = MainCamera::GetInstance();
-	
-	mTextureHandleCubeMap = 0;
-
-	// モデル読み込み
-	modelData = Resource::LoadModelFile(directrypath, filename);
-
-	CreateVertexResource();
 	CreateMaterialResource();
 
 }
@@ -48,26 +34,26 @@ void Model::Update()
 void Model::Draw()
 {
 	// 配列を渡す(開始スロット番号、使用スロット数、VBV配列へのポインタ)
-	mDxCommon->mCommandList->IASetVertexBuffers(0, 1, &mVertexBufferView);
+	DirectXCommon::GetInstance()->mCommandList->IASetVertexBuffers(0, 1, &mVertexBufferView);
 	// IndexBufferViewをセット
-	mDxCommon->mCommandList->IASetIndexBuffer(&mIndexBufferView);
+	DirectXCommon::GetInstance()->mCommandList->IASetIndexBuffer(&mIndexBufferView);
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけばいい
-	mDxCommon->mCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	DirectXCommon::GetInstance()->mCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	// マテリアルのCBufferの場所を指定
-	mDxCommon->mCommandList->SetGraphicsRootConstantBufferView(0, mMaterialResource->GetGPUVirtualAddress());
-	mDxCommon->mCommandList->SetGraphicsRootConstantBufferView(3, mDirectionalLightResource->GetGPUVirtualAddress());
-	mDxCommon->mCommandList->SetGraphicsRootConstantBufferView(4, mCameraResource->GetGPUVirtualAddress());
+	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootConstantBufferView(0, mMaterialResource->GetGPUVirtualAddress());
+	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootConstantBufferView(3, mDirectionalLightResource->GetGPUVirtualAddress());
+	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootConstantBufferView(4, mCameraResource->GetGPUVirtualAddress());
 
 	// テクスチャをセット
-	mDxCommon->mCommandList->SetGraphicsRootDescriptorTable(2, mDxCommon->srv_->mTextureData.at(mTextureHandle).textureSrvHandleGPU);
+	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootDescriptorTable(2, DirectXCommon::GetInstance()->mSrv->mTextureData.at(mTextureHandle).textureSrvHandleGPU);
 	// CueMapのテクスチャをセット
 	if (mTextureHandleCubeMap != 0) {
-		mDxCommon->mCommandList->SetGraphicsRootDescriptorTable(5, mDxCommon->srv_->mTextureData.at(mTextureHandleCubeMap).textureSrvHandleGPU);
+		DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootDescriptorTable(5, DirectXCommon::GetInstance()->mSrv->mTextureData.at(mTextureHandleCubeMap).textureSrvHandleGPU);
 	}
 
 	// インデックスを使用してドローコール
-	mDxCommon->mCommandList->DrawIndexedInstanced(UINT(modelData.indices.size()), 1, 0, 0, 0);
+	DirectXCommon::GetInstance()->mCommandList->DrawIndexedInstanced(UINT(modelData.indices.size()), 1, 0, 0, 0);
 }
 
 void Model::DrawGUI(const std::string& label){
@@ -105,8 +91,8 @@ void Model::CreateVertexResource() {
 
 
 	// 実際に頂点リソースを作る
-	mVertexResource = mDxCommon->CreateBufferResource(
-		mDxCommon->device_.Get(), sizeof(VertexData) * modelData.vertices.size());
+	mVertexResource = DirectXCommon::GetInstance()->CreateBufferResource(
+		DirectXCommon::GetInstance()->mDevice.Get(), sizeof(VertexData) * modelData.vertices.size());
 
 	// リソースの先頭のアドレスから使う
 	mVertexBufferView.BufferLocation = mVertexResource->GetGPUVirtualAddress();
@@ -124,7 +110,7 @@ void Model::CreateVertexResource() {
 void Model::CreateIndexResource(){
 
 	// Indexは <uint32_t * Indexデータのサイズ> 分だけ確保する
-	mIndexResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(uint32_t) * modelData.indices.size());
+	mIndexResource = DirectXCommon::GetInstance()->CreateBufferResource(DirectXCommon::GetInstance()->mDevice.Get(), sizeof(uint32_t) * modelData.indices.size());
 	// GPUアドレスを取得
 	mIndexBufferView.BufferLocation = mIndexResource->GetGPUVirtualAddress();
 	// Byte数は <uint32_t * Indexデータのサイズ>分
@@ -140,9 +126,9 @@ void Model::CreateIndexResource(){
 void Model::CreateMaterialResource()
 {
 	// マテリアル用のResourceを作る
-	mMaterialResource = mDxCommon->
-		CreateBufferResource(mDxCommon->
-			device_.Get(), sizeof(Material));
+	mMaterialResource = DirectXCommon::GetInstance()->
+		CreateBufferResource(DirectXCommon::GetInstance()->
+			mDevice.Get(), sizeof(Material));
 
 	// マテリアルにデータを書き込む
 	mMaterialData = nullptr;
@@ -150,10 +136,10 @@ void Model::CreateMaterialResource()
 	mMaterialResource->Map(0, nullptr, reinterpret_cast<void**>(&mMaterialData));
 	// テクスチャの情報を転送
 	if (modelData.material.textureFilePath.empty()) {
-		mTextureHandle = mDxCommon->srv_->defaultTexId_;
+		mTextureHandle = DirectXCommon::GetInstance()->mSrv->defaultTexId_;
 	}
 	else {
-		mTextureHandle = mDxCommon->srv_->LoadTexture(modelData.material.textureFilePath);
+		mTextureHandle = DirectXCommon::GetInstance()->mSrv->LoadTexture(modelData.material.textureFilePath);
 	}
 	// 色の書き込み・Lightingの無効化
 	mMaterialData->color = { 1.0f, 1.0f, 1.0f, 1.0f };
@@ -164,7 +150,7 @@ void Model::CreateMaterialResource()
 	mMaterialData->shininess = 100.0f;
 
 	// Light
-	mDirectionalLightResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(DirectionalLight));
+	mDirectionalLightResource = DirectXCommon::GetInstance()->CreateBufferResource(DirectXCommon::GetInstance()->mDevice.Get(), sizeof(DirectionalLight));
 	// データを書き込む
 	mDirectionalLightResource->Map(0, nullptr, reinterpret_cast<void**>(&mDirectionalLightData));
 	mDirectionalLightData->color = { 1.0f, 1.0f, 1.0f, 1.0f };
@@ -172,10 +158,9 @@ void Model::CreateMaterialResource()
 	mDirectionalLightData->intensity = 1.0f;
 
 	// カメラデータ
-	mCameraResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(CameraForGPU));
+	mCameraResource = DirectXCommon::GetInstance()->CreateBufferResource(DirectXCommon::GetInstance()->mDevice.Get(), sizeof(CameraForGPU));
 	// データを書き込む
 	mCameraResource->Map(0, nullptr, reinterpret_cast<void**>(&mCameraData));
-	mCamera->Initialize();
-	mCameraData->worldPosition = mCamera->GetTranslate();
+	mCameraData->worldPosition = MainCamera::GetInstance()->GetTranslate();
 
 }

@@ -5,8 +5,6 @@
 
 void DiffusionToCircleParticle::Init() {
 
-	mDxCommon = DirectXCommon::GetInstance();
-	mCamera = MainCamera::GetInstance();
 	mWorldTransform.scale = { 1.0f,1.0f,1.0f };
 	mWorldTransform.rotation = { 0.0f,0.0f,0.0f };
 	mWorldTransform.translation = { 0.0f,0.0f,0.0f };
@@ -15,8 +13,8 @@ void DiffusionToCircleParticle::Init() {
 
 	// エミッター初期設定
 	mEmitter = {};
-	mEmitter.worldTransform = new WorldTransform();
-	mEmitter.worldTransform->Init();
+	mEmitter.worldtransform = std::shared_ptr<WorldTransform>();
+	mEmitter.worldtransform->Init();
 	mEmitter.count = 3;
 	mEmitter.frequency = 1.5f;// 1.5秒ごとに発生
 	mEmitter.frequencyTime = 0.0f;// 発生頻度用の時刻 0で初期化
@@ -28,7 +26,7 @@ void DiffusionToCircleParticle::Init() {
 	CreateMaterial();
 	CreateInstancing();
 
-	mDxCommon->srv_->SetInstancingBuffer(kNumMaxInstance, mInstancingResource);
+	DirectXCommon::GetInstance()->mSrv->SetInstancingBuffer(kNumMaxInstance, mInstancingResource);
 
 }
 
@@ -38,9 +36,9 @@ void DiffusionToCircleParticle::Update() {
 	ImGui::Begin("DTCPatricle");
 	ImGui::DragScalar("Emitter Count", ImGuiDataType_U16, &mEmitter.count, 1, 0, nullptr, "%u");
 	ImGui::DragFloat("Emitter Frequency", &mEmitter.frequency, 0.1f, 0.0f, 10.0f);
-	ImGui::DragFloat("Emitter Scale", &mEmitter.worldTransform->scale.x, 0.1f, 0.01f, 10.0f);
-	ImGui::DragFloat3("Emitter Rotation", &mEmitter.worldTransform->rotation.x, 0.01f, -100.0f, 100.0f);
-	ImGui::DragFloat3("Emitter Translation", &mEmitter.worldTransform->translation.x, 0.01f, -100.0f, 100.0f);
+	ImGui::DragFloat("Emitter Scale", &mEmitter.worldtransform->scale.x, 0.1f, 0.01f, 10.0f);
+	ImGui::DragFloat3("Emitter Rotation", &mEmitter.worldtransform->rotation.x, 0.01f, -100.0f, 100.0f);
+	ImGui::DragFloat3("Emitter Translation", &mEmitter.worldtransform->translation.x, 0.01f, -100.0f, 100.0f);
 
 #endif // _DEBUG
 
@@ -58,7 +56,7 @@ void DiffusionToCircleParticle::Update() {
 	}
 
 	// ワールド行列とWVP行列を掛け合わした行列を代入
-	mWVPData->WVP = Multiply(mWorldTransform.GetWorldMatrix(), mCamera->GetViewProjectionMatrix());
+	mWVPData->WVP = Multiply(mWorldTransform.GetWorldMatrix(), MainCamera::GetInstance()->GetViewProjectionMatrix());
 	mWVPData->World = mWorldTransform.GetWorldMatrix();
 
 	// イテレーターの位置を保持する数値
@@ -82,7 +80,7 @@ void DiffusionToCircleParticle::Update() {
 			// 徐々に透明にする
 			float alpha = 1.0f - ((*it).currentTime / (*it).lifeTime);
 
-			mInstancingData[instanceCount_].WVP = Multiply((*it).worldTransform.GetWorldMatrix(), mCamera->GetViewProjectionMatrix());
+			mInstancingData[instanceCount_].WVP = Multiply((*it).worldTransform.GetWorldMatrix(), MainCamera::GetInstance()->GetViewProjectionMatrix());
 			mInstancingData[instanceCount_].World = (*it).worldTransform.GetWorldMatrix();
 			mInstancingData[instanceCount_].color = (*it).color;
 			mInstancingData[instanceCount_].color.a = alpha;
@@ -137,17 +135,17 @@ void DiffusionToCircleParticle::Draw() {
 	// isntancceCountttが1以上のときに描画処理を行う
 	if (instanceCount_ > 0) {
 		// 頂点バッファをセット
-		mDxCommon->mCommandList->IASetVertexBuffers(0, 1, &mVertexBufferView);
+		DirectXCommon::GetInstance()->mCommandList->IASetVertexBuffers(0, 1, &mVertexBufferView);
 		// 形状を三角形に設定
-		mDxCommon->mCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		DirectXCommon::GetInstance()->mCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		// マテリアルのCBufferの場所を指定
-		mDxCommon->mCommandList->SetGraphicsRootConstantBufferView(0, mMaterialResource->GetGPUVirtualAddress());
+		DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootConstantBufferView(0, mMaterialResource->GetGPUVirtualAddress());
 
-		mDxCommon->mCommandList->SetGraphicsRootDescriptorTable(1, mDxCommon->srv_->instancingSrvHandleGPU);
+		DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootDescriptorTable(1, DirectXCommon::GetInstance()->mSrv->instancingSrvHandleGPU);
 		// テクスチャをセット
-		mDxCommon->mCommandList->SetGraphicsRootDescriptorTable(2, mDxCommon->srv_->mTextureData.at(mDxCommon->srv_->defaultTexId_).textureSrvHandleGPU);
+		DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootDescriptorTable(2, DirectXCommon::GetInstance()->mSrv->mTextureData.at(DirectXCommon::GetInstance()->mSrv->defaultTexId_).textureSrvHandleGPU);
 		// ドローコール
-		mDxCommon->mCommandList->DrawInstanced(6, instanceCount_, 0, 0);
+		DirectXCommon::GetInstance()->mCommandList->DrawInstanced(6, instanceCount_, 0, 0);
 	}
 }
 
@@ -182,7 +180,7 @@ std::list<Particle> DiffusionToCircleParticle::Emit(const Emitter& emtter, std::
 	std::list<Particle> particles;
 	for (uint32_t count = 0; count < emtter.count; count++) {
 		// 新規パーティクルを生成
-		particles.push_back(Create(mEmitter.worldTransform->translation,randomEngine));
+		particles.push_back(Create(mEmitter.worldtransform->translation,randomEngine));
 	}
 	// 生成したリストを返す
 	return particles;

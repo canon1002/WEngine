@@ -1,12 +1,10 @@
 #include "ImGuiManager.h"
 
 #ifdef _DEBUG
-void ImGuiManager::Initialize(WinAPI* winApp, DirectXCommon* dxCommon){
-	winApp_ = winApp;
-	mDxCommon = dxCommon;
-
+void ImGuiManager::Init(){
+	
 	DXGI_SWAP_CHAIN_DESC1 swapChain;
-	mDxCommon->swapChain->GetDesc1(&swapChain);
+	DirectXCommon::GetInstance()->mSwapChain->GetDesc1(&swapChain);
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	// フォントを変更
@@ -16,13 +14,13 @@ void ImGuiManager::Initialize(WinAPI* winApp, DirectXCommon* dxCommon){
 	//io.Fonts->AddFontFromFileTTF("Resources/Font/makinas4/Makinas-4-Square.otf", 12.0f, nullptr, io.Fonts->GetGlyphRangesJapanese());
 	
 	ImGui::StyleColorsDark();
-	ImGui_ImplWin32_Init(winApp_->GetHWND());
-	ImGui_ImplDX12_Init(mDxCommon->device_.Get(),
+	ImGui_ImplWin32_Init(WinApp::GetInstance()->GetHWND());
+	ImGui_ImplDX12_Init(DirectXCommon::GetInstance()->mDevice.Get(),
 		swapChain.BufferCount,
-		mDxCommon->rtv_->rtvDesc.Format,
-		mDxCommon->srv_->srvDescriptorHeap.Get(),
-		mDxCommon->srv_->srvDescriptorHeap->GetCPUDescriptorHandleForHeapStart(),
-		mDxCommon->srv_->srvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
+		DirectXCommon::GetInstance()->mRtv->rtvDesc.Format,
+		DirectXCommon::GetInstance()->mSrv->srvDescriptorHeap.Get(),
+		DirectXCommon::GetInstance()->mSrv->srvDescriptorHeap->GetCPUDescriptorHandleForHeapStart(),
+		DirectXCommon::GetInstance()->mSrv->srvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
 
 }
 
@@ -40,7 +38,7 @@ void ImGuiManager::End(){
 
 void ImGuiManager::Draw(){
 	// ImGuiの描画
-	ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), mDxCommon->mCommandList.Get());
+	ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), DirectXCommon::GetInstance()->mCommandList.Get());
 }
 
 void ImGuiManager::ReleseProcess(){

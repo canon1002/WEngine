@@ -28,11 +28,6 @@ public: // -- 公開 メンバ関数 -- //
 
 private: // -- 非公開 メンバ変数 -- //
 
-	InputManager* pInput;
-
-	// カメラのポインタ
-	CameraCommon* pCamera;
-
 	// 3Dレティクルオブジェクト
 	std::unique_ptr<Object3d> mObject;
 

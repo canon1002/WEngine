@@ -34,7 +34,7 @@ public:
 private:
 
 	// 入力マネージャー
-	InputManager* mInput;
+	
 	
 	// カメラ
 	CameraCommon* mCamera;

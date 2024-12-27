@@ -45,10 +45,6 @@ private:
 	// モデルデータ
 	ModelData mModelData;
 
-	// 外部ポインタ
-	CameraCommon* mCamera = nullptr;
-	DirectXCommon* mDxCommon = nullptr;
-
 	// ワールド座標
 	WorldTransform* mWorldTransform;
 	

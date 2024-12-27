@@ -2,8 +2,8 @@
 
 ParticleManager* ParticleManager::instance = nullptr;
 
-ParticleManager* ParticleManager::GetInstance()
-{
+ParticleManager* ParticleManager::GetInstance(){
+	
 	if (instance == nullptr) {
 		instance = new ParticleManager();
 	}
@@ -11,35 +11,31 @@ ParticleManager* ParticleManager::GetInstance()
 	return instance;
 }
 
+ParticleManager::~ParticleManager() {
+
+	// インスタンスを削除
+	delete instance;
+	instance = nullptr;
+
+}
+
 void ParticleManager::Init(){
 
-	// dxCommonのポインタ取得
-	mDxCommon = DirectXCommon::GetInstance();
 	// PipelineStateObjectを生成する
 	CreatePipelineState();
-
-
 }
 
-void ParticleManager::Update(){
-
-
-
-}
+void ParticleManager::Update(){}
 
 void ParticleManager::PreDraw(){
 
 	// RootSignatureを設定。PSOに設定しているが、別途設定が必要
-	mDxCommon->mCommandList->SetGraphicsRootSignature(mRootSignature.Get());
-	mDxCommon->mCommandList->SetPipelineState(mGraphicsPipelineState.Get());
+	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootSignature(mRootSignature.Get());
+	DirectXCommon::GetInstance()->mCommandList->SetPipelineState(mGraphicsPipelineState.Get());
 
 }
 
-void ParticleManager::Draw(){
-
-
-
-}
+void ParticleManager::Draw(){}
 
 void ParticleManager::CreateRootSignature(){
 
@@ -101,12 +97,12 @@ void ParticleManager::CreateRootSignature(){
 	);
 
 	if (FAILED(hr)) {
-		WinAPI::Log(reinterpret_cast<char*>(errorBlob->GetBufferPointer()));
+		WinApp::Log(reinterpret_cast<char*>(errorBlob->GetBufferPointer()));
 		assert(false);
 	}
 
 	// バイナリを元に作成
-	hr = mDxCommon->device_->CreateRootSignature(0, signatureBlob->GetBufferPointer(),
+	hr = DirectXCommon::GetInstance()->mDevice->CreateRootSignature(0, signatureBlob->GetBufferPointer(),
 		signatureBlob->GetBufferSize(), IID_PPV_ARGS(&mRootSignature));
 	assert(SUCCEEDED(hr));
 
@@ -157,12 +153,12 @@ void ParticleManager::CreatePipelineState(){
 	rasterizerDesc.FillMode = D3D12_FILL_MODE_SOLID;
 
 	// Shaderをcompileする(P.37)
-	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob = WinAPI::CompileShader(L"Shaders/Particle.VS.hlsl",
-		L"vs_6_0", mDxCommon->dxcUtils, mDxCommon->dxcCompiler, mDxCommon->includeHandler);
+	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob = WinApp::CompileShader(L"Shaders/Particle.VS.hlsl",
+		L"vs_6_0", DirectXCommon::GetInstance()->dxcUtils, DirectXCommon::GetInstance()->dxcCompiler, DirectXCommon::GetInstance()->includeHandler);
 	assert(vertexShaderBlob != nullptr);
 
-	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob = WinAPI::CompileShader(L"Shaders/Particle.PS.hlsl",
-		L"ps_6_0", mDxCommon->dxcUtils, mDxCommon->dxcCompiler, mDxCommon->includeHandler);
+	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob = WinApp::CompileShader(L"Shaders/Particle.PS.hlsl",
+		L"ps_6_0", DirectXCommon::GetInstance()->dxcUtils, DirectXCommon::GetInstance()->dxcCompiler, DirectXCommon::GetInstance()->includeHandler);
 	assert(pixelShaderBlob != nullptr);
 
 	// PSOを生成する(P.38)
@@ -198,7 +194,7 @@ void ParticleManager::CreatePipelineState(){
 
 	// 実際に生成
 	HRESULT hr;
-	hr = mDxCommon->device_->CreateGraphicsPipelineState(&graphicsPipelineStateDesc,
+	hr = DirectXCommon::GetInstance()->mDevice->CreateGraphicsPipelineState(&graphicsPipelineStateDesc,
 		IID_PPV_ARGS(&mGraphicsPipelineState));
 	assert(SUCCEEDED(hr));
 

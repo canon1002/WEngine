@@ -199,7 +199,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="GameEngine\Effect\Particle\ParticleCommon.cpp" />
     <ClCompile Include="GameEngine\Scene\LoadingScene.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="GameEngine\Object\3d\Object3dCommon.cpp" />
     <ClCompile Include="GameEngine\Object\3d\Object3d.cpp" />
     <ClCompile Include="GameEngine\Object\Model\ModelManager.cpp" />
     <ClCompile Include="GameEngine\Effect\Particle\ParticleManager.cpp" />
@@ -300,7 +299,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Externals\imgui\imstb_textedit.h" />
     <ClInclude Include="Externals\imgui\imstb_truetype.h" />
     <ClInclude Include="GameEngine\Input\Gamepad.h" />
-    <ClInclude Include="GameEngine\Object\3d\Object3dCommon.h" />
     <ClInclude Include="GameEngine\Object\3d\Object3d.h" />
     <ClInclude Include="GameEngine\Object\Model\ModelManager.h" />
     <ClInclude Include="GameEngine\Input\InputManager.h" />

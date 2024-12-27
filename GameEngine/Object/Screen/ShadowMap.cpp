@@ -50,10 +50,10 @@ void ShadowMap::Draw()
 		0,
 		nullptr,
 		FALSE,
-		&dxCommon->dsv_->mDsvHandle);
+		&dxCommon->mDsv->mDsvHandle);
 
 	dxCommon->mCommandList->ClearDepthStencilView(
-		dxCommon->dsv_->mDsvDescriptorHeap->GetCPUDescriptorHandleForHeapStart(),
+		dxCommon->mDsv->mDsvDescriptorHeap->GetCPUDescriptorHandleForHeapStart(),
 		D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 
 }
@@ -66,7 +66,7 @@ void ShadowMap::CreateScenePass()
 	DirectXCommon* dxCommon = DirectXCommon::GetInstance();
 
 	// 定数バッファの作成
-	mScenePassResource = dxCommon->CreateBufferResource(dxCommon->device_.Get(), sizeof(ScenePassConstants));
+	mScenePassResource = dxCommon->CreateBufferResource(dxCommon->mDevice.Get(), sizeof(ScenePassConstants));
 
 	// 頂点リソースにデータを書き込む
 	mScenePassResource->Map(0, nullptr, reinterpret_cast<void**>(&mScenePass));// 書き込むためのアドレスを取得

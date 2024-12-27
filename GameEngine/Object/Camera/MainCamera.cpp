@@ -15,12 +15,10 @@ MainCamera* MainCamera::GetInstance() {
 }
 
 void MainCamera::Initialize() {
-	winApp_ = WinAPI::GetInstance();
-	// 入力を取得する
-	mInput = InputManager::GetInstance();
-	mWorldTransform = new WorldTransform();
+
+	mWorldTransform = make_unique<WorldTransform>();
 	verticalFOV_ = 0.45f;
-	aspectRatio_ = (float(winApp_->kClientWidth) / float(winApp_->kClientHeight));
+	aspectRatio_ = (float(WinApp::GetInstance()->kClientWidth) / float(WinApp::GetInstance()->kClientHeight));
 	nearClip_ = 0.1f;
 	farClip_ = 1000.0f;
 	viewMatrix_ = Inverse(mWorldTransform->GetWorldMatrix());
@@ -88,13 +86,13 @@ void MainCamera::Update()
 			// スティック入力の量
 			const static int stickValue = 8000;
 
-			if (mInput->GetStickRatio(Gamepad::Stick::RIGHT_Y, stickValue) != 0.0f ||
-				mInput->GetStickRatio(Gamepad::Stick::RIGHT_X, stickValue) != 0.0f) {
+			if (InputManager::GetInstance()->GetStickRatio(Gamepad::Stick::RIGHT_Y, stickValue) != 0.0f ||
+				InputManager::GetInstance()->GetStickRatio(Gamepad::Stick::RIGHT_X, stickValue) != 0.0f) {
 
 				// Xの移動量とYの移動量を設定する
 				Vector3 direction = {
-					mInput->GetStickRatio(Gamepad::Stick::RIGHT_Y, stickValue),
-					mInput->GetStickRatio(Gamepad::Stick::RIGHT_X, stickValue),
+					InputManager::GetInstance()->GetStickRatio(Gamepad::Stick::RIGHT_Y, stickValue),
+					InputManager::GetInstance()->GetStickRatio(Gamepad::Stick::RIGHT_X, stickValue),
 					0.0f,
 				};
 				// 念のために正規化

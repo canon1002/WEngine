@@ -10,7 +10,7 @@ Keyboard* Keyboard::instance = nullptr;
 Keyboard* Keyboard::GetInstance() {
 	// 関数内staticは初めて通ったときのみ実行される
 	if (instance == nullptr) {
-		instance = new Keyboard;
+		instance = new Keyboard();
 	}
 	return instance;
 }
@@ -20,11 +20,11 @@ void Keyboard::Finalize()
 
 }
 
-void Keyboard::Initialize(WinAPI* winApp) {
-	winApp_ = winApp;
+void Keyboard::Init() {
+	
 	// Directinputオブジェクトの生成
 	HRESULT hr = DirectInput8Create(
-		winApp_->wc.hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8,
+		WinApp::GetInstance()->wc.hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8,
 		(void**)&directinput, nullptr);
 	assert(SUCCEEDED(hr));
 
@@ -39,7 +39,7 @@ void Keyboard::Initialize(WinAPI* winApp) {
 	assert(SUCCEEDED(hr));
 	// 排他制御レベルのセット
 	hr = keyboard->SetCooperativeLevel(
-		winApp_->hwnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE | DISCL_NOWINKEY);
+		WinApp::GetInstance()->hwnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE | DISCL_NOWINKEY);
 	assert(SUCCEEDED(hr));
 
 }

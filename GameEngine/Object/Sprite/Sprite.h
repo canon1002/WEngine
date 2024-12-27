@@ -24,7 +24,7 @@ public:
 	auto* GetMaterial() { return  materialResourceSprite.Get(); }
 	auto* GetWVP() { return mWvpResource.Get(); }
 	void SetTexture(std::string filepath){
-		mTextureHandle = mDxCommon->srv_->LoadTexture(filepath); 
+		mTextureHandle = DirectXCommon::GetInstance()->mSrv->LoadTexture(filepath);
 		AdjustTextureSize();
 	}
 	void SetTexture(int32_t textureHandle) {
@@ -54,7 +54,7 @@ private:
 
 	// 外部ポインタ
 	CameraCommon* mCamera = nullptr;
-	DirectXCommon* mDxCommon = nullptr;
+	
 
 	WorldTransform mWorldTransform;
 	Matrix4x4 worldM, cameraM, viewM, projectM, wvpM;

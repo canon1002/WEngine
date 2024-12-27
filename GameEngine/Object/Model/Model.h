@@ -22,11 +22,8 @@ class Model
 {
 public:
 
-	
-
 	~Model();
-	void Initialize(DirectXCommon* dxCommon,CameraCommon* camera, const std::string& directrypath, const std::string& filename);
-	void Initialize(const std::string& directrypath, const std::string& filename);
+	void Init(const std::string& directrypath, const std::string& filename);
 	void Update();
 	void Draw();
 
@@ -88,12 +85,6 @@ public: // -- 公開 メンバ変数 -- //
 
 
 private: // --  非公開 メンバ変数 -- //
-
-	// DirectXのポインタ
-	DirectXCommon* mDxCommon = nullptr;
-	CameraCommon* mCamera = nullptr;
-
-	
 
 };
 

@@ -103,7 +103,7 @@ public:
 	static RenderCopyImage* GetInstance();
 	void Finalize();
 
-	void Initialize(DirectXCommon* dxCommon, CameraCommon* camera);
+	void Init();
 	void Update();
 	void PreDraw();
 	void Draw();
@@ -191,10 +191,6 @@ public:
 
 
 private:
-
-	// 外部ポインタ
-	CameraCommon* mCamera = nullptr;
-	DirectXCommon* mDxCommon = nullptr;
 
 	// グラフィックパイプライン
 	Microsoft::WRL::ComPtr <ID3D12PipelineState> graphicsPipelineState = nullptr;

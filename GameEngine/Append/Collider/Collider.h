@@ -76,7 +76,7 @@ public: // -- 公開 メンバ関数 -- //
 	/// ワールドトランスフォームの取得
 	/// </summary>
 	/// <returns>ワールドトランスフォームのポインタ</returns>
-	WorldTransform* GetWorld() { return pWorldTransform; }
+	WorldTransform* GetWorld() { return mWorldTransform.get(); }
 
 	// 衝突属性の変更・取得
 	inline uint32_t GetCollisionAttribute() { return mCollisionAttribute; }
@@ -90,13 +90,21 @@ public: // -- 公開 メンバ関数 -- //
 	virtual bool IsCollision(SphereCollider* c) = 0;
 
 	
-	Model* GetModel() const{ return mModel; }
+	Model* GetModel() const{ return mModel.get(); }
 	void DebugDraw(std::string label) { mModel->DrawGUI(label); }
 
 	// 衝突フラグ取得
 	virtual bool GetOnCollisionFlag()const { return mIsOnCollision; }
 
-	void SetWorld(WorldTransform* world) { pWorldTransform = world; }
+	void SetWorld(WorldTransform* world) {
+		if (mWorldTransform == nullptr) {
+			mWorldTransform = std::make_shared<WorldTransform>();
+		}
+		mWorldTransform->scale = world->scale; 
+		mWorldTransform->rotation = world->rotation; 
+		mWorldTransform->translation = world->translation; 
+	
+	}
 	void SetAddTranslation(Vector3 translation) { mAddtranslation = translation; }
 	
 protected: // -- 限定公開 メンバ関数 -- //
@@ -121,17 +129,16 @@ protected: // -- 限定公開 メンバ変数 -- //
 
 
 	// 外部ポインタ
-	DirectXCommon* mDxCommon = nullptr;
 	Matrix4x4 viewM, wvpM;
 
 	// Transformation用のResourceを作る
 	Microsoft::WRL::ComPtr<ID3D12Resource> mWvpResource = nullptr;
 	// データを書き込む
-	TransformationMatrixForGrid3D* mWvpData = nullptr;
-	WorldTransform* pWorldTransform;
+	std::unique_ptr<TransformationMatrixForGrid3D> mWvpData = nullptr;
+	std::shared_ptr<WorldTransform> mWorldTransform;
 
 	// モデル
-	Model* mModel;
+	std::shared_ptr<Model> mModel;
 
 	// 衝突フラグ
 	bool mIsOnCollision;

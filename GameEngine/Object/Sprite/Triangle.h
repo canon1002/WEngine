@@ -13,7 +13,7 @@ public:
 	Triangle();
 	~Triangle();
 
-	void Initialize(DirectXCommon* dxCommon,CameraCommon* camera);
+	void Init(CameraCommon* camera);
 	void Update();
 	void Draw();
 
@@ -67,7 +67,7 @@ private:
 
 	// 外部ポインタ
 	CameraCommon* mCamera = nullptr;
-	DirectXCommon* mDxCommon = nullptr;
+	
 
 	WorldTransform mWorldTransform;
 	Matrix4x4 worldM, cameraM, viewM, projectM, pespectiveM,wvpM;

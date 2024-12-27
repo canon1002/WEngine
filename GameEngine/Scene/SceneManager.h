@@ -35,37 +35,17 @@ private:
 	int32_t prevSceneNo_ = -1;// 前のシーン
 
 
-	/// エンジン機能のポインタ
-
-	// WindowsAPI
-	WinAPI* winApp_;
-	// DirectX
-	DirectXCommon* mDxCommon;
-
 #ifdef _DEBUG
 	// ImGuiManager
 	std::unique_ptr<ImGuiManager> imGuiManager_ = nullptr;
 #endif // _DEBUG
-	// Input
-	InputManager* inputManager_;
 	
-	// Audio
-	Audio* audio_;
-	// メインカメラ
-	std::unique_ptr<MainCamera> mainCamera_ = nullptr;
-	
-	// オブジェクト管理者クラス
-	ObjectManager* objectAdmin_;
-
-	// ポストエフェクト
-	RenderCopyImage* copyImage_;
-
 public:
 
 	SceneManager();
 	~SceneManager();
 
-	void Init(WinAPI* winApp, DirectXCommon* dxCommon);
+	void Init();
 	int Run();//　この関数でゲームループを呼び出す
 
 	

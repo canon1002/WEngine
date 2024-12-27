@@ -4,13 +4,12 @@
 
 RenderCopyImage::RenderCopyImage() {}
 
-RenderCopyImage::~RenderCopyImage()
-{
-	//delete mWvpData;
-	//delete vertexData;
-	//delete wvpData;
-	//delete mVertexData;
-	//delete materialData;
+RenderCopyImage::~RenderCopyImage(){
+
+	// インスタンスを解放
+	delete instance;
+	instance = nullptr;
+		
 }
 
 RenderCopyImage* RenderCopyImage::instance = nullptr;
@@ -18,21 +17,14 @@ RenderCopyImage* RenderCopyImage::instance = nullptr;
 RenderCopyImage* RenderCopyImage::GetInstance()
 {
 	if (instance == nullptr) {
-		instance = new RenderCopyImage();
+		instance = new RenderCopyImage ();
 	}
 	return instance;
 }
 
-void RenderCopyImage::Finalize()
-{
-	delete instance;
-	instance = nullptr;
-}
+void RenderCopyImage::Finalize(){}
 
-void RenderCopyImage::Initialize(DirectXCommon* dxCommon, CameraCommon* camera) {
-
-	mDxCommon = dxCommon;
-	mCamera = camera;
+void RenderCopyImage::Init() {
 
 	// CopyImage用のPSO及びRootSignatureを生成する
 	CreateGraphicsPipeline();
@@ -43,7 +35,7 @@ void RenderCopyImage::Initialize(DirectXCommon* dxCommon, CameraCommon* camera) 
 
 	// PostEffect用のResourceを作る
 	mPostEffects = nullptr;
-	mPostEffectResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(PostEffects));
+	mPostEffectResource = DirectXCommon::GetInstance()->CreateBufferResource(DirectXCommon::GetInstance()->mDevice.Get(), sizeof(PostEffects));
 	// 書き込むためのアドレスを取得
 	mPostEffectResource->Map(0, nullptr, reinterpret_cast<void**>(&mPostEffects));
 	
@@ -74,10 +66,10 @@ void RenderCopyImage::Initialize(DirectXCommon* dxCommon, CameraCommon* camera) 
 	
 
 	// 画像を設定(エラー回避)
-	mTextureHandle = mDxCommon->srv_->LoadTexture("uvChecker.png");
-	mTextureHandle = mDxCommon->srv_->CreateRenderTextureSRV(mDxCommon->rtv_->mRenderTextureResource.Get());
+	mTextureHandle = DirectXCommon::GetInstance()->mSrv->LoadTexture("uvChecker.png");
+	mTextureHandle = DirectXCommon::GetInstance()->mSrv->CreateRenderTextureSRV(DirectXCommon::GetInstance()->mRtv->mRenderTextureResource.Get());
 
-	mDepthStencilHandle = mDxCommon->srv_->CreateDepthSRV(mDxCommon->dsv_->mDepthStencilTextureResource.Get());
+	mDepthStencilHandle = DirectXCommon::GetInstance()->mSrv->CreateDepthSRV(DirectXCommon::GetInstance()->mDsv->mDepthStencilTextureResource.Get());
 }
 
 void RenderCopyImage::Update() {
@@ -104,30 +96,30 @@ void RenderCopyImage::Update() {
 
 void RenderCopyImage::PreDraw(){
 	// RootSignatureを設定。PSOに設定しているが、別途設定が必要
-	mDxCommon->mCommandList->SetGraphicsRootSignature(rootSignature.Get());
-	mDxCommon->mCommandList->SetPipelineState(graphicsPipelineState.Get());
+	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootSignature(rootSignature.Get());
+	DirectXCommon::GetInstance()->mCommandList->SetPipelineState(graphicsPipelineState.Get());
 }
 
 void RenderCopyImage::Draw() {
 
 	
-	mDxCommon->mCommandList->IASetVertexBuffers(0, 1, &mVertexBufferView);
+	DirectXCommon::GetInstance()->mCommandList->IASetVertexBuffers(0, 1, &mVertexBufferView);
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけばいい
-	mDxCommon->mCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	DirectXCommon::GetInstance()->mCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	/// CBV設定
 
 	// マテリアルのCBufferの場所を指定
-	mDxCommon->mCommandList->SetGraphicsRootConstantBufferView(0, mPostEffectResource->GetGPUVirtualAddress());
+	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootConstantBufferView(0, mPostEffectResource->GetGPUVirtualAddress());
 	//wvp用のCBufferの場所を指定
-	mDxCommon->mCommandList->SetGraphicsRootConstantBufferView(1, mWvpResource->GetGPUVirtualAddress());
+	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootConstantBufferView(1, mWvpResource->GetGPUVirtualAddress());
 	// テクスチャをセット
-	mDxCommon->mCommandList->SetGraphicsRootDescriptorTable(2, mDxCommon->srv_->mTextureData.at(mTextureHandle).textureSrvHandleGPU);
+	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootDescriptorTable(2, DirectXCommon::GetInstance()->mSrv->mTextureData.at(mTextureHandle).textureSrvHandleGPU);
 	// DepthTextureを設定
-	mDxCommon->mCommandList->SetGraphicsRootDescriptorTable(3, mDxCommon->srv_->mTextureData.at(mDepthStencilHandle).textureSrvHandleGPU);
+	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootDescriptorTable(3, DirectXCommon::GetInstance()->mSrv->mTextureData.at(mDepthStencilHandle).textureSrvHandleGPU);
 
 	// インスタンス生成
-	mDxCommon->mCommandList->DrawInstanced(3, 1, 0, 0);
+	DirectXCommon::GetInstance()->mCommandList->DrawInstanced(3, 1, 0, 0);
 
 }
 
@@ -258,12 +250,12 @@ void RenderCopyImage::CreateRootSignature(){
 	);
 
 	if (FAILED(hr)) {
-		WinAPI::Log(reinterpret_cast<char*>(errorBlob->GetBufferPointer()));
+		WinApp::Log(reinterpret_cast<char*>(errorBlob->GetBufferPointer()));
 		assert(false);
 	}
 
 	// バイナリを元に
-	hr = mDxCommon->device_->CreateRootSignature(0, signatureBlob->GetBufferPointer(),
+	hr = DirectXCommon::GetInstance()->mDevice->CreateRootSignature(0, signatureBlob->GetBufferPointer(),
 		signatureBlob->GetBufferSize(), IID_PPV_ARGS(&rootSignature));
 	assert(SUCCEEDED(hr));
 
@@ -300,12 +292,12 @@ void RenderCopyImage::CreateGraphicsPipeline(){
 	rasterizerDesc.FillMode = D3D12_FILL_MODE_SOLID;
 
 	// Shaderをcompileする(P.37)
-	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob = WinAPI::CompileShader(L"Shaders/PostEffect/CopyImage.VS.hlsl",
-		L"vs_6_0", mDxCommon->dxcUtils, mDxCommon->dxcCompiler, mDxCommon->includeHandler);
+	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob = WinApp::CompileShader(L"Shaders/PostEffect/CopyImage.VS.hlsl",
+		L"vs_6_0", DirectXCommon::GetInstance()->dxcUtils, DirectXCommon::GetInstance()->dxcCompiler, DirectXCommon::GetInstance()->includeHandler);
 	assert(vertexShaderBlob != nullptr);
 
-	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob = WinAPI::CompileShader(L"Shaders/PostEffect/CopyImage.PS.hlsl",
-		L"ps_6_0", mDxCommon->dxcUtils, mDxCommon->dxcCompiler, mDxCommon->includeHandler);
+	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob = WinApp::CompileShader(L"Shaders/PostEffect/CopyImage.PS.hlsl",
+		L"ps_6_0", DirectXCommon::GetInstance()->dxcUtils, DirectXCommon::GetInstance()->dxcCompiler, DirectXCommon::GetInstance()->includeHandler);
 	assert(pixelShaderBlob != nullptr);
 
 
@@ -341,7 +333,7 @@ void RenderCopyImage::CreateGraphicsPipeline(){
 
 	// 実際に生成
 	HRESULT hr;
-	hr = mDxCommon->device_->CreateGraphicsPipelineState(&graphicsPipelineStateDesc,
+	hr = DirectXCommon::GetInstance()->mDevice->CreateGraphicsPipelineState(&graphicsPipelineStateDesc,
 		IID_PPV_ARGS(&graphicsPipelineState));
 	assert(SUCCEEDED(hr));
 
@@ -353,7 +345,7 @@ void RenderCopyImage::CreateVertexResource() {
 
 	// VertexResourceを生成する(P.42)
 	// 実際に頂点リソースを作る
-	mVertexResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(VertexData) * 3);
+	mVertexResource = DirectXCommon::GetInstance()->CreateBufferResource(DirectXCommon::GetInstance()->mDevice.Get(), sizeof(VertexData) * 3);
 
 }
 
@@ -361,12 +353,12 @@ void RenderCopyImage::CreateVertexResource() {
 void RenderCopyImage::CreateTransformation() {
 
 	// Transformation用のResourceを作る
-	mWvpResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(Matrix4x4));
+	mWvpResource = DirectXCommon::GetInstance()->CreateBufferResource(DirectXCommon::GetInstance()->mDevice.Get(), sizeof(Matrix4x4));
 	// データを書き込む
 	// 書き込むためのアドレスを取得
 	mWvpResource->Map(0, nullptr, reinterpret_cast<void**>(&mWvpData));
 	// 単位行列を書き込む
-	*mWvpData = mCamera->GetViewProjectionMatrix();
+	*mWvpData = MainCamera::GetInstance()->GetViewProjectionMatrix();
 
 }
 

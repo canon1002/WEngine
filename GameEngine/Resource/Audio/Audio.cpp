@@ -4,9 +4,8 @@
 Audio* Audio::instance = nullptr;
 
 Audio* Audio::GetInstance() {
-	// 関数内staticは初めて通ったときのみ実行される
 	if (instance == nullptr) {
-		instance = new Audio;
+		instance = new Audio();
 	}
 	return instance;
 }
@@ -14,6 +13,10 @@ Audio* Audio::GetInstance() {
 // 開放する
 void Audio::Finalize(){
 	xAudio2_.Reset();
+
+	// インスタンスの解放
+	delete instance;
+	instance = nullptr;
 }
 
 void Audio::Initialize() {

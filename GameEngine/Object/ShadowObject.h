@@ -52,7 +52,7 @@ public:	// --公開 メンバ変数 -- //
 	std::string mObjname;
 
 	// 外部ポインタ
-	DirectXCommon* mDxCommon = nullptr;
+	
 	
 	Model* mModel = nullptr;
 	

@@ -34,6 +34,19 @@ struct LevelData{
 /// </summary>
 class LevelEditor
 {
+private: // -- 非公開 メンバ関数 -- //
+
+
+	// コンストラクタ
+	LevelEditor() = default;
+	// デストラクタ
+	~LevelEditor() = default;
+
+	//コピーコンストラクタと演算子オーバーロードの禁止
+	LevelEditor(const LevelEditor& obj) = delete;
+	LevelEditor& operator=(const LevelEditor& obj) = delete;
+
+
 public: // -- 公開 メンバ関数 -- //
 
 	// インスタンス取得
@@ -58,7 +71,7 @@ private: // -- 非公開 メンバ変数 -- //
 	static LevelEditor* instance;
 	
 	// 3Dオブジェクトの配列
-	std::vector<Object3d*> mObjects;
+	std::vector<std::unique_ptr<Object3d>> mObjects;
 
 
 };

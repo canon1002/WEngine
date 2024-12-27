@@ -9,19 +9,18 @@
 
 void Skinning::Init(const std::string& directorypath, const std::string& filepath, ModelData modelData)
 {
-	mDxCommon = DirectXCommon::GetInstance();
-
+	
 	// スケルトン生成
 	mSkeleton = Skeleton::Create(modelData.rootNode);
 
 	// 新規にスキンクラスターを含めたデータを生成
 	mNowSkincluster = std::make_shared<SkinningStatus>();
 	// スキンクラスターを生成
-	mNowSkincluster->skinCluster = SkinCluster::Create(mDxCommon->device_, mSkeleton, modelData);
+	mNowSkincluster->skinCluster = SkinCluster::Create(DirectXCommon::GetInstance()->mDevice, mSkeleton, modelData);
 	// アニメーションに必要な情報をセット
 	mNowSkincluster->animation = Resource::LoadAnmation(directorypath, filepath);
 	// スキンクラスターを生成
-	mNowSkincluster->skinCluster = SkinCluster::Create(mDxCommon->device_, mSkeleton, modelData);
+	mNowSkincluster->skinCluster = SkinCluster::Create(DirectXCommon::GetInstance()->mDevice, mSkeleton, modelData);
 	// アニメーションの一時停止をoffに
 	mNowSkincluster->isPause = false;
 	// ループさせる
@@ -226,11 +225,11 @@ void Skinning::CreateSkinningData(const std::string& directorypath, const std::s
 	// 新規にスキンクラスターを含めたデータを生成
 	std::shared_ptr<SkinningStatus> newSkinning = std::make_shared<SkinningStatus>();
 	// スキンクラスターを生成
-	newSkinning->skinCluster = SkinCluster::Create(mDxCommon->device_, mSkeleton, modelData);
+	newSkinning->skinCluster = SkinCluster::Create(DirectXCommon::GetInstance()->mDevice, mSkeleton, modelData);
 	// アニメーションに必要な情報をセット
 	newSkinning->animation = Resource::LoadAnmation(directorypath, filename + filrExt);
 	// スキンクラスターを生成
-	newSkinning->skinCluster = SkinCluster::Create(mDxCommon->device_, mSkeleton, modelData);
+	newSkinning->skinCluster = SkinCluster::Create(DirectXCommon::GetInstance()->mDevice, mSkeleton, modelData);
 	// アニメーションの一時停止をoffに
 	newSkinning->isPause = false;
 	// ループさせる
@@ -246,6 +245,38 @@ void Skinning::CreateSkinningData(const std::string& directorypath, const std::s
 	mSkinClusterMap[filename] = newSkinning;
 
 	// 上記のshared_ptrはローカルなのでこの時点で参照が外れるのでそのままにしておく
+}
+
+void Skinning::CreateAnimationData(const std::string& directorypath, const std::string& filename, ModelData modelData) {
+	
+	// アニメーションの配列を確認
+	std::vector<Animation> animations;
+	Resource::LoadAnimations(directorypath, filename, animations);
+	
+	// 新規にスキンクラスターを含めたデータを生成
+	std::shared_ptr<SkinningStatus> newSkinning = std::make_shared<SkinningStatus>();
+	// スキンクラスターを生成
+	newSkinning->skinCluster = SkinCluster::Create(DirectXCommon::GetInstance()->mDevice, mSkeleton, modelData);
+	// アニメーションに必要な情報をセット
+	newSkinning->animation = Resource::LoadAnmation(directorypath, filename);
+	// スキンクラスターを生成
+	newSkinning->skinCluster = SkinCluster::Create(DirectXCommon::GetInstance()->mDevice, mSkeleton, modelData);
+	// アニメーションの一時停止をoffに
+	newSkinning->isPause = false;
+	// ループさせる
+	newSkinning->isLoop = true;
+	// アニメーションの開始時間を0.0fに設定
+	newSkinning->animationTime = 0.0f;
+	// アニメーションを有効にする
+	newSkinning->isActive = true;
+	// 名称を設定
+	newSkinning->name = filename;
+	// 設定したデータをマップに登録する
+	mSkinClusterMap[filename] = newSkinning;
+
+	// 上記のshared_ptrはローカルなのでこの時点で参照が外れるのでそのままにしておく
+
+
 }
 
 void Skinning::SetNextAnimation(std::string name)

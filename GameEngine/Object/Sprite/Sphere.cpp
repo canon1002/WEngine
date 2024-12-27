@@ -12,33 +12,14 @@ Sphere::~Sphere()
 	delete directionalLightDate;
 }
 
-void Sphere::Initialize(DirectXCommon* dxCommon,CameraCommon* camera) {
-
-	mDxCommon = dxCommon;
-	mCamera=camera;
+void Sphere::Init() {
 
 	CreateVertexResource();
 	CreateTransformation();
 	CreateBufferView();
-
 }
 
 void Sphere::Update() {
-
-
-	ImGui::Begin("Sphere");
-	ImGui::DragFloat3("scale", &mWorldTransform.scale.x, 0.01f, 0.0f, 5.0f);
-	ImGui::DragFloat3("rotate", &mWorldTransform.rotation.x, 0.01f, -2.0f, 2.0f);
-	ImGui::DragFloat3("tranlate", &mWorldTransform.translation.x, 0.01f, -2.0f, 2.0f);
-	ImGui::Checkbox("useBallTex", &useBall);
-	ImGui::End();
-
-	ImGui::Begin("Light");
-	ImGui::SliderFloat4("color", &directionalLightDate->color.r, 0.0f, 1.0f);
-	ImGui::DragFloat3("directon", &directionalLightDate->direction.x, 0.05f, -10.0f, 10.0f);
-	ImGui::SliderFloat("intensity", &directionalLightDate->intensity, 0.0f, 1.0f);
-	ImGui::End();
-	
 
 	// カメラ行列のビュー行列(カメラのワールド行列の逆行列)
 	viewM = Inverse(cameraM);
@@ -53,22 +34,22 @@ void Sphere::Update() {
 
 void Sphere::Draw() const {
 
-	mDxCommon->mCommandList->IASetVertexBuffers(0, 1, &mVertexBufferView);
+	DirectXCommon::GetInstance()->mCommandList->IASetVertexBuffers(0, 1, &mVertexBufferView);
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけばいい
-	mDxCommon->mCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	DirectXCommon::GetInstance()->mCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	/// CBV設定
 
 	// マテリアルのCBufferの場所を指定
-	mDxCommon->mCommandList->SetGraphicsRootConstantBufferView(0, materialResource->GetGPUVirtualAddress());
+	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootConstantBufferView(0, materialResource->GetGPUVirtualAddress());
 	//wvp用のCBufferの場所を指定
-	mDxCommon->mCommandList->SetGraphicsRootConstantBufferView(1, mWvpResource->GetGPUVirtualAddress());
-	mDxCommon->mCommandList->SetGraphicsRootConstantBufferView(3, directionalLightResource->GetGPUVirtualAddress());
+	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootConstantBufferView(1, mWvpResource->GetGPUVirtualAddress());
+	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootConstantBufferView(3, directionalLightResource->GetGPUVirtualAddress());
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である
-	mDxCommon->mCommandList->SetGraphicsRootDescriptorTable(2, mDxCommon->srv_->mTextureData.at(1).textureSrvHandleGPU);
+	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootDescriptorTable(2, DirectXCommon::GetInstance()->mSrv->mTextureData.at(1).textureSrvHandleGPU);
 
 	// インスタンス生成
-	mDxCommon->mCommandList->DrawInstanced(((kSubdivision) * (kSubdivision) * 6), 1, 0, 0);
+	DirectXCommon::GetInstance()->mCommandList->DrawInstanced(((kSubdivision) * (kSubdivision) * 6), 1, 0, 0);
 
 }
 
@@ -77,10 +58,10 @@ void Sphere::CreateVertexResource() {
 
 	// VertexResourceを生成する(P.42)
 	// 実際に頂点リソースを作る
-	mVertexResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(VertexData) * ((kSubdivision) * (kSubdivision) * 6));
+	mVertexResource = DirectXCommon::GetInstance()->CreateBufferResource(DirectXCommon::GetInstance()->mDevice.Get(), sizeof(VertexData) * ((kSubdivision) * (kSubdivision) * 6));
 
 	// マテリアル用のResourceを作る
-	materialResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(Material));
+	materialResource = DirectXCommon::GetInstance()->CreateBufferResource(DirectXCommon::GetInstance()->mDevice.Get(), sizeof(Material));
 	// マテリアルにデータを書き込む
 	materialData = nullptr;
 	// 書き込むためのアドレスを取得
@@ -90,7 +71,7 @@ void Sphere::CreateVertexResource() {
 	materialData->enableLighting = true;
 
 	// Light
-	directionalLightResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(DirectionalLight));
+	directionalLightResource = DirectXCommon::GetInstance()->CreateBufferResource(DirectXCommon::GetInstance()->mDevice.Get(), sizeof(DirectionalLight));
 	// データを書き込む
 	directionalLightResource->Map(0, nullptr, reinterpret_cast<void**>(&directionalLightDate));
 	directionalLightDate->color = { 1.0f, 1.0f, 1.0f, 1.0f };
@@ -104,7 +85,7 @@ void Sphere::CreateVertexResource() {
 void Sphere::CreateTransformation() {
 
 	// Transformation用のResourceを作る
-	mWvpResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(TransformationMatrix));
+	mWvpResource = DirectXCommon::GetInstance()->CreateBufferResource(DirectXCommon::GetInstance()->mDevice.Get(), sizeof(TransformationMatrix));
 	// データを書き込む
 	// 書き込むためのアドレスを取得
 	mWvpResource->Map(0, nullptr, reinterpret_cast<void**>(&mWvpData));

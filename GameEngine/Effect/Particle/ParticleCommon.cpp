@@ -5,8 +5,6 @@
 
 void ParticleCommon::Init(){
 
-	mDxCommon = DirectXCommon::GetInstance();
-	mCamera = MainCamera::GetInstance();
 	mWorldTransform.scale = { 1.0f,1.0f,1.0f };
 	mWorldTransform.rotation = { 0.0f,0.0f,0.0f };
 	mWorldTransform.translation = { 0.0f,0.0f,0.0f };
@@ -15,8 +13,8 @@ void ParticleCommon::Init(){
 
 	// エミッター初期設定
 	mEmitter = {};
-	mEmitter.worldTransform = new WorldTransform();
-	mEmitter.worldTransform->Init();
+	mEmitter.worldtransform = std::make_shared<WorldTransform>();
+	mEmitter.worldtransform->Init();
 	mEmitter.count = 3;
 	mEmitter.frequency = 1.5f;// 1.5秒ごとに発生
 	mEmitter.frequencyTime = 0.0f;// 発生頻度用の時刻 0で初期化
@@ -28,7 +26,7 @@ void ParticleCommon::Init(){
 	CreateMaterial();
 	CreateInstancing();
 
-	mDxCommon->srv_->SetInstancingBuffer(kNumMaxInstance, mInstancingResource);
+	DirectXCommon::GetInstance()->mSrv->SetInstancingBuffer(kNumMaxInstance, mInstancingResource);
 }
 
 
@@ -37,11 +35,11 @@ void ParticleCommon::CreateTransformation() {
 		//particles[index] = MakeNewParticle(randomEngine_);
 	}
 	// Transformation用のResourceを作る
-	mWVPResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(ParticleForGPU));
+	mWVPResource = DirectXCommon::GetInstance()->CreateBufferResource(DirectXCommon::GetInstance()->mDevice.Get(), sizeof(ParticleForGPU));
 	// 書き込むためのアドレスを取得
 	mWVPResource->Map(0, nullptr, reinterpret_cast<void**>(&mWVPData));
 	// 単位行列を書き込む
-	mWVPData->WVP = mCamera->GetViewProjectionMatrix();
+	mWVPData->WVP = MainCamera::GetInstance()->GetViewProjectionMatrix();
 	mWVPData->World = MakeIdentity();
 	mWVPData->color = Color(1.0f, 1.0f, 1.0f, 1.0f);
 
@@ -58,7 +56,7 @@ void ParticleCommon::CreateVertex() {
 	modelData_.vertices.push_back(VertexData{ .position = { 1.0f, -1.0f,0.0f,1.0f},.texcoord = {1.0f,1.0f},.normal = {0.0f,0.0f,1.0f} });
 
 	// 頂点リソースを作る
-	mVertexResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(VertexData) * modelData_.vertices.size());
+	mVertexResource = DirectXCommon::GetInstance()->CreateBufferResource(DirectXCommon::GetInstance()->mDevice.Get(), sizeof(VertexData) * modelData_.vertices.size());
 	// リソースの先頭のアドレスから使う
 	mVertexBufferView.BufferLocation = mVertexResource->GetGPUVirtualAddress();
 	// 使用するリソースサイズは頂点分のサイズ
@@ -79,7 +77,7 @@ void ParticleCommon::CreateIndex()
 void ParticleCommon::CreateMaterial() {
 
 	// マテリアル用のResourceを作る
-	mMaterialResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(Material));
+	mMaterialResource = DirectXCommon::GetInstance()->CreateBufferResource(DirectXCommon::GetInstance()->mDevice.Get(), sizeof(Material));
 	// マテリアルにデータを書き込む
 	mMaterialData = nullptr;
 	// 書き込むためのアドレスを取得
@@ -96,7 +94,7 @@ void ParticleCommon::CreateMaterial() {
 void ParticleCommon::CreateInstancing() {
 
 	// リソースを生成
-	mInstancingResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(ParticleForGPU) * kNumMaxInstance);
+	mInstancingResource = DirectXCommon::GetInstance()->CreateBufferResource(DirectXCommon::GetInstance()->mDevice.Get(), sizeof(ParticleForGPU) * kNumMaxInstance);
 	// 書き込むためのアドレスを取得
 	mInstancingResource->Map(0, nullptr, reinterpret_cast<void**>(&mInstancingData));
 

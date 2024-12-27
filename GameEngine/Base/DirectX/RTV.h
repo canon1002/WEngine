@@ -10,11 +10,8 @@ public: // -- public メンバ関数 -- //
 	RTV() = default;
 	~RTV() = default;
 
-	/// <summary>
 	/// 初期化
-	/// </summary>
-	/// <param name="dxCommon"></param>
-	void Initialize(DirectXCommon* dxCommon);
+	void Init();
 
 private: // -- private メンバ関数 -- //
 
@@ -43,7 +40,5 @@ public: // -- public メンバ変数 -- //
 
 private: // -- private メンバ変数 -- //
 
-	// ポインタ
-	DirectXCommon* mDxCommon;
 
 };

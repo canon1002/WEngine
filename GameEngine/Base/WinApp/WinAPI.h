@@ -23,33 +23,30 @@
 #include <wrl.h>
 #include <memory>
 
-class WinAPI final
+class WinApp final
 {
-private: // ** メンバ関数 ** //
+private: // -- 非公開 メンバ関数 -- //
+
+	WinApp() = default;
+	~WinApp() = default;
 
 	// コピーコンストラクタと演算子オーバーロードの禁止
-	WinAPI(const WinAPI& obj) = delete;
-	WinAPI& operator=(const WinAPI& obj) = delete;
+	WinApp(const WinApp& obj) = delete;
+	WinApp& operator=(const WinApp& obj) = delete;
 
-public: // ** 静的メンバ関数 ** //
+public: // -- 公開 メンバ関数 -- //
 
-	static WinAPI* GetInstance();
-
-public: // ** メンバ関数 ** //
-
-	WinAPI() = default;
-	~WinAPI() = default;
+	// インスタンス取得
+	static WinApp* GetInstance();
 
 	// 初期化
-	void Initialize();
+	void Init();
 
 	// 消去
-	void Finalize();
+	void Final();
 
-public: // -- アクセッサ -- //
-
+	// ウィンドウプロシージャの取得
 	HWND GetHWND() { return hwnd; }
-
 
 	// システム 及び デバッグメッセージ
 
@@ -71,7 +68,7 @@ public: // -- アクセッサ -- //
 	// メッセージ処理
 	bool ProcessMessage();
 
-	// ** 変換 ** //
+	// -- 変換 -- //
 
 	// string->wstring
 	static std::wstring ConvertString(const std::string& str);
@@ -99,7 +96,7 @@ public:
 private: 
 
 	// インスタンス
-	static WinAPI* instance;
+	static WinApp* instance;
 
 };
 

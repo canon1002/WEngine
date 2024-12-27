@@ -18,12 +18,12 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg
 /// </summary>
 class ImGuiManager
 {
-public:
+public: // -- 公開 メンバ関数 -- //
 
 	ImGuiManager() = default;
 	~ImGuiManager() = default;
 
-	void Initialize(WinAPI* winApp,DirectXCommon* dxComoon);
+	void Init();
 
 	void Begin();
 
@@ -32,10 +32,6 @@ public:
 	void Draw();
 
 	void ReleseProcess();
-
-private:
-	WinAPI* winApp_ = nullptr;
-	DirectXCommon* mDxCommon = nullptr;
 
 };
 #endif // _DEBUG

@@ -41,7 +41,7 @@ protected: // -- 限定公開 メンバ変数 -- //
 	
 	// 外部ポインタ
 	CameraCommon* mCamera = nullptr;
-	DirectXCommon* mDxCommon = nullptr;
+	
 
 	// テクスチャハンドル 
 	int32_t textureHandle_;

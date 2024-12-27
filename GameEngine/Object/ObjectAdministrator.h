@@ -21,7 +21,7 @@ public: // -- public メンバ関数 -- //
 
 	ObjectManager() = default;
 	~ObjectManager() = default;
-	void Init(DirectXCommon* dxCommon);
+	void Init();
 	void Update();
 	void Draw();
 	void Finalize();
@@ -35,18 +35,10 @@ public: // -- public メンバ変数 -- //
 	// Object3Dのリスト
 	std::list<std::shared_ptr<ObjectBase>> objectList_;
 
-	// モデル管理者クラス
-	ModelManager* modelAdmin_ = nullptr;
-	// スプライト管理者クラス
-	SpriteAdministrator* spriteAdmin_ = nullptr;
-	// パーティクル管理者クラス
-	//std::unique_ptr<> particleAdmin_ = nullptr;
-
-
 private: // -- private メンバ変数 -- //
 
 	// DXCommonのポインタ
-	DirectXCommon* mDxCommon = nullptr;
+	
 	
 	static ObjectManager* instance;
 	

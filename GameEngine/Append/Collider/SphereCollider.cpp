@@ -4,9 +4,9 @@
 #include "GameEngine/Object/Model/ModelManager.h"
 #include "GameEngine/Object/Model/Skybox/Skybox.h"
 
-SphereCollider::SphereCollider(WorldTransform* worldtransform, float radius){
+SphereCollider::SphereCollider(std::shared_ptr<WorldTransform> worldtransform, float radius){
 	// ワールド座標のポインタを代入
-	pWorldTransform = worldtransform;
+	mWorldTransform = worldtransform;
 	// 半径を代入
 	mRadius = radius;
 	// 追加平行移動の初期化
@@ -15,11 +15,11 @@ SphereCollider::SphereCollider(WorldTransform* worldtransform, float radius){
 
 
 void SphereCollider::Init() {
-	mDxCommon = DirectXCommon::GetInstance();
+
 	// 矩形のモデルを読み込み // いずれは他の場所に移す
 	ModelManager::GetInstance()->LoadModel("wireSphere", "wireSphere.gltf");
 	// モデルを検索してセット
-	mModel = ModelManager::GetInstance()->FindModel("wireSphere.gltf");
+	mModel = ModelManager::GetInstance()->FindModelPtr("wireSphere.gltf");
 	CreateTransformation();
 	mModel->mMaterialData->environmentCoefficient = 0.0f;
 	// 衝突フラグ保持時間
@@ -30,14 +30,14 @@ void SphereCollider::Init() {
 
 void SphereCollider::Update() {
 
-	MainCamera* camera = MainCamera::GetInstance();
 	// カメラ行列のビュー行列(カメラのワールド行列の逆行列)
-	viewM = camera->GetViewMatrix();
+	viewM = MainCamera::GetInstance()->GetViewMatrix();
 	// WVPにまとめる
-	wvpM = camera->GetViewProjectionMatrix();
+	wvpM = MainCamera::GetInstance()->GetViewProjectionMatrix();
+
 	// ワールド行列を作る
 	WorldTransform* world = new WorldTransform();
-	world->translation = pWorldTransform->GetWorldPosition();
+	world->translation = mWorldTransform->GetWorldPosition();
 	// ridiusに合わせて拡大縮小を行う
 	world->scale = { mRadius,mRadius,mRadius};
 	// 追加移動量の適用
@@ -45,8 +45,11 @@ void SphereCollider::Update() {
 	// 矩形のワールド行列とWVP行列を掛け合わした行列を代入
 	mWvpData->WVP = Multiply(world->GetWorldMatrix(), wvpM);
 	mWvpData->World = world->GetWorldMatrix();
+	
 	// 更新
 	mModel->Update();
+
+
 	// カウント減少
 	if (mOnCollisionCount > 0) {
 		mOnCollisionCount--;
@@ -61,17 +64,17 @@ void SphereCollider::Update() {
 
 void SphereCollider::Draw() {
 	//wvp用のCBufferの場所を指定
-	mDxCommon->mCommandList->SetGraphicsRootConstantBufferView(1, mWvpResource->GetGPUVirtualAddress());
+	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootConstantBufferView(1, mWvpResource->GetGPUVirtualAddress());
 	// 頂点をセット
 	// 配列を渡す(開始スロット番号、使用スロット数、VBV配列へのポインタ)
-	mDxCommon->mCommandList->IASetVertexBuffers(0, 1, &mModel->mVertexBufferView);
+	DirectXCommon::GetInstance()->mCommandList->IASetVertexBuffers(0, 1, &mModel->mVertexBufferView);
 	// 描画
 	mModel->Draw();
 }
 
 void SphereCollider::CreateTransformation() {
 	// Transformation用のResourceを作る
-	mWvpResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(TransformationMatrixForGrid3D));
+	mWvpResource = DirectXCommon::GetInstance()->CreateBufferResource(DirectXCommon::GetInstance()->mDevice.Get(), sizeof(TransformationMatrixForGrid3D));
 	// データを書き込む
 	// 書き込むためのアドレスを取得
 	mWvpResource->Map(0, nullptr, reinterpret_cast<void**>(&mWvpData));

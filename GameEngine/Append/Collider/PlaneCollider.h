@@ -29,7 +29,7 @@ public: // -- 公開 メンバ関数 -- //
     virtual void OnCollision(Collider* collider) override { collider; }
 
     // ワールド座標
-    virtual Vector3 GetWorldPos()const override { return pWorldTransform->GetWorldPosition(); }
+    virtual Vector3 GetWorldPos()const override { return mWorldTransform->GetWorldPosition(); }
 
     Vector3 GetNormal()const;
     float GetDistance()const;

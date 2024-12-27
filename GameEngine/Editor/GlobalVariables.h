@@ -6,7 +6,7 @@
 #include <string>
 #include <map>
 #include <json.hpp>
-
+#include <memory>
 
 // 項目
 struct Item {

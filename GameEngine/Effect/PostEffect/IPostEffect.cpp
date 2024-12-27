@@ -16,7 +16,7 @@ IPostEffect::~IPostEffect(){
 void IPostEffect::CreateVertexResource() {
 
 	// リソース生成
-	mVertexResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(VertexData) * 3);
+	mVertexResource = DirectXCommon::GetInstance()->CreateBufferResource(DirectXCommon::GetInstance()->mDevice.Get(), sizeof(VertexData) * 3);
 	// 頂点バッファビューを作成
 	mVertexBufferView = {};
 	// リソースの先頭のアドレスから使う

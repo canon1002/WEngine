@@ -1,6 +1,7 @@
 #include "Grid3D.h"
 #include "GameEngine/Object/Camera/MainCamera.h"
 #include "GameEngine/Base/Debug/ImGuiManager.h"
+#include <memory>
 
 Grid3D::Grid3D(int32_t gridsize, float gridspace){
 	// サイズと間隔を引数で取得
@@ -12,9 +13,7 @@ Grid3D::Grid3D(int32_t gridsize, float gridspace){
 
 void Grid3D::Init(){
 
-	mDxCommon = DirectXCommon::GetInstance();
-	
-	mWorldTransform = new WorldTransform();
+	mWorldTransform = std::make_shared<WorldTransform>();
 	mWorldTransform->Init();
 	CreateTransformation();
 	CreateGraphicsPipeline();
@@ -68,31 +67,31 @@ void Grid3D::Update()
 void Grid3D::PreDraw() {
 
 	// RootSignatureを設定。PSOに設定しているが、別途設定が必要
-	mDxCommon->mCommandList->SetGraphicsRootSignature(rootSignature.Get());
-	mDxCommon->mCommandList->SetPipelineState(graphicsPipelineState.Get());
+	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootSignature(rootSignature.Get());
+	DirectXCommon::GetInstance()->mCommandList->SetPipelineState(graphicsPipelineState.Get());
 
 }
 
 void Grid3D::Draw()
 {
 	//wvp用のCBufferの場所を指定
-	mDxCommon->mCommandList->SetGraphicsRootConstantBufferView(0, mWvpResource->GetGPUVirtualAddress());
+	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootConstantBufferView(0, mWvpResource->GetGPUVirtualAddress());
 	
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけばいい
-	mDxCommon->mCommandList->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_LINELIST);
+	DirectXCommon::GetInstance()->mCommandList->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_LINELIST);
 	// 配列を渡す(開始スロット番号、使用スロット数、VBV配列へのポインタ)
-	mDxCommon->mCommandList->IASetVertexBuffers(0, 1, &mVertexBufferView);
+	DirectXCommon::GetInstance()->mCommandList->IASetVertexBuffers(0, 1, &mVertexBufferView);
 	// IndexBufferViewをセット
-	mDxCommon->mCommandList->IASetIndexBuffer(&indexBufferView);
+	DirectXCommon::GetInstance()->mCommandList->IASetIndexBuffer(&indexBufferView);
 	// インデックスを使用してドローコール
-	mDxCommon->mCommandList->DrawIndexedInstanced(UINT(mGridIndices.size()), 1, 0, 0, 0);
+	DirectXCommon::GetInstance()->mCommandList->DrawIndexedInstanced(UINT(mGridIndices.size()), 1, 0, 0, 0);
 
 }
 
 void Grid3D::CreateTransformation(){
 
 	// Transformation用のResourceを作る
-	mWvpResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(TransformationMatrixForGrid3D));
+	mWvpResource = DirectXCommon::GetInstance()->CreateBufferResource(DirectXCommon::GetInstance()->mDevice.Get(), sizeof(TransformationMatrixForGrid3D));
 	// データを書き込む
 	// 書き込むためのアドレスを取得
 	mWvpResource->Map(0, nullptr, reinterpret_cast<void**>(&mWvpData));
@@ -147,8 +146,8 @@ void Grid3D::CreateIndexResource(){
     }
 
     // 実際に頂点リソースを作る
-    mVertexResource = mDxCommon->CreateBufferResource(
-        mDxCommon->device_.Get(), sizeof(VertexDataForGrid) * mGridVertices.size());
+    mVertexResource = DirectXCommon::GetInstance()->CreateBufferResource(
+        DirectXCommon::GetInstance()->mDevice.Get(), sizeof(VertexDataForGrid) * mGridVertices.size());
 
     // リソースの先頭のアドレスから使う
     mVertexBufferView.BufferLocation = mVertexResource->GetGPUVirtualAddress();
@@ -163,7 +162,7 @@ void Grid3D::CreateIndexResource(){
 
 
     // Indexは <uint32_t * Indexデータのサイズ> 分だけ確保する
-    indexResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(uint32_t) * mGridIndices.size());
+    indexResource = DirectXCommon::GetInstance()->CreateBufferResource(DirectXCommon::GetInstance()->mDevice.Get(), sizeof(uint32_t) * mGridIndices.size());
     // GPUアドレスを取得
     indexBufferView.BufferLocation = indexResource->GetGPUVirtualAddress();
     // Byte数は <uint32_t * Indexデータのサイズ>分
@@ -207,12 +206,12 @@ void Grid3D::CreateRootSignature() {
 	);
 
 	if (FAILED(hr)) {
-		WinAPI::Log(reinterpret_cast<char*>(errorBlob->GetBufferPointer()));
+		WinApp::Log(reinterpret_cast<char*>(errorBlob->GetBufferPointer()));
 		assert(false);
 	}
 
 	// バイナリを元に
-	hr = mDxCommon->device_->CreateRootSignature(0, signatureBlob->GetBufferPointer(),
+	hr = DirectXCommon::GetInstance()->mDevice->CreateRootSignature(0, signatureBlob->GetBufferPointer(),
 		signatureBlob->GetBufferSize(), IID_PPV_ARGS(&rootSignature));
 	assert(SUCCEEDED(hr));
 
@@ -263,12 +262,12 @@ void Grid3D::CreateGraphicsPipeline() {
 	rasterizerDesc.FillMode = D3D12_FILL_MODE_SOLID;
 
 	// Shaderをcompileする(P.37)
-	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob = WinAPI::CompileShader(L"Shaders/Grid3D.VS.hlsl",
-		L"vs_6_0", mDxCommon->dxcUtils, mDxCommon->dxcCompiler, mDxCommon->includeHandler);
+	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob = WinApp::CompileShader(L"Shaders/Grid3D.VS.hlsl",
+		L"vs_6_0", DirectXCommon::GetInstance()->dxcUtils, DirectXCommon::GetInstance()->dxcCompiler, DirectXCommon::GetInstance()->includeHandler);
 	assert(vertexShaderBlob != nullptr);
 
-	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob = WinAPI::CompileShader(L"Shaders/Grid3D.PS.hlsl",
-		L"ps_6_0", mDxCommon->dxcUtils, mDxCommon->dxcCompiler, mDxCommon->includeHandler);
+	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob = WinApp::CompileShader(L"Shaders/Grid3D.PS.hlsl",
+		L"ps_6_0", DirectXCommon::GetInstance()->dxcUtils, DirectXCommon::GetInstance()->dxcCompiler, DirectXCommon::GetInstance()->includeHandler);
 	assert(pixelShaderBlob != nullptr);
 
 	// PSOを生成する(P.38)
@@ -303,7 +302,7 @@ void Grid3D::CreateGraphicsPipeline() {
 
 	// 実際に生成
 	HRESULT hr;
-	hr = mDxCommon->device_->CreateGraphicsPipelineState(&graphicsPipelineStateDesc,
+	hr = DirectXCommon::GetInstance()->mDevice->CreateGraphicsPipelineState(&graphicsPipelineStateDesc,
 		IID_PPV_ARGS(&graphicsPipelineState));
 	assert(SUCCEEDED(hr));
 

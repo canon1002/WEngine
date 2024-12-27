@@ -66,14 +66,14 @@ public:
 	std::vector<uint32_t> mGridIndices;
 
 	// 外部ポインタ
-	DirectXCommon* mDxCommon = nullptr;
+	
 	Matrix4x4 viewM, wvpM;
 
 	// Transformation用のResourceを作る
 	Microsoft::WRL::ComPtr<ID3D12Resource> mWvpResource = nullptr;
 	// データを書き込む
-	TransformationMatrixForGrid3D* mWvpData = nullptr;
-	WorldTransform* mWorldTransform;
+	std::unique_ptr<TransformationMatrixForGrid3D> mWvpData = nullptr;
+	std::shared_ptr<WorldTransform> mWorldTransform;
 
 	// 頂点リソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> mVertexResource = nullptr;

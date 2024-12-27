@@ -45,20 +45,16 @@ public: // -- アクセッサ -- //
 	Vector3 GetRotate()const { return mWorldTransform->rotation; }
 	Vector3 GetTranslate()const { return mWorldTransform->GetWorldPosition(); }
 
-	Vector2 GetWindowSize()const { return Vector2((float)winApp_->kClientWidth, (float)winApp_->kClientHeight); }
+	Vector2 GetWindowSize()const { return Vector2((float)WinApp::GetInstance()->kClientWidth, (float)WinApp::GetInstance()->kClientHeight); }
 
 #pragma endregion
 
 public: // -- public メンバ変数 -- //
 
 	// WorldTransform
-	WorldTransform* mWorldTransform;
+	std::shared_ptr<WorldTransform> mWorldTransform;
 
 protected: // -- protected メンバ変数 -- //
-
-	// winAppのポインタ
-	WinAPI* winApp_ = nullptr;
-
 
 	// ビュー行列
 	Matrix4x4 viewMatrix_;

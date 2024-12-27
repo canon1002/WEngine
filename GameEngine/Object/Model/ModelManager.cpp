@@ -19,14 +19,9 @@ void ModelManager::Finalize() {
 	// リストをクリア
 	models.clear();
 
-	// インスタンスをdeleteし、nullptrを代入する
-	delete instance;
-	instance = nullptr;
 }
 
-void ModelManager::Initialize(DirectXCommon* dxCommon, CameraCommon* camera){
-	mDxCommon = dxCommon;
-	mCamera = camera;
+void ModelManager::Init(){
 	CreateGraphicsPipeline();
 	CreateGraphicsPipelineForSkinning();
 	CreateGraphicsPipelineForShadow();
@@ -42,7 +37,7 @@ void ModelManager::LoadModel(const std::string& directoryPath, const std::string
 	// モデルの生成とファイル読み込み
 	std::unique_ptr<Model> model = std::make_unique<Model>();
 	//初期化
-	model->Initialize(mDxCommon, mCamera, directoryPath, filepath);
+	model->Init(directoryPath, filepath);
 
 	// モデルをmapコンテナに格納
 	models.insert(std::make_pair(filepath, std::move(model)));
@@ -58,7 +53,7 @@ void ModelManager::LoadMultiModel(const std::string& directoryPath, const std::s
 	// モデルの生成とファイル読み込み
 	std::unique_ptr<MultiModel> model = std::make_unique<MultiModel>();
 	//初期化
-	model->Initialize(mDxCommon, mCamera, directoryPath, filepath);
+	model->Initialize(directoryPath, filepath);
 
 	// モデルをmapコンテナに格納
 	multiModels.insert(std::make_pair(filepath, std::move(model)));
@@ -70,6 +65,17 @@ Model* ModelManager::FindModel(const std::string filepath)
 	if (models.contains(filepath)) {
 		// 読み込み済みモデルを戻り値としてreturn
 		return models.at(filepath).get();
+	}
+	// ファイル名不一致の場合はnullptrを返す
+	return nullptr;
+}
+
+std::shared_ptr<Model> ModelManager::FindModelPtr(const std::string filepath)
+{
+	// 読み込み済みモデルを検索
+	if (models.contains(filepath)) {
+		// 読み込み済みモデルを戻り値としてreturn
+		return models[filepath];
 	}
 	// ファイル名不一致の場合はnullptrを返す
 	return nullptr;
@@ -90,7 +96,7 @@ std::shared_ptr<Model> ModelManager::Create(const std::string& filepath, const s
 	// 登録されていなければ新たにモデルを登録・生成
 	if (sModels_.find(filepath) == sModels_.end()) {
 		sModels_[filepath] = std::make_shared<Model>();
-		sModels_[filepath]->Initialize(filepath, filename);
+		sModels_[filepath]->Init(filepath, filename);
 	}
 	// モデルのポインタを返す
 	return sModels_[filepath];
@@ -99,23 +105,23 @@ std::shared_ptr<Model> ModelManager::Create(const std::string& filepath, const s
 void ModelManager::PreDraw(){
 
 	// RootSignatureを設定。PSOに設定しているが、別途設定が必要
-	mDxCommon->mCommandList->SetGraphicsRootSignature(rootSignature.Get());
-	mDxCommon->mCommandList->SetPipelineState(graphicsPipelineState.Get());
+	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootSignature(rootSignature.Get());
+	DirectXCommon::GetInstance()->mCommandList->SetPipelineState(graphicsPipelineState.Get());
 
 }
 
 void ModelManager::PreDrawForSkinning()
 {
 	// RootSignatureを設定。PSOに設定しているが、別途設定が必要
-	mDxCommon->mCommandList->SetGraphicsRootSignature(rootSignatureForSkinning.Get());
-	mDxCommon->mCommandList->SetPipelineState(graphicsPipelineStateForSkinning.Get());
+	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootSignature(rootSignatureForSkinning.Get());
+	DirectXCommon::GetInstance()->mCommandList->SetPipelineState(graphicsPipelineStateForSkinning.Get());
 }
 
 void ModelManager::PreDrawForShadow()
 {
 	// RootSignatureを設定。PSOに設定しているが、別途設定が必要
-	mDxCommon->mCommandList->SetGraphicsRootSignature(rootSignatureForForShadow.Get());
-	mDxCommon->mCommandList->SetPipelineState(graphicsPipelineStateForShadow.Get());
+	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootSignature(rootSignatureForForShadow.Get());
+	DirectXCommon::GetInstance()->mCommandList->SetPipelineState(graphicsPipelineStateForShadow.Get());
 }
 
 void ModelManager::CreateRootSignature(){
@@ -194,12 +200,12 @@ void ModelManager::CreateRootSignature(){
 	);
 
 	if (FAILED(hr)) {
-		WinAPI::Log(reinterpret_cast<char*>(errorBlob->GetBufferPointer()));
+		WinApp::Log(reinterpret_cast<char*>(errorBlob->GetBufferPointer()));
 		assert(false);
 	}
 
 	// バイナリを元に
-	hr = mDxCommon->device_->CreateRootSignature(0, signatureBlob->GetBufferPointer(),
+	hr = DirectXCommon::GetInstance()->mDevice->CreateRootSignature(0, signatureBlob->GetBufferPointer(),
 		signatureBlob->GetBufferSize(), IID_PPV_ARGS(&rootSignature));
 	assert(SUCCEEDED(hr));
 
@@ -252,12 +258,12 @@ void ModelManager::CreateGraphicsPipeline(){
 	rasterizerDesc.FillMode = D3D12_FILL_MODE_SOLID;
 
 	// Shaderをcompileする(P.37)
-	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob = WinAPI::CompileShader(L"Shaders/Object3d.VS.hlsl",
-		L"vs_6_0", mDxCommon->dxcUtils, mDxCommon->dxcCompiler, mDxCommon->includeHandler);
+	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob = WinApp::CompileShader(L"Shaders/Object3d.VS.hlsl",
+		L"vs_6_0", DirectXCommon::GetInstance()->dxcUtils, DirectXCommon::GetInstance()->dxcCompiler, DirectXCommon::GetInstance()->includeHandler);
 	assert(vertexShaderBlob != nullptr);
 
-	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob = WinAPI::CompileShader(L"Shaders/Object3d.PS.hlsl",
-		L"ps_6_0", mDxCommon->dxcUtils, mDxCommon->dxcCompiler, mDxCommon->includeHandler);
+	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob = WinApp::CompileShader(L"Shaders/Object3d.PS.hlsl",
+		L"ps_6_0", DirectXCommon::GetInstance()->dxcUtils, DirectXCommon::GetInstance()->dxcCompiler, DirectXCommon::GetInstance()->includeHandler);
 	assert(pixelShaderBlob != nullptr);
 
 	// PSOを生成する(P.38)
@@ -293,7 +299,7 @@ void ModelManager::CreateGraphicsPipeline(){
 
 	// 実際に生成
 	HRESULT hr;
-	hr = mDxCommon->device_->CreateGraphicsPipelineState(&graphicsPipelineStateDesc,
+	hr = DirectXCommon::GetInstance()->mDevice->CreateGraphicsPipelineState(&graphicsPipelineStateDesc,
 		IID_PPV_ARGS(&graphicsPipelineState));
 	assert(SUCCEEDED(hr));
 
@@ -389,12 +395,12 @@ void ModelManager::CreateRootSignatureForSkinning() {
 	);
 
 	if (FAILED(hr)) {
-		WinAPI::Log(reinterpret_cast<char*>(errorBlob->GetBufferPointer()));
+		WinApp::Log(reinterpret_cast<char*>(errorBlob->GetBufferPointer()));
 		assert(false);
 	}
 
 	// バイナリを元に
-	hr = mDxCommon->device_->CreateRootSignature(0, signatureBlob->GetBufferPointer(),
+	hr = DirectXCommon::GetInstance()->mDevice->CreateRootSignature(0, signatureBlob->GetBufferPointer(),
 		signatureBlob->GetBufferSize(), IID_PPV_ARGS(&rootSignatureForSkinning));
 	assert(SUCCEEDED(hr));
 
@@ -468,12 +474,12 @@ void ModelManager::CreateGraphicsPipelineForSkinning() {
 
 	// Shaderをcompileする(P.37)
 
-	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob = WinAPI::CompileShader(L"Shaders/SkinningObject3d.VS.hlsl",
-		L"vs_6_0", mDxCommon->dxcUtils, mDxCommon->dxcCompiler, mDxCommon->includeHandler);
+	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob = WinApp::CompileShader(L"Shaders/SkinningObject3d.VS.hlsl",
+		L"vs_6_0", DirectXCommon::GetInstance()->dxcUtils, DirectXCommon::GetInstance()->dxcCompiler, DirectXCommon::GetInstance()->includeHandler);
 	assert(vertexShaderBlob != nullptr);
 
-	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob = WinAPI::CompileShader(L"Shaders/Object3d.PS.hlsl",
-		L"ps_6_0", mDxCommon->dxcUtils, mDxCommon->dxcCompiler, mDxCommon->includeHandler);
+	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob = WinApp::CompileShader(L"Shaders/Object3d.PS.hlsl",
+		L"ps_6_0", DirectXCommon::GetInstance()->dxcUtils, DirectXCommon::GetInstance()->dxcCompiler, DirectXCommon::GetInstance()->includeHandler);
 	assert(pixelShaderBlob != nullptr);
 
 	// PSOを生成する(P.38)
@@ -509,7 +515,7 @@ void ModelManager::CreateGraphicsPipelineForSkinning() {
 
 	// 実際に生成
 	HRESULT hr;
-	hr = mDxCommon->device_->CreateGraphicsPipelineState(&graphicsPipelineStateDesc,
+	hr = DirectXCommon::GetInstance()->mDevice->CreateGraphicsPipelineState(&graphicsPipelineStateDesc,
 		IID_PPV_ARGS(&graphicsPipelineStateForSkinning));
 	assert(SUCCEEDED(hr));
 
@@ -597,12 +603,12 @@ void ModelManager::CreateRootSignatureForShadow()
 	);
 
 	if (FAILED(hr)) {
-		WinAPI::Log(reinterpret_cast<char*>(errorBlob->GetBufferPointer()));
+		WinApp::Log(reinterpret_cast<char*>(errorBlob->GetBufferPointer()));
 		assert(false);
 	}
 
 	// バイナリを元に
-	hr = mDxCommon->device_->CreateRootSignature(0, signatureBlob->GetBufferPointer(),
+	hr = DirectXCommon::GetInstance()->mDevice->CreateRootSignature(0, signatureBlob->GetBufferPointer(),
 		signatureBlob->GetBufferSize(), IID_PPV_ARGS(&rootSignatureForForShadow));
 	assert(SUCCEEDED(hr));
 
@@ -664,12 +670,12 @@ void ModelManager::CreateGraphicsPipelineForShadow()
 
 	// Shaderをcompileする(P.37)
 
-	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob = WinAPI::CompileShader(L"Shaders/Object3d.VS.hlsl",
-		L"vs_6_0", mDxCommon->dxcUtils, mDxCommon->dxcCompiler, mDxCommon->includeHandler);
+	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob = WinApp::CompileShader(L"Shaders/Object3d.VS.hlsl",
+		L"vs_6_0", DirectXCommon::GetInstance()->dxcUtils, DirectXCommon::GetInstance()->dxcCompiler, DirectXCommon::GetInstance()->includeHandler);
 	assert(vertexShaderBlob != nullptr);
 
-	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob = WinAPI::CompileShader(L"Shaders/Object3d.PS.hlsl",
-		L"ps_6_0", mDxCommon->dxcUtils, mDxCommon->dxcCompiler, mDxCommon->includeHandler);
+	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob = WinApp::CompileShader(L"Shaders/Object3d.PS.hlsl",
+		L"ps_6_0", DirectXCommon::GetInstance()->dxcUtils, DirectXCommon::GetInstance()->dxcCompiler, DirectXCommon::GetInstance()->includeHandler);
 	assert(pixelShaderBlob != nullptr);
 
 	// PSOを生成する(P.38)
@@ -703,7 +709,7 @@ void ModelManager::CreateGraphicsPipelineForShadow()
 
 	// 実際に生成
 	HRESULT hr;
-	hr = mDxCommon->device_->CreateGraphicsPipelineState(&graphicsPipelineStateDesc,
+	hr = DirectXCommon::GetInstance()->mDevice->CreateGraphicsPipelineState(&graphicsPipelineStateDesc,
 		IID_PPV_ARGS(&graphicsPipelineStateForShadow));
 	assert(SUCCEEDED(hr));
 

@@ -98,12 +98,7 @@ namespace Resource // ここから関数の宣言と定義を行う
 
 	// データを転送する
 	void UpdateTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages);
-
-
-	Microsoft::WRL::ComPtr<ID3D12Resource>UpdateTextureData(
-		DirectXCommon* dxCommon,
-		Microsoft::WRL::ComPtr < ID3D12Resource> texture,
-		const DirectX::ScratchImage& mipImages);
+	Microsoft::WRL::ComPtr<ID3D12Resource>UpdateTextureData(Microsoft::WRL::ComPtr < ID3D12Resource> texture,const DirectX::ScratchImage& mipImages);
 
 	/// <summary>
 	///	Assimpで3Dモデルの読み込みを行う関数

@@ -16,30 +16,22 @@ SceneManager::SceneManager() {}
 SceneManager::~SceneManager() {}
 
 // 初期化
-void SceneManager::Init(WinAPI* winApp, DirectXCommon* dxCommon){
-	// ポインタを取得
-	winApp_ = winApp;
-	mDxCommon = dxCommon;
+void SceneManager::Init(){
 
 #ifdef _DEBUG
 	// ImGuiManager
 	imGuiManager_ = std::make_unique<ImGuiManager>();
 #endif // _DEBUG
 
-	// Input
-	inputManager_ = InputManager::GetInstance();
-	// Audio
-	audio_ = Audio::GetInstance();
+	
 	// メインカメラ
-	mainCamera_ = std::make_unique<MainCamera>();
-	mainCamera_->Initialize();
+	MainCamera::GetInstance()->Initialize();
 
 	// オブジェクト管理者クラス
-	objectAdmin_ = ObjectManager::GetInstance();
-	objectAdmin_->Init(mDxCommon);
+	ObjectManager::GetInstance()->Init();
 
 	// モデル管理クラス
-	ModelManager::GetInstance()->Initialize(dxCommon, mainCamera_.get());
+	ModelManager::GetInstance()->Init();
 
 	// グローバル変数読み込み
 	GlobalVariables::GetInstance()->LoadFiles();
@@ -57,9 +49,8 @@ void SceneManager::Init(WinAPI* winApp, DirectXCommon* dxCommon){
 	// フレームレート
 	Framerate::GetInstance()->Init();
 
-	//
-	copyImage_ = RenderCopyImage::GetInstance();
-	copyImage_->Initialize(DirectXCommon::GetInstance(), MainCamera::GetInstance());
+	// ポストエフェクト
+	RenderCopyImage::GetInstance()->Init();
 }
 
 // 処理
@@ -67,11 +58,13 @@ int SceneManager::Run() {
 	
 
 #ifdef _DEBUG
-	imGuiManager_->Initialize(winApp_, mDxCommon);
+	imGuiManager_->Init();
 #endif // _DEBUG
 
-	inputManager_->Init(winApp_);
-	audio_->Initialize();
+	// 入力マネージャ
+	InputManager::GetInstance()->Init();
+	// Audio
+	Audio::GetInstance()->Initialize();
 
 	// 非同期処理
 	//std::mutex mutex;
@@ -96,7 +89,7 @@ int SceneManager::Run() {
 	//	});
 
 	// Windowsのメッセージ処理があればゲームループを抜ける
-	while (!winApp_->ProcessMessage())	{
+	while (!WinApp::GetInstance()->ProcessMessage()) {
 
 		// ImGuiの入力を受け付ける
 #ifdef _DEBUG
@@ -104,7 +97,7 @@ int SceneManager::Run() {
 #endif // _DEBUG
 
 		// 入力処理の更新を行う
-		inputManager_->Update();
+		InputManager::GetInstance()->Update();
 		// グローバル変数の更新
 		GlobalVariables::GetInstance()->Update();
 		// シーンのチェック
@@ -130,7 +123,7 @@ int SceneManager::Run() {
 			/// 更新処理
 			sceneArr_[currentSceneNo_]->Update();
 			// ポストエフェクト
-			copyImage_->Update();
+			RenderCopyImage::GetInstance()->Update();
 			// ダメージ表記の更新
 			DamageReaction::GetInstance()->UpdateSprite();
 
@@ -151,7 +144,7 @@ int SceneManager::Run() {
 		}
 		
 		// ポストエフェクトのImGui
-		copyImage_->Debug();
+		RenderCopyImage::GetInstance()->Debug();
 
 		// バックグラウンド処理
 		//if (ImGui::Button("Q")) {
@@ -173,17 +166,17 @@ int SceneManager::Run() {
 		/// 
 
 		// 描画前処理 -- RenderTexture --
-		mDxCommon->PreDrawForRenderTarget();
+		DirectXCommon::GetInstance()->PreDrawForRenderTarget();
 		/// 描画処理
 		sceneArr_[currentSceneNo_]->Draw();
 
 		// 描画後処理 -- RenderTexture --
-		mDxCommon->PostDrawForRenderTarget();
+		DirectXCommon::GetInstance()->PostDrawForRenderTarget();
 		// 描画前処理
-		mDxCommon->PreDraw();
+		DirectXCommon::GetInstance()->PreDraw();
 		
-		copyImage_->PreDraw();
-		copyImage_->Draw();
+		RenderCopyImage::GetInstance()->PreDraw();
+		RenderCopyImage::GetInstance()->Draw();
 
 		// UI描画
 		sceneArr_[currentSceneNo_]->DrawUI();
@@ -194,10 +187,10 @@ int SceneManager::Run() {
 #endif // _DEBUG
 
 		// 描画後処理
-		mDxCommon->PostDraw();
+		DirectXCommon::GetInstance()->PostDraw();
 
 		// ESCキーが押されたらループを抜ける
-		if (inputManager_->GetKey()->GetTriggerKey(DIK_ESCAPE)) {
+		if (InputManager::GetInstance()->GetKey()->GetTriggerKey(DIK_ESCAPE)) {
 			break;
 		}
 
@@ -221,9 +214,9 @@ int SceneManager::Run() {
 	sceneArr_[STAGE].reset();
 	sceneArr_[RESULT].reset();
 	
-	inputManager_->Final();
-	audio_->Finalize();
-	copyImage_->Finalize();
+	InputManager::GetInstance()->Final();
+	Audio::GetInstance()->Finalize();
+	RenderCopyImage::GetInstance()->Finalize();
 
 	return 0;
 }

@@ -17,7 +17,7 @@ public:
 public:
 	
 	// 入力マネージャー
-	InputManager* mInput;
+	
 
 	UISet mTitleOne;
 	UISet mTitleLogo;

@@ -20,7 +20,7 @@ struct Particle {
 
 // エミッター(パーティクル発生装置)
 struct Emitter {
-	WorldTransform* worldTransform;// エミッターの座標
+	std::shared_ptr<WorldTransform> worldtransform;// エミッターの座標
 	uint32_t count;// 発生数
 	float frequency;// 発生頻度
 	float frequencyTime;// 頻度用時刻
@@ -45,7 +45,7 @@ public: // -- 公開 メンバ変数 -- //
 	virtual bool GetActive() { return mIsActive; }
 
 	// エミッターの座標変更
-	inline void SetEmitterWorldTransform(WorldTransform* world) { mEmitter.worldTransform = world; }
+	inline void SetEmitterWorldTransform(std::shared_ptr<WorldTransform> world) { mEmitter.worldtransform = world; }
 
 protected: // -- 限定公開 メンバ関数 -- //
 
@@ -56,10 +56,6 @@ protected: // -- 限定公開 メンバ関数 -- //
 	virtual void CreateInstancing();
 
 protected: // -- 限定公開 メンバ変数 -- //
-
-	// 外部ポインタ
-	CameraCommon* mCamera = nullptr;
-	DirectXCommon* mDxCommon = nullptr;
 
 	// パーティクルのリスト
 	std::list<Particle> mParticles;

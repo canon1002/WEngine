@@ -2,9 +2,8 @@
 #include "GameEngine/Base/DirectX/DirectXCommon.h"
 #include "GameEngine/Resource/Texture/Resource.h"
 
-void DSV::Initialize(DirectXCommon* dxCommon){
-	// DirectXCommonのポインタを取得
-	mDxCommon = dxCommon;
+void DSV::Init() {
+
 	// 深度バッファ生成
 	CreateDepthBuffer();
 	// ディープステンシルビューを生成
@@ -27,8 +26,8 @@ void DSV::CreateDepthBuffer()
 	D3D12_RESOURCE_DESC depthBufferDesc = {};
 	depthBufferDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
 	depthBufferDesc.Alignment = 0;
-	depthBufferDesc.Width = mDxCommon->win_->kClientWidth; // ウィンドウの幅
-	depthBufferDesc.Height = mDxCommon->win_->kClientHeight; // ウィンドウの高さ
+	depthBufferDesc.Width = WinApp::GetInstance()->kClientWidth; // ウィンドウの幅
+	depthBufferDesc.Height = WinApp::GetInstance()->kClientHeight; // ウィンドウの高さ
 	depthBufferDesc.DepthOrArraySize = 1;
 	depthBufferDesc.MipLevels = 1;
 	depthBufferDesc.Format = DXGI_FORMAT_D32_FLOAT;
@@ -44,7 +43,7 @@ void DSV::CreateDepthBuffer()
 	clearValue.DepthStencil.Stencil = 0;
 
 	HRESULT hr;
-	hr = mDxCommon->device_->CreateCommittedResource(
+	hr = DirectXCommon::GetInstance()->mDevice->CreateCommittedResource(
 		&heapProps,
 		D3D12_HEAP_FLAG_NONE,
 		&depthBufferDesc,
@@ -56,19 +55,19 @@ void DSV::CreateDepthBuffer()
 
 }
 
-void DSV::CreateDepthStencilView(){
+void DSV::CreateDepthStencilView() {
 
 	// リソース生成
-	mDepthStencilTextureResource = Resource::CreateDeapStencilTextureResource(mDxCommon->device_, mDxCommon->win_->kClientWidth, mDxCommon->win_->kClientHeight);
+	mDepthStencilTextureResource = Resource::CreateDeapStencilTextureResource(DirectXCommon::GetInstance()->mDevice, WinApp::GetInstance()->kClientWidth, WinApp::GetInstance()->kClientHeight);
 
 	// DSV用のヒープでディスクリプタの数は1。DSVはシェーダー内で触るものではないので、ShaderVisibleはfalse
-	mDsvDescriptorHeap = mDxCommon->CreateDescriptorHeap(mDxCommon->device_, D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1, false);
+	mDsvDescriptorHeap = DirectXCommon::GetInstance()->CreateDescriptorHeap(DirectXCommon::GetInstance()->mDevice, D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1, false);
 
 	// DSVの設定
 	mDsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;// Format。基本的にはResourceに合わせる
 	mDsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;//2Dテクスチャ
 	// DSVHeapの先頭にDSVをつくる
-	mDxCommon->device_->CreateDepthStencilView(mDepthStencilTextureResource.Get(),
+	DirectXCommon::GetInstance()->mDevice->CreateDepthStencilView(mDepthStencilTextureResource.Get(),
 		&mDsvDesc, mDsvDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
 
 	mDsvHandle = mDsvDescriptorHeap->GetCPUDescriptorHandleForHeapStart();

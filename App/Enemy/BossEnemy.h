@@ -34,7 +34,7 @@ public: // -- 公開 メンバ関数 -- //
 
 	Object3d* GetObject3D() { return mObject.get(); }
 	// モデルの取得
-	Model* GetModel() { return mObject->mModel; }
+	Model* GetModel() { return mObject->mModel.get(); }
 	Collider* GetCollider() { return mObject->mCollider; }
 
 	void SetAttackCollider(CollisionManager* cManager);
@@ -57,7 +57,7 @@ public: // -- 公開 メンバ関数 -- //
 	// 自身の攻撃命中時に呼び出す関数
 	void ReciveDamageTolayer(float power);
 	// 能力値取得関数
-	Status* GetStatus() { return mStatus; }
+	std::shared_ptr<Status> GetStatus() { return mStatus; }
 
 
 	// 各行動 
@@ -106,7 +106,7 @@ public: // -- 公開 メンバ関数 -- //
 	Vector3 GetWorldPos();
 	Vector3 GetWorldPosForTarget();
 	
-	const WorldTransform* GetWorldPositionSword(int32_t count) { return mWorldTransformSword.at(count); }
+	const WorldTransform* GetWorldPositionSword(int32_t count) { return mWorldTransformSword.at(count).get(); }
 
 
 	// -- ActionNodeの実行条件を設定する関数 -- //
@@ -173,17 +173,17 @@ private: // -- 非公開 メンバ変数 -- //
 	float mReloadBTCount;
 
 	// 行動マップデータ
-	std::map<std::string,ACT::IAction*> mActions;
+	std::map<string, std::shared_ptr<ACT::IAction>> mActions;
 	// 現在の行動
-	ACT::IAction* mActiveAction;
+	std::weak_ptr<ACT::IAction> mActiveAction;
 
 	// 能力値
-	Status* mStatus;
+	std::shared_ptr<Status> mStatus;
 
 	// -- エフェクト関係 -- //
 
 	// 剣先と根本のワールド座標
-	std::array<WorldTransform*, 2> mWorldTransformSword;
+	std::array<std::unique_ptr<WorldTransform>, 2> mWorldTransformSword;
 
 	// 武器の各パーツの座標
 	std::array<Matrix4x4, 5> mWeaponWorldMat;

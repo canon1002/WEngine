@@ -13,7 +13,7 @@ public:
     /// </summary>
     /// <param name="worldtransform"> ワールド座標のポインタ </param>
     /// <param name="radius"> コライダーの半径 </param>
-    SphereCollider(WorldTransform* worldtransform, float radius);
+    SphereCollider(std::shared_ptr<WorldTransform> worldtransform, float radius);
 
     /// <summary>
     /// 仮想デストラクタ
@@ -57,7 +57,7 @@ public:
     }
 
     // ワールド座標の取得
-    Vector3 GetWorldPos()const override { return pWorldTransform->GetWorldPosition(); }
+    Vector3 GetWorldPos()const override { return mWorldTransform->GetWorldPosition(); }
     
     // 半径を設定
     float GetRadius()const { return mRadius; }

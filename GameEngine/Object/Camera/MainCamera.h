@@ -66,9 +66,6 @@ private: // -- private メンバ変数 -- //
 	// インスタンス
 	static MainCamera* instance;
 	
-	// 入力マネージャ
-	InputManager* mInput;
-
 	// フォロー対象の座標
 	const WorldTransform* mFollowTarget;
 	// 追跡対象の座標

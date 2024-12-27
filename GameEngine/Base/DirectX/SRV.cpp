@@ -5,9 +5,8 @@
 #include "GameEngine/Base/Debug/ImGuiManager.h"
 
 
-void SRV::Initialize(DirectXCommon* dx) {
-	mDxCommon = dx;
-
+void SRV::Init() {
+	
 	CreateShaderResourceView();
 
 	srvDescriptorHeap->SetName(L"srvDescriptorHeap");
@@ -18,7 +17,7 @@ void SRV::CreateShaderResourceView() {
 
 	// STV用ディスクリプタヒープの生成
 	// タンスの部分
-	srvDescriptorHeap = mDxCommon->CreateDescriptorHeap(mDxCommon->device_, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 128, true);
+	srvDescriptorHeap = DirectXCommon::GetInstance()->CreateDescriptorHeap(DirectXCommon::GetInstance()->mDevice, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 128, true);
 	//defaultTexId_ = LoadTexture("uvChecker.png");
 	defaultTexId_ = LoadTexture("uvChecker.dds");
 
@@ -46,8 +45,8 @@ int SRV::LoadTexture(const std::string filePath) {
 	// テクスチャを読んで転送する
 	DirectX::ScratchImage mipImages = Resource::LoadTextrue(filePath);
 	textureData.metadata = mipImages.GetMetadata();
-	textureData.textureResource = Resource::CreateTextureResource(mDxCommon->device_, textureData.metadata);
-	textureData.intermediaResource = Resource::UpdateTextureData(mDxCommon,textureData.textureResource, mipImages);
+	textureData.textureResource = Resource::CreateTextureResource(DirectXCommon::GetInstance()->mDevice, textureData.metadata);
+	textureData.intermediaResource = Resource::UpdateTextureData(textureData.textureResource, mipImages);
 
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
 	srvDesc.Format = textureData.metadata.format;
@@ -64,16 +63,16 @@ int SRV::LoadTexture(const std::string filePath) {
 		srvDesc.Texture2D.MipLevels = UINT(textureData.metadata.mipLevels);
 	}
 	// デスクリプタサイズを取得
-	const uint32_t descriptorSizeSRV = mDxCommon->device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	const uint32_t descriptorSizeSRV = DirectXCommon::GetInstance()->mDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	//const uint32_t descriptorSizeRTV = dx_->device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 	//const uint32_t descriptorSizeDSV = dx_->device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
 
-	textureData.textureSrvHandleCPU = mDxCommon->GetCPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, mTextureId);
-	textureData.textureSrvHandleGPU = mDxCommon->GetGPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, mTextureId);
+	textureData.textureSrvHandleCPU = DirectXCommon::GetInstance()->GetCPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, mTextureId);
+	textureData.textureSrvHandleGPU = DirectXCommon::GetInstance()->GetGPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, mTextureId);
 
 	mTextureData.insert(std::make_pair(mTextureId, textureData));
 
-	mDxCommon->device_->CreateShaderResourceView(textureData.textureResource.Get(), &srvDesc, textureData.textureSrvHandleCPU);
+	DirectXCommon::GetInstance()->mDevice->CreateShaderResourceView(textureData.textureResource.Get(), &srvDesc, textureData.textureSrvHandleCPU);
 
 	return mTextureId;
 
@@ -94,10 +93,10 @@ int SRV::SetInstancingBuffer(int32_t kNumInstance, Microsoft::WRL::ComPtr<ID3D12
 	instancingSrvDesc.Buffer.NumElements = kNumInstance;
 	instancingSrvDesc.Buffer.StructureByteStride = sizeof(ParticleForGPU);
 	// デスクリプタサイズを取得
-	const uint32_t descriptorSizeSRV = mDxCommon->device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	instaicingData.textureSrvHandleCPU = mDxCommon->GetCPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, mParticleId);
-	instaicingData.textureSrvHandleGPU = mDxCommon->GetGPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, mParticleId);
-	mDxCommon->device_->CreateShaderResourceView(instancingResource.Get(), &instancingSrvDesc, instaicingData.textureSrvHandleCPU);
+	const uint32_t descriptorSizeSRV = DirectXCommon::GetInstance()->mDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	instaicingData.textureSrvHandleCPU = DirectXCommon::GetInstance()->GetCPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, mParticleId);
+	instaicingData.textureSrvHandleGPU = DirectXCommon::GetInstance()->GetGPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, mParticleId);
+	DirectXCommon::GetInstance()->mDevice->CreateShaderResourceView(instancingResource.Get(), &instancingSrvDesc, instaicingData.textureSrvHandleCPU);
 
 	mTextureData.insert(std::make_pair(mParticleId, instaicingData));
 
@@ -119,17 +118,17 @@ int32_t SRV::CreateRenderTextureSRV(ID3D12Resource* pResource){
 	renderTextureSrvDesc.Texture2D.MipLevels = 1;
 
 	// デスクリプタサイズを取得
-	const uint32_t descriptorSizeSRV = mDxCommon->device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	const uint32_t descriptorSizeSRV = DirectXCommon::GetInstance()->mDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	//const uint32_t descriptorSizeRTV = dx_->device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 	//const uint32_t descriptorSizeDSV = dx_->device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
 
-	textureData.textureSrvHandleCPU = mDxCommon->GetCPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, mTextureId);
-	textureData.textureSrvHandleGPU = mDxCommon->GetGPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, mTextureId);
+	textureData.textureSrvHandleCPU = DirectXCommon::GetInstance()->GetCPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, mTextureId);
+	textureData.textureSrvHandleGPU = DirectXCommon::GetInstance()->GetGPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, mTextureId);
 
 	mTextureData.insert(std::make_pair(mTextureId, textureData));
 
 	// SRVの生成
-	mDxCommon->device_->CreateShaderResourceView(pResource,
+	DirectXCommon::GetInstance()->mDevice->CreateShaderResourceView(pResource,
 		&renderTextureSrvDesc, textureData.textureSrvHandleCPU);
 
 	return mTextureId;
@@ -148,11 +147,11 @@ int32_t SRV::GetEmptyIndex(){
 	++mTextureId;
 
 	// デスクリプタサイズを取得
-	const uint32_t descriptorSizeSRV = mDxCommon->device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	const uint32_t descriptorSizeSRV = DirectXCommon::GetInstance()->mDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
 	// CPUとGPUを取得/確保しておく
-	textureData.textureSrvHandleCPU = mDxCommon->GetCPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, mTextureId);
-	textureData.textureSrvHandleGPU = mDxCommon->GetGPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, mTextureId);
+	textureData.textureSrvHandleCPU = DirectXCommon::GetInstance()->GetCPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, mTextureId);
+	textureData.textureSrvHandleGPU = DirectXCommon::GetInstance()->GetGPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, mTextureId);
 
 	// 一応mapに追加しておく
 	mTextureData.insert(std::make_pair(mTextureId, textureData));
@@ -179,17 +178,17 @@ int32_t SRV::CreateDepthSRV(Microsoft::WRL::ComPtr<ID3D12Resource> depthStencilR
 	//dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
 
 	// デスクリプタサイズを取得
-	const uint32_t descriptorSizeSRV = mDxCommon->device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	const uint32_t descriptorSizeSRV = DirectXCommon::GetInstance()->mDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	//const uint32_t descriptorSizeRTV = dx_->device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 	//const uint32_t descriptorSizeDSV = dx_->device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
 
-	textureData.textureSrvHandleCPU = mDxCommon->GetCPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, mTextureId);
-	textureData.textureSrvHandleGPU = mDxCommon->GetGPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, mTextureId);
+	textureData.textureSrvHandleCPU = DirectXCommon::GetInstance()->GetCPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, mTextureId);
+	textureData.textureSrvHandleGPU = DirectXCommon::GetInstance()->GetGPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, mTextureId);
 
 	mTextureData.insert(std::make_pair(mTextureId, textureData));
 
 	// SRVの生成
-	mDxCommon->device_->CreateShaderResourceView(depthStencilResource.Get(),
+	DirectXCommon::GetInstance()->mDevice->CreateShaderResourceView(depthStencilResource.Get(),
 		&depthTextureSrvDesc, textureData.textureSrvHandleCPU);
 
 	return mTextureId;

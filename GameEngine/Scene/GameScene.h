@@ -55,12 +55,12 @@ public:
 private:
 
 	// 入力マネージャー
-	InputManager* mInput;
+	
 	// 衝突判定マネージャ
 	std::unique_ptr<CollisionManager> mCollisionManager;
 
 	// スカイボックス
-	Skybox* skybox_;
+	Skybox* mSkybox;
 	// プレイヤーキャラ
 	std::unique_ptr<Player> mPlayer;
 	// 敵キャラ

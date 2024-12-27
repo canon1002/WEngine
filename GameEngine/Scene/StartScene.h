@@ -17,7 +17,7 @@ public:
 public:
 	
 	// 入力マネージャー
-	InputManager* mInput;
+	
 
 	// 開始時の間
 	const float kStartWaitTimeMax = 2.0f;

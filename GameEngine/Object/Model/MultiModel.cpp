@@ -7,33 +7,15 @@ MultiModel::~MultiModel() {
 	CameraResource.Reset();
 }
 
-void MultiModel::Initialize(DirectXCommon* dxCommon,CameraCommon* camera,const std::string& directrypath,const std::string& filename)
-{
-	mDxCommon = dxCommon;
-	mCamera = camera;
+void MultiModel::Initialize(const std::string& directrypath, const std::string& filename){
 
 	// モデル読み込み
-	modelData = Resource::LoadMultiModelFile(directrypath,filename);
-
+	modelData = Resource::LoadMultiModelFile(directrypath, filename);
 	// 頂点リソース 生成
 	CreateVertexResource();
 	// Indexリソース 生成
 	CreateIndexResource();
 	// マテリアルリソース 生成
-	CreateMaterialResource();
-
-}
-
-void MultiModel::Initialize(const std::string& directrypath, const std::string& filename){
-
-	mDxCommon = DirectXCommon::GetInstance();
-	mCamera = MainCamera::GetInstance();
-	
-
-	// モデル読み込み
-	modelData = Resource::LoadMultiModelFile(directrypath, filename);
-
-	CreateVertexResource();
 	CreateMaterialResource();
 
 }
@@ -50,21 +32,21 @@ void MultiModel::Draw()
 		const MultiMaterial& material = modelData.materials[mesh.materialIndex];
 
 		// 配列を渡す(開始スロット番号、使用スロット数、VBV配列へのポインタ)
-		mDxCommon->mCommandList->IASetVertexBuffers(0, 1, &mesh.vertexBufferView);
+		DirectXCommon::GetInstance()->mCommandList->IASetVertexBuffers(0, 1, &mesh.vertexBufferView);
 		// IndexBufferViewをセット
-		mDxCommon->mCommandList->IASetIndexBuffer(&mesh.indexBufferView);
+		DirectXCommon::GetInstance()->mCommandList->IASetIndexBuffer(&mesh.indexBufferView);
 		// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけばいい
-		mDxCommon->mCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		DirectXCommon::GetInstance()->mCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 		// マテリアルのCBufferの場所を指定
-		mDxCommon->mCommandList->SetGraphicsRootConstantBufferView(0, material.materialResource->GetGPUVirtualAddress());
-		mDxCommon->mCommandList->SetGraphicsRootConstantBufferView(3, directionalLightResource->GetGPUVirtualAddress());
-		mDxCommon->mCommandList->SetGraphicsRootConstantBufferView(4, CameraResource->GetGPUVirtualAddress());
+		DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootConstantBufferView(0, material.materialResource->GetGPUVirtualAddress());
+		DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootConstantBufferView(3, directionalLightResource->GetGPUVirtualAddress());
+		DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootConstantBufferView(4, CameraResource->GetGPUVirtualAddress());
 
 		// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である
-		mDxCommon->mCommandList->SetGraphicsRootDescriptorTable(2, mDxCommon->srv_->mTextureData.at(mDxCommon->srv_->defaultTexId_).textureSrvHandleGPU);
+		DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootDescriptorTable(2, DirectXCommon::GetInstance()->mSrv->mTextureData.at(DirectXCommon::GetInstance()->mSrv->defaultTexId_).textureSrvHandleGPU);
 		// インデックスを使用してドローコール
-		mDxCommon->mCommandList->DrawIndexedInstanced(UINT(modelData.meshes[0].indices.size()), 1, 0, 0, 0);
+		DirectXCommon::GetInstance()->mCommandList->DrawIndexedInstanced(UINT(modelData.meshes[0].indices.size()), 1, 0, 0, 0);
 	}
 }
 
@@ -79,8 +61,8 @@ void MultiModel::CreateVertexResource() {
 	// メッシュの数だけ実行する
 	for (Mesh& mesh : modelData.meshes) {
 		// 実際に頂点リソースを作る
-		mesh.vertexResource = mDxCommon->CreateBufferResource(
-			mDxCommon->device_.Get(), sizeof(VertexData) * mesh.vertices.size());
+		mesh.vertexResource = DirectXCommon::GetInstance()->CreateBufferResource(
+			DirectXCommon::GetInstance()->mDevice.Get(), sizeof(VertexData) * mesh.vertices.size());
 
 		// リソースの先頭のアドレスから使う
 		mesh.vertexBufferView.BufferLocation = mesh.vertexResource->GetGPUVirtualAddress();
@@ -99,7 +81,7 @@ void MultiModel::CreateIndexResource(){
 	// メッシュの数だけ実行する
 	for (Mesh& mesh : modelData.meshes) {
 		// Indexは <uint32_t * Indexデータのサイズ> 分だけ確保する
-		mesh.indexResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(uint32_t) * mesh.indices.size());
+		mesh.indexResource = DirectXCommon::GetInstance()->CreateBufferResource(DirectXCommon::GetInstance()->mDevice.Get(), sizeof(uint32_t) * mesh.indices.size());
 		// GPUアドレスを取得
 		mesh.indexBufferView.BufferLocation = mesh.indexResource->GetGPUVirtualAddress();
 		// Byte数は <uint32_t * Indexデータのサイズ>分
@@ -118,9 +100,9 @@ void MultiModel::CreateMaterialResource(){
 		MultiMaterial& material = modelData.materials[mesh.materialIndex];
 
 		// マテリアル用のResourceを作る
-		material.materialResource = mDxCommon->
-			CreateBufferResource(mDxCommon->
-				device_.Get(), sizeof(Material));
+		material.materialResource = DirectXCommon::GetInstance()->
+			CreateBufferResource(DirectXCommon::GetInstance()->
+				mDevice.Get(), sizeof(Material));
 
 		// 書き込むためのアドレスを取得
 		material.materialResource->Map(0, nullptr, reinterpret_cast<void**>(&material.materialItem));
@@ -135,7 +117,7 @@ void MultiModel::CreateMaterialResource(){
 	}
 
 	// Light
-	directionalLightResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(DirectionalLight));
+	directionalLightResource = DirectXCommon::GetInstance()->CreateBufferResource(DirectXCommon::GetInstance()->mDevice.Get(), sizeof(DirectionalLight));
 	// データを書き込む
 	directionalLightResource->Map(0, nullptr, reinterpret_cast<void**>(&directionalLightDate));
 	directionalLightDate->color = { 1.0f, 1.0f, 1.0f, 1.0f };
@@ -143,7 +125,7 @@ void MultiModel::CreateMaterialResource(){
 	directionalLightDate->intensity = 1.0f;
 
 	// カメラデータ
-	CameraResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(CameraForGPU));
+	CameraResource = DirectXCommon::GetInstance()->CreateBufferResource(DirectXCommon::GetInstance()->mDevice.Get(), sizeof(CameraForGPU));
 	// データを書き込む
 	CameraResource->Map(0, nullptr, reinterpret_cast<void**>(&cameraData));
 	mCamera->Initialize();

@@ -34,7 +34,7 @@ void Actor::CreateBodyPartCollider(std::string name, float radius,uint32_t atrib
 	//
 
 	// 新規コライダーの宣言
-	std::unique_ptr<Collider> newCollider = std::make_unique<SphereCollider>(new WorldTransform(), radius);
+	std::shared_ptr<Collider> newCollider = std::make_unique<SphereCollider>(std::make_shared<WorldTransform>(), radius);
 	// 初期化
 	newCollider->Init();
 	// コライダーの衝突属性を設定

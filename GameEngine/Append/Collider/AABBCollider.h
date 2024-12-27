@@ -10,7 +10,7 @@ class AABBCollider :
 public: // -- 公開 メンバ関数 -- //
 
     // コンストラクタ
-    AABBCollider(WorldTransform* worldtransform,Vector3 radius);
+    AABBCollider(std::shared_ptr<WorldTransform> worldtransform,Vector3 radius);
 
 
     void Init()override;
@@ -33,7 +33,7 @@ public: // -- 公開 メンバ関数 -- //
     }
 
     // ワールド座標
-    virtual Vector3 GetWorldPos()const override { return pWorldTransform->GetWorldPosition(); }
+    virtual Vector3 GetWorldPos()const override { return mWorldTransform->GetWorldPosition(); }
 
     Vector3 GetMin()const;
     Vector3 GetMax()const;

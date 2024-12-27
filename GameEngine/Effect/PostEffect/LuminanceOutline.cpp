@@ -8,9 +8,6 @@ LuminanceOutline::~LuminanceOutline() {
 
 void LuminanceOutline::Init(){
 
-	mDxCommon = DirectXCommon::GetInstance();
-	mCamera = MainCamera::GetInstance();
-
 	// グラフィックスパイプライン・ルートシグネチャ生成
 	CreateGraphicsPipeline();
 	// 頂点データ・リソースを生成
@@ -19,7 +16,7 @@ void LuminanceOutline::Init(){
 	CreateEffectResource();
 
 	// レンダーターゲットの格納番号を受け取る
-	textureHandle_ = mDxCommon->srv_->CreateRenderTextureSRV(mDxCommon->rtv_->mRenderTextureResource.Get());
+	textureHandle_ = DirectXCommon::GetInstance()->mSrv->CreateRenderTextureSRV(DirectXCommon::GetInstance()->mRtv->mRenderTextureResource.Get());
 }
 
 void LuminanceOutline::Update(){
@@ -42,22 +39,22 @@ void LuminanceOutline::DrawGUI()
 
 void LuminanceOutline::PreDraw(){
 	// RootSignatureを設定。PSOに設定しているが、別途設定が必要
-	mDxCommon->mCommandList->SetGraphicsRootSignature(mRootSignature.Get());
-	mDxCommon->mCommandList->SetPipelineState(mGraphicsPipelineState.Get());
+	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootSignature(mRootSignature.Get());
+	DirectXCommon::GetInstance()->mCommandList->SetPipelineState(mGraphicsPipelineState.Get());
 }
 
 void LuminanceOutline::Draw(){
 
 	// 頂点バッファビューをセット
-	mDxCommon->mCommandList->IASetVertexBuffers(0, 1, &mVertexBufferView);
+	DirectXCommon::GetInstance()->mCommandList->IASetVertexBuffers(0, 1, &mVertexBufferView);
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけばいい
-	mDxCommon->mCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	DirectXCommon::GetInstance()->mCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	// ポストエフェクトのパラメータのCBufferの場所を指定
-	mDxCommon->mCommandList->SetGraphicsRootConstantBufferView(0, mEffectResource->GetGPUVirtualAddress());
+	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootConstantBufferView(0, mEffectResource->GetGPUVirtualAddress());
 	// SRVのDescriptorTableの先頭を設定
-	mDxCommon->mCommandList->SetGraphicsRootDescriptorTable(1, mDxCommon->srv_->mTextureData.at(textureHandle_).textureSrvHandleGPU);
+	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootDescriptorTable(1, DirectXCommon::GetInstance()->mSrv->mTextureData.at(textureHandle_).textureSrvHandleGPU);
 	// インスタンス生成
-	mDxCommon->mCommandList->DrawInstanced(3, 1, 0, 0);
+	DirectXCommon::GetInstance()->mCommandList->DrawInstanced(3, 1, 0, 0);
 }
 
 void LuminanceOutline::PostDraw(){
@@ -68,7 +65,7 @@ void LuminanceOutline::PostDraw(){
 void LuminanceOutline::CreateEffectResource() {
 
 	// リソース生成
-	mEffectResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(LuminanceOutline));
+	mEffectResource = DirectXCommon::GetInstance()->CreateBufferResource(DirectXCommon::GetInstance()->mDevice.Get(), sizeof(LuminanceOutline));
 	// 書き込むためのアドレスを取得
 	mEffectResource->Map(0, nullptr, reinterpret_cast<void**>(&mItems));
 	// エフェクトを有効/無効
@@ -108,12 +105,12 @@ void LuminanceOutline::CreateGraphicsPipeline(){
 	rasterizerDesc.FillMode = D3D12_FILL_MODE_SOLID;
 
 	// Shaderをcompileする(P.37)
-	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob = WinAPI::CompileShader(L"Shaders/PostEffect/CopyImage.VS.hlsl",
-		L"vs_6_0", mDxCommon->dxcUtils, mDxCommon->dxcCompiler, mDxCommon->includeHandler);
+	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob = WinApp::CompileShader(L"Shaders/PostEffect/CopyImage.VS.hlsl",
+		L"vs_6_0", DirectXCommon::GetInstance()->dxcUtils, DirectXCommon::GetInstance()->dxcCompiler, DirectXCommon::GetInstance()->includeHandler);
 	assert(vertexShaderBlob != nullptr);
 
-	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob = WinAPI::CompileShader(L"Shaders/PostEffect/LuminanceOutline.PS.hlsl",
-		L"ps_6_0", mDxCommon->dxcUtils, mDxCommon->dxcCompiler, mDxCommon->includeHandler);
+	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob = WinApp::CompileShader(L"Shaders/PostEffect/LuminanceOutline.PS.hlsl",
+		L"ps_6_0", DirectXCommon::GetInstance()->dxcUtils, DirectXCommon::GetInstance()->dxcCompiler, DirectXCommon::GetInstance()->includeHandler);
 	assert(pixelShaderBlob != nullptr);
 
 
@@ -149,7 +146,7 @@ void LuminanceOutline::CreateGraphicsPipeline(){
 
 	// 実際に生成
 	HRESULT hr;
-	hr = mDxCommon->device_->CreateGraphicsPipelineState(&graphicsPipelineStateDesc,
+	hr = DirectXCommon::GetInstance()->mDevice->CreateGraphicsPipelineState(&graphicsPipelineStateDesc,
 		IID_PPV_ARGS(&mGraphicsPipelineState));
 	assert(SUCCEEDED(hr));
 }
@@ -207,12 +204,12 @@ void LuminanceOutline::CreateRootSignature(){
 	);
 
 	if (FAILED(hr)) {
-		WinAPI::Log(reinterpret_cast<char*>(errorBlob->GetBufferPointer()));
+		WinApp::Log(reinterpret_cast<char*>(errorBlob->GetBufferPointer()));
 		assert(false);
 	}
 
 	// バイナリを元に
-	hr = mDxCommon->device_->CreateRootSignature(0, signatureBlob->GetBufferPointer(),
+	hr = DirectXCommon::GetInstance()->mDevice->CreateRootSignature(0, signatureBlob->GetBufferPointer(),
 		signatureBlob->GetBufferSize(), IID_PPV_ARGS(&mRootSignature));
 	assert(SUCCEEDED(hr));
 }

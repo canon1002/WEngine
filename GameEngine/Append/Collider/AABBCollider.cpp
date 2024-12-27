@@ -3,9 +3,9 @@
 #include "GameEngine/Object/Camera/MainCamera.h"
 #include "GameEngine/Object/Model/ModelManager.h"
 
-AABBCollider::AABBCollider(WorldTransform* worldtransform, Vector3 radius) {
+AABBCollider::AABBCollider(std::shared_ptr<WorldTransform> worldtransform, Vector3 radius) {
 	// ワールド座標のポインタを代入
-	pWorldTransform = worldtransform;
+	mWorldTransform = worldtransform;
 	// 各ベクトルの半径を代入
 	mRadius = radius;
 	// 衝突フラグはfalseにしておく
@@ -83,9 +83,9 @@ Vector3 AABBCollider::GetMin()const {
 	// AABBの最小値を計算する
 	Vector3 min = {};
 	// ワールド座標 - 各ベクトルの半径
-	min.x = pWorldTransform->translation.x - mRadius.x;
-	min.y = pWorldTransform->translation.y; // スキニングの関係で足元を最低値にする
-	min.z = pWorldTransform->translation.z - mRadius.z;
+	min.x = mWorldTransform->translation.x - mRadius.x;
+	min.y = mWorldTransform->translation.y; // スキニングの関係で足元を最低値にする
+	min.z = mWorldTransform->translation.z - mRadius.z;
 	return min;
 }
 
@@ -93,32 +93,31 @@ Vector3 AABBCollider::GetMax()const {
 	// AABBの最大値を計算する
 	Vector3 max = {};
 	// ワールド座標 + 各ベクトルの半径
-	max.x = pWorldTransform->translation.x + mRadius.x;
-	max.y = pWorldTransform->translation.y + (mRadius.y * 2.0f);
-	max.z = pWorldTransform->translation.x + mRadius.x;
+	max.x = mWorldTransform->translation.x + mRadius.x;
+	max.y = mWorldTransform->translation.y + (mRadius.y * 2.0f);
+	max.z = mWorldTransform->translation.x + mRadius.x;
 	return max;
 }
 
 Vector3 AABBCollider::GetVelocity()
 {
 	Vector3 result = {};
-	result = pWorldTransform->translation - mPrePosition;
+	result = mWorldTransform->translation - mPrePosition;
 	return result;
 }
 
 void AABBCollider::Init() {
-	mDxCommon = DirectXCommon::GetInstance();
 	// 矩形のモデルを読み込み // いずれは他の場所に移す
 	ModelManager::GetInstance()->LoadModel("wireCube", "wireCube.gltf");
 	// モデルを検索してセット
-	mModel = ModelManager::GetInstance()->FindModel("wireCube.gltf");
+	mModel = ModelManager::GetInstance()->FindModelPtr("wireCube.gltf");
 	CreateTransformation();
 }
 
 void AABBCollider::Update(){
 
 	// 前フレームの座標を取得
-	mPrePosition = pWorldTransform->translation;
+	mPrePosition = mWorldTransform->translation;
 
 	MainCamera* camera = MainCamera::GetInstance();
 	// カメラ行列のビュー行列(カメラのワールド行列の逆行列)
@@ -127,7 +126,7 @@ void AABBCollider::Update(){
 	wvpM = camera->GetViewProjectionMatrix();
 
 	// AABBなので回転をなくしたワールド行列を作る
-	WorldTransform world = *pWorldTransform;
+	WorldTransform world = *mWorldTransform;
 	// ridiusに合わせて拡大縮小を行う
 	world.scale = mRadius;
 	world.rotation = { 0.0f,0.0f,0.0f };
@@ -155,10 +154,10 @@ void AABBCollider::Update(){
 void AABBCollider::Draw(){
 
 	//wvp用のCBufferの場所を指定
-	mDxCommon->mCommandList->SetGraphicsRootConstantBufferView(1, mWvpResource->GetGPUVirtualAddress());
+	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootConstantBufferView(1, mWvpResource->GetGPUVirtualAddress());
 	// 頂点をセット
 	// 配列を渡す(開始スロット番号、使用スロット数、VBV配列へのポインタ)
-	mDxCommon->mCommandList->IASetVertexBuffers(0, 1, &mModel->mVertexBufferView);
+	DirectXCommon::GetInstance()->mCommandList->IASetVertexBuffers(0, 1, &mModel->mVertexBufferView);
 
 	mModel->Draw();
 
@@ -166,7 +165,7 @@ void AABBCollider::Draw(){
 
 void AABBCollider::CreateTransformation(){
 	// Transformation用のResourceを作る
-	mWvpResource = mDxCommon->CreateBufferResource(mDxCommon->device_.Get(), sizeof(TransformationMatrixForGrid3D));
+	mWvpResource = DirectXCommon::GetInstance()->CreateBufferResource(DirectXCommon::GetInstance()->mDevice.Get(), sizeof(TransformationMatrixForGrid3D));
 	// データを書き込む
 	// 書き込むためのアドレスを取得
 	mWvpResource->Map(0, nullptr, reinterpret_cast<void**>(&mWvpData));
