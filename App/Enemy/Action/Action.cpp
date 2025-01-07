@@ -20,6 +20,8 @@ void ACT::MoveToPlayer::Init(BossEnemy* boss)
 	mVelocity = Scalar(mMoveSpeed, mDirection);
 	// 追跡までの時間をリセット
 	mSearchTime = 0.0f;
+	// 追跡を行う時間
+	mSearchCount = 0.0f;
 
 	// 初期化する
 	mCondition = Condition::IDOL;
@@ -30,8 +32,14 @@ void ACT::MoveToPlayer::Update()
 {
 	// 実行時のみ処理を行う
 	if (mCondition == Condition::RUNNING) {
+		
 		// 移動させる
 		mBoss->AddTransform(mVelocity);
+
+		// 追跡時間を加算する
+		if (mSearchCount < kSearchCountMax) {
+			mSearchCount += (1.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetBattleSpeed();
+		}
 
 		// 移動方向への回転を行う
 		// ここから回転処理
@@ -66,8 +74,8 @@ void ACT::MoveToPlayer::Update()
 			mSearchTime = 0.0f;
 		}
 
-		// 終了処理
-		if (mBoss->InvokeNearDistance()) {
+		// 終了処理(攻撃範囲内に近づけた場合 または 一定時間が経過した場合)
+		if (mBoss->InvokeNearDistance() || mSearchCount > kSearchCountMax) {
 			mCondition = Condition::FINISHED;
 		}
 	}
@@ -96,9 +104,11 @@ void ACT::MoveToPlayer::Start()
 	mVelocity = Scalar(mMoveSpeed, mDirection);
 	// 追跡までの時間をリセット
 	mSearchTime = 0.0f;
+	// 追跡を行う時間をリセット
+	mSearchCount = 0.0f;
 
 	// アニメーションの変更
-	mBoss->GetObject3D()->mSkinning->SetNextAnimation("Run");
+	mBoss->GetObject3D()->mSkinning->SetNextAnimation("Walk");
 
 	// 実行する
 	mCondition = Condition::RUNNING;

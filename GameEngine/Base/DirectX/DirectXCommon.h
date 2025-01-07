@@ -34,9 +34,6 @@ class DirectXCommon
 {
 public:
 	
-	DirectXCommon() = default;
-	~DirectXCommon() = default;
-
 	// シングルトン インスタンス取得
 	static DirectXCommon* GetInstance();
 
@@ -46,6 +43,11 @@ public:
 	void UpdateFixFPS();
 
 private: // -- 静的メンバ関数 -- //
+
+	// コンストラクタ
+	DirectXCommon() = default;
+	// デストラクタ
+	~DirectXCommon() = default;
 
 	// コピーコンストラクタと演算子オーバーロードの禁止
 	DirectXCommon(const DirectXCommon& obj) = delete;

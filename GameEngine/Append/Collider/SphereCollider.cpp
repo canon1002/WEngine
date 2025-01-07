@@ -1,5 +1,6 @@
 #include "SphereCollider.h"
 #include "AABBCollider.h"
+#include "OBBCollider.h"
 #include "GameEngine/Object/Camera/MainCamera.h"
 #include "GameEngine/Object/Model/ModelManager.h"
 #include "GameEngine/Object/Model/Skybox/Skybox.h"
@@ -124,3 +125,32 @@ bool SphereCollider::IsCollision(SphereCollider* c) {
 	}
 	return false;
 }
+
+bool SphereCollider::IsCollision(OBBCollider* c) {
+
+	// 中心点をOBBのローカル空間上の点にする
+	Vector3 centerInOBBLocalSpace =
+		Transform(c->GetWorldPos(), Inverse(mWorldTransform->GetWorldMatrix()));
+
+	// OBBからABBを作成
+	AABB aabbOBBLocal = {};
+	aabbOBBLocal.min = c->GetSize() * (-1.0f);
+	aabbOBBLocal.max = c->GetSize();
+
+	Sphere sphereOBBLocal = {};
+	sphereOBBLocal.center = centerInOBBLocalSpace;
+	sphereOBBLocal.radius = mRadius;
+
+	// ローカル空間での球とAABBの衝突判定
+	Vector3 cloosestPoint{
+	std::clamp(sphereOBBLocal.center.x,aabbOBBLocal.min.x,aabbOBBLocal.max.x),
+	std::clamp(sphereOBBLocal.center.y,aabbOBBLocal.min.y,aabbOBBLocal.max.y),
+	std::clamp(sphereOBBLocal.center.z,aabbOBBLocal.min.z,aabbOBBLocal.max.z),
+	};
+
+	float distance = Length(Subtract(cloosestPoint, sphereOBBLocal.center));
+	if (distance < sphereOBBLocal.radius) {
+		return true;
+	}
+	return false;
+};

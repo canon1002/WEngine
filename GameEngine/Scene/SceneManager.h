@@ -48,8 +48,5 @@ public:
 	void Init();
 	int Run();//　この関数でゲームループを呼び出す
 
-	
-
-
 };
 

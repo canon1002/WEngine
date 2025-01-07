@@ -8,11 +8,11 @@
 // 前方宣言
 class CameraCommon;
 
-class Sphere
+class SphereEntity
 {
 public:
-	Sphere();
-	~Sphere();
+	SphereEntity();
+	~SphereEntity();
 
 	void Init();
 	void Update();

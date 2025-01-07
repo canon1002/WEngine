@@ -3,9 +3,11 @@
 // ImGui
 #include "GameEngine/Base/WinApp/WinAPI.h"
 #include "GameEngine/Base/DirectX/DirectXCommon.h"
-#include "../../Externals/imgui/imgui.h"
-#include "../../Externals/imgui/imgui_impl_dx12.h"
-#include "../../Externals/imgui/imgui_impl_win32.h"
+#include "Externals/imgui/imgui.h"
+#include "Externals/imgui/imgui_impl_dx12.h"
+#include "Externals/imgui/imgui_impl_win32.h"
+#include "Externals/imgui/imnodes.h"
+
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 
@@ -20,18 +22,21 @@ class ImGuiManager
 {
 public: // -- 公開 メンバ関数 -- //
 
+	// コンストラクタ
 	ImGuiManager() = default;
+	// デストラクタ
 	~ImGuiManager() = default;
 
+	// 初期化
 	void Init();
-
+	// ImGuiの開始処理
 	void Begin();
-
+	// ImGuiの終了処理
 	void End();
-
+	// 描画処理
 	void Draw();
-
-	void ReleseProcess();
+	// 終了処理
+	void Final();
 
 };
 #endif // _DEBUG

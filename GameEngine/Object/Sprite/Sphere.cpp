@@ -2,9 +2,9 @@
 #include "GameEngine/Object/Camera/MainCamera.h"
 #include "GameEngine/Base/Debug/ImGuiManager.h"
 
-Sphere::Sphere() {}
+SphereEntity::SphereEntity() {}
 
-Sphere::~Sphere()
+SphereEntity::~SphereEntity()
 {
 	delete mWvpData;
 	delete mVertexData;
@@ -12,14 +12,14 @@ Sphere::~Sphere()
 	delete directionalLightDate;
 }
 
-void Sphere::Init() {
+void SphereEntity::Init() {
 
 	CreateVertexResource();
 	CreateTransformation();
 	CreateBufferView();
 }
 
-void Sphere::Update() {
+void SphereEntity::Update() {
 
 	// カメラ行列のビュー行列(カメラのワールド行列の逆行列)
 	viewM = Inverse(cameraM);
@@ -32,7 +32,7 @@ void Sphere::Update() {
 	mWvpData->World = mWorldTransform.GetWorldMatrix();
 }
 
-void Sphere::Draw() const {
+void SphereEntity::Draw() const {
 
 	DirectXCommon::GetInstance()->mCommandList->IASetVertexBuffers(0, 1, &mVertexBufferView);
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけばいい
@@ -54,7 +54,7 @@ void Sphere::Draw() const {
 }
 
 //
-void Sphere::CreateVertexResource() {
+void SphereEntity::CreateVertexResource() {
 
 	// VertexResourceを生成する(P.42)
 	// 実際に頂点リソースを作る
@@ -82,7 +82,7 @@ void Sphere::CreateVertexResource() {
 }
 
 //
-void Sphere::CreateTransformation() {
+void SphereEntity::CreateTransformation() {
 
 	// Transformation用のResourceを作る
 	mWvpResource = DirectXCommon::GetInstance()->CreateBufferResource(DirectXCommon::GetInstance()->mDevice.Get(), sizeof(TransformationMatrix));
@@ -96,7 +96,7 @@ void Sphere::CreateTransformation() {
 }
 
 //
-void Sphere::CreateBufferView() {
+void SphereEntity::CreateBufferView() {
 
 	// VertexBufferViewを作成する(P.43)
 	// 頂点バッファビューを作成する
@@ -192,7 +192,7 @@ void Sphere::CreateBufferView() {
 }
 
 //
-void Sphere::DrawBeginResource() {
+void SphereEntity::DrawBeginResource() {
 
 
 }

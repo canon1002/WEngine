@@ -1192,6 +1192,9 @@ void Player::ReciveDamageToBoss(float power)
 	// ボスにダメージを与える
 	StatusManager::GetInstance()->ReceiveDamage(mStatus, power, mBoss->GetStatus());
 
+	// ボスのノックバックカウントを加算
+	mBoss->SetKnockBackCount(1);
+
 	// シェイクを発生させる
 	//mBoss->SetShake(0.25f, 0.1f);
 

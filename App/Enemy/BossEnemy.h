@@ -59,37 +59,8 @@ public: // -- 公開 メンバ関数 -- //
 	// 能力値取得関数
 	std::shared_ptr<Status> GetStatus() { return mStatus; }
 
-
-	// 各行動 
-	
-	// 攻撃行動
-	// 命名規則 (行動分類 + 距離 + 追加効果 ) ※変更する可能性あり
-	// (例: Attack(攻撃) + Long(遠距離) + InstantDeath(即死) )
-
-	// 遠距離攻撃
-	void AttackLong();
-	// 近距離攻撃
-	void AttackClose();
-	// 刺突攻撃
-	void AttackThrust();
-	// ダッシュ攻撃
-	void AttackDash();
-	// ジャンプ攻撃
-	void AttackJump();
-
-	// 移動関連行動
-	// 命名規則 (行動分類  + 方向or対象 )
-
-	// プレイヤーに接近する
-	void MoveToPlayer();
-	// プレイヤーから逃げる
-	void EscapeToPlayer();
-	// 後退
-	void BackStep();
-	// ジャンプ
-	void Jump(float JumpPower);
-
-	inline void MoveForward() { mObject->mWorldTransform->translation.z += mVelocity.z; }
+	// 行動指定関数
+	void SetAction(const std::string& key);
 	
 
 	// -- 変更用関数 -- //
@@ -113,15 +84,22 @@ public: // -- 公開 メンバ関数 -- //
 
 	// 距離が近い場合に実行
 	bool InvokeNearDistance();
+	// 距離が近い場合に実行(距離設定可能)
+	bool IsNearDistance(float range);
 
 	// 距離が遠い場合に実行
 	bool InvokeFarDistance();
+	// 距離が遠い場合に実行(距離設定可能)
+	bool IsFarDistance(float range);
 
 	// シェイク処理
 	void SetShake(float duration, float power);
 
 	// シェイク実行処理
 	void ShakeUpdate();
+
+	// リアクション処理(のけぞり)
+	void SetKnockBackCount(int32_t count);
 
 #pragma endregion
 
@@ -193,6 +171,11 @@ private: // -- 非公開 メンバ変数 -- //
 	float mShakeDuration;
 	float mShakePower;
 	float mShakeTime;
+
+
+	// 仮ノックバック処理
+	int32_t mKnockBackCount;
+	const int32_t kKnockBackCountMax = 7;
 
 
 };

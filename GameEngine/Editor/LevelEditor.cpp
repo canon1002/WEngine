@@ -82,9 +82,9 @@ void LevelEditor::CheckLevelEditorFile(){
 			objectData.worldTransform.translation.y = (float)transform["translation"][2];
 			objectData.worldTransform.translation.z = (float)transform["translation"][1];
 			// 回転
-			objectData.worldTransform.rotation.x = -GetRadian((float)transform["rotate"][0]);
-			objectData.worldTransform.rotation.y = -GetRadian((float)transform["rotate"][2]);
-			objectData.worldTransform.rotation.z = -GetRadian((float)transform["rotate"][1]);
+			objectData.worldTransform.rotation.x = -GetRadian((float)transform["rotation"][0]);
+			objectData.worldTransform.rotation.y = -GetRadian((float)transform["rotation"][2]);
+			objectData.worldTransform.rotation.z = -GetRadian((float)transform["rotation"][1]);
 			// スケーリング
 			objectData.worldTransform.scale.x = (float)transform["scaling"][0];
 			objectData.worldTransform.scale.y = (float)transform["scaling"][2];

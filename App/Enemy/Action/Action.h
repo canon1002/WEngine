@@ -115,7 +115,12 @@ namespace ACT {
 		float mMoveSpeed;
 		// 追跡周期
 		float mSearchTime;
-		const float kSearchCycle = 3.0f;
+		const float kSearchCycle = 1.0f;
+
+		// 追跡を行う時間
+		float mSearchCount;
+		const float kSearchCountMax = 2.0f;
+
 	};
 	
 	// ----------------------------------------------------

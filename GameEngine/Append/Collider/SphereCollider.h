@@ -2,6 +2,7 @@
 #include "Collider.h"
 
 class AABBCollider;
+class OBBCollider;
 
 class SphereCollider :
     public Collider
@@ -45,6 +46,8 @@ public:
     virtual bool IsCollision(AABBCollider* c);
 	// 球体との衝突判定
     virtual bool IsCollision(SphereCollider* c);
+    // OBBとの衝突判定
+    virtual bool IsCollision(OBBCollider* c);
 
     // 衝突時の処理
     virtual void OnCollision()override {};

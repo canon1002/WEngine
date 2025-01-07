@@ -7,6 +7,7 @@
 #include "GameEngine/Effect/Particle/ParticleManager.h"
 #include "GameEngine/Object/Screen/RenderCopyImage.h"
 #include "GameEngine/GameMaster/Framerate.h"
+#include "GameEngine/Append/Collider/CollisionManager.h"
 
 void TitleScene::Finalize() {}
 
@@ -32,13 +33,6 @@ void TitleScene::Init() {
 	ModelManager::GetInstance()->LoadModel("MapObjects", "Plane.gltf");
 	mGroundObj->SetModel("Plane.gltf");
 	mGroundObj->SetScale(Vector3(1024.0f, 1.0f, 1024.0f));
-
-	// 建物
-	mBuildingObj = std::make_unique<Object3d>();
-	mBuildingObj->Init("Title Building");
-	ModelManager::GetInstance()->LoadModel("MapObjects", "Wall.gltf");
-	mBuildingObj->SetModel("Wall.gltf");
-	mBuildingObj->SetScale(Vector3(1.0f, 1.0f, 1.0f));
 
 	/// スタート補間
 
@@ -102,6 +96,41 @@ void TitleScene::Init() {
 	mTitleSelect.displayCount = 0.5f;
 	mTitleSelect.isActive = true;
 
+	// -- エディタテスト -- //
+	mBTNodeEditor = std::make_unique<BTNodeEditor>();
+	mBTNodeEditor->Init();
+
+	// -- OBB衝突テスト -- //
+
+	// 衝突判定マネージャ
+	mCollisionManager = std::make_unique<CollisionManager>();
+
+	mOBBTestObj = std::make_unique<Object3d>();
+	mOBBTestObj->Init("OBBTest");
+	mOBBTestObj->SetModel("box.gltf");
+	mOBBTestObj->mWorldTransform->translation = { 0.0f,7.0f,-85.0f };
+	mOBBTestObj->mWorldTransform->scale = { 1.0f,1.0f,1.0f };
+	mOBBTestObj->mWorldTransform->rotation = { 0.0f,0.0f,0.0f };
+
+	mOBBTestObj->mCollider = new OBBCollider(mOBBTestObj->mWorldTransform, Vector3(1.0f, 1.0f, 1.0f));
+	mOBBTestObj->mCollider->Init();
+	mOBBTestObj->mCollider->SetAddTranslation(Vector3(0.0f, 0.55f, -0.1f));
+	mOBBTestObj->mCollider->SetCollisionAttribute(kCollisionAttributePlayer);
+	mOBBTestObj->mCollider->SetCollisionMask(kCollisionAttributeEnemyBullet);
+
+	
+	mOBBTestObj2 = std::make_unique<Object3d>();
+	mOBBTestObj2->Init("OBBTest2");
+	mOBBTestObj2->SetModel("box.gltf");
+	mOBBTestObj2->mWorldTransform->translation = { -4.0f,7.0f,-85.0f };
+	mOBBTestObj2->mWorldTransform->scale = { 1.0f,1.0f,1.0f };
+	mOBBTestObj2->mWorldTransform->rotation = { 0.3f,0.0f,0.0f };
+
+	mOBBTestObj2->mCollider = new OBBCollider(mOBBTestObj2->mWorldTransform, Vector3(1.0f, 1.0f, 1.0f));
+	mOBBTestObj2->mCollider->Init();
+	mOBBTestObj2->mCollider->SetAddTranslation(Vector3(0.0f, 0.55f, -0.1f));
+	mOBBTestObj2->mCollider->SetCollisionAttribute(kCollisionAttributeEnemyBullet);
+	mOBBTestObj2->mCollider->SetCollisionMask(kCollisionAttributePlayer);
 
 }
 
@@ -111,8 +140,27 @@ void TitleScene::Update() {
 	mCamera->Update();
 	mObject->Update();
 	mGroundObj->Update();
-	mBuildingObj->Update();
-	mBuildingObj->DrawGUI();
+
+	mBTNodeEditor->Update();
+
+	mOBBTestObj->Update();
+	mOBBTestObj->DrawGUI();
+	mOBBTestObj2->Update();
+	mOBBTestObj2->DrawGUI();
+
+	// コライダーの更新処理
+	mOBBTestObj->mCollider->Update();
+	mOBBTestObj2->mCollider->Update();
+
+	// コライダーリストへの追加処理
+	mCollisionManager->SetCollider(mOBBTestObj->mCollider);
+	mCollisionManager->SetCollider(mOBBTestObj2->mCollider);
+
+	// 衝突判定を行う
+	mCollisionManager->Update();
+
+	// コライダーリストのクリア
+	mCollisionManager->ClearColliders();
 
 	// UI 更新
 	mTitleOne.sprite->Update();
@@ -230,6 +278,8 @@ void TitleScene::Update() {
 		
 	}
 
+	
+
 }
 
 void TitleScene::Draw() {
@@ -237,7 +287,13 @@ void TitleScene::Draw() {
 	ModelManager::GetInstance()->PreDrawForShadow();
 	mObject->Draw();
 	mGroundObj->Draw();
-	mBuildingObj->Draw();
+
+	mOBBTestObj->Draw();
+	mOBBTestObj2->Draw();
+
+	mOBBTestObj->mCollider->Draw();
+	mOBBTestObj2->mCollider->Draw();
+
 }
 
 void TitleScene::DrawUI()

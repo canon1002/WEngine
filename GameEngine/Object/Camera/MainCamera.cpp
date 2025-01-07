@@ -80,7 +80,6 @@ void MainCamera::Update()
 		Matrix4x4 matW = mWorldTransform->GetWorldMatrix();
 
 		// 回転操作可能であれば回転できるようにする
-		mIsControll = false;
 		if (mIsControll) {
 
 			// スティック入力の量
@@ -129,7 +128,7 @@ void MainCamera::Update()
 
 	}
 
-	SetCameraRotarionToSearchTarget();
+	//SetCameraRotarionToSearchTarget();
 	UpdateRotationEasing();
 
 

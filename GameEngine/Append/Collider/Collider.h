@@ -16,7 +16,15 @@
 #include "GameEngine/Object/Grid3D.h"
 #include "GameEngine/Object/Model/Model.h"
 
+struct AABB {
+	Vector3 min;// 最小値
+	Vector3 max;// 最大値
+};
 
+struct Sphere {
+	Vector3 center;// 中心
+	float radius;// 半径
+};
 
 struct Plane {
 	Vector3 normal;// 法線(単位ベクトル)
@@ -25,6 +33,7 @@ struct Plane {
 
 class AABBCollider;
 class SphereCollider;
+class OBBCollider;
 
 /// <summary>
 ///	コライダー
@@ -88,6 +97,7 @@ public: // -- 公開 メンバ関数 -- //
 	virtual bool IsCollision(Collider* c) = 0;
 	virtual bool IsCollision(AABBCollider* c) = 0;
 	virtual bool IsCollision(SphereCollider* c) = 0;
+	virtual bool IsCollision(OBBCollider* c) = 0;
 
 	
 	Model* GetModel() const{ return mModel.get(); }
@@ -134,7 +144,7 @@ protected: // -- 限定公開 メンバ変数 -- //
 	// Transformation用のResourceを作る
 	Microsoft::WRL::ComPtr<ID3D12Resource> mWvpResource = nullptr;
 	// データを書き込む
-	std::unique_ptr<TransformationMatrixForGrid3D> mWvpData = nullptr;
+	std::shared_ptr<TransformationMatrixForGrid3D> mWvpData = nullptr;
 	std::shared_ptr<WorldTransform> mWorldTransform;
 
 	// モデル

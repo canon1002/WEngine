@@ -6,8 +6,6 @@
 #include "App/Player/Player.h"
 #include "GameEngine/Append/Collider/AABBCollider.h"
 #include "GameEngine/Append/Collider/SphereCollider.h"
-#include "App/AI/BehaviorTree/BTMoveAction.h"
-#include "App/AI/BehaviorTree/BTAttackAction.h"
 #include "GameEngine/Object/Model/Skybox/Skybox.h"
 
 #include "GameEngine/GameMaster/Framerate.h"
@@ -45,8 +43,10 @@ void BossEnemy::Init() {
 	mObject->mSkinning->SetMotionBlendingInterval(30.0f);
 	// 使用するアニメーションを登録しておく
 	mObject->mSkinning->CreateSkinningData("Boss", "Idle", ".gltf", mObject->GetModel()->modelData, true);
-	mObject->mSkinning->CreateSkinningData("Boss", "Run", ".gltf", mObject->GetModel()->modelData, true);
+	mObject->mSkinning->CreateSkinningData("Boss", "Walk", ".gltf", mObject->GetModel()->modelData, true);
+	mObject->mSkinning->CreateSkinningData("Boss", "Dash", ".gltf", mObject->GetModel()->modelData, true);
 	mObject->mSkinning->CreateSkinningData("Boss", "backStep", ".gltf", mObject->GetModel()->modelData);
+	mObject->mSkinning->CreateSkinningData("Boss", "Knockback", ".gltf", mObject->GetModel()->modelData);
 	mObject->mSkinning->CreateSkinningData("Boss", "death", ".gltf", mObject->GetModel()->modelData);
 	
 	mObject->mSkinning->CreateSkinningData("Boss", "Slash", ".gltf", mObject->GetModel()->modelData);
@@ -146,6 +146,9 @@ void BossEnemy::Init() {
 	mWorldTransformSword[0]->SetParent(mWeaponWorldMat[0]);
 	mWorldTransformSword[1]->SetParent(mWeaponWorldMat[4]);
 
+	// 仮ノックバック処理
+	mKnockBackCount = 0;
+
 }
 
 void BossEnemy::InitBehavior() {
@@ -162,27 +165,30 @@ void BossEnemy::InitBehavior() {
 	BT::Sequence* newSequence = new BT::Sequence();
 	BT::Selector* ReafOneSelector = new BT::Selector();
 
-
+	// プレイヤーが遠い場合
 	newSequence->SetChild(new BT::Condition(std::bind(&BossEnemy::InvokeFarDistance, this)));
-	newSequence->SetChild(new BT::MoveToPlayer(this));// 接近
-	newSequence->SetChild(new BT::AttackClose(this));// 近接攻撃
-
-	// ジャンプ攻撃orダッシュ攻撃
-	BT::Selector* atkSelector = new BT::Selector();
-	atkSelector->SetChild(new BT::Decorator(std::bind(&BossEnemy::InvokeFarDistance, this), new BT::AttackDash(this))); // Playerが遠い場合、ダッシュ攻撃
-	atkSelector->SetChild(new BT::AttackJump(this));
+	newSequence->SetChild(new BT::Action(this,"MoveToPlayer"));// 接近
 	
-
-	// 構築
+	// 接近行動の終了時、敵の飛距離に応じた行動を取る
+	// 至近距離 : ジャンプ攻撃
+	// 中遠距離 : ダッシュ → ダッシュ攻撃
+	BT::Selector* atkSelector = new BT::Selector();
+	BT::Sequence* farAtkActions = new BT::Sequence();
+	farAtkActions->SetChild(new BT::Decorator(std::bind(&BossEnemy::InvokeFarDistance, this), new BT::Action(this, "Dash")));
+	farAtkActions->SetChild(new BT::Action(this, "AttackDash"));
+	atkSelector->SetChild(farAtkActions); // 中遠距離
+	atkSelector->SetChild(new BT::Action(this, "AttackJump"));
 	newSequence->SetChild(atkSelector);
+
+	// ルートノードに追加
 	ReafOneSelector->SetChild(newSequence);
 
 
 	// 接近状態だったら
 	BT::Sequence* startNear = new BT::Sequence();
-	startNear->SetChild(new BT::AttackThrust(this));	// 刺突
-	startNear->SetChild(new BT::Condition(std::bind(&BossEnemy::InvokeNearDistance, this))); // プレイヤーが近くにいたら下の行動を実行
-	startNear->SetChild(new BT::BackStep(this));		// 後退
+	startNear->SetChild(new BT::Action(this,"AttackThrust"));	// 刺突
+	startNear->SetChild(new BT::Condition(std::bind(&BossEnemy::InvokeNearDistance, this))); // 至近距離時
+	startNear->SetChild(new BT::Action(this, "BackStep")); // 後退する
 	ReafOneSelector->SetChild(startNear);
 
 
@@ -198,7 +204,11 @@ void BossEnemy::InitActions()
 	mActions["MoveToPlayer"] = make_shared<ACT::MoveToPlayer>();
 	mActions["MoveToPlayer"]->Init(this);
 
-	// 後退
+	// ダッシュ
+	mActions["Dash"] = make_shared<ACT::Dash>();
+	mActions["Dash"]->Init(this);
+
+	// バックステップ
 	mActions["BackStep"] = make_shared<ACT::BackStep>();
 	mActions["BackStep"]->Init(this);
 
@@ -218,17 +228,14 @@ void BossEnemy::InitActions()
 	mActions["AttackJump"] = make_shared<ACT::AttackJump>();
 	mActions["AttackJump"]->Init(this);
 
+	// のけぞり
+	mActions["knockBack"] = make_shared<ACT::KnockBack>();
+	mActions["knockBack"]->Init(this);
+
 	// 初期は行動しない
 	mActiveAction.reset();
 
 }
-
-// 関数ポインタテーブルの実体
-void (BossEnemy::* BossEnemy::CommandTable[])() = {
-	&BossEnemy::MoveForward,
-	&BossEnemy::BackStep,
-};
-
 
 void BossEnemy::Update() {
 
@@ -252,9 +259,31 @@ void BossEnemy::Update() {
 		// ステートの更新処理を行う
 		this->UpdateState();
 
-		// BehaviorTreeの更新処理を行う
-		this->UpdateBehaviorTree();
+		// ノックバックカウントが最大の場合はBehaviorTreeの更新を行わない
+		if (mKnockBackCount>=kKnockBackCountMax) {
+		
+			// ノックバックが終了したら
+			if (mActiveAction.lock()->GetCondition() == ACT::Condition::FINISHED) {
+				// カウント0に戻す
+				mKnockBackCount = 0;
+				
+				// ビヘイビアツリーをリセット
+				mRoot->Reset();
 
+				// 各アクションの初期化もしておく
+				for (auto& action : mActions) {
+					action.second->End();
+					action.second->Reset();
+				}
+
+				// 行動クラスのポインタをnullptrにする
+				mActiveAction.reset();
+			}
+		}
+		else {
+			// BehaviorTreeの更新処理を行う
+			this->UpdateBehaviorTree();
+		}
 		
 	}
 
@@ -483,65 +512,12 @@ void BossEnemy::ReciveDamageTolayer(float power)
 	StatusManager::GetInstance()->ReceiveDamage(mStatus, power, pPlayer->GetStatus());
 }
 
-void BossEnemy::AttackLong()
-{
-
-}
-
-void BossEnemy::AttackClose()
-{
-	//// 前回の行動を終了
-	//if (mActiveAction != nullptr) {
-	//	mActiveAction->End();
-	//}
+void BossEnemy::SetAction(const std::string& key){
 	// 現行アクションを設定
-	mActiveAction = mActions["AttackClose"];
+	mActiveAction = mActions[key];
 	mActiveAction.lock()->Start();
 }
 
-void BossEnemy::AttackThrust()
-{
-	// 現行アクションを設定
-	mActiveAction = mActions["AttackThrust"];
-	mActiveAction.lock()->Start();
-}
-
-void BossEnemy::AttackDash(){
-	// 現行アクションを設定
-	mActiveAction = mActions["AttackDash"];
-	mActiveAction.lock()->Start();
-}
-
-void BossEnemy::AttackJump(){
-	// 現行アクションを設定
-	mActiveAction = mActions["AttackJump"];
-	mActiveAction.lock()->Start();
-}
-
-void BossEnemy::MoveToPlayer(){
-	// 現行アクションを設定
-	mActiveAction = mActions["MoveToPlayer"];
-	mActiveAction.lock()->Start();
-}
-
-void BossEnemy::EscapeToPlayer()
-{
-
-
-}
-
-void BossEnemy::BackStep()
-{
-	// 現行アクションを設定
-	mActiveAction = mActions["BackStep"];
-	mActiveAction.lock()->Start();
-}
-
-void BossEnemy::Jump(float JumpPower)
-{
-	// 移動量を加算
-	mObject->mWorldTransform->translation.y += JumpPower;
-}
 
 Vector3 BossEnemy::GetWorldPos()
 {
@@ -564,6 +540,18 @@ bool BossEnemy::InvokeNearDistance() {
 	return false;
 }
 
+bool BossEnemy::IsNearDistance(float range){
+	//	距離が近い場合のみ実行
+	if (Length(Vector3(
+		GetWorldPos().x - GetWorldPosForTarget().x,
+		GetWorldPos().y - GetWorldPosForTarget().y,
+		GetWorldPos().z - GetWorldPosForTarget().z))
+		<= range) {
+		return true;
+	}
+	return false;
+}
+
 bool BossEnemy::InvokeFarDistance() {
 	//	距離が遠い場合のみ実行
 	if (Length(Vector3(
@@ -571,6 +559,18 @@ bool BossEnemy::InvokeFarDistance() {
 		GetWorldPos().y - GetWorldPosForTarget().y,
 		GetWorldPos().z - GetWorldPosForTarget().z))
 		> (mObject->mWorldTransform->scale.x + mObject->mWorldTransform->scale.z) / 0.8f) {
+		return true;
+	}
+	return false;
+}
+
+bool BossEnemy::IsFarDistance(float range){
+	//	距離が遠い場合のみ実行
+	if (Length(Vector3(
+		GetWorldPos().x - GetWorldPosForTarget().x,
+		GetWorldPos().y - GetWorldPosForTarget().y,
+		GetWorldPos().z - GetWorldPosForTarget().z))
+		> range) {
 		return true;
 	}
 	return false;
@@ -596,6 +596,19 @@ void BossEnemy::ShakeUpdate() {
 		float shakeOffsetZ = (rand() % 100 / 100.0f - 0.5f) * mShakePower;
 		mObject->mWorldTransform->translation.x += shakeOffsetX;
 		mObject->mWorldTransform->translation.z += shakeOffsetZ;
+	}
+}
+
+void BossEnemy::SetKnockBackCount(int32_t count){
+	
+	if (mKnockBackCount < kNumMaxInfluence) {
+		mKnockBackCount += count;
+	}
+	else{
+		// 行動を終了
+		mActiveAction.lock()->End();
+		// 行動を設定(ノックバック)
+		SetAction("knockBack");
 	}
 }
 

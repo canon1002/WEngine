@@ -565,9 +565,6 @@ void GameScene::Update() {
 	ParticleManager::GetInstance()->Update();
 	//mDTCParticle->Update();
 
-
-	mPlayerTrailEffect->Update();
-
 	mGameOverFadeSprite->Update();
 	mGameOverMessageSprite->Update();
 
@@ -595,8 +592,8 @@ void GameScene::Draw() {
 	mPlayer->ColliderDraw();
 	mBoss->ColliderDraw();
 
-	mPlayerTrailEffect->Draw();
-	mBossTrailEffect->Draw();
+	//mPlayerTrailEffect->Draw();
+	//mBossTrailEffect->Draw();
 
 	// Object3D(Skinning)の描画前処理
 	ModelManager::GetInstance()->PreDrawForSkinning();

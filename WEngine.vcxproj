@@ -61,7 +61,7 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)GameEngine;$(ProjectDir)\\Externals;$(ProjectDir)\\Externals\assimp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)GameEngine;$(ProjectDir)\\Externals;$(ProjectDir)\\Externals\imgui;$(ProjectDir)\\Externals\assimp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
@@ -92,7 +92,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)GameEngine;$(ProjectDir)\\Externals;$(ProjectDir)\\Externals\assimp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)GameEngine;$(ProjectDir)\\Externals;$(ProjectDir)\\Externals\imgui;$(ProjectDir)\\Externals\assimp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
@@ -118,11 +118,13 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="App\Actor\Actor.cpp" />
-    <ClCompile Include="App\AI\BehaviorTree\BTAttackAction.cpp" />
-    <ClCompile Include="App\AI\BehaviorTree\BTMoveAction.cpp" />
+    <ClCompile Include="App\AI\BehaviorTree\IBehavior.cpp" />
     <ClCompile Include="App\Enemy\Action\AttackJump.cpp" />
+    <ClCompile Include="App\Enemy\Action\Dash.cpp" />
     <ClCompile Include="App\Status\StatusManager.cpp" />
     <ClCompile Include="App\Enemy\Action\AttackDash.cpp" />
+    <ClCompile Include="Externals\imgui\imnodes.cpp" />
+    <ClCompile Include="GameEngine\Editor\NodeEditor\BTNodeEditor.cpp" />
     <ClCompile Include="GameEngine\Effect\EffectPixels\EffectPixels.cpp" />
     <ClCompile Include="GameEngine\Effect\Particle\DashSmoke.cpp" />
     <ClCompile Include="GameEngine\Input\Controller.cpp" />
@@ -198,6 +200,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="GameEngine\Editor\LevelEditor.cpp" />
     <ClCompile Include="GameEngine\Effect\Particle\ParticleCommon.cpp" />
     <ClCompile Include="GameEngine\Scene\LoadingScene.cpp" />
+    <ClCompile Include="App\Enemy\Action\KnockBack.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="GameEngine\Object\3d\Object3d.cpp" />
     <ClCompile Include="GameEngine\Object\Model\ModelManager.cpp" />
@@ -223,12 +226,14 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App\Actor\Actor.h" />
-    <ClInclude Include="App\AI\BehaviorTree\BTAttackAction.h" />
-    <ClInclude Include="App\AI\BehaviorTree\BTMoveAction.h" />
     <ClInclude Include="App\Enemy\Action\ActionList.h" />
     <ClInclude Include="App\Enemy\Action\AttackJump.h" />
+    <ClInclude Include="App\Enemy\Action\Dash.h" />
     <ClInclude Include="App\Status\StatusManager.h" />
     <ClInclude Include="App\Enemy\Action\AttackDash.h" />
+    <ClInclude Include="Externals\imgui\imnodes.h" />
+    <ClInclude Include="Externals\imgui\imnodes_internal.h" />
+    <ClInclude Include="GameEngine\Editor\NodeEditor\BTNodeEditor.h" />
     <ClInclude Include="GameEngine\Effect\EffectPixels\EffectPixels.h" />
     <ClInclude Include="GameEngine\Effect\Particle\DashSmoke.h" />
     <ClInclude Include="GameEngine\Input\Controller.h" />
@@ -332,6 +337,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="GameEngine\Object\Base\ObjectBase.h" />
     <ClInclude Include="GameEngine\Effect\Particle\TrailEffect.h" />
     <ClInclude Include="App\Enemy\Action\Seartch.h" />
+    <ClInclude Include="App\Enemy\Action\KnockBack.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt" />

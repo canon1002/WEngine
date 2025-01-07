@@ -7,12 +7,14 @@ void ImGuiManager::Init(){
 	DirectXCommon::GetInstance()->mSwapChain->GetDesc1(&swapChain);
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
+
 	// フォントを変更
 	ImGuiIO& io = ImGui::GetIO();
 	//io.Fonts->AddFontFromFileTTF("Resources/Font/M_PLUS_1_Code/MPLUS1Code-VariableFont_wght.ttf", 12.0f, nullptr, io.Fonts->GetGlyphRangesJapanese());
 	io.Fonts->AddFontFromFileTTF("Resources/Font/makinas4/Makinas-4-Flat.otf", 12.0f, nullptr, io.Fonts->GetGlyphRangesJapanese());
 	//io.Fonts->AddFontFromFileTTF("Resources/Font/makinas4/Makinas-4-Square.otf", 12.0f, nullptr, io.Fonts->GetGlyphRangesJapanese());
 	
+	// ImGuiの描画カラーを設定
 	ImGui::StyleColorsDark();
 	ImGui_ImplWin32_Init(WinApp::GetInstance()->GetHWND());
 	ImGui_ImplDX12_Init(DirectXCommon::GetInstance()->mDevice.Get(),
@@ -21,6 +23,9 @@ void ImGuiManager::Init(){
 		DirectXCommon::GetInstance()->mSrv->srvDescriptorHeap.Get(),
 		DirectXCommon::GetInstance()->mSrv->srvDescriptorHeap->GetCPUDescriptorHandleForHeapStart(),
 		DirectXCommon::GetInstance()->mSrv->srvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
+
+	// imnodesを初期化
+	ImNodes::CreateContext();
 
 }
 
@@ -41,9 +46,10 @@ void ImGuiManager::Draw(){
 	ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), DirectXCommon::GetInstance()->mCommandList.Get());
 }
 
-void ImGuiManager::ReleseProcess(){
+void ImGuiManager::Final(){
 	ImGui_ImplDX12_Shutdown();
 	ImGui_ImplWin32_Shutdown();
 	ImGui::DestroyContext();
+	ImNodes::DestroyContext();
 }
 #endif // _DEBUG

@@ -10,31 +10,18 @@
                     0.0,
                     0.0
                 ],
-                "rotate": [
+                "rotation": [
                     0.0,
                     -0.0,
                     0.0
                 ],
                 "scaling": [
-                    1.0,
-                    1.0,
+                    64.0,
+                    64.0,
                     1.0
                 ]
             },
-            "file_name": "field",
-            "collider": {
-                "type": "BOX",
-                "center": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "size": [
-                    2.0,
-                    2.0,
-                    2.0
-                ]
-            }
+            "file_name": "Plane"
         }
     ]
 }

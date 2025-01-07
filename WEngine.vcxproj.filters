@@ -425,12 +425,6 @@
     <ClCompile Include="App\AI\State\VitalityBossState.cpp">
       <Filter>App\AI\State</Filter>
     </ClCompile>
-    <ClCompile Include="App\AI\BehaviorTree\BTAttackAction.cpp">
-      <Filter>App\AI\BehaviorTree</Filter>
-    </ClCompile>
-    <ClCompile Include="App\AI\BehaviorTree\BTMoveAction.cpp">
-      <Filter>App\AI\BehaviorTree</Filter>
-    </ClCompile>
     <ClCompile Include="GameEngine\Effect\PostEffect\Vignette.cpp">
       <Filter>GameEngine\Effect\PostEffect</Filter>
     </ClCompile>
@@ -454,6 +448,11 @@
     <ClCompile Include="App\Enemy\Action\Seartch.cpp" />
     <ClCompile Include="App\Enemy\Action\AttackJump.cpp" />
     <ClCompile Include="App\Actor\Actor.cpp" />
+    <ClCompile Include="GameEngine\Editor\NodeEditor\BTNodeEditor.cpp" />
+    <ClCompile Include="Externals\imgui\imnodes.cpp" />
+    <ClCompile Include="App\AI\BehaviorTree\IBehavior.cpp" />
+    <ClCompile Include="App\Enemy\Action\KnockBack.cpp" />
+    <ClCompile Include="App\Enemy\Action\Dash.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameEngine\Object\Light\DirectionalLight.h">
@@ -735,12 +734,6 @@
     <ClInclude Include="App\AI\State\VitalityBossState.h">
       <Filter>App\AI\State</Filter>
     </ClInclude>
-    <ClInclude Include="App\AI\BehaviorTree\BTAttackAction.h">
-      <Filter>App\AI\BehaviorTree</Filter>
-    </ClInclude>
-    <ClInclude Include="App\AI\BehaviorTree\BTMoveAction.h">
-      <Filter>App\AI\BehaviorTree</Filter>
-    </ClInclude>
     <ClInclude Include="App\AI\BehaviorTree\IBehavior.h">
       <Filter>App\AI\BehaviorTree</Filter>
     </ClInclude>
@@ -768,6 +761,11 @@
     <ClInclude Include="App\Enemy\Action\Seartch.h" />
     <ClInclude Include="App\Enemy\Action\AttackJump.h" />
     <ClInclude Include="App\Actor\Actor.h" />
+    <ClInclude Include="GameEngine\Editor\NodeEditor\BTNodeEditor.h" />
+    <ClInclude Include="Externals\imgui\imnodes_internal.h" />
+    <ClInclude Include="Externals\imgui\imnodes.h" />
+    <ClInclude Include="App\Enemy\Action\KnockBack.h" />
+    <ClInclude Include="App\Enemy\Action\Dash.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt">

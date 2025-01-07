@@ -1,6 +1,7 @@
 #pragma once
 #include <functional>
 #include "GameEngine/Math/Math.h"
+#include <iostream>
 
 class BossEnemy;
 
@@ -177,13 +178,17 @@ namespace BT {
 	class Action : public INode {
 	public:
 
-		Action() = default;
+		// コンストラクタ 
+		Action(BossEnemy* boss, const std::string& actionName) {
+			// ボスクラスのポインタ取得
+			mBoss = boss;
+			// アクション名をセット
+			mActionName = actionName;
+		}
 		virtual ~Action() = default;
 
 		// 実行
-		virtual BT::NodeStatus Tick()override {
-			return BT::NodeStatus::SUCCESS;
-		}
+		virtual BT::NodeStatus Tick()override;
 		// 再起動
 		virtual void Reset() override {
 			// 待機状態にする
@@ -194,6 +199,9 @@ namespace BT {
 
 		// ボスクラスのポインタ
 		BossEnemy* mBoss;
+
+		// アクション名
+		std::string mActionName;
 
 	};
 
@@ -337,6 +345,87 @@ namespace BT {
 
 		// 条件関数の結果保持
 		bool mHoldcondition;
+
+	};
+
+
+	// --------------------------------------------
+	// パラレル(並行思考)ノード
+	// --------------------------------------------
+	class Parallel : public INode {
+
+	public:// -- 公開 メンバ関数 -- // 
+
+		// 子ノードをセット
+		void SetChild(BT::INode* child) {
+			children.push_back(child);
+		}
+
+		// 実行
+		virtual BT::NodeStatus Tick()override {
+
+			// 実行終了状態であれば早期リターンする
+			if (this->mCondition == NodeCondition::FINISHED) {
+				return mResultStatus;
+			}
+
+			for (auto child : children) {
+
+				// 子ノードの処理を実行する
+				BT::NodeStatus status = child->Tick();
+
+				switch (status)
+				{
+					// いずれかの子ノードが成功したら成功を返し、終了状態にする
+				case BT::NodeStatus::SUCCESS:
+
+					// 終了状態にする
+					this->mCondition = NodeCondition::FINISHED;
+					mResultStatus = BT::NodeStatus::SUCCESS;
+					return mResultStatus;
+
+					break;
+
+					// いずれかの子ノードが失敗したら失敗を返し、終了状態にする
+				case BT::NodeStatus::FAILURE:
+
+					// 終了状態にする
+					this->mCondition = NodeCondition::FINISHED;
+					mResultStatus = BT::NodeStatus::FAILURE;
+					return mResultStatus;
+
+					break;
+
+					// 実行中の処理。すべての子ノードを実行するため、returnしない
+				case BT::NodeStatus::RUNNING:
+
+					// 実行中状態にする
+					this->mCondition = NodeCondition::RUN;
+					mResultStatus = BT::NodeStatus::RUNNING;
+
+					break;
+				default:
+					break;
+				}
+
+			}
+		}
+
+		// 再起動
+		virtual void Reset() override {
+			// 待機状態にする
+			this->mCondition = NodeCondition::IDOL;
+			for (auto child : children) {
+				child->Reset();
+			}
+		}
+
+	public: // -- メンバ変数 -- //
+
+		// 子ノード
+		std::vector<INode*>children;
+		// 実行結果を保持する
+		BT::NodeStatus mResultStatus;
 
 	};
 

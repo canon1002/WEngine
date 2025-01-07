@@ -6,6 +6,7 @@
 
 // テスト用
 #include "GameEngine/Object/ShadowObject.h"
+#include "GameEngine/Editor/NodeEditor/BTNodeEditor.h"
 
 // ゲーム用
 #include "App/Player/Player.h"
@@ -40,8 +41,6 @@ private:
 	CameraCommon* mCamera;
 	// 地面
 	std::unique_ptr<Object3d> mGroundObj;
-	// 建物
-	std::unique_ptr<Object3d> mBuildingObj;
 
 	// シーン開幕のビネット処理
 	bool mIsTransitionForPreScene;
@@ -63,6 +62,9 @@ private:
 	UISet mTitleLogo;
 	UISet mTitleSelect;
 
+	// -- エディタテスト -- //
+	std::unique_ptr<BTNodeEditor> mBTNodeEditor;
+
 	// -- シャドウテスト -- //
 
 	// オブジェクト
@@ -70,7 +72,11 @@ private:
 
 	// -- 画面遷移テスト -- //
 
-
+	// 衝突判定マネージャ
+	std::unique_ptr<CollisionManager> mCollisionManager;
+	// OBB衝突テスト
+	std::unique_ptr<Object3d> mOBBTestObj;
+	std::unique_ptr<Object3d> mOBBTestObj2;
 
 };
 
