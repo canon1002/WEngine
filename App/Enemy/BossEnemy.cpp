@@ -101,7 +101,6 @@ void BossEnemy::Init() {
 	CreateBodyPartCollider("RightHand", 0.1f, kCollisionAttributeEnemy, kCollisionAttributePlayerBullet);
 
 	mRightHandWorldMat = MakeAffineMatrix(Vector3{ 0.0f,0.0f,0.0f }, Vector3{ 0.0f,0.0f,0.0f }, Vector3{ 0.0f,0.0f,0.0f });
-	mRightHandsWorldMat = MakeAffineMatrix(Vector3{ 0.0f,0.0f,0.0f }, Vector3{ 0.0f,0.0f,0.0f }, Vector3{ 0.0f,0.0f,0.0f });
 
 	mWeapon = std::make_unique<Object3d>();
 	mWeapon->Init("Weapon");
@@ -113,7 +112,11 @@ void BossEnemy::Init() {
 	mWeapon->mSkinning->IsInactive();
 	
 	// 拡大率を変更
-	mWeapon->mWorldTransform->scale = { 3.0f,3.0f,12.0f };
+	mWeapon->mWorldTransform->scale = { 6.0f,6.0f,18.0f };
+	// 回転量を変更
+	mWeapon->mWorldTransform->rotation = { 1.065f,0.0f,0.0f };
+	// 平行移動を行う
+	mWeapon->mWorldTransform->translation = { 4.6f,-5.9f,5.8f };
 
 	// ペアレント
 	mWeapon->mWorldTransform->SetParent(mRightHandWorldMat);
@@ -122,7 +125,7 @@ void BossEnemy::Init() {
 	for (int32_t i = 0; i < 5; i++) {
 		mWeaponWorldMat[i] = MakeAffineMatrix(Vector3{ 0.0f,0.0f,0.0f }, Vector3{ 0.0f,0.0f,0.0f }, Vector3{ 0.0f,0.0f,0.0f });
 		// コライダー 宣言
-		SphereCollider* newCollider = new SphereCollider(std::make_shared<WorldTransform>(), 0.25f);
+		SphereCollider* newCollider = new SphereCollider(std::make_shared<WorldTransform>(), 0.45f);
 		// 初期化
 		newCollider->Init();
 		newCollider->SetCollisionAttribute(kCollisionAttributeEnemyBullet);
@@ -174,7 +177,8 @@ void BossEnemy::InitBehavior() {
 	// 中遠距離 : ダッシュ → ダッシュ攻撃
 	BT::Selector* atkSelector = new BT::Selector();
 	BT::Sequence* farAtkActions = new BT::Sequence();
-	farAtkActions->SetChild(new BT::Decorator(std::bind(&BossEnemy::InvokeFarDistance, this), new BT::Action(this, "Dash")));
+	farAtkActions->SetChild(new BT::Condition(std::bind(&BossEnemy::InvokeFarDistance, this)));
+	farAtkActions->SetChild(new BT::Action(this, "Dash"));
 	farAtkActions->SetChild(new BT::Action(this, "AttackDash"));
 	atkSelector->SetChild(farAtkActions); // 中遠距離
 	atkSelector->SetChild(new BT::Action(this, "AttackJump"));
@@ -260,31 +264,33 @@ void BossEnemy::Update() {
 		this->UpdateState();
 
 		// ノックバックカウントが最大の場合はBehaviorTreeの更新を行わない
-		if (mKnockBackCount>=kKnockBackCountMax) {
-		
-			// ノックバックが終了したら
-			if (mActiveAction.lock()->GetCondition() == ACT::Condition::FINISHED) {
-				// カウント0に戻す
-				mKnockBackCount = 0;
-				
-				// ビヘイビアツリーをリセット
-				mRoot->Reset();
+		//if (mKnockBackCount>=kKnockBackCountMax) {
+		//
+		//	// ノックバックが終了したら
+		//	if (mActiveAction.lock()->GetCondition() == ACT::Condition::FINISHED) {
+		//		// カウント0に戻す
+		//		mKnockBackCount = 0;
+		//		
+		//		// ビヘイビアツリーをリセット
+		//		mRoot->Reset();
 
-				// 各アクションの初期化もしておく
-				for (auto& action : mActions) {
-					action.second->End();
-					action.second->Reset();
-				}
+		//		// 各アクションの初期化もしておく
+		//		for (auto& action : mActions) {
+		//			action.second->End();
+		//			action.second->Reset();
+		//		}
 
-				// 行動クラスのポインタをnullptrにする
-				mActiveAction.reset();
-			}
-		}
-		else {
-			// BehaviorTreeの更新処理を行う
-			this->UpdateBehaviorTree();
-		}
+		//		// 行動クラスのポインタをnullptrにする
+		//		mActiveAction.reset();
+		//	}
+		//}
+		//else {
+		//	
+		//}
 		
+		// BehaviorTreeの更新処理を行う
+		this->UpdateBehaviorTree();
+
 	}
 
 	// シェイクの更新
@@ -341,10 +347,6 @@ void BossEnemy::UpdateObject(){
 	// 右手のワールド行列を更新
 	mRightHandWorldMat = Multiply(
 		GetObject3D()->mSkinning->GetSkeleton().joints[GetObject3D()->mSkinning->GetSkeleton().jointMap["mixamorig:RightHandThumb1"]
-		].skeletonSpaceMatrix, GetObject3D()->GetWorldTransform()->GetWorldMatrix());
-
-	mRightHandsWorldMat = Multiply(
-		GetObject3D()->mSkinning->GetSkeleton().joints[GetObject3D()->mSkinning->GetSkeleton().jointMap["mixamorig:RightHandMiddle1"]
 		].skeletonSpaceMatrix, GetObject3D()->GetWorldTransform()->GetWorldMatrix());
 
 	mWeapon->Update();
@@ -534,7 +536,7 @@ bool BossEnemy::InvokeNearDistance() {
 		GetWorldPos().x - GetWorldPosForTarget().x,
 		GetWorldPos().y - GetWorldPosForTarget().y,
 		GetWorldPos().z - GetWorldPosForTarget().z))
-		<= (mObject->mWorldTransform->scale.x + mObject->mWorldTransform->scale.z) / 0.8f) {
+		<= Length(Vector3(mObject->mWorldTransform->scale))){
 		return true;
 	}
 	return false;
@@ -558,7 +560,7 @@ bool BossEnemy::InvokeFarDistance() {
 		GetWorldPos().x - GetWorldPosForTarget().x,
 		GetWorldPos().y - GetWorldPosForTarget().y,
 		GetWorldPos().z - GetWorldPosForTarget().z))
-		> (mObject->mWorldTransform->scale.x + mObject->mWorldTransform->scale.z) / 0.8f) {
+		> Length(Vector3(mObject->mWorldTransform->scale))) {
 		return true;
 	}
 	return false;
@@ -600,13 +602,13 @@ void BossEnemy::ShakeUpdate() {
 }
 
 void BossEnemy::SetKnockBackCount(int32_t count){
-	
+	count;
 	if (mKnockBackCount < kNumMaxInfluence) {
-		mKnockBackCount += count;
+		//mKnockBackCount += count;
 	}
 	else{
 		// 行動を終了
-		mActiveAction.lock()->End();
+		//mActiveAction.lock()->End();
 		// 行動を設定(ノックバック)
 		SetAction("knockBack");
 	}

@@ -293,6 +293,18 @@ void Skinning::SetNextAnimation(std::string name)
 	StartMotionBrend();
 }
 
+void Skinning::ChangeNextAnimation(std::string name){
+
+	// アニメーションが存在するか検索する
+	std::map<std::string, std::shared_ptr<SkinningStatus>>::iterator it = mSkinClusterMap.find(name);
+	// 未登録チェック
+	assert(it != mSkinClusterMap.end());
+
+	// 切り替えアニメーションを変更する
+	mWaitingSkinClusters.front() = mSkinClusterMap.at(name);
+
+}
+
 void Skinning::StartMotionBrend()
 {
 	// 各パラメータの初期化

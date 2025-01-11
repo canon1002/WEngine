@@ -283,13 +283,13 @@ namespace BT {
 				return mResultStatus;
 			}
 
-			if (mHoldcondition!=true) {
+			if (mHoldcondition != true) {
 				// 条件関数の結果を保持
 				mHoldcondition = func();
 			}
 
 			// 条件用の関数ポインタの結果がtureの場合
-			if (mHoldcondition==true) {
+			if (mHoldcondition == true) {
 
 				// 条件成功したら子ノードの処理を実行する
 				BT::NodeStatus status = child->Tick();
@@ -299,7 +299,8 @@ namespace BT {
 					// 終了状態にする
 					this->mCondition = NodeCondition::FINISHED;
 					// 
-					return BT::NodeStatus::SUCCESS;
+					mResultStatus = BT::NodeStatus::SUCCESS;
+					return mResultStatus;
 				}
 				// 失敗したら
 				else if (status == BT::NodeStatus::FAILURE) {
@@ -330,6 +331,7 @@ namespace BT {
 			// 待機状態にする
 			this->mCondition = NodeCondition::IDOL;
 			mHoldcondition = false;
+			mResultStatus = BT::NodeStatus::RUNNING;
 		}
 
 	public:

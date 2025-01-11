@@ -94,6 +94,12 @@ public: // -- 公開 メンバ関数 -- //
 	void SetNextAnimation(std::string name);
 
 	/// <summary>
+	/// 次に再生するアニメーションを変更する
+	/// </summary>
+	/// <param name="name">アニメーション名</param>
+	void ChangeNextAnimation(std::string name);
+
+	/// <summary>
 	/// モーションブレンドを開始する
 	/// <para> 次回のアニメーションが設定されていない場合は停止する </para>
 	/// </summary>

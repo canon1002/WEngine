@@ -107,6 +107,19 @@ void ACT::Dash::End(){
 void ACT::Dash::Reset(){
 	// 初期化する
 	mCondition = Condition::IDOL;
+
+
+	// 移動の始点
+	mStartPos = mBoss->GetWorldPos();
+	mStartPos.y = 0.0f;
+	// 移動の終点
+	mEndPos = mBoss->GetWorldPosForTarget();
+	mEndPos.y = 0.0f;
+	// 方向の設定
+	mDirection = Normalize(mEndPos - mStartPos);
+	mDirection.y = 0.0f;
+	// 移動量の設定
+	mVelocity = Scalar(mMoveSpeed, mDirection);
 }
 
 void ACT::Dash::SetCollider(CollisionManager* cManager){

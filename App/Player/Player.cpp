@@ -40,7 +40,10 @@ void Player::Init() {
 	// スキニングアニメーションを生成
 	mObject->mSkinning = make_unique<Skinning>();
 	mObject->mSkinning->Init("player", "idle.gltf", mObject->GetModel()->modelData);
-	mObject->mSkinning->SetMotionBlendingInterval(10.0f);
+	// モーションブレンド速度
+	mObject->mSkinning->SetMotionBlendingInterval(60.0f);
+	// アニメーション再生速度
+	//mObject->mSkinning->SetAnimationPlaySpeed(1.0f);
 	// 使用するアニメーションを登録しておく
 	mObject->mSkinning->CreateSkinningData("player", "idle", ".gltf", mObject->GetModel()->modelData, true);
 	mObject->mSkinning->CreateSkinningData("player", "prepare", ".gltf", mObject->GetModel()->modelData);
@@ -82,7 +85,7 @@ void Player::Init() {
 
 
 	// 身体の部位に合わせたコライダーを生成
-	CreateBodyPartCollider("Head", 0.15f, kCollisionAttributePlayer, kCollisionAttributeEnemyBullet);
+	CreateBodyPartCollider("Head", 0.2f, kCollisionAttributePlayer, kCollisionAttributeEnemyBullet);
 	CreateBodyPartCollider("Hips", 0.15f, kCollisionAttributePlayer, kCollisionAttributeEnemyBullet);
 	CreateBodyPartCollider("LeftLeg", 0.1f, kCollisionAttributePlayer, kCollisionAttributeEnemyBullet);
 	CreateBodyPartCollider("LeftFoot", 0.1f, kCollisionAttributePlayer, kCollisionAttributeEnemyBullet);
@@ -746,7 +749,7 @@ void Player::Attack()
 			case 1:
 
 				mObject->mSkinning->SetNextAnimation("slashR");
-				mObject->mSkinning->SetAnimationPlaySpeed(2.0f);
+				mObject->mSkinning->SetAnimationPlaySpeed(3.0f);
 				mObject->mSkinning->SetMotionBlendingInterval(30.0f);
 
 				break;

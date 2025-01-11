@@ -119,7 +119,7 @@ namespace ACT {
 
 		// 追跡を行う時間
 		float mSearchCount;
-		const float kSearchCountMax = 2.0f;
+		const float kSearchCountMax = 1.0f;
 
 	};
 	

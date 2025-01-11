@@ -115,6 +115,42 @@ void GameScene::Init() {
 	mMoveUI.displayCount = 0.0f;
 	mMoveUI.isActive = true;
 
+	// ボタン入力
+	for (int32_t i = 0; i < mButtonUI.size(); i++) {
+		for (int32_t j = 0; j < mButtonUI[i].size(); j++) {
+			mButtonUI[i][j] = std::make_shared<Sprite>();
+			mButtonUI[i][j]->Init();
+			std::string directryPath = "UI/Button/";
+			std::string filepath;
+			switch (i){
+			case 0:
+				filepath = "A";
+				mButtonUI[i][j]->SetPos({ 1020.0f,560.0f });
+				break;
+			case 1:
+				filepath = "B";
+				mButtonUI[i][j]->SetPos({ 1060.0f,520.0f });
+				break;
+			case 2:
+				filepath = "Y";
+				mButtonUI[i][j]->SetPos({ 1020.0f,480.0f });
+				break;
+			case 3:
+				filepath = "X";
+				mButtonUI[i][j]->SetPos({ 980.0f,520.0f });
+				break;
+			default:
+				break;
+			}
+			filepath += to_string(j);
+			filepath += ".png";
+			mButtonUI[i][j]->SetTexture(directryPath + filepath);
+			mButtonUI[i][j]->SetScale({ 0.25f,0.25f });
+			
+		}
+	}
+	
+
 	// 動くオブジェクトの地面影
 	for (int32_t i = 0; i < mGroundShadow.size(); i++) {
 		mGroundShadow[i] = std::make_unique<Object3d>();
@@ -192,6 +228,14 @@ void GameScene::Update() {
 
 	mMoveUI.sprite->Update();
 	mActionUI.sprite->Update();
+
+	// ボタン入力
+	for (int32_t i = 0; i < mButtonUI.size(); i++) {
+		for (int32_t j = 0; j < mButtonUI[i].size(); j++) {
+			mButtonUI[i][j]->Update();
+		}
+	}
+	
 
 	// シーン切り替え
 	// 1キーを押したうえで
@@ -629,6 +673,30 @@ void GameScene::DrawUI()
 		// UI表示
 		//mMoveUI.sprite->Draw();
 		//mActionUI.sprite->Draw();
+		
+		// ボタン入力
+		for (int32_t i = 0; i < mButtonUI.size(); i++) {
+			mButtonUI[i][0]->Draw();
+		}
+		
+		if (InputManager::GetInstance()->GetLongPush(Gamepad::Button::A)||
+			InputManager::GetInstance()->GetPused(Gamepad::Button::A)) {
+			mButtonUI[0][1]->Draw();
+		}
+		if (InputManager::GetInstance()->GetLongPush(Gamepad::Button::B) ||
+			InputManager::GetInstance()->GetPused(Gamepad::Button::B)) {
+			mButtonUI[1][1]->Draw();
+		}
+		if (InputManager::GetInstance()->GetLongPush(Gamepad::Button::Y) ||
+			InputManager::GetInstance()->GetPused(Gamepad::Button::Y)) {
+			mButtonUI[2][1]->Draw();
+		}
+		if (InputManager::GetInstance()->GetLongPush(Gamepad::Button::X) ||
+			InputManager::GetInstance()->GetPused(Gamepad::Button::X)) {
+			mButtonUI[3][1]->Draw();
+		}
+
+		
 		// レティクル表示
 		mPlayer->GetReticle3D()->Draw2DReticle();
 
