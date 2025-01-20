@@ -1,6 +1,7 @@
 #pragma once
 #include "GameEngine/Base/Debug/ImGuiManager.h"
 #include "GameEngine/Editor/GlobalVariables.h"
+#include "GameEngine/Editor/NodeEditor/Nodes/AINodeBase.h"
 
 
 // ノードの種類
@@ -10,16 +11,9 @@ enum class AINodeType {
 	SEQUENCE,
 	ACTION,
 	DECRATOR,
+	CONDITION,
 };
 
-// ノードの基底部分
-struct AINodeBase {
-	std::string name;				// 名前
-	int32_t index;					// 自身のIndex
-	std::vector<int32_t> children;	// 子jointのIndexリスト。いなければ空
-	std::optional<int32_t> parent;	// 親JointのIndex。いなければnull
-	AINodeType type;				// ノードの動き方
-};
 
 /// <summary>
 /// BehaviorTree Nodeエディタクラス
@@ -38,7 +32,10 @@ public:// -- 公開 メンバ関数 -- //
 	void Update();
 
 	// 新規ノード生成処理
-	void CreateNode(AINodeType type, const std::string& name);
+	void Create(const std::shared_ptr<AINode::INode>& node, const std::string& name);
+
+	// ファクトリメソッド(文字列に応じてノードを作成する)
+	std::shared_ptr<AINode::INode> CreateNodeByType(const std::string& type);
 
 	// ノードの種類を文字列に変換
 	inline std::string AINodeTypeToString(AINodeType type) {
@@ -67,12 +64,20 @@ public:// -- 公開 メンバ関数 -- //
 
 private: // -- 非公開 メンバ関数 -- //
 
+
+	// ノードをJSONファイルへの書き込み用に変換する
+	json ConvertNodeToJson(const std::shared_ptr<AINode::INode>& node);
+
+	// ノード保存処理
+	void SaveNode();
+
+
 public: // -- 公開 メンバ変数 -- //
 
 	// 持ち主情報(文字列 ・ これがjsonファイル名になる)
 	std::string mOwnerName;
 	// ノードリスト
-	std::vector<AINodeBase> mNodes;
+	std::vector<std::shared_ptr<AINode::INode>> mNodes;
 	// ノード番号
 	int32_t mNodeIndex;
 

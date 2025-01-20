@@ -453,6 +453,7 @@
     <ClCompile Include="App\AI\BehaviorTree\IBehavior.cpp" />
     <ClCompile Include="App\Enemy\Action\KnockBack.cpp" />
     <ClCompile Include="App\Enemy\Action\Dash.cpp" />
+    <ClCompile Include="GameEngine\Editor\NodeEditor\Nodes\AINodeActions.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameEngine\Object\Light\DirectionalLight.h">
@@ -766,6 +767,9 @@
     <ClInclude Include="Externals\imgui\imnodes.h" />
     <ClInclude Include="App\Enemy\Action\KnockBack.h" />
     <ClInclude Include="App\Enemy\Action\Dash.h" />
+    <ClInclude Include="GameEngine\Editor\NodeEditor\Nodes\AINodeBase.h" />
+    <ClInclude Include="GameEngine\Editor\NodeEditor\Nodes\AINodeComposites.h" />
+    <ClInclude Include="GameEngine\Editor\NodeEditor\Nodes\AINodeActions.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt">
