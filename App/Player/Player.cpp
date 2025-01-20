@@ -41,9 +41,9 @@ void Player::Init() {
 	mObject->mSkinning = make_unique<Skinning>();
 	mObject->mSkinning->Init("player", "idle.gltf", mObject->GetModel()->modelData);
 	// モーションブレンド速度
-	mObject->mSkinning->SetMotionBlendingInterval(60.0f);
+	mObject->mSkinning->SetMotionBlendingInterval(30.0f);
 	// アニメーション再生速度
-	//mObject->mSkinning->SetAnimationPlaySpeed(1.0f);
+	mObject->mSkinning->SetAnimationPlaySpeed(1.0f);
 	// 使用するアニメーションを登録しておく
 	mObject->mSkinning->CreateSkinningData("player", "idle", ".gltf", mObject->GetModel()->modelData, true);
 	mObject->mSkinning->CreateSkinningData("player", "prepare", ".gltf", mObject->GetModel()->modelData);
@@ -542,9 +542,9 @@ void Player::Avoid()
 		// パラメータの補正
 
 		// 回避距離
-		mAvoidStatus.mAvoidRange = 8.0f;
+		mAvoidStatus.mAvoidRange = 4.0f;
 		// 回避速度
-		mAvoidStatus.mAvoidSpeed = 2.0f;
+		mAvoidStatus.mAvoidSpeed = 1.5f;
 		// 回避経過時間( 0.0f ~ 1.0f )
 		mAvoidStatus.mAvoidTime = 0.0f;
 		// 回避開始地点に現在の座標を代入
@@ -580,21 +580,19 @@ void Player::Avoid()
 
 			// アニメーション変更
 			mObject->mSkinning->SetNextAnimation("avoid");
-			mObject->mSkinning->SetAnimationPlaySpeed(2.0f);
+			mObject->mSkinning->SetAnimationPlaySpeed(mAvoidStatus.mAvoidSpeed);
 
 		}
 		// スティック入力がなければバックステップを行う
 		else {
 
-			Vector3 direction = TransformNomal(Vector3(0.0f, 0.0f, -1.0f), MainCamera::GetInstance()->mWorldTransform->GetWorldMatrix());
-			// y座標は移動しない
-			direction.y = 0.0f;
-			mAvoidStatus.mAvoidMoveEndPos = mObject->mWorldTransform->translation + Scalar(mAvoidStatus.mAvoidRange, direction);
+			// 移動方向をプレイヤーの向きの反対方向にを終点に設定
+			mAvoidStatus.mAvoidMoveEndPos = mObject->mWorldTransform->translation + Scalar(-mAvoidStatus.mAvoidRange, mDirection);
 			// 回避状態に変更
 			mBehavior = Behavior::kAvoid;
 			// アニメーション変更
 			mObject->mSkinning->SetNextAnimation("backStep");
-			mObject->mSkinning->SetAnimationPlaySpeed(2.5f);
+			mObject->mSkinning->SetAnimationPlaySpeed(mAvoidStatus.mAvoidSpeed);
 		}
 
 	}
@@ -749,8 +747,6 @@ void Player::Attack()
 			case 1:
 
 				mObject->mSkinning->SetNextAnimation("slashR");
-				mObject->mSkinning->SetAnimationPlaySpeed(3.0f);
-				mObject->mSkinning->SetMotionBlendingInterval(30.0f);
 
 				break;
 
@@ -762,7 +758,6 @@ void Player::Attack()
 
 			case 3:
 
-				mObject->mSkinning->SetMotionBlendingInterval(15.0f);
 				mObject->mSkinning->SetNextAnimation("slashEnd");
 
 				break;
@@ -784,8 +779,7 @@ void Player::Attack()
 				// コンボ回数リセット
 				mAttackStatus.comboCount = 0;
 				mBehavior = Behavior::kRoot;
-				mObject->mSkinning->SetAnimationPlaySpeed(1.0f);
-				mObject->mSkinning->SetMotionBlendingInterval(30.0f);
+				
 			}
 		}
 	}
@@ -1098,10 +1092,7 @@ void Player::SpecialAtkRB()
 			mChargeStatus.moveingTime = 0.0f;
 
 			// モーションを切り替える
-			if (mObject->mSkinning->GetNowSkinCluster()->name != "thrust" && !mObject->mSkinning->SearchToWaitingSkinCluster("thrust")) 
-			{
-				mObject->mSkinning->SetAnimationPlaySpeed(3.0f);
-				mObject->mSkinning->SetMotionBlendingInterval(30.0f);
+			if (mObject->mSkinning->GetNowSkinCluster()->name != "thrust" && !mObject->mSkinning->SearchToWaitingSkinCluster("thrust")) {
 				mObject->mSkinning->SetNextAnimation("thrust");
 			}
 		}
@@ -1135,7 +1126,6 @@ void Player::SpecialAtkRB()
 
 			// 移動終了
 			mBehavior = Behavior::kRoot;
-			mObject->mSkinning->SetAnimationPlaySpeed(1.0f);
 
 			// カメラの回転操作をON
 			MainCamera::GetInstance()->SetCameraRotateControll(true);
