@@ -92,8 +92,15 @@ private:
 	UISet mMoveUI;
 	UISet mActionUI;
 
+	// ボタンの間隔
+	const Vector2 kButtonSpacing = { 20.0f,30.0f };
+	// 文字の間隔
+	const float kActionSpacing = 15.0f;
+
 	// ボタン入力の表示UI
 	std::array<std::shared_ptr<Sprite>, 4> mButtonUI;
+	// 行動内容表示UI
+	std::array<std::shared_ptr<Sprite>, 4> mActionsUI;
 
 	// 動くオブジェクトの地面影
 	std::array<std::unique_ptr<Object3d>, 2> mGroundShadow;

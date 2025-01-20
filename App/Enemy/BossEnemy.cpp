@@ -387,7 +387,7 @@ void BossEnemy::UpdateObject(){
 	mObject->mCollider->Update();
 
 	// UI更新
-	mStatus->Update(mObject->GetWorldTransform().get());
+	mStatus->Update();
 
 }
 

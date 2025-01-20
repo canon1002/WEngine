@@ -10,22 +10,27 @@ public: // -- 公開 メンバ関数 -- //
 	// 初期化
 	void Init() {
 
-		mSprites.resize(3);
+		mSprites.resize(2);
 
 		// スプライトの初期化
 		for (auto& sprite : mSprites) {
 			sprite = std::make_unique<Sprite>();
 			sprite->Init();
-			sprite->SetColor({ 0.0f,0.7f,0.0f,1.0f });
+			sprite->SetColor({ 1.0f,1.0f,1.0f,1.0f });
+			sprite->SetTexture(DirectXCommon::GetInstance()->mSrv->LoadTexture("white2x2.dds"));
+			sprite->SetAnchorPoint(Vector2(0.5f, 0.5f));
+			sprite->SetSpriteSize(Vector2(200.0f, 20.0f));
 		}
-		mSprites[0]->SetTexture(DirectXCommon::GetInstance()->mSrv->LoadTexture("hpBarBase.png"));
-		mSprites[1]->SetTexture(DirectXCommon::GetInstance()->mSrv->LoadTexture("hpBarMidle.png"));
-		mSprites[2]->SetTexture(DirectXCommon::GetInstance()->mSrv->LoadTexture("hpBarTop.png"));
+		
+		// HPバーの背景部分
+		mSprites[0]->SetScale(Vector2(1.05f, 1.0f));	// 横方向に大きく
+		mSprites[0]->SetColor({ 0.7f,0.7f,0.7f,1.0f });	// 灰色に変更
 
-		mSprites[0]->SetSpriteSize(Vector2(200.0f, 40.0f));
-		mSprites[1]->SetSpriteSize(Vector2(200.0f, 40.0f));
-		mSprites[2]->SetSpriteSize(Vector2(200.0f, 40.0f));
+		// HPバーの体力部分
+		mSprites[1]->SetScale(Vector2(1.0f, 0.95f));	// 縦方向をやや小さく
+		mSprites[1]->SetColor({0.6f,0.0f,0.0f,1.0f});	// 赤色に変更
 
+		// ステータスの仮初期化(このあとjsonから数値をひっぱてくる)
 		HP = 10;
 		MAXHP = 10;
 		STR = 10;
@@ -34,41 +39,28 @@ public: // -- 公開 メンバ関数 -- //
 	}
 
 	// 更新処理
-	void Update(const WorldTransform* world) {
-		// 座標を設定
-		Vector3 newPos = world->translation;
-		newPos.x -= 0.0f;
-		newPos.y += 2.0f;
-		for (auto& sprite : mSprites) {
-			sprite->SetAnchorPoint({ 0.5f,0.5f });
-			sprite->SetPos(DamageReaction::GetInstance()->GetScreenPos(newPos, MainCamera::GetInstance()));
-
-			// スケール更新
-			if (sprite == mSprites[1]) {
-				float hpUIScale = ((float)HP / (float)MAXHP);
-				sprite->SetScale({ hpUIScale,1.0f });
-			}
-			sprite->Update();
-		}
-	}	
-
 	void Update() {
 		for (auto& sprite : mSprites) {
-			// 座標を設定
-			sprite->SetPos(Vector2{ 10.0f,30.0f });
+
 			// スケール更新
 			if (sprite == mSprites[1]) {
-				float hpUIScale = ((float)HP / (float)MAXHP);
-				sprite->SetScale({ hpUIScale,1.0f });
+			
+				// 残りのHPに応じてスケールを変更
+				sprite->SetScale(Vector2(
+					((float)HP / (float)MAXHP), 
+					sprite->GetScale().y
+				));
 			}
+
 			// 更新
 			sprite->Update();
 		}
 	}
 
-	// 描画
-	void Draw() {
+	// 描画処理 (2d座標を設定)
+	void Draw(const Vector2& pos) {
 		for (auto& sprite : mSprites) {
+			sprite->SetPos(pos);
 			sprite->Draw();
 		}
 	}

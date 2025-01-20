@@ -544,7 +544,7 @@ void Player::Avoid()
 		// 回避距離
 		mAvoidStatus.mAvoidRange = 4.0f;
 		// 回避速度
-		mAvoidStatus.mAvoidSpeed = 1.5f;
+		mAvoidStatus.mAvoidSpeed = 2.0f;
 		// 回避経過時間( 0.0f ~ 1.0f )
 		mAvoidStatus.mAvoidTime = 0.0f;
 		// 回避開始地点に現在の座標を代入

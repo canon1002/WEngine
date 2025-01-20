@@ -45,6 +45,9 @@ public:
 		mWorldTransform.scale.y = scale.y;
 	}
 
+	Vector2 GetScale() { return Vector2(mWorldTransform.scale.x, mWorldTransform.scale.y); }
+	Vector2 GetPos() { return Vector2(mWorldTransform.translation.x, mWorldTransform.translation.y); }
+
 private:
 
 	// テクスチャサイズをイメージに合わせる

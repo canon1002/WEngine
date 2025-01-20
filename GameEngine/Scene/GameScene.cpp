@@ -121,31 +121,68 @@ void GameScene::Init() {
 		mButtonUI[i]->Init();
 		std::string directryPath = "UI/Button/";
 		std::string filepath;
+
+		// 基準になる座標(右下に配置)
+		Vector2 basePos{};
+		basePos.x = MainCamera::GetInstance()->GetWindowSize().x * 0.9f;
+		basePos.y = MainCamera::GetInstance()->GetWindowSize().y * 0.9f;
+
 		switch (i) {
 		case 0:
 			filepath = "A";
-			mButtonUI[i]->SetPos({ 1020.0f,560.0f });
+			
+			// 下位置に配置 yのみ下にずらす
+			mButtonUI[i]->SetPos({ basePos.x, basePos.y + kButtonSpacing.y });
+			
 			break;
 		case 1:
 			filepath = "B";
-			mButtonUI[i]->SetPos({ 1060.0f,520.0f });
+			// 右位置に配置 xのみ右にずらす
+			mButtonUI[i]->SetPos({ basePos.x + kButtonSpacing.x, basePos.y });
 			break;
 		case 2:
 			filepath = "Y";
-			mButtonUI[i]->SetPos({ 1020.0f,480.0f });
+			// 上位置に配置 yのみ上にずらす
+			mButtonUI[i]->SetPos({ basePos.x, basePos.y - kButtonSpacing.y });
 			break;
 		case 3:
 			filepath = "X";
-			mButtonUI[i]->SetPos({ 980.0f,520.0f });
+			// 左位置に配置 xのみ左にずらす
+			mButtonUI[i]->SetPos({ basePos.x - kButtonSpacing.x, basePos.y });
 			break;
 		default:
 			break;
 		}
 		filepath += ".png";
 		mButtonUI[i]->SetTexture(directryPath + filepath);
-		mButtonUI[i]->SetScale({ 0.25f,0.25f });
+		mButtonUI[i]->SetScale({ 0.15f,0.15f });
+		mButtonUI[i]->SetAnchorPoint(Vector2(0.5f, 0.5f));
 	}
 
+	// 行動内容表示UI
+	for (int32_t i = 0; i < mActionsUI.size(); i++) {
+		// スプライト生成
+		mActionsUI[i] = std::make_shared<Sprite>();
+		mActionsUI[i]->Init();
+
+		if (i < 2) {
+			// ボタンの右側に配置
+			mActionsUI[i]->SetPos(Vector2(mButtonUI[i]->GetPos().x + kActionSpacing, mButtonUI[i]->GetPos().y));
+			mActionsUI[i]->SetAnchorPoint(Vector2(0.0f, 0.5f));
+		}
+		else {
+			// ボタンの左側に配置
+			mActionsUI[i]->SetPos(Vector2(mButtonUI[i]->GetPos().x - kActionSpacing, mButtonUI[i]->GetPos().y));
+			mActionsUI[i]->SetAnchorPoint(Vector2(1.0f, 0.5f));
+		}
+
+		mActionsUI[i]->SetScale({ 0.2f,0.2f });
+	}
+	// テクスチャをセット
+	mActionsUI[0]->SetTexture("UI/Fonts/Avoid.png");
+	mActionsUI[1]->SetTexture("UI/Fonts/ATK.png");
+	mActionsUI[2]->SetTexture("UI/Fonts/SATK.png");
+	mActionsUI[3]->SetTexture("UI/Fonts/RockOn.png");
 
 	// 動くオブジェクトの地面影
 	for (int32_t i = 0; i < mGroundShadow.size(); i++) {
@@ -225,9 +262,10 @@ void GameScene::Update() {
 	mMoveUI.sprite->Update();
 	mActionUI.sprite->Update();
 
-	// ボタン入力
+	// ボタン入力 & 行動表示
 	for (int32_t i = 0; i < mButtonUI.size(); i++) {
 		mButtonUI[i]->Update();
+		mActionsUI[i]->Update();
 	}
 
 
@@ -661,16 +699,20 @@ void GameScene::DrawUI()
 		break;
 	case Phase::BATTLE:
 
-		mPlayer->GetStatus()->Draw();
-		mBoss->GetStatus()->Draw();
+		Vector2 hpPos = MainCamera::GetInstance()->GetWindowSize();
+		mPlayer->GetStatus()->Draw(Vector2(hpPos.x * 0.5f, hpPos.y * 0.8f));
+		mBoss->GetStatus()->Draw(Vector2(hpPos.x * 0.5f, hpPos.y * 0.2f));
 
 		// UI表示
 		//mMoveUI.sprite->Draw();
 		//mActionUI.sprite->Draw();
 
-		// ボタン入力
+		// ボタン入力 & 行動表示
 		for (int32_t i = 0; i < mButtonUI.size(); i++) {
 			mButtonUI[i]->Draw();
+			if (i != 2) {
+				mActionsUI[i]->Draw();
+			}
 		}
 
 		// ボタン入力時
