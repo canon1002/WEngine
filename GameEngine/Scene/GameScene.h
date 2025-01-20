@@ -93,7 +93,7 @@ private:
 	UISet mActionUI;
 
 	// ボタン入力の表示UI
-	std::array<std::array<std::shared_ptr<Sprite>, 4>, 4> mButtonUI;
+	std::array<std::shared_ptr<Sprite>, 4> mButtonUI;
 
 	// 動くオブジェクトの地面影
 	std::array<std::unique_ptr<Object3d>, 2> mGroundShadow;

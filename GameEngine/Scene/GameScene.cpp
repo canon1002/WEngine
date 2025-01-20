@@ -15,7 +15,7 @@
 void GameScene::Finalize() {}
 
 void GameScene::Init() {
-	
+
 	// 衝突判定マネージャ
 	mCollisionManager = std::make_unique<CollisionManager>();
 
@@ -117,39 +117,35 @@ void GameScene::Init() {
 
 	// ボタン入力
 	for (int32_t i = 0; i < mButtonUI.size(); i++) {
-		for (int32_t j = 0; j < mButtonUI[i].size(); j++) {
-			mButtonUI[i][j] = std::make_shared<Sprite>();
-			mButtonUI[i][j]->Init();
-			std::string directryPath = "UI/Button/";
-			std::string filepath;
-			switch (i){
-			case 0:
-				filepath = "A";
-				mButtonUI[i][j]->SetPos({ 1020.0f,560.0f });
-				break;
-			case 1:
-				filepath = "B";
-				mButtonUI[i][j]->SetPos({ 1060.0f,520.0f });
-				break;
-			case 2:
-				filepath = "Y";
-				mButtonUI[i][j]->SetPos({ 1020.0f,480.0f });
-				break;
-			case 3:
-				filepath = "X";
-				mButtonUI[i][j]->SetPos({ 980.0f,520.0f });
-				break;
-			default:
-				break;
-			}
-			filepath += to_string(j);
-			filepath += ".png";
-			mButtonUI[i][j]->SetTexture(directryPath + filepath);
-			mButtonUI[i][j]->SetScale({ 0.25f,0.25f });
-			
+		mButtonUI[i] = std::make_shared<Sprite>();
+		mButtonUI[i]->Init();
+		std::string directryPath = "UI/Button/";
+		std::string filepath;
+		switch (i) {
+		case 0:
+			filepath = "A";
+			mButtonUI[i]->SetPos({ 1020.0f,560.0f });
+			break;
+		case 1:
+			filepath = "B";
+			mButtonUI[i]->SetPos({ 1060.0f,520.0f });
+			break;
+		case 2:
+			filepath = "Y";
+			mButtonUI[i]->SetPos({ 1020.0f,480.0f });
+			break;
+		case 3:
+			filepath = "X";
+			mButtonUI[i]->SetPos({ 980.0f,520.0f });
+			break;
+		default:
+			break;
 		}
+		filepath += ".png";
+		mButtonUI[i]->SetTexture(directryPath + filepath);
+		mButtonUI[i]->SetScale({ 0.25f,0.25f });
 	}
-	
+
 
 	// 動くオブジェクトの地面影
 	for (int32_t i = 0; i < mGroundShadow.size(); i++) {
@@ -231,11 +227,9 @@ void GameScene::Update() {
 
 	// ボタン入力
 	for (int32_t i = 0; i < mButtonUI.size(); i++) {
-		for (int32_t j = 0; j < mButtonUI[i].size(); j++) {
-			mButtonUI[i][j]->Update();
-		}
+		mButtonUI[i]->Update();
 	}
-	
+
 
 	// シーン切り替え
 	// 1キーを押したうえで
@@ -409,7 +403,7 @@ void GameScene::Update() {
 		}
 		mPlayerDashSmoke->Update();
 
-		
+
 		mBossDashSmoke->Update();
 
 		break;
@@ -673,30 +667,54 @@ void GameScene::DrawUI()
 		// UI表示
 		//mMoveUI.sprite->Draw();
 		//mActionUI.sprite->Draw();
-		
+
 		// ボタン入力
 		for (int32_t i = 0; i < mButtonUI.size(); i++) {
-			mButtonUI[i][0]->Draw();
-		}
-		
-		if (InputManager::GetInstance()->GetLongPush(Gamepad::Button::A)||
-			InputManager::GetInstance()->GetPused(Gamepad::Button::A)) {
-			mButtonUI[0][1]->Draw();
-		}
-		if (InputManager::GetInstance()->GetLongPush(Gamepad::Button::B) ||
-			InputManager::GetInstance()->GetPused(Gamepad::Button::B)) {
-			mButtonUI[1][1]->Draw();
-		}
-		if (InputManager::GetInstance()->GetLongPush(Gamepad::Button::Y) ||
-			InputManager::GetInstance()->GetPused(Gamepad::Button::Y)) {
-			mButtonUI[2][1]->Draw();
-		}
-		if (InputManager::GetInstance()->GetLongPush(Gamepad::Button::X) ||
-			InputManager::GetInstance()->GetPused(Gamepad::Button::X)) {
-			mButtonUI[3][1]->Draw();
+			mButtonUI[i]->Draw();
 		}
 
-		
+		// ボタン入力時
+		if (InputManager::GetInstance()->GetLongPush(Gamepad::Button::A) ||
+			InputManager::GetInstance()->GetPused(Gamepad::Button::A)) {
+			// 緑色に変更
+			mButtonUI[0]->SetColor(Color(0.0f, 0.0f, 0.8f, 1.0f));
+		}
+		else {
+			// 非入力時は白色
+			mButtonUI[0]->SetColor(Color(1.0f, 1.0f, 1.0f, 1.0f));
+		}
+
+		if (InputManager::GetInstance()->GetLongPush(Gamepad::Button::B) ||
+			InputManager::GetInstance()->GetPused(Gamepad::Button::B)) {
+			// 緑色に変更
+			mButtonUI[1]->SetColor(Color(0.0f, 0.0f, 0.8f, 1.0f));
+		}
+		else {
+			// 非入力時は白色
+			mButtonUI[1]->SetColor(Color(1.0f, 1.0f, 1.0f, 1.0f));
+		}
+
+		if (InputManager::GetInstance()->GetLongPush(Gamepad::Button::Y) ||
+			InputManager::GetInstance()->GetPused(Gamepad::Button::Y)) {
+			// 緑色に変更
+			mButtonUI[2]->SetColor(Color(0.0f, 0.0f, 0.8f, 1.0f));
+		}
+		else {
+			// 非入力時は白色
+			mButtonUI[2]->SetColor(Color(1.0f, 1.0f, 1.0f, 1.0f));
+		}
+
+		if (InputManager::GetInstance()->GetLongPush(Gamepad::Button::X) ||
+			InputManager::GetInstance()->GetPused(Gamepad::Button::X)) {
+			// 緑色に変更
+			mButtonUI[3]->SetColor(Color(0.0f, 0.0f, 0.8f, 1.0f));
+		}
+		else {
+			// 非入力時は白色
+			mButtonUI[3]->SetColor(Color(1.0f, 1.0f, 1.0f, 1.0f));
+		}
+
+
 		// レティクル表示
 		mPlayer->GetReticle3D()->Draw2DReticle();
 
