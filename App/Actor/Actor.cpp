@@ -11,6 +11,22 @@ void Actor::SetCollider(CollisionManager* cManager)
 	}
 }
 
+ACT::Condition Actor::GetActionCondition(const std::string& key) {
+	// 引数で指定した行動クラスの状態を取得する
+	return mActions[key]->GetCondition();
+}
+
+ACT::IAction* Actor::GetActionClass(const std::string& key) {
+	// 引数で指定した行動クラスの状態を取得する
+	return mActions[key].get();
+}
+
+void Actor::SetAction(const std::string& key) {
+	// 現行アクションを設定
+	mActiveAction = mActions[key];
+	mActiveAction.lock()->Start();
+}
+
 void Actor::CreateBodyPartCollider(std::string name, float radius,uint32_t atribute, uint32_t mask) {
 
 	// 名称が重複している場合は処理を行わない

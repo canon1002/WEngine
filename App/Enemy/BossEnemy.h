@@ -3,7 +3,6 @@
 #include "App/AI/State/IBossState.h"
 #include "App/AI/State/VitalityBossState.h"
 #include "App/AI/BehaviorTree/IBehavior.h"
-#include "App/Enemy/Action/Action.h"
 #include "App/Status/StatusManager.h"
 
 // 前方宣言
@@ -47,20 +46,12 @@ public: // -- 公開 メンバ関数 -- //
 
 #pragma region コマンド・ステート関連
 
-	// 行動制御
-	void SetNextAction(const std::string& key);
-	// 行動状況取得
-	ACT::Condition GetActionCondition(const std::string& key);
-	// 行動クラスのポインタの取得
-	ACT::IAction* GetActionClass(const std::string& key);
-
 	// 自身の攻撃命中時に呼び出す関数
 	void ReciveDamageTolayer(float power);
 	// 能力値取得関数
 	std::shared_ptr<Status> GetStatus() { return mStatus; }
 
-	// 行動指定関数
-	void SetAction(const std::string& key);
+	
 	
 
 	// -- 変更用関数 -- //
@@ -147,11 +138,6 @@ private: // -- 非公開 メンバ変数 -- //
 
 	// ビヘイビアツリーの再実行カウント
 	float mReloadBTCount;
-
-	// 行動マップデータ
-	std::map<string, std::shared_ptr<ACT::IAction>> mActions;
-	// 現在の行動
-	std::weak_ptr<ACT::IAction> mActiveAction;
 
 	// 能力値
 	std::shared_ptr<Status> mStatus;

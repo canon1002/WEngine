@@ -1,6 +1,7 @@
 #pragma once
 #include "GameEngine/Object/3d/Object3d.h"
 #include "App/Status/StatusManager.h"
+#include "App/Enemy/Action/Action.h"
 
 // 前方宣言
 class CollisionManager;
@@ -33,7 +34,32 @@ public: // -- 公開 メンバ関数 -- //
 	/// <param name="cManager"></param>
 	void SetCollider(CollisionManager* cManager);
 
-	
+
+#pragma region アクション関連
+
+	/// <summary>
+	/// 行動指定関数
+	/// </summary>
+	/// <param name="key">行動内容(クラス名)</param>
+	virtual void SetAction(const std::string& key);
+
+	/// <summary>
+	/// 行動状況取得
+	/// </summary>
+	/// <param name="key">行動内容(クラス名)</param>
+	ACT::Condition GetActionCondition(const std::string& key);
+
+	/// <summary>
+	/// 行動クラスのポインタの取得
+	/// </summary>
+	/// <param name="key">行動内容(クラス名)</param>
+	ACT::IAction* GetActionClass(const std::string& key);
+
+
+#pragma endregion
+
+
+
 	// -- アクセッサ -- //
 
 
@@ -87,6 +113,14 @@ protected: // -- 限定公開 メンバ変数 -- //
 
 	// ヒットストップ時間
 	float mHitStopDuration = 0.0f;
+
+
+	// 行動マップデータ
+	std::map<string, std::shared_ptr<ACT::IAction>> mActions;
+	// 現在の行動
+	std::weak_ptr<ACT::IAction> mActiveAction;
+
+
 
 };
 

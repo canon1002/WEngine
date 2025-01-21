@@ -31,7 +31,7 @@ void BossEnemy::Init() {
 
 	mObject = std::make_unique<Object3d>();
 	mObject->Init("BossEnemyObj");
-	mObject->mWorldTransform->scale = { 1.25f,1.25f,1.25f };
+	mObject->mWorldTransform->scale = { 1.0f,1.0f,1.0f };
 	mObject->mWorldTransform->translation = { 0.0f,0.0f,20.0f };
 
 	// モデルを設定
@@ -489,36 +489,13 @@ void BossEnemy::UpdateState() {
 
 }
 
-//
-void BossEnemy::SetNextAction(const std::string& key)
-{
-	// マップからポインタを取得
-	mActiveAction = mActions[key];
-}
-
-ACT::Condition BossEnemy::GetActionCondition(const std::string& key)
-{
-	// 引数で指定した行動クラスの状態を取得する
-	return mActions[key]->GetCondition();
-
-}
-
-ACT::IAction* BossEnemy::GetActionClass(const std::string& key) {
-	// 引数で指定した行動クラスの状態を取得する
-	return mActions[key].get();
-}
-
 void BossEnemy::ReciveDamageTolayer(float power)
 {
 	// プレイヤーにダメージを与える
 	StatusManager::GetInstance()->ReceiveDamage(mStatus, power, pPlayer->GetStatus());
 }
 
-void BossEnemy::SetAction(const std::string& key){
-	// 現行アクションを設定
-	mActiveAction = mActions[key];
-	mActiveAction.lock()->Start();
-}
+
 
 
 Vector3 BossEnemy::GetWorldPos()
