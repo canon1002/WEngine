@@ -1,0 +1,49 @@
+{
+    "name": "scene",
+    "objects": [
+        {
+            "type": "MESH",
+            "name": "Plane",
+            "transform": {
+                "translation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "rotation": [
+                    0.0,
+                    -0.0,
+                    0.0
+                ],
+                "scaling": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            },
+            "file_name": "Plane"
+        },
+        {
+            "type": "MESH",
+            "name": "SqueareWall",
+            "transform": {
+                "translation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "rotation": [
+                    0.0,
+                    0.0,
+                    -89.99998474121094
+                ],
+                "scaling": [
+                    0.19999997317790985,
+                    0.19999997317790985,
+                    0.19999998807907104
+                ]
+            },
+            "file_name": "SqueareWall"
+        }
+    ]
+}
