@@ -92,10 +92,11 @@ Vector3 Project(const Vector3& v1, const Vector3& v2);
 /// <summary>
 /// 最近接点
 /// </summary>
-/// <param name="point"></param>
-/// <param name="segment"></param>
+/// <param name="point">線分との距離を求める点</param>
+/// <param name="origin">線分の始点</param>
+/// <param name="diff">線分の始点から終点までの距離</param>
 /// <returns></returns>
-//Vector3 ClosestPoint(const Vector3& point, const Segment& segment);
+Vector3 ClosestPoint(const Vector3& point, const Vector3& origin,const Vector3& diff);
 
 /// <summary>
 /// 

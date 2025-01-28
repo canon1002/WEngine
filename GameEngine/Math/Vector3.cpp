@@ -300,15 +300,16 @@ Vector3 Project(const Vector3& v1, const Vector3& v2)
 	return result;
 }
 
-/// 最近接点
-//Vector3 ClosestPoint(const Vector3& point, const Segment& segment)
-//{
-//	float t = Dot(Subtract(point, segment.origin), segment.diff) / pow(Length(segment.diff), 2.0f);
-//	t = clamp(t, 1.0f, 0.0f);
-//
-//	Vector3 result = Add(segment.origin, Scalar(t, segment.diff));
-//	return result;
-//}
+
+Vector3 ClosestPoint(const Vector3& point, const Vector3& origin, const Vector3& diff) {
+
+	float t = Dot(Subtract(point, origin), diff) / pow(Length(diff), 2.0f);
+	t = clamp(t, 1.0f, 0.0f);
+
+	Vector3 result = Add(origin, Scalar(t, diff));
+	return result;
+
+}
 
 Vector3 Perpendicular(const Vector3& v) {
 	if (v.x != 0 || v.y != 0) {
@@ -348,7 +349,7 @@ Vector3 ExponentialInterpolation(Vector3 a, Vector3 b, float t, float k) {
 float ExponentialInterpolation(float a, float b, float t, float k) {
 	float result = 0.0f;
 	result = a + ((b - a) * k * t);
-	
+
 	return result;
 }
 
