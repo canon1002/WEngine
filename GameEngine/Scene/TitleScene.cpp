@@ -14,18 +14,14 @@ void TitleScene::Finalize() {}
 //　継承した関数
 void TitleScene::Init() {
 
-	mObject = std::make_unique<ShadowObject>();
-	mObject->Init("ShadowObject");
-	ModelManager::GetInstance()->LoadModel("box", "box.gltf");
-	mObject->SetModel("box.gltf");
-	mObject->mModel->mTextureHandle = DirectXCommon::GetInstance()->mSrv->LoadTexture("uvChecker.dds");
-	mObject->mWorldTransform->rotation = { 0.5f,0.0f,0.0f };
+	// シーン内選択段階 (最初は遷移中にする)
+	mSelectStep = SelectStep::SCENESTART;
 
 	// カメラ設定
 	mCamera = MainCamera::GetInstance();
 	mCamera->Initialize();
-	mCamera->mWorldTransform->rotation = { 0.524f ,0.0f,0.0f };
-	mCamera->mWorldTransform->translation = { 0.0f,80.0f ,-160.0f };
+	mCamera->mWorldTransform->rotation = { -0.07f ,0.0f,0.0f };
+	mCamera->mWorldTransform->translation = { 0.0f,2.2f ,-20.0f };
 
 	// 地面
 	mGroundObj = std::make_unique<Object3d>();
@@ -34,29 +30,19 @@ void TitleScene::Init() {
 	mGroundObj->SetModel("Plane.gltf");
 	mGroundObj->SetScale(Vector3(1024.0f, 1.0f, 1024.0f));
 
-	/// スタート補間
+	// 剣
+	mSwordObj = std::make_unique<Object3d>();
+	mSwordObj->Init("Title Sword");
+	ModelManager::GetInstance()->LoadModel("Weapons", "sword.gltf");
+	mSwordObj->SetModel("sword.gltf");
+	mSwordObj->mWorldTransform->scale = { 2.0f,2.0f,2.0f };
+	mSwordObj->mWorldTransform->rotation = { -1.563f,0.0628f,-0.471f };
+	mSwordObj->mWorldTransform->translation = { 2.0f,8.0f,0.0f };
 
-	// カメラ回転
-	mCameraRot.s = { mCamera->mWorldTransform->rotation.x,0.0f,0.0f };
-	mCameraRot.e = { 0.05f,0.0f,0.0f };
-	mCameraRot.t = 0.0f;
-
-	// カメラ移動
-	mCameraTrYZ.s = mCamera->mWorldTransform->translation;
-	mCameraTrYZ.e = { 0.0f,6.0f,-100.0f };
-	mCameraTrYZ.t = 0.0f;
-
-	// カメラ移動(ゲームシーン移行)
-	mCameraTrZ.s = mCameraTrYZ.e;
-	mCameraTrZ.e = { 0.0f,6.0f,-60.0f };
-	mCameraTrZ.t = 0.0f;
-
+	mGameStartVignnetingTime = 0.0f;
 	
 	mIsTransitionForPreScene = true;
 	viggnetOnlyTime = 0.0f;
-	mIsTransitionTitleSelect = false;
-	mIsTransitionGameScene = false;
-	mIsActiveTransition = false;
 
 	// ビネット初期設定(透明)
 	RenderCopyImage* render = RenderCopyImage::GetInstance();
@@ -64,73 +50,105 @@ void TitleScene::Init() {
 	render->SetViggnetIndex(10.0f);
 	render->SetViggnetMultiplier(10.0f);
 
-	// 以下 UI
-	mTitleOne.sprite = std::make_unique<Sprite>();
-	mTitleOne.sprite->Init();
-	mTitleOne.sprite->SetTexture("pleaseButton.png");
-	mTitleOne.sprite->SetPos({ 640.0f,500.0f});
-	mTitleOne.sprite->SetScale({ 0.5f,0.5f});
-
-	mTitleOne.sprite->SetAnchorPoint({ 0.5f,0.5f });
-	mTitleOne.t = 0.0f;
-	mTitleOne.displayCount = 0.5f;
-	mTitleOne.isActive = true;
+#pragma region UI関連の初期化
 	
-	// ゲームタイトル
+	// タイトルロゴ (タイトル名を記載する)
 	mTitleLogo.sprite = std::make_unique<Sprite>();
 	mTitleLogo.sprite->Init();
-	mTitleLogo.sprite->SetTexture("UI/Title.png");
-	mTitleLogo.sprite->SetPos({ 640.0f,100.0f});
+	mTitleLogo.sprite->SetTexture("UI/System/Title.png");
+	mTitleLogo.sprite->SetPos({ 640.0f,100.0f });
 	mTitleLogo.sprite->SetAnchorPoint({ 0.5f,0.5f });
-	mTitleLogo.t = 0.0f;
+	mTitleLogo.t = 1.0f;
 	mTitleLogo.displayCount = 0.0f;
 	mTitleLogo.isActive = true;
+
 	
-	// 以下 UI
-	mTitleSelect.sprite = std::make_unique<Sprite>();
-	mTitleSelect.sprite->Init();
-	mTitleSelect.sprite->SetTexture("UI/UI3.png");
-	mTitleSelect.sprite->SetPos({ 640.0f,500.0f});
-	mTitleSelect.sprite->SetAnchorPoint({ 0.5f,0.5f });
-	mTitleSelect.t = 0.0f;
-	mTitleSelect.displayCount = 0.5f;
-	mTitleSelect.isActive = true;
+	// スタート誘導UI (例:ボタンを押してください)
+	mPushStartUI.sprite = std::make_unique<Sprite>();
+	mPushStartUI.sprite->Init();
+	mPushStartUI.sprite->SetTexture("UI/System/Push.png");
+	mPushStartUI.sprite->SetPos({ 640.0f,500.0f });
+	mPushStartUI.sprite->SetScale({ 0.5f,0.5f });
+	mPushStartUI.sprite->SetAnchorPoint({ 0.5f,0.5f });
+	mPushStartUI.t = 1.0f;
+	mPushStartUI.displayCount = 0.5f;
+	mPushStartUI.isActive = true;
+
+
+	// UI - スタート誘導UI背景
+	mPushStartBackUI.sprite = std::make_unique<Sprite>();
+	mPushStartBackUI.sprite->Init();
+	mPushStartBackUI.sprite->SetTexture("UI/System/BackLong.png");
+	mPushStartBackUI.sprite->SetColor(Color(1.0f, 1.0f, 0.0f, 1.0f));
+	mPushStartBackUI.sprite->SetPos({ 640.0f,500.0f });
+	mPushStartBackUI.sprite->SetScale({ 0.5f,0.5f });
+	mPushStartBackUI.sprite->SetAnchorPoint({ 0.5f,0.5f });
+	mPushStartBackUI.t = 0.0f;
+	mPushStartBackUI.displayCount = 0.5f;
+	mPushStartBackUI.isActive = true;
+
+
+	// UI - ゲーム開始
+	mGameStartUI.sprite = std::make_unique<Sprite>();
+	mGameStartUI.sprite->Init();
+	mGameStartUI.sprite->SetTexture("UI/System/Start.png");
+	mGameStartUI.sprite->SetPos({ 640.0f,460.0f });
+	mGameStartUI.sprite->SetScale({ 0.5f,0.5f });
+	mGameStartUI.sprite->SetAnchorPoint({ 0.5f,0.5f });
+	mGameStartUI.t = 1.0f;
+	mGameStartUI.displayCount = 0.5f;
+	mGameStartUI.isActive = true;
+
+	// UI - システム(オプション)
+	mSystemUI.sprite = std::make_unique<Sprite>();
+	mSystemUI.sprite->Init();
+	mSystemUI.sprite->SetTexture("UI/System/System.png");
+	mSystemUI.sprite->SetPos({ 640.0f,500.0f });
+	mSystemUI.sprite->SetScale({ 0.5f,0.5f });
+	mSystemUI.sprite->SetAnchorPoint({ 0.5f,0.5f });
+	mSystemUI.t = 1.0f;
+	mSystemUI.displayCount = 0.5f;
+	mSystemUI.isActive = true;
+	
+	// UI - ゲーム終了
+	mQuitUI.sprite = std::make_unique<Sprite>();
+	mQuitUI.sprite->Init();
+	mQuitUI.sprite->SetTexture("UI/System/Quit.png");
+	mQuitUI.sprite->SetPos({ 640.0f,540.0f });
+	mQuitUI.sprite->SetScale({ 0.5f,0.5f });
+	mQuitUI.sprite->SetAnchorPoint({ 0.5f,0.5f });
+	mQuitUI.t = 1.0f;
+	mQuitUI.displayCount = 0.5f;
+	mQuitUI.isActive = true;
+
+	// UI - 選択中のUI
+	mSelectingBackUI.sprite = std::make_unique<Sprite>();
+	mSelectingBackUI.sprite->Init();
+	mSelectingBackUI.sprite->SetTexture("UI/System/BackShort.png");
+	mSelectingBackUI.sprite->SetColor(Color(1.0f, 1.0f, 0.0f, 1.0f));
+	mSelectingBackUI.sprite->SetPos({ 640.0f,460.0f });
+	mSelectingBackUI.sprite->SetScale({ 0.5f,0.5f });
+	mSelectingBackUI.sprite->SetAnchorPoint({ 0.5f,0.5f });
+	mSelectingBackUI.t = 0.0f;
+	mSelectingBackUI.displayCount = 0.5f;
+	mSelectingBackUI.isActive = true;
+
+	// 選択中のUI番号
+	mUISelectingNum = 0;
+	// 背景UIのカウントが上昇中であるか
+	mIsUpperBackUICount = true;
+	// UI表示の遷移中であるか
+	mIsTransUI = false;
+	// UI表示切替の進行度
+	mUITransCount = 0.0f;
+
+#pragma endregion
+
 
 	// -- エディタテスト -- //
 	mBTNodeEditor = std::make_unique<BTNodeEditor>();
 	mBTNodeEditor->Init();
 
-	// -- OBB衝突テスト -- //
-
-	// 衝突判定マネージャ
-	mCollisionManager = std::make_unique<CollisionManager>();
-
-	mOBBTestObj = std::make_unique<Object3d>();
-	mOBBTestObj->Init("OBBTest");
-	mOBBTestObj->SetModel("box.gltf");
-	mOBBTestObj->mWorldTransform->translation = { 0.0f,7.0f,-85.0f };
-	mOBBTestObj->mWorldTransform->scale = { 1.0f,1.0f,1.0f };
-	mOBBTestObj->mWorldTransform->rotation = { 0.0f,0.0f,0.0f };
-
-	mOBBTestObj->mCollider = new OBBCollider(mOBBTestObj->mWorldTransform, Vector3(1.0f, 1.0f, 1.0f));
-	mOBBTestObj->mCollider->Init();
-	mOBBTestObj->mCollider->SetAddTranslation(Vector3(0.0f, 0.55f, -0.1f));
-	mOBBTestObj->mCollider->SetCollisionAttribute(kCollisionAttributePlayer);
-	mOBBTestObj->mCollider->SetCollisionMask(kCollisionAttributeEnemyBullet);
-
-	
-	mOBBTestObj2 = std::make_unique<Object3d>();
-	mOBBTestObj2->Init("OBBTest2");
-	mOBBTestObj2->SetModel("box.gltf");
-	mOBBTestObj2->mWorldTransform->translation = { -4.0f,7.0f,-85.0f };
-	mOBBTestObj2->mWorldTransform->scale = { 1.0f,1.0f,1.0f };
-	mOBBTestObj2->mWorldTransform->rotation = { 0.3f,0.0f,0.0f };
-
-	mOBBTestObj2->mCollider = new OBBCollider(mOBBTestObj2->mWorldTransform, Vector3(1.0f, 1.0f, 1.0f));
-	mOBBTestObj2->mCollider->Init();
-	mOBBTestObj2->mCollider->SetAddTranslation(Vector3(0.0f, 0.55f, -0.1f));
-	mOBBTestObj2->mCollider->SetCollisionAttribute(kCollisionAttributeEnemyBullet);
-	mOBBTestObj2->mCollider->SetCollisionMask(kCollisionAttributePlayer);
 
 }
 
@@ -138,146 +156,250 @@ void TitleScene::Update() {
 
 	// オブジェクト更新
 	mCamera->Update();
-	mObject->Update();
 	mGroundObj->Update();
+	mGroundObj->DrawGUI();
+	mSwordObj->Update();
+	mSwordObj->DrawGUI();
 
 	mBTNodeEditor->Update();
 
-	mOBBTestObj->Update();
-	mOBBTestObj->DrawGUI();
-	mOBBTestObj2->Update();
-	mOBBTestObj2->DrawGUI();
 
-	// コライダーの更新処理
-	mOBBTestObj->mCollider->Update();
-	mOBBTestObj2->mCollider->Update();
-
-	// コライダーリストへの追加処理
-	mCollisionManager->SetCollider(mOBBTestObj->mCollider);
-	mCollisionManager->SetCollider(mOBBTestObj2->mCollider);
-
-	// 衝突判定を行う
-	mCollisionManager->Update();
-
-	// コライダーリストのクリア
-	mCollisionManager->ClearColliders();
-
-	// UI 更新
-	mTitleOne.sprite->Update();
+	// タイトルロゴの更新
 	mTitleLogo.sprite->Update();
-	mTitleSelect.sprite->Update();
 
-	mTitleOne.t += (1.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetGameSpeed();
-	if (mTitleOne.t >= 1.0f) {
-		mTitleOne.t = 0.0f;
-	}
-	mTitleSelect.t += (1.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetGameSpeed();
-	if (mTitleSelect.t >= 1.0f) {
-		mTitleSelect.t = 0.0f;
-	}
-
-	// カメラやシーン遷移をしていない場合に入力を受け付ける
-	if (!mIsActiveTransition) {
-
-		// ボタンかキーボード入力でタイトルの選択受付に移行する
-		if (InputManager::GetInstance()->GetPused(Gamepad::Button::B) || InputManager::GetInstance()->GetTriggerKey(DIK_RETURN)) {
-
-			// タイトルの選択画面に移行する
-			if (!mIsTransitionTitleSelect) {
-				mIsTransitionTitleSelect = true;
-				mIsActiveTransition = true;
-			}
-
-			// 選択画面でゲーム開始を選択したら遷移後にシーン移行
-			else if (!mIsTransitionGameScene) {
-				mIsTransitionGameScene = true;
-				mIsActiveTransition = true;
-
-				// 遷移のスタート地点設定
-				mCameraTrZ.s = mCamera->mWorldTransform->translation;
-			}
-
-		}
-	}
-
-	if (mIsTransitionForPreScene) 
+	// シーン内の状態に応じて処理を変える
+	switch (mSelectStep)
 	{
-		if (viggnetOnlyTime < 1.0f) 
+	case SelectStep::SCENESTART:
+
+		if (mIsTransitionForPreScene)
 		{
-			viggnetOnlyTime += (1.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetGameSpeed();
+			if (viggnetOnlyTime < 1.0f)
+			{
+				viggnetOnlyTime += (1.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetGameSpeed();
 
-		}
-		else if (viggnetOnlyTime >= 1.0f) 
-		{
-			viggnetOnlyTime = 1.0f;
-			mIsActiveTransition = false;
-		}
-		RenderCopyImage::GetInstance()->SetViggnetIndex(ExponentialInterpolation(10.0f, 0.0f, viggnetOnlyTime, 1.0f));
-	}
+			}
+			else if (viggnetOnlyTime >= 1.0f)
+			{
+				viggnetOnlyTime = 1.0f;
+				mIsActiveTransition = false;
 
-	// カメラ遷移
-	if (mIsTransitionTitleSelect && !mIsTransitionGameScene) {
-
-		/// 回転
-
-		// tを増加させ、座標を移動
-		if (mCameraRot.t < 1.0f) {
-			mCameraRot.t += (1.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetGameSpeed();
-		}
-		else if (mCameraRot.t > 1.0f) {
-			mCameraRot.t = 1.0f;
-		}
-		// 補間後の数値を計算
-		mCamera->mWorldTransform->rotation = ExponentialInterpolation(mCameraRot.s, mCameraRot.e, mCameraRot.t, 1.0f);
-
-		/// 平行移動
-
-		// tを増加させ、座標を移動
-		if (mCameraTrYZ.t < 1.0f) {
-			mCameraTrYZ.t += (1.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetGameSpeed();
-		}
-		else if (mCameraTrYZ.t > 1.0f) {
-			mCameraTrYZ.t = 1.0f;
-		}
-		// 補間後の数値を計算
-		mCamera->mWorldTransform->translation = ExponentialInterpolation(mCameraTrYZ.s, mCameraTrYZ.e, mCameraTrYZ.t, 1.0f);
-
-		if (mCameraRot.t == 1.0f && mCameraTrYZ.t == 1.0f) {
-			mIsActiveTransition = false;
+				// スタート入力誘導に移行
+				mSelectStep = SelectStep::START;
+			}
+			RenderCopyImage::GetInstance()->SetViggnetIndex(ExponentialInterpolation(10.0f, 0.0f, viggnetOnlyTime, 1.0f));
 		}
 
-	}
+		break;
+	case SelectStep::START:
+		
+		// スタート誘導UI/UI背景を更新
+		mPushStartUI.sprite->Update();
+		mPushStartBackUI.sprite->Update();
 
-	// ゲームシーン遷移
-	if (mIsTransitionGameScene) {
+		// Bボタンを押したらゲーム選択画面に移行する
+		// ボタンかキーボード入力でタイトルの選択受付に移行する
+		if (InputManager::GetInstance()->GetPused(Gamepad::Button::B) ||
+			InputManager::GetInstance()->GetTriggerKey(DIK_RETURN)) {
 
-		/// 平行移動
-
-		// tを増加させ、座標を移動
-		if (mCameraTrZ.t < 1.0f) {
-			mCameraTrZ.t += (1.0f / Framerate::GetInstance()->GetFramerate());
+			// UI表示の遷移を行う
+			mIsTransUI = true;
+			// UI表示切替の進行度をリセット
+			mUITransCount = 0.0f;
 		}
-		else if (mCameraTrZ.t > 1.0f) {
-			mCameraTrZ.t = 1.0f;
+
+		// UIが非遷移中の場合
+		if(!mIsTransUI){
+
+			// UI背景を点滅させる
+			if (mIsUpperBackUICount) {
+				// 透明度を増加させる
+				mPushStartBackUI.t += (1.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetGameSpeed();
+
+				// 不透明になるギリギリで変更
+				if (mPushStartBackUI.t >= 0.9f) {
+					mIsUpperBackUICount = false;
+				}
+
+			}
+			else {
+				// 透明度を減少させる
+				mPushStartBackUI.t -= (1.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetGameSpeed();
+				
+				// 透明になるギリギリで変更
+				if (mPushStartBackUI.t <= 0.1f) {
+					mIsUpperBackUICount = true;
+				}
+			}
+
+			// 透明度の変更
+			mPushStartBackUI.sprite->SetAlpha(mPushStartBackUI.t);
+
 		}
-		// 補間後の数値を計算
-		mCamera->mWorldTransform->translation = ExponentialInterpolation(mCameraTrZ.s, mCameraTrZ.e, mCameraTrZ.t, 1.0f);
-		// 画面をどんどん暗くする
-		RenderCopyImage::GetInstance()->SetViggnetIndex(ExponentialInterpolation(0.0f, 10.0f, mCameraTrZ.t, 1.0f));
+		// UI表示の遷移中
+		else if (mIsTransUI) {
+			// UIを透明にしていく
+			if (mUITransCount < 1.0f) {
+				mUITransCount += (1.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetGameSpeed();
+				mPushStartUI.sprite->SetAlpha(1.0f - mUITransCount);
+				mPushStartBackUI.sprite->SetAlpha(1.0f - mUITransCount);
+			}
+			// UI表示の遷移が終了したら
+			else if (mUITransCount >= 1.0f) {
 
-		if (mCameraTrZ.t == 1.0f) {
-			mIsActiveTransition = false;
-
-			// 遷移が終了したら
-			if (mIsActiveTransition == false) {
-				// ゲームシーンへ移行する
-				sceneNo = SCENE::STAGE;
+				// UI表示の遷移を終了
+				mIsTransUI = false;
+				// UI表示切替の進行度をリセット
+				mUITransCount = 0.0f;
+				// 背景UIの透明度を上げるようにする
+				mIsUpperBackUICount = true;
+				// 選択画面に移行
+				mSelectStep = SelectStep::GAMESELECT;
 			}
 		}
 
-		
-	}
+		break;
+	case SelectStep::GAMESELECT:
 
+		// UI表示の遷移していない場合
+		if (!mIsTransUI) {
+
+			// 開始/システム/終了 のUIをそれぞれ不透明にしていく
+			if (mUITransCount < 1.0f) {
+				mUITransCount += (1.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetGameSpeed();
+			}
+			else if (mUITransCount > 1.0f) {
+				mUITransCount = 1.0f;
+			}
+
+			// それぞれ透明度を調整
+			mGameStartUI.sprite->SetColor(Color(1.0f, 1.0f, 1.0f, mUITransCount));
+			mSystemUI.sprite->SetColor(Color(1.0f, 1.0f, 1.0f, mUITransCount));
+			mQuitUI.sprite->SetColor(Color(1.0f, 1.0f, 1.0f, mUITransCount));
+
+
+			// あまり望ましくはないが、switchをネストし、選択しているUIへの処理を記載する
+			switch (mUISelectingNum)
+			{
+			case 0: // ゲーム開始 
+
+				// Bボタンを押したらゲーム開始処理を行う
+				if (InputManager::GetInstance()->GetPused(Gamepad::Button::B) ||
+					InputManager::GetInstance()->GetTriggerKey(DIK_RETURN)) {
+
+					// UI表示の遷移を行う
+					mIsTransUI = true;
+					// UI表示切替の進行度をリセット
+					mUITransCount = 0.0f;
+				}
+
+				break;
+
+			case 1: // システム(オプション) 
+				
+				//
+				// オプション画面や処理ができていないため実装待ち
+				//
+				
+				break;
+
+			case 2: // ゲーム終了 
+				
+				//
+				// ゲームシーンに終了をさせる処理ができていないため実装待ち
+				//
+
+				break;
+
+			default:
+				break;
+			}
+
+			// UI背景を点滅させる
+			if (mIsUpperBackUICount) {
+				// 透明度を増加させる
+				mSelectingBackUI.t += (1.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetGameSpeed();
+
+				// 不透明になるギリギリで変更
+				if (mSelectingBackUI.t >= 0.9f) {
+					mIsUpperBackUICount = false;
+				}
+
+			}
+			else {
+				// 透明度を減少させる
+				mSelectingBackUI.t -= (1.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetGameSpeed();
+
+				// 透明になるギリギリで変更
+				if (mSelectingBackUI.t <= 0.1f) {
+					mIsUpperBackUICount = true;
+				}
+			}
+
+			// 透明度の変更
+			mSelectingBackUI.sprite->SetAlpha(mSelectingBackUI.t);
+
+		}
+
+		// UI表示の遷移中
+		if (mIsTransUI) {
+
+			// UIを透明にしていく
+			if (mUITransCount < 1.0f) {
+				mUITransCount += (1.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetGameSpeed();
+				
+				// タイトルロゴもここで透明にする
+				mSelectingBackUI.sprite->SetAlpha(1.0f - mUITransCount);
+				mTitleLogo.sprite->SetAlpha(1.0f - mUITransCount);
+				mGameStartUI.sprite->SetAlpha(1.0f - mUITransCount);
+				mSystemUI.sprite->SetAlpha(1.0f - mUITransCount);
+				mQuitUI.sprite->SetAlpha(1.0f - mUITransCount);
+			}
+
+			// UI表示の遷移が終了したら
+			else if (mUITransCount >= 1.0f) {
+
+				// UI表示の遷移を終了
+				mIsTransUI = false;
+				// UI表示切替の進行度をリセット
+				mUITransCount = 0.0f;
+				// ビネットをかける準備をする
+				mGameStartVignnetingTime = 0.0f;
+				// ゲーム開始演出に移行
+				mSelectStep = SelectStep::GAMESTART;
+				
+			}
+		}
+
+		// 開始/システム/終了 のUIをそれぞれ更新
+		mGameStartUI.sprite->Update();
+		mSystemUI.sprite->Update();
+		mQuitUI.sprite->Update();
+		mSelectingBackUI.sprite->Update();
+
+		break;
+	case SelectStep::GAMESTART:
+
+		// ゲームシーンへの遷移処理
+		if (mGameStartVignnetingTime < 1.0f) {
+			mGameStartVignnetingTime += (1.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetGameSpeed();
+		}
+
+		// 画面をどんどん暗くする
+		RenderCopyImage::GetInstance()->SetViggnetIndex(ExponentialInterpolation(0.0f, 10.0f, mGameStartVignnetingTime, 1.0f));
+
+		// 遷移が終了したら
+		if (mGameStartVignnetingTime >= 1.0f) {
+			// ゲームシーンへ移行する
+			sceneNo = SCENE::STAGE;
+		}
+
+
+		break;
+	default:
+		break;
+	}
+	
 	
 
 }
@@ -285,37 +407,47 @@ void TitleScene::Update() {
 void TitleScene::Draw() {
 
 	ModelManager::GetInstance()->PreDrawForShadow();
-	mObject->Draw();
 	mGroundObj->Draw();
-
-	mOBBTestObj->Draw();
-	mOBBTestObj2->Draw();
-
-	mOBBTestObj->mCollider->Draw();
-	mOBBTestObj2->mCollider->Draw();
+	mSwordObj->Draw();
 
 }
 
 void TitleScene::DrawUI()
 {
-
 	// 画像 描画前処理
 	SpriteAdministrator::GetInstance()->PreDraw();
 
-	// カメラやシーン遷移をしていない場合にのみUIを表示
-	if (!mIsActiveTransition) {
-		if (!mIsTransitionTitleSelect) {
-			if (mTitleOne.t <= mTitleOne.displayCount) {
-				mTitleOne.sprite->Draw();
-			}
-		}
+	// タイトルロゴ
+	mTitleLogo.sprite->Draw();
 
-		else if (!mIsTransitionGameScene) {
-			mTitleLogo.sprite->Draw();
-			if (mTitleSelect.t <= mTitleSelect.displayCount) {
-				mTitleSelect.sprite->Draw();
-			}
-		}
+	// シーン内の状態に応じて処理を変える
+	switch (mSelectStep)
+	{
+	case SelectStep::SCENESTART:
+		
+		break;
+	case SelectStep::START:
+
+		mPushStartBackUI.sprite->Draw();
+		mPushStartUI.sprite->Draw();
+
+		break;
+	case SelectStep::GAMESELECT:
+
+		// 選択中のUI座標に表示
+		mSelectingBackUI.sprite->Draw();
+
+		mGameStartUI.sprite->Draw();
+		//mSystemUI.sprite->Draw();
+		//mQuitUI.sprite->Draw();
+
+		break;
+	case SelectStep::GAMESTART:
+
+
+		break;
+	default:
+		break;
 	}
 
 }

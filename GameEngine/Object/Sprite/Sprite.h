@@ -33,6 +33,7 @@ public:
 	}
 
 	void SetColor(Color color) { materialData->color = color; }
+	void SetAlpha(float alpha) { materialData->color.a = alpha; }
 	void SetTextureSize(Vector2 size) { textureSize_ = size; }
 	void SetSpriteSize(Vector2 size) { spriteSize = size; }
 	void SetPos(Vector2 pos) {
@@ -47,6 +48,7 @@ public:
 
 	Vector2 GetScale() { return Vector2(mWorldTransform.scale.x, mWorldTransform.scale.y); }
 	Vector2 GetPos() { return Vector2(mWorldTransform.translation.x, mWorldTransform.translation.y); }
+
 
 private:
 

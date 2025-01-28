@@ -454,6 +454,7 @@
     <ClCompile Include="App\Enemy\Action\KnockBack.cpp" />
     <ClCompile Include="App\Enemy\Action\Dash.cpp" />
     <ClCompile Include="GameEngine\Editor\NodeEditor\Nodes\AINodeActions.cpp" />
+    <ClCompile Include="GameEngine\Append\Collider\CapsuelCollider.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameEngine\Object\Light\DirectionalLight.h">
@@ -770,6 +771,7 @@
     <ClInclude Include="GameEngine\Editor\NodeEditor\Nodes\AINodeBase.h" />
     <ClInclude Include="GameEngine\Editor\NodeEditor\Nodes\AINodeComposites.h" />
     <ClInclude Include="GameEngine\Editor\NodeEditor\Nodes\AINodeActions.h" />
+    <ClInclude Include="GameEngine\Append\Collider\CapsuelCollider.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt">

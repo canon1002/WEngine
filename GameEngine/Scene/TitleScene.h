@@ -17,6 +17,13 @@
 #include "GameEngine/Append/Collider/CollisionManager.h"
 #include "GameEngine/Input/InputManager.h"
 
+// 選択段階の判別用
+enum class SelectStep {
+	SCENESTART,	// シーン開始時
+	START,		// 開始直後のボタンを押して貰う場面
+	GAMESELECT,	// ゲームセレクト(開始/システム/終了 の選択場面)
+	GAMESTART,	// ゲーム開始までの移行中
+};
 
 class TitleScene :
     public IScene
@@ -33,50 +40,56 @@ public:
 	void DrawUI() override;
 
 private:
-
-	// 入力マネージャー
-	
 	
 	// カメラ
 	CameraCommon* mCamera;
 	// 地面
 	std::unique_ptr<Object3d> mGroundObj;
+	// 剣
+	std::unique_ptr<Object3d> mSwordObj;
+
+	// シーン内選択段階
+	SelectStep mSelectStep;
+
+	float mGameStartVignnetingTime;
 
 	// シーン開幕のビネット処理
 	bool mIsTransitionForPreScene;
 	float viggnetOnlyTime;
-	// ゲームシーンに移行するか
-	bool mIsTransitionGameScene;
-	// タイトルでの選択表示に移行するか
-	bool mIsTransitionTitleSelect;
-
 	// 何かしら遷移中であるか
 	bool mIsActiveTransition;
 
-	// スタート補間
-	EasingVector3 mCameraRot;// カメラ回転
-	EasingVector3 mCameraTrYZ;// カメラ移動
-	EasingVector3 mCameraTrZ;// カメラ移動
-	
-	UISet mTitleOne;
+	// タイトルロゴ (タイトル名を記載する)
 	UISet mTitleLogo;
-	UISet mTitleSelect;
+	// スタート誘導UI (例:ボタンを押してください)
+	UISet mPushStartUI;
+	// UI - スタート誘導UI背景
+	UISet mPushStartBackUI;
+	// UI - ゲーム開始
+	UISet mGameStartUI;
+	// UI - システム(オプション)
+	UISet mSystemUI;
+	// UI - ゲーム終了
+	UISet mQuitUI;
+	// UI - 選択中のUI
+	UISet mSelectingBackUI;
+	
+
+	// UI関連の変数
+	const float kUIPositionSpace = 40.0f;	// 各UI(選択肢)の間隔
+	const float kUIBasePosition = 480.0f;	// UI(選択肢)の基本となる座標
+	
+	int32_t mUISelectingNum;	// 選択中のUI番号
+	bool mIsUpperBackUICount;	// 背景UIのカウントが上昇中であるか
+
+	bool mIsTransUI;	// UI表示の遷移中であるか
+	float mUITransCount;	// UI表示切替の進行度
+
+
 
 	// -- エディタテスト -- //
 	std::unique_ptr<BTNodeEditor> mBTNodeEditor;
 
-	// -- シャドウテスト -- //
-
-	// オブジェクト
-	std::unique_ptr<ShadowObject> mObject;
-
-	// -- 画面遷移テスト -- //
-
-	// 衝突判定マネージャ
-	std::unique_ptr<CollisionManager> mCollisionManager;
-	// OBB衝突テスト
-	std::unique_ptr<Object3d> mOBBTestObj;
-	std::unique_ptr<Object3d> mOBBTestObj2;
-
+	
 };
 
