@@ -17,12 +17,29 @@ namespace AINode {
 		// コンストラクタ
 		Composite() = default;
 		// 仮想デストラクタ
-		virtual ~Composite() override = default;
+		~Composite() override = default;
 
 		// 実行処理
 		virtual State Tick() override = 0;
 		// 再起動処理
 		virtual void Reset() override = 0;
+		
+		// JSONへの変換
+		// 現時点ではSelectorもSequenceも中身が変わらないのでここで定義する
+		inline virtual json ConvertToJson() override {
+
+			nlohmann::json j;
+			j["name"] = mName;				// ノードの名称
+			j["index"] = mIndex;			// エディタで使用するノード番号
+			j["tag"] = mTag;				// ノードの種類(クラス名)
+			
+			// 子ノードの走査
+			for (auto& child : mChildren) {
+				j["child"].push_back(child->ConvertToJson());
+			}
+
+			return j;
+		}
 
 		// 子ノードの番号をセットする
 		inline virtual void SetChald(const std::shared_ptr<INode>& child) {
@@ -50,7 +67,9 @@ namespace AINode {
 	public: // -- 公開 メンバ関数 -- //
 
 		// コンストラクタ
-		Selector(const std::string& nodeName) {};
+		Selector(const std::string& nodeName) {
+			mName = nodeName;
+		};
 
 		// デストラクタ
 		virtual ~Selector()override {};

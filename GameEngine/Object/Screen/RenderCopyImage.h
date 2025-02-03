@@ -91,16 +91,16 @@ struct FullScereenEffect {
 	Matrix4x4 projectionInverse; // NDCをViewに変換するために使う逆行列    
 };
 
-class RenderCopyImage{
+class PostEffect{
 
 private:
 
-	RenderCopyImage();
-	~RenderCopyImage();
+	PostEffect();
+	~PostEffect();
 
 public:
 	
-	static RenderCopyImage* GetInstance();
+	static PostEffect* GetInstance();
 	void Finalize();
 
 	void Init();
@@ -228,6 +228,6 @@ private:
 	int32_t mDepthStencilHandle;
 
 	// インスタンス
-	static RenderCopyImage* instance;
+	static PostEffect* instance;
 };
 

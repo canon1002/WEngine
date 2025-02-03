@@ -9,6 +9,7 @@
 #include "GameEngine/Editor/NodeEditor/BTNodeEditor.h"
 
 // ゲーム用
+#include"App/Actor/Actor.h"
 #include "App/Player/Player.h"
 #include "App/Enemy/BossEnemy.h"
 // エフェクト
@@ -88,6 +89,7 @@ private:
 
 
 	// -- エディタテスト -- //
+	std::unique_ptr<Actor> mBTNodeTestActor;
 	std::unique_ptr<BTNodeEditor> mBTNodeEditor;
 
 	

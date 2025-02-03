@@ -12,8 +12,8 @@ class BossEnemy : public Actor
 {
 public: // -- 公開 メンバ関数 -- //
 
-	BossEnemy() = default;
-	~BossEnemy() = default;
+	BossEnemy();
+	~BossEnemy();
 
 	// 初期化
 	void Init();

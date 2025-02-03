@@ -50,7 +50,7 @@ void SceneManager::Init(){
 	Framerate::GetInstance()->Init();
 
 	// ポストエフェクト
-	RenderCopyImage::GetInstance()->Init();
+	PostEffect::GetInstance()->Init();
 }
 
 // 処理
@@ -123,7 +123,7 @@ int SceneManager::Run() {
 			/// 更新処理
 			sceneArr_[currentSceneNo_]->Update();
 			// ポストエフェクト
-			RenderCopyImage::GetInstance()->Update();
+			PostEffect::GetInstance()->Update();
 			// ダメージ表記の更新
 			DamageReaction::GetInstance()->UpdateSprite();
 
@@ -144,7 +144,7 @@ int SceneManager::Run() {
 		}
 		
 		// ポストエフェクトのImGui
-		RenderCopyImage::GetInstance()->Debug();
+		PostEffect::GetInstance()->Debug();
 
 		// バックグラウンド処理
 		//if (ImGui::Button("Q")) {
@@ -175,8 +175,8 @@ int SceneManager::Run() {
 		// 描画前処理
 		DirectXCommon::GetInstance()->PreDraw();
 		
-		RenderCopyImage::GetInstance()->PreDraw();
-		RenderCopyImage::GetInstance()->Draw();
+		PostEffect::GetInstance()->PreDraw();
+		PostEffect::GetInstance()->Draw();
 
 		// UI描画
 		sceneArr_[currentSceneNo_]->DrawUI();
@@ -216,7 +216,7 @@ int SceneManager::Run() {
 	
 	InputManager::GetInstance()->Final();
 	Audio::GetInstance()->Finalize();
-	RenderCopyImage::GetInstance()->Finalize();
+	PostEffect::GetInstance()->Finalize();
 
 	return 0;
 }

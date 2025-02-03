@@ -306,7 +306,7 @@ void GameScene::Update() {
 		}
 
 		// ビネットでフェードインする
-		RenderCopyImage::GetInstance()->SetViggnetIndex(ExponentialInterpolation(10.0f, 0.0f, mViggnetTime, 1.0f));
+		PostEffect::GetInstance()->SetViggnetIndex(ExponentialInterpolation(10.0f, 0.0f, mViggnetTime, 1.0f));
 
 		// フェードインが終わったら戦闘開始
 		if (mViggnetTime == 1.0f) {
@@ -385,7 +385,7 @@ void GameScene::Update() {
 		if (mPlayer->GetStatus()->HP <= 0.0f) {
 			mPhase = Phase::LOSE;
 			mViggnetTime = 0.0f;
-			RenderCopyImage::GetInstance()->SetRedViggnetEnable(true);
+			PostEffect::GetInstance()->SetRedViggnetEnable(true);
 
 		}
 		// ボスのHPが0になったら
@@ -451,10 +451,10 @@ void GameScene::Update() {
 				mViggnetTime += (1.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetGameSpeed();
 
 				// ビネットでフェードする
-				RenderCopyImage::GetInstance()->SetViggnetMultiplier(ExponentialInterpolation(10.0f, 20.0f, mViggnetTime, 1.0f));
-				RenderCopyImage::GetInstance()->SetViggnetIndex(ExponentialInterpolation(0.0f, 4.0f, mViggnetTime, 1.0f));
-				RenderCopyImage::GetInstance()->SetRedViggnetMultiplier(ExponentialInterpolation(0.0f, 0.5f, mViggnetTime, 1.0f));
-				RenderCopyImage::GetInstance()->SetRedViggnetIndex(ExponentialInterpolation(0.0f, 0.5f, mViggnetTime, 1.0f));
+				PostEffect::GetInstance()->SetViggnetMultiplier(ExponentialInterpolation(10.0f, 20.0f, mViggnetTime, 1.0f));
+				PostEffect::GetInstance()->SetViggnetIndex(ExponentialInterpolation(0.0f, 4.0f, mViggnetTime, 1.0f));
+				PostEffect::GetInstance()->SetRedViggnetMultiplier(ExponentialInterpolation(0.0f, 0.5f, mViggnetTime, 1.0f));
+				PostEffect::GetInstance()->SetRedViggnetIndex(ExponentialInterpolation(0.0f, 0.5f, mViggnetTime, 1.0f));
 				//mGameOverFadeSprite->SetColor(Color(0.4f, 0.0f, 0.0f, ExponentialInterpolation(0.0f, 0.8f, viggnetTime, 1.0f)));
 
 			}
@@ -484,15 +484,15 @@ void GameScene::Update() {
 					mViggnetTime += (1.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetGameSpeed();
 
 					// ビネットでフェードする
-					RenderCopyImage::GetInstance()->SetViggnetMultiplier(ExponentialInterpolation(20.0f, 10.0f, mViggnetTime, 1.0f));
-					RenderCopyImage::GetInstance()->SetViggnetIndex(ExponentialInterpolation(4.0f, 10.0f, mViggnetTime, 1.0f));
-					RenderCopyImage::GetInstance()->SetRedViggnetMultiplier(ExponentialInterpolation(0.0f, 0.5f, mViggnetTime, 1.0f));
-					RenderCopyImage::GetInstance()->SetRedViggnetIndex(ExponentialInterpolation(0.0f, 0.5f, mViggnetTime, 1.0f));
+					PostEffect::GetInstance()->SetViggnetMultiplier(ExponentialInterpolation(20.0f, 10.0f, mViggnetTime, 1.0f));
+					PostEffect::GetInstance()->SetViggnetIndex(ExponentialInterpolation(4.0f, 10.0f, mViggnetTime, 1.0f));
+					PostEffect::GetInstance()->SetRedViggnetMultiplier(ExponentialInterpolation(0.0f, 0.5f, mViggnetTime, 1.0f));
+					PostEffect::GetInstance()->SetRedViggnetIndex(ExponentialInterpolation(0.0f, 0.5f, mViggnetTime, 1.0f));
 				}
 				else if (mViggnetTime >= 1.0f) {
-					RenderCopyImage::GetInstance()->SetRedViggnetEnable(false);
-					RenderCopyImage::GetInstance()->SetRedViggnetMultiplier(0.0f);
-					RenderCopyImage::GetInstance()->SetRedViggnetIndex(0.0f);
+					PostEffect::GetInstance()->SetRedViggnetEnable(false);
+					PostEffect::GetInstance()->SetRedViggnetMultiplier(0.0f);
+					PostEffect::GetInstance()->SetRedViggnetIndex(0.0f);
 					this->Init();
 				}
 
@@ -583,7 +583,7 @@ void GameScene::Update() {
 			}
 		}
 		// ビネットでフェードインする
-		RenderCopyImage::GetInstance()->SetViggnetIndex(ExponentialInterpolation(0.0f, 10.0f, mViggnetTime, 1.0f));
+		PostEffect::GetInstance()->SetViggnetIndex(ExponentialInterpolation(0.0f, 10.0f, mViggnetTime, 1.0f));
 
 		// フェードインが終わったら戦闘開始
 		if (mViggnetTime == 1.0f) {

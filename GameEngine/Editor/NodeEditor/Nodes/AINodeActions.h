@@ -27,6 +27,8 @@ namespace AINode {
 		virtual State Tick() override = 0;
 		// 再起動処理
 		virtual void Reset() override = 0;
+		// JSONへの変換
+		virtual json ConvertToJson() override = 0;
 
 	public: // -- 公開 メンバ変数 -- //
 	
@@ -50,34 +52,41 @@ namespace AINode {
 		virtual ~Action() = default;
 
 		// 実行処理
-		virtual State Tick() override = 0;
+		virtual State Tick() override;
 		// 再起動処理
-		virtual void Reset() override = 0;
+		virtual void Reset() override {};
+		// JSONへの変換
+		inline virtual json ConvertToJson() override;
 
 	};
 
 	// --------------------------------------------
 	// コンディションノード(条件ノード)
 	// --------------------------------------------
-	class Condition : public INode {
+	class Condition : public Task {
 	public:
 
-		// コンストラクタ // 条件分岐用の関数を引数として渡す
-		Condition(std::function<bool()> func,const std::string& nodeName) {
-			mFunc = func;
+		// コンストラクタ
+		Condition(Actor* actor, const std::string& nodeName) {
+			
+			// Actorのポインタ取得
+			mActor = actor;
 			// ノード名をセット
 			mName = nodeName;
 		};
 
 		// 実行処理3
-		virtual State Tick() override = 0;
+		virtual State Tick() override;
 		// 再起動処理
-		virtual void Reset() override = 0;
+		virtual void Reset() override {};
+
+		// JSONへの変換
+		inline virtual json ConvertToJson() override;
 
 	public:
 
 		// 条件用 関数ポインタ
-		std::function<bool()> mFunc;
+		//std::function<bool()> mFunc;
 
 	};
 

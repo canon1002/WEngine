@@ -11,6 +11,14 @@
 #include "GameEngine/GameMaster/Framerate.h"
 #include "App/Enemy/Action/ActionList.h"
 
+BossEnemy::BossEnemy()
+{
+}
+
+BossEnemy::~BossEnemy()
+{
+}
+
 void BossEnemy::Init() {
 	
 	// モデルの読み込み

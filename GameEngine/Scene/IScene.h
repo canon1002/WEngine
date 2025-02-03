@@ -29,7 +29,7 @@ public:
 	virtual void Draw() = 0;
 	virtual void DrawUI() = 0;
 
-	// 仮想デストラクタがないと警告される
+	// 仮想デストラクタ(これがないと開放ミス)
 	virtual ~IScene();
 
 	// シーン番号のゲッター

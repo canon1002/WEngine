@@ -23,7 +23,7 @@ WEngineは、DirectX12のフレームワークを利用した自作ゲームエ�
 ## 使用技術
 - **プログラミング言語**: C++
 - **ツール**: Visual Studio, Git
-- **外部ライブラリ** DirectXTex,ImGui,ImNodes,assimp,json
+- **外部ライブラリ** DirectXTex,ImGui,ImNodes,assimp,json,magic_enum
 
 
 ## 作者

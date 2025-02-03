@@ -2,9 +2,9 @@
 #include "GameEngine/Object/Camera/MainCamera.h"
 #include "GameEngine/Base/Debug/ImGuiManager.h"
 
-RenderCopyImage::RenderCopyImage() {}
+PostEffect::PostEffect() {}
 
-RenderCopyImage::~RenderCopyImage(){
+PostEffect::~PostEffect(){
 
 	// インスタンスを解放
 	delete instance;
@@ -12,19 +12,19 @@ RenderCopyImage::~RenderCopyImage(){
 		
 }
 
-RenderCopyImage* RenderCopyImage::instance = nullptr;
+PostEffect* PostEffect::instance = nullptr;
 
-RenderCopyImage* RenderCopyImage::GetInstance()
+PostEffect* PostEffect::GetInstance()
 {
 	if (instance == nullptr) {
-		instance = new RenderCopyImage ();
+		instance = new PostEffect ();
 	}
 	return instance;
 }
 
-void RenderCopyImage::Finalize(){}
+void PostEffect::Finalize(){}
 
-void RenderCopyImage::Init() {
+void PostEffect::Init() {
 
 	// CopyImage用のPSO及びRootSignatureを生成する
 	CreateGraphicsPipeline();
@@ -72,7 +72,7 @@ void RenderCopyImage::Init() {
 	mDepthStencilHandle = DirectXCommon::GetInstance()->mSrv->CreateDepthSRV(DirectXCommon::GetInstance()->mDsv->mDepthStencilTextureResource.Get());
 }
 
-void RenderCopyImage::Update() {
+void PostEffect::Update() {
 
 	// 書き込むためのアドレスを取得
 	//fullScreenResource->Map(0, nullptr, reinterpret_cast<void**>(&fullScreenData));
@@ -94,13 +94,13 @@ void RenderCopyImage::Update() {
 
 }
 
-void RenderCopyImage::PreDraw(){
+void PostEffect::PreDraw(){
 	// RootSignatureを設定。PSOに設定しているが、別途設定が必要
 	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootSignature(rootSignature.Get());
 	DirectXCommon::GetInstance()->mCommandList->SetPipelineState(graphicsPipelineState.Get());
 }
 
-void RenderCopyImage::Draw() {
+void PostEffect::Draw() {
 
 	
 	DirectXCommon::GetInstance()->mCommandList->IASetVertexBuffers(0, 1, &mVertexBufferView);
@@ -123,7 +123,7 @@ void RenderCopyImage::Draw() {
 
 }
 
-void RenderCopyImage::Debug()
+void PostEffect::Debug()
 {
 
 #ifdef _DEBUG
@@ -176,7 +176,7 @@ void RenderCopyImage::Debug()
 
 }
 
-void RenderCopyImage::CreateRootSignature(){
+void PostEffect::CreateRootSignature(){
 	
 	// 複数枚のSRVを扱えるように一括で設定をする
 	D3D12_DESCRIPTOR_RANGE descriptorRange[1] = {};
@@ -261,7 +261,7 @@ void RenderCopyImage::CreateRootSignature(){
 
 }
 
-void RenderCopyImage::CreateGraphicsPipeline(){
+void PostEffect::CreateGraphicsPipeline(){
 
 	// ルートシグネチャを生成する
 	CreateRootSignature();
@@ -341,7 +341,7 @@ void RenderCopyImage::CreateGraphicsPipeline(){
 }
 
 //
-void RenderCopyImage::CreateVertexResource() {
+void PostEffect::CreateVertexResource() {
 
 	// VertexResourceを生成する(P.42)
 	// 実際に頂点リソースを作る
@@ -350,7 +350,7 @@ void RenderCopyImage::CreateVertexResource() {
 }
 
 //
-void RenderCopyImage::CreateTransformation() {
+void PostEffect::CreateTransformation() {
 
 	// Transformation用のResourceを作る
 	mWvpResource = DirectXCommon::GetInstance()->CreateBufferResource(DirectXCommon::GetInstance()->mDevice.Get(), sizeof(Matrix4x4));
@@ -363,7 +363,7 @@ void RenderCopyImage::CreateTransformation() {
 }
 
 //
-void RenderCopyImage::CreateBufferView() {
+void PostEffect::CreateBufferView() {
 
 	// VertexBufferViewを作成する(P.43)
 	// 頂点バッファビューを作成する

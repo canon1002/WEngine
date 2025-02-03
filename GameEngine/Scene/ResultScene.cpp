@@ -56,7 +56,7 @@ void ResultScene::Update()
 		}
 
 		// ビネットでフェードインする
-		RenderCopyImage::GetInstance()->SetViggnetIndex(ExponentialInterpolation(10.0f, 0.0f, mViggnetTime, 1.0f));
+		PostEffect::GetInstance()->SetViggnetIndex(ExponentialInterpolation(10.0f, 0.0f, mViggnetTime, 1.0f));
 
 		if (mViggnetTime == 1.0f)
 		{
@@ -84,7 +84,7 @@ void ResultScene::Update()
 		}
 
 		// ビネットでフェードインする
-		RenderCopyImage::GetInstance()->SetViggnetIndex(ExponentialInterpolation(10.0f, 0.0f, mViggnetTime, 1.0f));
+		PostEffect::GetInstance()->SetViggnetIndex(ExponentialInterpolation(10.0f, 0.0f, mViggnetTime, 1.0f));
 
 		if (mViggnetTime == 1.0f)
 		{

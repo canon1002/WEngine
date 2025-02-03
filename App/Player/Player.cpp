@@ -10,6 +10,10 @@
 #include "App/Reaction/DamageReaction.h"
 #include "GameEngine/GameMaster/Framerate.h"
 
+Player::Player()
+{
+}
+
 Player::~Player() {
 
 	for (auto& arrow : mArrows) {

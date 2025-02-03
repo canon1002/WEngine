@@ -10,7 +10,7 @@ void StartScene::Finalize() {
 void StartScene::Init(){
 
 	// ビネット初期設定(透明)
-	RenderCopyImage* render = RenderCopyImage::GetInstance();
+	PostEffect* render = PostEffect::GetInstance();
 	render->SetViggnetColor(Vector4(0.0f, 0.0f, 0.0f, 0.0f));
 	render->SetViggnetIndex(00.0f);
 	render->SetViggnetMultiplier(10.0f);
@@ -106,7 +106,7 @@ void StartScene::Update()
 		}
 
 		// ビネットでフェードインする
-		RenderCopyImage::GetInstance()->SetViggnetIndex(ExponentialInterpolation(10.0f, 0.0f, mViggnetTime, 1.0f));
+		PostEffect::GetInstance()->SetViggnetIndex(ExponentialInterpolation(10.0f, 0.0f, mViggnetTime, 1.0f));
 
 	}
 

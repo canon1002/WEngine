@@ -12,6 +12,16 @@ class Actor {
 public: // -- 公開 メンバ関数 -- //
 
 	/// <summary>
+	/// コンストラクタ
+	/// </summary>
+	Actor();
+
+	/// <summary>
+	/// 仮想デストラクタ
+	/// </summary>
+	virtual ~Actor() {}
+
+	/// <summary>
 	/// オブジェクト情報の取得
 	/// </summary>
 	Object3d* GetObject3D() { return mObject.get(); }
@@ -62,6 +72,11 @@ public: // -- 公開 メンバ関数 -- //
 
 	// -- アクセッサ -- //
 
+	/// <summary>
+	/// アクターの名称を取得する
+	/// </summary>
+	std::string GetName() { return mName; }
+
 
 	/// <summary>
 	/// ヒットストップの時間を設定
@@ -103,6 +118,9 @@ protected: // -- 限定公開 メンバ関数 -- //
 
 
 protected: // -- 限定公開 メンバ変数 -- //
+
+	// アクターの名称
+	std::string mName;
 
 	// オブジェクトクラス
 	std::unique_ptr<Object3d> mObject;

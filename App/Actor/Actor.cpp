@@ -3,6 +3,10 @@
 #include "GameEngine/Append/Collider/CollisionManager.h"
 
 
+Actor::Actor(){
+	
+}
+
 void Actor::SetCollider(CollisionManager* cManager)
 {
 	// コライダーをマネージャーに登録

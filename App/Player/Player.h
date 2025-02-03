@@ -100,7 +100,7 @@ class Player : public Actor {
 
 public: // -- 公開 メンバ関数 -- //
 
-	Player() = default;
+	Player();
 	~Player();
 
 	// 初期化

@@ -45,7 +45,7 @@ void TitleScene::Init() {
 	viggnetOnlyTime = 0.0f;
 
 	// ビネット初期設定(透明)
-	RenderCopyImage* render = RenderCopyImage::GetInstance();
+	PostEffect* render = PostEffect::GetInstance();
 	render->SetViggnetColor(Vector4(0.0f, 0.0f, 0.0f, 0.0f));
 	render->SetViggnetIndex(10.0f);
 	render->SetViggnetMultiplier(10.0f);
@@ -146,8 +146,10 @@ void TitleScene::Init() {
 
 
 	// -- エディタテスト -- //
-	mBTNodeEditor = std::make_unique<BTNodeEditor>();
-	mBTNodeEditor->Init();
+	
+	//mBTNodeTestActor = std::make_unique<Actor>("NodeTester");
+	//mBTNodeEditor = std::make_unique<BTNodeEditor>(mBTNodeTestActor.get());
+	//mBTNodeEditor->Init();
 
 
 }
@@ -161,7 +163,7 @@ void TitleScene::Update() {
 	mSwordObj->Update();
 	mSwordObj->DrawGUI();
 
-	mBTNodeEditor->Update();
+	//mBTNodeEditor->Update();
 
 
 	// タイトルロゴの更新
@@ -187,7 +189,7 @@ void TitleScene::Update() {
 				// スタート入力誘導に移行
 				mSelectStep = SelectStep::START;
 			}
-			RenderCopyImage::GetInstance()->SetViggnetIndex(ExponentialInterpolation(10.0f, 0.0f, viggnetOnlyTime, 1.0f));
+			PostEffect::GetInstance()->SetViggnetIndex(ExponentialInterpolation(10.0f, 0.0f, viggnetOnlyTime, 1.0f));
 		}
 
 		break;
@@ -386,7 +388,7 @@ void TitleScene::Update() {
 		}
 
 		// 画面をどんどん暗くする
-		RenderCopyImage::GetInstance()->SetViggnetIndex(ExponentialInterpolation(0.0f, 10.0f, mGameStartVignnetingTime, 1.0f));
+		PostEffect::GetInstance()->SetViggnetIndex(ExponentialInterpolation(0.0f, 10.0f, mGameStartVignnetingTime, 1.0f));
 
 		// 遷移が終了したら
 		if (mGameStartVignnetingTime >= 1.0f) {
