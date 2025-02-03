@@ -4,7 +4,7 @@
 「Gladiator」は、3Dアクションゲームです。プレイヤーは剣を持ち、目の前に現れた敵と1vs1の戦いをし、勝つことを目的としたゲームです。
 
 ### ゲームの特色
-- **敵の行動処理** : BehaviorTreeを活かしたランダム性を極力排除した敵AI
+- **敵の行動処理** : [BehaviorTree]を活かしたランダム性を極力排除した敵AI
 - **アニメーション** : モーションブレンドを利用し、プレイヤーや敵が滑らかに動きます
 
 # WEngine 詳細説明
@@ -32,3 +32,5 @@ WEngineは、DirectX12のフレームワークを利用した自作ゲームエ�
 - メール: your.email@example.com
 -  GitHubURL [WEngine & Gladiator](https://github.com/canon1002/WEngine)
 
+## 外部リンク
+[BehaviorTree]:(https://github.com/canon1002/WEngine/blob/master/App/AI/BehaviorTree/IBehavior.h)
