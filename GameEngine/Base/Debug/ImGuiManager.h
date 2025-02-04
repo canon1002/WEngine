@@ -22,11 +22,8 @@ class ImGuiManager
 {
 public: // -- 公開 メンバ関数 -- //
 
-	// コンストラクタ
-	ImGuiManager() = default;
-	// デストラクタ
-	~ImGuiManager() = default;
-
+	// インスタンスの取得
+	static ImGuiManager* GetInstance();
 	// 初期化
 	void Init();
 	// ImGuiの開始処理
@@ -37,6 +34,21 @@ public: // -- 公開 メンバ関数 -- //
 	void Draw();
 	// 終了処理
 	void Final();
+	// デストラクタ
+	~ImGuiManager() = default;
+
+private: // -- 非公開 メンバ関数 -- //
+
+	// コンストラクタ
+	ImGuiManager() = default;
+	// コピーコンストラクタと演算子オーバーロードの禁止
+	ImGuiManager(const ImGuiManager& obj) = delete;
+	ImGuiManager& operator=(const ImGuiManager& obj) = delete;
+
+private: // -- 非公開 メンバ変数 -- //
+
+	// インスタンス
+	static ImGuiManager* mInstance;
 
 };
 #endif // _DEBUG

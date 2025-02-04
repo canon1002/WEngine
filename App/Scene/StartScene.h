@@ -1,12 +1,12 @@
 #pragma once
-#include "IScene.h"
+#include "GameEngine/Scene/BaseScene.h"
 #include "GameEngine/Input/InputManager.h"
 
-class ResultScene :
-    public IScene
+class StartScene :
+    public BaseScene
 {
 public:
-	void Finalize()override;
+	void Final()override;
 
 	//　継承した関数
 	void Init() override;
@@ -19,12 +19,17 @@ public:
 	// 入力マネージャー
 	
 
-	UISet mTitleOne;
-	UISet mTitleLogo;
+	// 開始時の間
+	const float kStartWaitTimeMax = 2.0f;
+	float mStartWaitTime;
+
+	UISet mBackGround;
+	UISet mLogoImage;
 
 	// フェード中か
 	bool mIsFading;
-	bool mIsFadingSceneEnd;
+	bool mIsFadeOuting;
+
 	// 開始前のビネット
 	float mViggnetTime;
 

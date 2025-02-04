@@ -9,10 +9,11 @@
 #include "App/Reaction/DamageReaction.h"
 #include "GameEngine/Effect/Particle/ParticleManager.h"
 #include "App/Status/StatusManager.h"
-#include "GameEngine/Object/Screen/RenderCopyImage.h"
+#include "GameEngine/Effect/PostEffect/PostEffect.h"
 #include "GameEngine/GameMaster/Framerate.h"
+#include "GameEngine/Scene/SceneManager.h"
 
-void GameScene::Finalize() {}
+void GameScene::Final() {}
 
 void GameScene::Init() {
 
@@ -274,7 +275,8 @@ void GameScene::Update() {
 	// Bボタンまたは、Enterキーでシーン遷移
 	if (InputManager::GetInstance()->GetPushKey(DIK_1)) {
 		if (InputManager::GetInstance()->GetPused(Gamepad::Button::B) || InputManager::GetInstance()->GetTriggerKey(DIK_RETURN)) {
-			sceneNo = SCENE::RESULT;
+			// リザルトシーンへ移行する
+			SceneManager::GetInstance()->ChangeScene("Result");
 		}
 	}
 
@@ -588,7 +590,8 @@ void GameScene::Update() {
 		// フェードインが終わったら戦闘開始
 		if (mViggnetTime == 1.0f) {
 			//this->Init();
-			sceneNo = SCENE::RESULT;
+			// リザルトシーンへ移行する
+			SceneManager::GetInstance()->ChangeScene("Result");
 		}
 
 		// プレイヤー 更新

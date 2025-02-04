@@ -5,11 +5,13 @@
 #include "GameEngine/Editor/LevelEditor.h"
 #include "App/Reaction/DamageReaction.h"
 #include "GameEngine/Effect/Particle/ParticleManager.h"
-#include "GameEngine/Object/Screen/RenderCopyImage.h"
+#include "GameEngine/Effect/PostEffect/PostEffect.h"
 #include "GameEngine/GameMaster/Framerate.h"
 #include "GameEngine/Append/Collider/CollisionManager.h"
 
-void TitleScene::Finalize() {}
+#include "GameEngine/Scene/SceneManager.h"
+
+void TitleScene::Final() {}
 
 //　継承した関数
 void TitleScene::Init() {
@@ -393,7 +395,7 @@ void TitleScene::Update() {
 		// 遷移が終了したら
 		if (mGameStartVignnetingTime >= 1.0f) {
 			// ゲームシーンへ移行する
-			sceneNo = SCENE::STAGE;
+			SceneManager::GetInstance()->ChangeScene("Game");
 		}
 
 

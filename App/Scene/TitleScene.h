@@ -1,5 +1,5 @@
 #pragma once
-#include "IScene.h"
+#include "GameEngine/Scene/BaseScene.h"
 
 #include "GameEngine/Object/Camera/MainCamera.h"
 #include "GameEngine/Object/Model/Skybox/Skybox.h"
@@ -27,12 +27,12 @@ enum class SelectStep {
 };
 
 class TitleScene :
-    public IScene
+    public BaseScene
 {
 public:
 	~TitleScene() {}
 
-	void Finalize()override;
+	void Final()override;
 
 	//　継承した関数
 	void Init() override;

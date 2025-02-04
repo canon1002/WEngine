@@ -151,9 +151,9 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="GameEngine\Effect\PostEffect\LuminanceOutline.cpp" />
     <ClCompile Include="GameEngine\Effect\PostEffect\Vignette.cpp" />
     <ClCompile Include="GameEngine\Object\Model\MultiModel.cpp" />
-    <ClCompile Include="GameEngine\Object\Screen\RenderCopyImage.cpp" />
+    <ClCompile Include="GameEngine\Effect\PostEffect\PostEffect.cpp" />
     <ClCompile Include="GameEngine\Base\DirectX\DSV.cpp" />
-    <ClCompile Include="GameEngine\Base\Engine.cpp" />
+    <ClCompile Include="GameEngine\Base\Framework.cpp" />
     <ClCompile Include="GameEngine\Base\Debug\ImGuiManager.cpp" />
     <ClCompile Include="GameEngine\Base\DirectX\DirectXCommon.cpp" />
     <ClCompile Include="GameEngine\Base\DirectX\SRV.cpp" />
@@ -175,14 +175,13 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="GameEngine\Object\Sprite\Triangle.cpp" />
     <ClCompile Include="GameEngine\Resource\Audio\Audio.cpp" />
     <ClCompile Include="GameEngine\Resource\Texture\Resource.cpp" />
-    <ClCompile Include="GameEngine\Scene\GameScene.cpp" />
-    <ClCompile Include="GameEngine\Scene\IScene.cpp" />
-    <ClCompile Include="GameEngine\Scene\MenuScene.cpp" />
-    <ClCompile Include="GameEngine\Scene\OverScene.cpp" />
-    <ClCompile Include="GameEngine\Scene\ResultScene.cpp" />
+    <ClCompile Include="App\Scene\GameScene.cpp" />
+    <ClCompile Include="App\Scene\MenuScene.cpp" />
+    <ClCompile Include="App\Scene\OverScene.cpp" />
+    <ClCompile Include="App\Scene\ResultScene.cpp" />
     <ClCompile Include="GameEngine\Scene\SceneManager.cpp" />
-    <ClCompile Include="GameEngine\Scene\StartScene.cpp" />
-    <ClCompile Include="GameEngine\Scene\TitleScene.cpp" />
+    <ClCompile Include="App\Scene\StartScene.cpp" />
+    <ClCompile Include="App\Scene\TitleScene.cpp" />
     <ClCompile Include="Externals\imgui\imgui.cpp" />
     <ClCompile Include="Externals\imgui\imgui_demo.cpp" />
     <ClCompile Include="Externals\imgui\imgui_draw.cpp" />
@@ -201,8 +200,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="GameEngine\Editor\GlobalVariables.cpp" />
     <ClCompile Include="GameEngine\Editor\LevelEditor.cpp" />
     <ClCompile Include="GameEngine\Effect\Particle\ParticleCommon.cpp" />
-    <ClCompile Include="GameEngine\Scene\LoadingScene.cpp" />
     <ClCompile Include="App\Enemy\Action\KnockBack.cpp" />
+    <ClCompile Include="App\Gladiator.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="GameEngine\Object\3d\Object3d.cpp" />
     <ClCompile Include="GameEngine\Object\Model\ModelManager.cpp" />
@@ -225,8 +224,10 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="GameEngine\Object\Base\ObjectBase.cpp" />
     <ClCompile Include="GameEngine\Effect\Particle\TrailEffect.cpp" />
     <ClCompile Include="App\Enemy\Action\Seartch.cpp" />
+    <ClCompile Include="App\Scene\SceneFactory.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="GameEngine\Scene\AbstractSceneFactory.h" />
     <ClInclude Include="GameEngine\Append\Collider\CapsuelCollider.h" />
     <ClInclude Include="GameEngine\Editor\NodeEditor\Nodes\AINodeActions.h" />
     <ClInclude Include="App\Actor\Actor.h" />
@@ -263,9 +264,9 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="GameEngine\Effect\PostEffect\LuminanceOutline.h" />
     <ClInclude Include="GameEngine\Effect\PostEffect\Vignette.h" />
     <ClInclude Include="GameEngine\Object\Model\MultiModel.h" />
-    <ClInclude Include="GameEngine\Object\Screen\RenderCopyImage.h" />
+    <ClInclude Include="GameEngine\Effect\PostEffect\PostEffect.h" />
     <ClInclude Include="GameEngine\Base\DirectX\DSV.h" />
-    <ClInclude Include="GameEngine\Base\Engine.h" />
+    <ClInclude Include="GameEngine\Base\Framework.h" />
     <ClInclude Include="GameEngine\Base\Debug\ImGuiManager.h" />
     <ClInclude Include="GameEngine\Base\DirectX\DirectXCommon.h" />
     <ClInclude Include="GameEngine\Base\DirectX\SRV.h" />
@@ -293,14 +294,14 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="GameEngine\Object\Sprite\Triangle.h" />
     <ClInclude Include="GameEngine\Resource\Audio\Audio.h" />
     <ClInclude Include="GameEngine\Resource\Texture\Resource.h" />
-    <ClInclude Include="GameEngine\Scene\GameScene.h" />
-    <ClInclude Include="GameEngine\Scene\IScene.h" />
-    <ClInclude Include="GameEngine\Scene\MenuScene.h" />
-    <ClInclude Include="GameEngine\Scene\OverScene.h" />
-    <ClInclude Include="GameEngine\Scene\ResultScene.h" />
+    <ClInclude Include="App\Scene\GameScene.h" />
+    <ClInclude Include="GameEngine\Scene\BaseScene.h" />
+    <ClInclude Include="App\Scene\MenuScene.h" />
+    <ClInclude Include="App\Scene\OverScene.h" />
+    <ClInclude Include="App\Scene\ResultScene.h" />
     <ClInclude Include="GameEngine\Scene\SceneManager.h" />
-    <ClInclude Include="GameEngine\Scene\StartScene.h" />
-    <ClInclude Include="GameEngine\Scene\TitleScene.h" />
+    <ClInclude Include="App\Scene\StartScene.h" />
+    <ClInclude Include="App\Scene\TitleScene.h" />
     <ClInclude Include="Externals\imgui\imconfig.h" />
     <ClInclude Include="Externals\imgui\imgui.h" />
     <ClInclude Include="Externals\imgui\imgui_impl_dx12.h" />
@@ -335,7 +336,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="GameEngine\Editor\GlobalVariables.h" />
     <ClInclude Include="GameEngine\Editor\LevelEditor.h" />
     <ClInclude Include="GameEngine\Effect\Particle\ParticleCommon.h" />
-    <ClInclude Include="GameEngine\Scene\LoadingScene.h" />
     <ClInclude Include="GameEngine\Object\ShadowObject.h" />
     <ClInclude Include="GameEngine\Object\Screen\ShadowMap.h" />
     <ClInclude Include="App\Player\Action\Skill.h" />
@@ -344,6 +344,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="GameEngine\Effect\Particle\TrailEffect.h" />
     <ClInclude Include="App\Enemy\Action\Seartch.h" />
     <ClInclude Include="App\Enemy\Action\KnockBack.h" />
+    <ClInclude Include="App\Gladiator.h" />
+    <ClInclude Include="App\Scene\SceneFactory.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt" />

@@ -3,24 +3,13 @@
 #include "GameEngine/Object/Sprite/Sprite.h"
 #include <memory>
 
-enum SCENE { 
-	START,
-	TITLE, 
-	STAGE,
-	RESULT,
-	OVER ,
-	MENU,
-};
+class SceneManager;
 
-class IScene
-{
-protected:
-	// シーンを管理する番号
-	static int sceneNo;
+class BaseScene{
 
-public:
+public: // -- 公開メンバ 関数 -- //
 
-	virtual void Finalize() = 0;
+	
 
 	// 継承先で実装される関数
 	// 抽象クラスなので純粋仮想関数にする
@@ -28,12 +17,18 @@ public:
 	virtual void Update() = 0;
 	virtual void Draw() = 0;
 	virtual void DrawUI() = 0;
+	virtual void Final() = 0;
 
-	// 仮想デストラクタ(これがないと開放ミス)
-	virtual ~IScene();
+	// 仮想デストラクタ(これがないと開放ミスが発生)
+	virtual ~BaseScene() {};
 
-	// シーン番号のゲッター
-	int GetSceneNo();
+	// シーンマネージャのポインタをセットする
+	virtual void SetSceneManager(SceneManager* sceneManager) { mSceneManager = sceneManager; }
+
+protected: // -- 限定公開 メンバ変数 -- //
+
+	// シーンマネージャのポインタ
+	SceneManager* mSceneManager;
 
 };
 

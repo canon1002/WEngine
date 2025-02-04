@@ -1,5 +1,5 @@
 #pragma once
-#include "IScene.h"
+#include "GameEngine/Scene/BaseScene.h"
 
 #include "GameEngine/Object/Camera/MainCamera.h"
 #include "GameEngine/Object/Model/Skybox/Skybox.h"
@@ -34,13 +34,14 @@ struct EasingToVector3 {
 };
 
 class GameScene :
-	public IScene
+	public BaseScene
 {
 public:
 
-	~GameScene() {}
+	~GameScene() {};
+
 	//　継承した関数
-	void Finalize()override;
+	void Final()override;
 	void Init() override;
 	void Update() override;
 	void Draw() override;

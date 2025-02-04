@@ -193,13 +193,10 @@
     <ClCompile Include="Externals\imgui\imgui_widgets.cpp">
       <Filter>Externals\imgui</Filter>
     </ClCompile>
-    <ClCompile Include="GameEngine\Scene\IScene.cpp">
-      <Filter>GameEngine\Scene</Filter>
-    </ClCompile>
     <ClCompile Include="GameEngine\Scene\SceneManager.cpp">
       <Filter>GameEngine\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="GameEngine\Scene\TitleScene.cpp">
+    <ClCompile Include="App\Scene\TitleScene.cpp">
       <Filter>GameEngine\Scene</Filter>
     </ClCompile>
     <ClCompile Include="GameEngine\Math\Matrix4x4.cpp">
@@ -232,10 +229,10 @@
     <ClCompile Include="GameEngine\Object\3d\Object3d.cpp">
       <Filter>GameEngine\Object\3d</Filter>
     </ClCompile>
-    <ClCompile Include="GameEngine\Scene\GameScene.cpp">
+    <ClCompile Include="App\Scene\GameScene.cpp">
       <Filter>GameEngine\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="GameEngine\Scene\ResultScene.cpp">
+    <ClCompile Include="App\Scene\ResultScene.cpp">
       <Filter>GameEngine\Scene</Filter>
     </ClCompile>
     <ClCompile Include="GameEngine\Object\Sprite\Sprite.cpp">
@@ -268,9 +265,6 @@
     <ClCompile Include="App\Player\Player.cpp">
       <Filter>App\Player</Filter>
     </ClCompile>
-    <ClCompile Include="GameEngine\Scene\LoadingScene.cpp">
-      <Filter>GameEngine\Scene</Filter>
-    </ClCompile>
     <ClCompile Include="App\Enemy\Action\Action.cpp">
       <Filter>App\Enemy\Action</Filter>
     </ClCompile>
@@ -295,7 +289,7 @@
     <ClCompile Include="GameEngine\Append\Animation\Skinning\Skinnig.cpp">
       <Filter>GameEngine\Append\Animation\Skinning</Filter>
     </ClCompile>
-    <ClCompile Include="GameEngine\Base\Engine.cpp">
+    <ClCompile Include="GameEngine\Base\Framework.cpp">
       <Filter>GameEngine\Base</Filter>
     </ClCompile>
     <ClCompile Include="GameEngine\Base\Debug\ImGuiManager.cpp">
@@ -347,7 +341,7 @@
     <ClCompile Include="GameEngine\Object\Model\MultiModel.cpp">
       <Filter>GameEngine\Object\Model</Filter>
     </ClCompile>
-    <ClCompile Include="GameEngine\Object\Screen\RenderCopyImage.cpp">
+    <ClCompile Include="GameEngine\Effect\PostEffect\PostEffect.cpp">
       <Filter>GameEngine\Object\Screen</Filter>
     </ClCompile>
     <ClCompile Include="GameEngine\Object\Screen\ShadowMap.cpp">
@@ -428,13 +422,13 @@
     <ClCompile Include="GameEngine\Effect\PostEffect\Vignette.cpp">
       <Filter>GameEngine\Effect\PostEffect</Filter>
     </ClCompile>
-    <ClCompile Include="GameEngine\Scene\MenuScene.cpp">
+    <ClCompile Include="App\Scene\MenuScene.cpp">
       <Filter>GameEngine\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="GameEngine\Scene\OverScene.cpp">
+    <ClCompile Include="App\Scene\OverScene.cpp">
       <Filter>GameEngine\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="GameEngine\Scene\StartScene.cpp">
+    <ClCompile Include="App\Scene\StartScene.cpp">
       <Filter>GameEngine\Scene</Filter>
     </ClCompile>
     <ClCompile Include="GameEngine\Object\Base\ObjectBase.cpp">
@@ -455,6 +449,8 @@
     <ClCompile Include="App\Enemy\Action\Dash.cpp" />
     <ClCompile Include="GameEngine\Editor\NodeEditor\Nodes\AINodeActions.cpp" />
     <ClCompile Include="GameEngine\Append\Collider\CapsuelCollider.cpp" />
+    <ClCompile Include="App\Gladiator.cpp" />
+    <ClCompile Include="App\Scene\SceneFactory.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameEngine\Object\Light\DirectionalLight.h">
@@ -490,13 +486,13 @@
     <ClInclude Include="Externals\imgui\imstb_truetype.h">
       <Filter>Externals\imgui</Filter>
     </ClInclude>
-    <ClInclude Include="GameEngine\Scene\IScene.h">
+    <ClInclude Include="GameEngine\Scene\BaseScene.h">
       <Filter>GameEngine\Scene</Filter>
     </ClInclude>
     <ClInclude Include="GameEngine\Scene\SceneManager.h">
       <Filter>GameEngine\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="GameEngine\Scene\TitleScene.h">
+    <ClInclude Include="App\Scene\TitleScene.h">
       <Filter>GameEngine\Scene</Filter>
     </ClInclude>
     <ClInclude Include="GameEngine\Math\Math.h">
@@ -538,10 +534,10 @@
     <ClInclude Include="GameEngine\Object\3d\Object3d.h">
       <Filter>GameEngine\Object\3d</Filter>
     </ClInclude>
-    <ClInclude Include="GameEngine\Scene\GameScene.h">
+    <ClInclude Include="App\Scene\GameScene.h">
       <Filter>GameEngine\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="GameEngine\Scene\ResultScene.h">
+    <ClInclude Include="App\Scene\ResultScene.h">
       <Filter>GameEngine\Scene</Filter>
     </ClInclude>
     <ClInclude Include="GameEngine\Object\Sprite\Sprite.h">
@@ -574,9 +570,6 @@
     <ClInclude Include="App\Player\Player.h">
       <Filter>App\Player</Filter>
     </ClInclude>
-    <ClInclude Include="GameEngine\Scene\LoadingScene.h">
-      <Filter>GameEngine\Scene</Filter>
-    </ClInclude>
     <ClInclude Include="App\Enemy\Action\Action.h">
       <Filter>App\Enemy\Action</Filter>
     </ClInclude>
@@ -598,7 +591,7 @@
     <ClInclude Include="GameEngine\Append\Animation\Skinning\Skinnig.h">
       <Filter>GameEngine\Append\Animation\Skinning</Filter>
     </ClInclude>
-    <ClInclude Include="GameEngine\Base\Engine.h">
+    <ClInclude Include="GameEngine\Base\Framework.h">
       <Filter>GameEngine\Base</Filter>
     </ClInclude>
     <ClInclude Include="GameEngine\Base\Debug\ImGuiManager.h">
@@ -658,7 +651,7 @@
     <ClInclude Include="GameEngine\Object\Model\MultiModel.h">
       <Filter>GameEngine\Object\Model</Filter>
     </ClInclude>
-    <ClInclude Include="GameEngine\Object\Screen\RenderCopyImage.h">
+    <ClInclude Include="GameEngine\Effect\PostEffect\PostEffect.h">
       <Filter>GameEngine\Object\Screen</Filter>
     </ClInclude>
     <ClInclude Include="GameEngine\Object\Screen\ShadowMap.h">
@@ -742,13 +735,13 @@
     <ClInclude Include="GameEngine\Effect\PostEffect\Vignette.h">
       <Filter>GameEngine\Effect\PostEffect</Filter>
     </ClInclude>
-    <ClInclude Include="GameEngine\Scene\MenuScene.h">
+    <ClInclude Include="App\Scene\MenuScene.h">
       <Filter>GameEngine\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="GameEngine\Scene\OverScene.h">
+    <ClInclude Include="App\Scene\OverScene.h">
       <Filter>GameEngine\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="GameEngine\Scene\StartScene.h">
+    <ClInclude Include="App\Scene\StartScene.h">
       <Filter>GameEngine\Scene</Filter>
     </ClInclude>
     <ClInclude Include="GameEngine\Object\Base\ObjectBase.h">
@@ -772,6 +765,9 @@
     <ClInclude Include="GameEngine\Editor\NodeEditor\Nodes\AINodeComposites.h" />
     <ClInclude Include="GameEngine\Editor\NodeEditor\Nodes\AINodeActions.h" />
     <ClInclude Include="GameEngine\Append\Collider\CapsuelCollider.h" />
+    <ClInclude Include="App\Gladiator.h" />
+    <ClInclude Include="GameEngine\Scene\AbstractSceneFactory.h" />
+    <ClInclude Include="App\Scene\SceneFactory.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt">

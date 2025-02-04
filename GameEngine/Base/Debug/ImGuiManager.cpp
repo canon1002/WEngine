@@ -1,6 +1,20 @@
 #include "ImGuiManager.h"
 
 #ifdef _DEBUG
+
+// インスタンスの初期化
+ImGuiManager* ImGuiManager::mInstance = nullptr;
+
+// インスタンスの取得
+ImGuiManager* ImGuiManager::GetInstance(){
+
+	// インスタンスがnullptrであれば生成する
+	if (mInstance == nullptr) {
+		mInstance = new ImGuiManager();
+	}
+	return mInstance;
+}
+
 void ImGuiManager::Init(){
 	
 	DXGI_SWAP_CHAIN_DESC1 swapChain;
@@ -51,5 +65,9 @@ void ImGuiManager::Final(){
 	ImGui_ImplWin32_Shutdown();
 	ImGui::DestroyContext();
 	ImNodes::DestroyContext();
+
+	// インスタンスの破棄
+	delete mInstance;
+	mInstance = nullptr;
 }
 #endif // _DEBUG

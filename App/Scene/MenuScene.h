@@ -1,12 +1,12 @@
 #pragma once
-#include "IScene.h"
+#include "GameEngine/Scene/BaseScene.h"
 #include "GameEngine/Input/InputManager.h"
 
-class OverScene :
-    public IScene
+class MenuScene :
+    public BaseScene
 {
 public:
-	void Finalize()override;
+	void Final()override;
 
 	//　継承した関数
 	void Init() override;

@@ -1,9 +1,10 @@
 #include "StartScene.h"
-#include "GameEngine/Object/Screen/RenderCopyImage.h"
+#include "GameEngine/Effect/PostEffect/PostEffect.h"
 #include "GameEngine/Object/ObjectAdministrator.h"
 #include "GameEngine/GameMaster/Framerate.h"
+#include "GameEngine/Scene/SceneManager.h"
 
-void StartScene::Finalize() {
+void StartScene::Final() {
 
 }
 
@@ -102,7 +103,8 @@ void StartScene::Update()
 		else if (mViggnetTime >= 1.0f)
 		{
 			mViggnetTime = 1.0f;
-			sceneNo = SCENE::TITLE;
+			// タイトルシーンへ移行する
+			SceneManager::GetInstance()->ChangeScene("Title");
 		}
 
 		// ビネットでフェードインする

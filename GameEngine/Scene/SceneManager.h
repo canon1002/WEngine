@@ -1,52 +1,58 @@
 #pragma once
-#include <memory>
-#include "IScene.h"
-#include "StartScene.h"
-#include "TitleScene.h"
-#include "GameScene.h"
-#include "ResultScene.h"
-#include "OverScene.h"
-#include "MenuScene.h"
-
-#include "GameEngine/Base/DirectX/DirectXCommon.h"
-#include "GameEngine/Base/Debug/ImGuiManager.h"
-#include "GameEngine/object/camera/MainCamera.h"
-#include "GameEngine/Object/Sprite/Triangle.h"
-#include "GameEngine/Object/Sprite/Sprite.h"
-#include "GameEngine/Resource/Texture/Resource.h"
-#include "GameEngine/Object/Sprite/Sphere.h"
-
-#include "GameEngine/Input/InputManager.h"
-#include "GameEngine/Resource/Audio/Audio.h"
-
-#include "GameEngine/Object/ObjectAdministrator.h"
-
-#include "GameEngine/Object/Screen/RenderCopyImage.h"
+#include "GameEngine/Scene/BaseScene.h"
+#include "GameEngine/Scene/AbstractSceneFactory.h"
 
 class SceneManager
 {
-private:
+public: // -- 公開 メンバ関数 -- //
 
-	// シーンを保持するメンバ変数
-	std::array<std::unique_ptr<IScene>, 6> sceneArr_;
+	// インスタンス生成
+	static SceneManager* GetInstance();
 
-	// どのシーンを呼び出すかを管理する変数
-	int32_t currentSceneNo_;// 現在のシーン
-	int32_t prevSceneNo_ = -1;// 前のシーン
-
-
-#ifdef _DEBUG
-	// ImGuiManager
-	std::unique_ptr<ImGuiManager> imGuiManager_ = nullptr;
-#endif // _DEBUG
-	
-public:
-
-	SceneManager();
+	// デストラクタ
 	~SceneManager();
 
+	// 初期化
 	void Init();
-	int Run();//　この関数でゲームループを呼び出す
+	void Update();
+	void Draw();
+	void Final();
+
+	/// <summary>
+	/// シーン工場の設定
+	/// </summary>
+	/// <param name="sceneFactory">シーン工場(具象)</param>
+	void SetSceneFactory(AbstractSceneFactory* sceneFactory) {
+		mSceneFactory = sceneFactory;
+	}
+
+	/// <summary>
+	/// 次シーン予約
+	/// </summary>
+	/// <param name="sceneName"> シーン名 </param>
+	void ChangeScene(const std::string& sceneName);
+
+private: // -- 非公開 メンバ変数 -- //
+
+	// コンストラクタ
+	SceneManager() = default;
+	// コピーコンストラクタと演算子オーバーロードの禁止
+	SceneManager(const SceneManager& obj) = delete;
+	SceneManager& operator=(const SceneManager& obj) = delete;
+
+private: // -- 非公開 メンバ変数 -- //
+
+	// 実行中のシーン
+	std::unique_ptr<BaseScene> mCurrentScene = nullptr;
+	// 次のシーン
+	std::unique_ptr<BaseScene> mNextScene = nullptr;
+	// メニューシーン(現行シーンの上のレイヤーのようなもの)
+	std::unique_ptr<BaseScene> mMenuScene = nullptr;
+	// シーン工場のポインタ(解放禁止)
+	AbstractSceneFactory* mSceneFactory;
+
+	// インスタンス
+	static SceneManager* mInstance;
 
 };
 

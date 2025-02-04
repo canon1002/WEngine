@@ -1,9 +1,10 @@
 #include "ResultScene.h"
-#include "GameEngine/Object/Screen/RenderCopyImage.h"
+#include "GameEngine/Effect/PostEffect/PostEffect.h"
 #include "GameEngine/GameMaster/Framerate.h"
 #include "GameEngine/Object/ObjectAdministrator.h"
+#include "GameEngine/Scene/SceneManager.h"
 
-void ResultScene::Finalize() {
+void ResultScene::Final() {
 
 }
 
@@ -94,7 +95,8 @@ void ResultScene::Update()
 	// シーン切り替え
 	// Bボタンまたは、Enterキーでシーン遷移
 	if (InputManager::GetInstance()->GetPused(Gamepad::Button::B) || InputManager::GetInstance()->GetTriggerKey(DIK_RETURN)) {
-		sceneNo = SCENE::TITLE;
+		// タイトルシーンへ移行する
+		SceneManager::GetInstance()->ChangeScene("Title");
 	}
 
 }
