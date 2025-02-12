@@ -151,56 +151,74 @@ Vector3 Scalar(float scalar, const Vector3& v)
 	return result;
 }
 
+float Lerp(const float& p0, const float& p1, const float t){
+	return (1.0f - t) * p0 + t * p1;
+}
+
 Vector3 Lerp(const Vector3& p0, const Vector3& p1, const float t) {
 
 	return Vector3{
-		t * p0.x + (1.0f - t) * p1.x,
-		t * p0.y + (1.0f - t) * p1.y,
-		t * p0.z + (1.0f - t) * p1.z
+		(1.0f - t) * p0.x + t * p1.x,
+		(1.0f - t) * p0.y + t * p1.y,
+		(1.0f - t) * p0.z + t * p1.z,
 	};
 }
 
 Vector3 Slerp(const Vector3& p0, const Vector3& p1, const float t)
 {
-	//// 正規化した値を取得
-	//std::clamp(t, 0.0f, 1.0f);
-	//Vector3 np0 = Normalize(p0);
-	//Vector3 np1 = Normalize(p1);
+	// 戻り値の宣言
+	Vector3 result;
 
-	//// なす角をarcsin(アークサイン)を用いて求める
-	//float theta = acosf(Dot(np0, np1));
-	//float sinTheta = sin(theta);
-	//float sinThetaFrom = sin((1 - t) * theta);
-	//float sinThetaTo = sin(t * theta);
-	//
-	//Vector3 result = Lerp(p0, p1, t);
-	//Vector3 slerpVector = (sinThetaFrom * np0 + sinThetaTo * np1) / sinTheta;
+	// 正規化した値を取得
+	Vector3 n0 = Normalize(p0);
+	Vector3 n1 = Normalize(p1);
+	// 内積の取得
+	float dot = Dot(n0, n1);
+	if (dot < 0) {
+		// 逆の回転を利用
+		n0 *= (-1.0f);
+		dot = -dot;
+	}
 
-	//return Vector3(result * slerpVector);
+	// なす角を求める
+	float theta = std::acos(dot);
+	// sin角を求める
+	float sinTheta = 1.0f / std::sinf(theta);
 
-	float newT = std::clamp(t, 0.0f, 1.0f);
-
-	Vector3 normalizeV1 = Normalize(p0);
-	Vector3 normalizeV2 = Normalize(p1);
-
-
-	float dot = Dot(normalizeV1, normalizeV2);
-
-	float theta = std::acosf(dot) * newT;
-
-	Vector3 subtractVec3 = Subtract(p1, p0);
-	Vector3 relativeVector = Normalize(
-		Vector3{ subtractVec3.x * newT,
-		subtractVec3.y * newT,
-		subtractVec3.z * newT });
-
-	Vector3 result = {
-		p0.x * std::cos(theta) + relativeVector.x * std::sin(theta),
-		p0.y * std::cos(theta) + relativeVector.y * std::sin(theta),
-		p0.z * std::cos(theta) + relativeVector.z * std::sin(theta)
-	};
+	// thetaとsinを使って補間係数scaler0,scaler1を求める
+	// 
+	// 0.0により近いか
+	if (dot <= -1.0f || 1.0f <= dot || sinTheta == 0.0f) {
+		result = n0 * (1.0f - t) + (n1 * t);
+	}
+	// 近いほうで補完する
+	else if (dot < 0.0f) {
+		result = (n0 * (std::sin(theta * (1.0f - t)) * sinTheta)) + ((n1*-1) * (std::sin(theta * t) * sinTheta));
+	}
+	else {
+		result = (n0 * (std::sin(theta * (1.0f - t)) * sinTheta)) + (n1 * (std::sin(theta * t) * sinTheta));
+	}
 
 	return result;
+}
+
+float LerpShortAngle(float s, float e, float t){
+
+	// 角度差分を求める
+	float diff = e - s;
+
+	// 回転処理
+	const float PI = 3.14f;
+	// -2π~2πに
+	float rot = std::fmodf(diff, 2.0f * PI);
+	if (rot > PI) {
+		rot -= 2.0f * PI;
+	}
+	if (rot < -PI) {
+		rot += 2.0f * PI;
+	}
+
+	return Lerp(s, s + rot, t);
 }
 
 Vector3 CatmullRomInterpolation(const Vector3& p0, const Vector3& p1, const Vector3& p2, const Vector3& p3, const float t) {

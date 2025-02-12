@@ -44,7 +44,6 @@ public: // -- 公開 メンバ関数 -- //
 	/// <param name="cManager"></param>
 	void SetCollider(CollisionManager* cManager);
 
-
 #pragma region アクション関連
 
 	/// <summary>

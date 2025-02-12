@@ -184,10 +184,12 @@ void BossEnemy::InitBehavior() {
 	// 至近距離 : ジャンプ攻撃
 	// 中遠距離 : ダッシュ → ダッシュ攻撃
 	BT::Selector* atkSelector = new BT::Selector();
+
 	BT::Sequence* farAtkActions = new BT::Sequence();
 	farAtkActions->SetChild(new BT::Condition(std::bind(&BossEnemy::InvokeFarDistance, this)));
 	farAtkActions->SetChild(new BT::Action(this, "Dash"));
 	farAtkActions->SetChild(new BT::Action(this, "AttackDash"));
+
 	atkSelector->SetChild(farAtkActions); // 中遠距離
 	atkSelector->SetChild(new BT::Action(this, "AttackJump"));
 	newSequence->SetChild(atkSelector);

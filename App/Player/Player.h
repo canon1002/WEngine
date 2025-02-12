@@ -2,7 +2,6 @@
 #include "App/Actor/Actor.h"
 #include "GameEngine/Input/InputManager.h"
 #include "App/Reticle/Reticle3D.h"
-#include "App/Player/Arrow.h"
 #include "App/Status/StatusManager.h"
 
 // 前方宣言
@@ -131,7 +130,6 @@ public: // -- 公開 メンバ関数 -- //
 	Vector3 GetWorldPos() { return mObject->GetWorldTransform()->translation; }
 	Reticle3D* GetReticle3D() { return mReticle.get(); }
 
-	void SetColliderListForArrow(CollisionManager* cManager);
 	void SetColliderList(CollisionManager* cManager);
 
 	Behavior GetBehavior()const { return mBehavior; }
@@ -149,14 +147,11 @@ public: // -- 公開 メンバ関数 -- //
 	// Debag用
 	void DebagCtr();
 
-	
-	void SpecialAtkRB();
-	void SpecialAtkRT();
-	void SpecialAtkLB();
-	void SpecialAtkLT();
+	// 入力状況をDirectionに保存する
+	void InputDirection();
 
-	// アロー生成関数
-	Arrow* CreateArrow(Vector3 startPos,Vector3 endPos);
+	// Directionを徐々に入力方向に合わせる
+	void AdJustDirection();
 
 	// ボスクラスのポインタをセットする
 	void SetBoss(BossEnemy* boss) { mBoss = boss; }
@@ -187,8 +182,15 @@ private: // -- 非公開 メンバ変数 -- //
 
 	// 移動量
 	Vector3 mVelocity;
-	// プレイヤーの向いてる向き
+	// プレイヤーの現在の向き
 	Vector3 mDirection;
+	// 現在の入力方向
+	Vector3 mDirectionForInput;
+	// 最後に入力されていた方向
+	Vector3 mDirectionForPreInput;
+	// 方向入力時間
+	float mDirectionInputCount;
+	// 
 
 	// 重力の影響を受けるか
 	bool mIsGravity;
@@ -210,8 +212,8 @@ private: // -- 非公開 メンバ変数 -- //
 	int32_t mChargeCount;
 	// 狙い撃ちの構えをしているか
 	bool mIsAimMode;
-	// アロークラス
-	std::list<Arrow*> mArrows;
+	
+
 
 	// 能力値
 	std::shared_ptr<Status> mStatus;

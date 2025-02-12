@@ -16,9 +16,6 @@ Player::Player()
 
 Player::~Player() {
 
-	for (auto& arrow : mArrows) {
-		delete arrow;
-	}
 }
 
 void Player::Init() {
@@ -187,13 +184,19 @@ void Player::Init() {
 	mWorldTransformSword[0]->SetParent(mAttackStatus.swordWorldMat[0]);
 	mWorldTransformSword[1]->SetParent(mAttackStatus.swordWorldMat[4]);
 
-	
+	// 方向指定(とりあえず奥を向く)
+	mDirection = { 0.0f,0.0f,1.0f };
+	mDirectionForInput = { 0.0f,0.0f,0.0f };
+	mDirectionForPreInput = { 0.0f,0.0f,0.0f };
 
 }
 
 void Player::Update() {
 
 	if (mStatus->HP > 0.0f) {
+
+		// 方向入力
+		InputDirection();
 
 		// 落下処理
 		Fall();
@@ -205,11 +208,12 @@ void Player::Update() {
 		// 防御関連処理
 		//Guard();
 
-		// 突撃
-		SpecialAtkRB();
 		
 		// 攻撃関連処理
 		Attack();
+
+		// 方向修正
+		AdJustDirection();
 
 		// デバッグ操作
 #ifdef _DEBUG
@@ -377,6 +381,7 @@ void Player::DrawGUI() {
 
 	mObject->DrawGuiTree();
 
+	ImGui::DragFloat3("DirectionInuut", &mDirectionForInput.x);
 	ImGui::DragFloat3("Direction", &mDirection.x);
 
 	const char* str[] = {
@@ -508,22 +513,6 @@ void Player::ColliderDraw() {
 
 	// 剣
 	mAttackStatus.sword->Draw();
-
-
-	for (const auto& arrow : mArrows) {
-		arrow->GetCollider()->Draw();
-	}
-}
-
-void Player::SetColliderListForArrow(CollisionManager* cManager)
-{
-	// アロークラスのコライダーをリストに追加する
-	auto arrowIt = mArrows.begin();  // イテレータを初期化
-	while (arrowIt != mArrows.end()) {
-		const auto& arrow = *arrowIt;
-		cManager->SetCollider(arrow->GetCollider());
-		++arrowIt;  // イテレータを次に進める
-	}
 
 }
 
@@ -815,41 +804,8 @@ void Player::Move()
 	// 通常/防御時に有効
 	if (mBehavior == Behavior::kRoot || mBehavior == Behavior::kMove || mBehavior == Behavior::kGuard) {
 
-		// 上下移動の可否
-		if (InputManager::GetInstance()->GetPushKey(DIK_W)) {
-			mDirection.z += 1.0f / Framerate::GetInstance()->GetFramerate() * Framerate::GetInstance()->GetBattleSpeed();
-		}
-		if (InputManager::GetInstance()->GetPushKey(DIK_S)) {
-			mDirection.z -= 1.0f / Framerate::GetInstance()->GetFramerate() * Framerate::GetInstance()->GetBattleSpeed();
-		}
-		// 左右移動の可否
-		if (InputManager::GetInstance()->GetPushKey(DIK_A)) {
-			mDirection.x -= 1.0f / Framerate::GetInstance()->GetFramerate() * Framerate::GetInstance()->GetBattleSpeed();
-		}
-		if (InputManager::GetInstance()->GetPushKey(DIK_D)) {
-			mDirection.x += 1.0f / Framerate::GetInstance()->GetFramerate() * Framerate::GetInstance()->GetBattleSpeed();
-		}
-
-		// スティック入力の量
-		const static int stickValue = 6000;
 		// いずれかの数値が、以上(以下)であれば移動処理を行う
-		if (InputManager::GetInstance()->GetStick(Gamepad::Stick::LEFT_X) < -stickValue || // 左 
-			InputManager::GetInstance()->GetStick(Gamepad::Stick::LEFT_X) > stickValue || // 右
-			InputManager::GetInstance()->GetStick(Gamepad::Stick::LEFT_Y) < -stickValue || // 上
-			InputManager::GetInstance()->GetStick(Gamepad::Stick::LEFT_Y) > stickValue	  // 下
-			) {
-
-			// Xの移動量とYの移動量を設定する
-			mDirection = {
-				(float)InputManager::GetInstance()->GetStick(Gamepad::Stick::LEFT_X) ,
-				0.0f,
-				(float)InputManager::GetInstance()->GetStick(Gamepad::Stick::LEFT_Y)
-			};
-
-			// 正規化
-			if (Length(mDirection) != 0.0f) {
-				mDirection = Normalize(mDirection);
-			}
+		if (Length(mDirectionForInput) != 0.0f) {
 
 			// 移動速度を設定
 			float moveSpeed = 0.10f;
@@ -858,25 +814,8 @@ void Player::Move()
 				moveSpeed = 0.03f;
 			}
 
-			// カメラの回転量を反映
-			mDirection = TransformNomal(mDirection, MainCamera::GetInstance()->mWorldTransform->GetWorldMatrix());
-			// y座標は移動しない
-			mDirection.y = 0.0f;
-
 			// 平行移動を行う
-			mObject->mWorldTransform->translation += mDirection * moveSpeed;
-
-			// ここから回転処理
-			const float PI = 3.14f;
-			float rotateY = std::atan2f(mDirection.x, mDirection.z);
-			//rotateY = std::fmodf(rotateY, 2.0f * PI);
-			if (rotateY > PI) {
-				rotateY -= 2.0f * PI;
-			}
-			if (rotateY < -PI) {
-				rotateY += 2.0f * PI;
-			}
-			mObject->mWorldTransform->rotation.y = rotateY;
+			mObject->mWorldTransform->translation += mDirectionForInput * moveSpeed;
 
 			// 移動状態に変更
 			if (mBehavior == Behavior::kRoot) {
@@ -886,18 +825,13 @@ void Player::Move()
 
 		}
 
-		if (InputManager::GetInstance()->GetStick(Gamepad::Stick::LEFT_X) >= -stickValue && // 左 
-			InputManager::GetInstance()->GetStick(Gamepad::Stick::LEFT_X) <= stickValue && // 右
-			InputManager::GetInstance()->GetStick(Gamepad::Stick::LEFT_Y) >= -stickValue && // 上
-			InputManager::GetInstance()->GetStick(Gamepad::Stick::LEFT_Y) <= stickValue	  // 下
-			) {
+		if (mDirectionInputCount <= 0.0f) {
 
 			if (mBehavior == Behavior::kMove) {
 				// 通常状態に戻す
 				mBehavior = Behavior::kRoot;
 			}
 		}
-
 
 	}
 
@@ -984,205 +918,66 @@ void Player::DebagCtr()
 
 }
 
-void Player::SpecialAtkRB()
-{
-	// 入力段階
-	if (mBehavior == Behavior::kRoot || mBehavior == Behavior::kMove || mBehavior == Behavior::kCharge) {
 
-		// 突進攻撃(仮)
-		if (InputManager::GetInstance()->GetGamepad()->getButton(Gamepad::Button::RIGHT_SHOULDER)) {
-			mChargeStatus.pushingFrame += (1.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetBattleSpeed();
+void Player::InputDirection(){
 
-			// 入力時間が一定まで達していたら 攻撃方向を指定できるようにする
-			if (mChargeStatus.pushingFrame >= 1.0f)
-			{
-				if (mBehavior == Behavior::kRoot || mBehavior == Behavior::kMove)
-				{
-					mBehavior = Behavior::kCharge;
-				}
+	// 入力方向の初期化
+	mDirectionForInput = { 0.0f ,0.0f ,0.0f };
 
-				if (mBehavior == Behavior::kCharge) {
-					if (mObject->mSkinning->GetNowSkinCluster()->name != "prepare" &&
-						!mObject->mSkinning->SearchToWaitingSkinCluster("prepare")) {
-						// 溜めモーションを切り替える
-						mObject->mSkinning->SetNextAnimation("prepare");
-					}
-				}
-				// 溜めフラグをtrueに
-				mChargeStatus.isCastMode = true;
+	// スティック入力の量
+	const static int stickValue = 8000;
+	// いずれかの数値が、以上(以下)であれば移動処理を行う
+	if (InputManager::GetInstance()->GetStickRatio(Gamepad::Stick::LEFT_X, stickValue) != 0.0f ||
+		InputManager::GetInstance()->GetStickRatio(Gamepad::Stick::LEFT_Y, stickValue) != 0.0f) {
 
-				// 左スティックで方向を指定
-				const static int stickValue = 6000;
-				// いずれかの数値が、以上(以下)であれば移動処理を行う
-				if (InputManager::GetInstance()->GetStick(Gamepad::Stick::LEFT_X) < -stickValue || // 左 
-					InputManager::GetInstance()->GetStick(Gamepad::Stick::LEFT_X) > stickValue || // 右
-					InputManager::GetInstance()->GetStick(Gamepad::Stick::LEFT_Y) < -stickValue || // 上
-					InputManager::GetInstance()->GetStick(Gamepad::Stick::LEFT_Y) > stickValue	  // 下
-					) {
-
-					// Xの移動量とYの移動量を設定する
-					mDirection = {
-						(float)InputManager::GetInstance()->GetStick(Gamepad::Stick::LEFT_X) ,
-						0.0f,
-						(float)InputManager::GetInstance()->GetStick(Gamepad::Stick::LEFT_Y)
-					};
-
-					// 正規化
-					if (Length(mDirection) != 0.0f) {
-						mDirection = Normalize(mDirection);
-					}
-
-					// カメラの回転量を反映
-					mDirection = TransformNomal(mDirection, MainCamera::GetInstance()->mWorldTransform->GetWorldMatrix());
-					// y座標は移動しない
-					mDirection.y = 0.0f;
-
-					// ここから回転処理
-					const float PI = 3.14f;
-					float rotateY = std::atan2f(mDirection.x, mDirection.z);
-					rotateY = std::fmodf(rotateY, 2.0f * PI);
-					if (rotateY > PI) {
-						rotateY -= 2.0f * PI;
-					}
-					if (rotateY < -PI) {
-						rotateY += 2.0f * PI;
-					}
-					mObject->mWorldTransform->rotation.y = rotateY;
-
-				}
-
-			}
-
-		}
-
-		// 離すと攻撃する
-		if (mChargeStatus.pushingFrame > 0.0f && InputManager::GetInstance()->GetReleased(Gamepad::Button::RIGHT_SHOULDER)) {
-
-			mIsAimMode = false;
-
-			// ちゃんと攻撃モーションが発生するようにする
-			if (mObject->mSkinning->GetIsMotionbrending()) {
-				mObject->mSkinning->EndMotionBrend();
-			}
-
-			// 溜めフラグの解除
-			mBehavior = Behavior::kChargeAttack;
-			// 攻撃フラグをtrueにする
-			mChargeStatus.isCharge = true;
-
-			// 始点の設定
-			mChargeStatus.startPos = mObject->mWorldTransform->translation;
-			// 初期回転量
-			mChargeStatus.cameraStartRot = MainCamera::GetInstance()->GetRotate();
-			mChargeStatus.cameraEndRot = { mChargeStatus.cameraStartRot.x,std::atan2f(mDirection.x, mDirection.z),mChargeStatus.cameraStartRot.z };
-
-			// 正規化
-			if (Length(mDirection) != 0.0f) {
-				mDirection = Normalize(mDirection);
-			}
-			else {
-
-				mDirection;
-			}
-
-			// カメラの回転量を反映
-			//mDirection = TransformNomal(mDirection, MainCamera::GetInstance()->mWorldTransform->GetWorldMatrix());
-			// y座標は移動しない
-			mDirection.y = 0.0f;
-			// 終点の設定
-			mChargeStatus.attackRange = 14.0f;
-			mChargeStatus.endPos = mObject->mWorldTransform->translation + Scalar(mChargeStatus.attackRange, mDirection);
-
-			mChargeStatus.moveingTime = 0.0f;
-
-			// モーションを切り替える
-			if (mObject->mSkinning->GetNowSkinCluster()->name != "thrust" && !mObject->mSkinning->SearchToWaitingSkinCluster("thrust")) {
-				mObject->mSkinning->SetNextAnimation("thrust");
+		// カウントの増加
+		if (mDirectionInputCount < 1.0f) {
+			mDirectionInputCount += 1.0f / (Framerate::GetInstance()->GetFramerate() * Framerate::GetInstance()->GetBattleSpeed());
+			if (mDirectionInputCount > 1.0f) {
+				mDirectionInputCount = 1.0f;
 			}
 		}
 
+		// Xの移動量とZの移動量を設定する
+		mDirectionForInput = {
+			(float)InputManager::GetInstance()->GetStick(Gamepad::Stick::LEFT_X) ,
+			0.0f,
+			(float)InputManager::GetInstance()->GetStick(Gamepad::Stick::LEFT_Y)
+		};
 
-		// 何かしらのボタンでキャンセル
+		// 正規化
+		if (Length(mDirectionForInput) != 0.0f) {
+			mDirectionForInput = Normalize(mDirectionForInput);
+		}
+
+		// カメラの回転量を反映
+		mDirectionForInput = TransformNomal(mDirectionForInput, MainCamera::GetInstance()->mWorldTransform->GetWorldMatrix());
+		// y座標は移動しない
+		mDirectionForInput.y = 0.0f;
 
 	}
-
-	// 攻撃段階
-	else if (mBehavior == Behavior::kChargeAttack) {
-
-		// 線形補間を利用して座標を移動させる
-		if (mChargeStatus.moveingTime < 1.0f) {
-
-			// カメラ回転
-			//MainCamera::GetInstance()->SetRotate(ExponentialInterpolation(mChargeStatus.cameraStartRot, mChargeStatus.cameraEndRot, mChargeStatus.moveingTime, 1.0f));
-
-			// 移動
-			mChargeStatus.moveingTime += 1.0f / 30.0f;
-			mObject->mWorldTransform->translation.x = (1.0f - mChargeStatus.moveingTime) * mChargeStatus.startPos.x + mChargeStatus.moveingTime * mChargeStatus.endPos.x;
-			mObject->mWorldTransform->translation.z = (1.0f - mChargeStatus.moveingTime) * mChargeStatus.startPos.z + mChargeStatus.moveingTime * mChargeStatus.endPos.z;
-
-		}
-		else if (mChargeStatus.moveingTime >= 1.0f) {
-			// タイムを補正
-			mChargeStatus.moveingTime = 1.0f;
-
-			// 攻撃フラグをfalseにする
-			mChargeStatus.isCharge = false;
-
-			// 移動終了
-			mBehavior = Behavior::kRoot;
-
-			// カメラの回転操作をON
-			MainCamera::GetInstance()->SetCameraRotateControll(true);
-
-		}
+	else {
+		mDirectionInputCount = 0.0f;
 	}
 
+}
+
+void Player::AdJustDirection(){
+
+	// 方向指定をしていない場合は回転しない
+	if (Length(mDirection) == 0.0f || Length(mDirectionForInput) == 0.0f) {
+		return;
+	}
+
+	// オブジェクトを回転
+	mObject->mWorldTransform->rotation.y = LerpShortAngle(
+		mObject->mWorldTransform->rotation.y,
+		std::atan2f(mDirectionForInput.x, mDirectionForInput.z),
+		0.1f
+	);
 
 }
 
-void Player::SpecialAtkRT()
-{
-
-}
-
-void Player::SpecialAtkLB()
-{
-
-}
-
-void Player::SpecialAtkLT()
-{
-
-}
-
-Arrow* Player::CreateArrow(Vector3 startPos, Vector3 endPos)
-{
-	// アローの進行方向を設定し、正規化しておく
-	Vector3 directionForArrow = endPos - startPos;
-	directionForArrow = Normalize(directionForArrow);
-	Vector3 vel = Scalar(1.0f, directionForArrow);
-
-	// 回転
-	Vector3 rotate = { 0.0f,0.0f,0.0f };
-	const float PI = 3.14f;
-	// y軸回りの回転
-	rotate.y = std::atan2f(directionForArrow.x, directionForArrow.z);
-
-	// x軸回りの回転
-	rotate.x = -std::atan2f(directionForArrow.y, directionForArrow.z);
-
-	// 回転量が -PI から PI の範囲に収まるように補正
-	rotate.y = std::fmod(rotate.y + PI, 2.0f * PI) - PI;
-	rotate.x = std::fmod(rotate.x + PI, 2.0f * PI) - PI;
-
-	// アロークラスの宣言と初期化を行う(上記で求めた移動方向と始点の座標を代入)
-	Arrow* arrow = new Arrow();
-	arrow->Init(this, startPos, vel);
-	arrow->SetRotate(rotate);
-	arrow->SetCubeMap(mObject->GetModel()->mTextureHandleCubeMap);
-
-	return arrow;
-}
 
 void Player::ReciveDamageToBoss(float power)
 {

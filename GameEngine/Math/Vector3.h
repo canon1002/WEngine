@@ -29,8 +29,18 @@ Vector3 Subtract(const Vector3& v1, const Vector3& v2);
 
 Vector3 Scalar(float scalar, const Vector3& v);
 
+float Lerp(const float& p0, const float& p1, const float t);
 Vector3 Lerp(const Vector3& p0, const Vector3& p1, const float t);
 Vector3 Slerp(const Vector3& p0, const Vector3& p1, const float t);
+
+/// <summary>
+/// 最短角度補間
+/// </summary>
+/// <param name="s"></param>
+/// <param name="e"></param>
+/// <param name="t"></param>
+/// <returns></returns>
+float LerpShortAngle(float s, float e, float t);
 
 /// <summary>
 /// CatmullRom補間
