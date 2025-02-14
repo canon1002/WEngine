@@ -9,14 +9,23 @@ class BossEnemy;
 
 // 振る舞い
 enum class Behavior {
-	kRoot,   // 通常状態
-	kMove,   // 移動状態
-	kAttack, // 攻撃中
-	kJump,	 // ジャンプ中
-	kCharge, // 溜め動作中
+	kRoot,  // 通常状態
+	kMove,  // 移動状態
+	kDash,	// ダッシュ状態
+	kAttack,	// 攻撃中
+	kJump,	// ジャンプ中
+	kCharge,	// 溜め動作中
 	kChargeAttack, // 溜め攻撃
 	kAvoid,  // 回避行動
 	kGuard,  // 防御行動
+};
+
+// ワーク構造体
+// 各行動にて共通で使用しない変数をまとめた構造体
+// 各行動の調整がある程度できたらStateパターンへ移行する
+
+struct WorkDash{
+
 };
 
 // 攻撃用定数
@@ -29,7 +38,6 @@ struct ConstAttack {
 };
 
 struct AttackStatus {
-
 
 	std::unique_ptr<Object3d> sword; // オブジェクト
 	bool isUp;			// 数値が上昇しているか

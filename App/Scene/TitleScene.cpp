@@ -21,7 +21,7 @@ void TitleScene::Init() {
 
 	// カメラ設定
 	mCamera = MainCamera::GetInstance();
-	mCamera->Initialize();
+	mCamera->Init();
 	mCamera->mWorldTransform->rotation = { -0.07f ,0.0f,0.0f };
 	mCamera->mWorldTransform->translation = { 0.0f,2.2f ,-20.0f };
 

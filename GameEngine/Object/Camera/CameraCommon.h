@@ -10,7 +10,7 @@ public: // -- public メンバ関数 -- //
 	CameraCommon() = default;
 	~CameraCommon() = default;
 
-	virtual void Initialize();
+	virtual void Init();
 	
 	virtual void Update();
 

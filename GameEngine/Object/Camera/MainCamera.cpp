@@ -14,7 +14,7 @@ MainCamera* MainCamera::GetInstance() {
 	return instance;
 }
 
-void MainCamera::Initialize() {
+void MainCamera::Init() {
 
 	mWorldTransform = make_unique<WorldTransform>();
 	verticalFOV_ = 0.45f;
@@ -28,6 +28,11 @@ void MainCamera::Initialize() {
 	// ターゲット
 	mFollowTarget = nullptr;
 	mSearchTarget = nullptr;
+
+	// フォロー対象が一定時間前にいた座標を保持する変数
+	mInterFollowTarget = { 0.0f,0.0f,0.0f };
+	// フォロー対象からカメラまでの距離
+	mOffset = { 0.0f,0.8f,-2.5f };
 
 	// 遷移後回転量
 	mEaseBeforeRotation = mWorldTransform->rotation;
@@ -57,6 +62,7 @@ void MainCamera::Update()
 		ImGui::SliderAngle("RotateZ", &mWorldTransform->rotation.z);
 		ImGui::DragFloat3("Rotate", &mWorldTransform->rotation.x, 0.1f, -1000.0f, 1000.0f);
 		ImGui::DragFloat3("Transform", &mWorldTransform->translation.x, 0.1f, -1000.0f, 1000.0f);
+		ImGui::DragFloat3("Offset", &mOffset.x, 0.1f, -100.0f, 100.0f);
 		ImGui::DragFloat3("AddTransform", &mAddTranslation.x, 0.1f, -1000.0f, 1000.0f);
 		ImGui::DragFloat("NearClip", &nearClip_, 0.01f, 0.0f, 100.0f);
 		ImGui::DragFloat("FarClip", &farClip_, 0.1f, 1.0f, 1000.0f);
@@ -67,12 +73,12 @@ void MainCamera::Update()
 
 	// フォロー対象がいれば追従を行う
 	if (mFollowTarget) {
-		// 追従対象からカメラまでの距離
-		Vector3 offset = { 0.0f,1.2f,0.5f };
-		// オフセットをカメラの回転に合わせて回転させる
-		offset = TransformNomal(offset, mWorldTransform->GetWorldMatrix());
+		
+		// 追従座標の補間
+		mInterFollowTarget = Lerp(mInterFollowTarget, mFollowTarget->GetWorldPosition(), 0.25f);
+
 		// オフセット分ずらす
-		mWorldTransform->translation = mFollowTarget->translation + offset;
+		mWorldTransform->translation = mInterFollowTarget + GetOffset();
 
 		// 追加で平行移動値が設定されていれば更にずらす
 		mWorldTransform->translation += mAddTranslation;
@@ -205,4 +211,14 @@ void MainCamera::SetCameraRotationToDirection(const Vector3 direction)
 	mEasedRotation.y = atan2f(direction.x, direction.z);
 	mRotaionEasingTime = 0.0f;
 	mIsRotationEasing = true;
+}
+
+Vector3 MainCamera::GetOffset() const{
+
+	// 追従対象からカメラまでの距離
+	Vector3 offset = mOffset;
+	// オフセットをカメラの回転に合わせて回転させる
+	offset = TransformNomal(offset, mWorldTransform->GetWorldMatrix());
+
+	return offset;
 }

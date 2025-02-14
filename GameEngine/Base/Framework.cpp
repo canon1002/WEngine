@@ -56,7 +56,7 @@ void Framework::Init(){
 	mDxCommon->Init();
 	
 	// メインカメラ
-	MainCamera::GetInstance()->Initialize();
+	MainCamera::GetInstance()->Init();
 	// オブジェクト管理者クラス
 	ObjectManager::GetInstance()->Init();
 	// モデル管理クラス

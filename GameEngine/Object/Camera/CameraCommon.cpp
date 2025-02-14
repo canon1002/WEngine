@@ -2,7 +2,7 @@
 #include "GameEngine/Base/WinApp/WinAPI.h"
 #include "GameEngine/Base/DirectX/DirectXCommon.h"
 
-void CameraCommon::Initialize(){
+void CameraCommon::Init(){
 	mWorldTransform = std::make_shared<WorldTransform>();
 	verticalFOV_ = 0.45f;
 	aspectRatio_ = (float(WinApp::GetInstance()->kClientWidth) / float(WinApp::GetInstance()->kClientHeight));

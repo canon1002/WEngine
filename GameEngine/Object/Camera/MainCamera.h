@@ -20,7 +20,7 @@ public: // -- public メンバ関数 -- //
 	/// <summary>
 	/// 初期化処理
 	/// </summary>
-	void Initialize()override;
+	void Init()override;
 
 	/// <summary>
 	/// 更新処理
@@ -55,6 +55,9 @@ public: // -- public メンバ関数 -- //
 		mIsControll = flag;
 	}
 
+	// オフセットの算出・取得
+	Vector3 GetOffset()const;
+
 private: // -- private メンバ関数 -- //
 
 	// コピーコンストラクタと演算子オーバーロードの禁止
@@ -68,8 +71,14 @@ private: // -- private メンバ変数 -- //
 	
 	// フォロー対象の座標
 	const WorldTransform* mFollowTarget;
+	// フォロー対象が一定時間前にいた座標を保持する変数
+	Vector3 mInterFollowTarget;
+	// フォロー対象からカメラまでの距離
+	Vector3 mOffset;
+
 	// 追跡対象の座標
 	const WorldTransform* mSearchTarget;
+	
 	// 遷移後回転量
 	Vector3 mEaseBeforeRotation;
 	Vector3 mEasedRotation;

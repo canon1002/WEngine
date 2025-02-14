@@ -42,7 +42,7 @@ void Player::Init() {
 	mObject->mSkinning = make_unique<Skinning>();
 	mObject->mSkinning->Init("player", "idle.gltf", mObject->GetModel()->modelData);
 	// モーションブレンド速度
-	mObject->mSkinning->SetMotionBlendingInterval(30.0f);
+	mObject->mSkinning->SetMotionBlendingInterval(60.0f);
 	// アニメーション再生速度
 	mObject->mSkinning->SetAnimationPlaySpeed(1.0f);
 	// 使用するアニメーションを登録しておく
@@ -57,6 +57,7 @@ void Player::Init() {
 	
 	mObject->mSkinning->CreateSkinningData("player", "avoid", ".gltf", mObject->GetModel()->modelData);
 	mObject->mSkinning->CreateSkinningData("player", "backStep", ".gltf", mObject->GetModel()->modelData);
+	mObject->mSkinning->CreateSkinningData("player", "walk", ".gltf", mObject->GetModel()->modelData, true);
 	mObject->mSkinning->CreateSkinningData("player", "run", ".gltf", mObject->GetModel()->modelData, true);
 
 
@@ -236,6 +237,15 @@ void Player::Update() {
 			break;
 		case Behavior::kMove:
 
+			if (mObject->mSkinning->GetNowSkinCluster()->name != "walk" &&
+				!mObject->mSkinning->SearchToWaitingSkinCluster("walk"))
+			{
+				mObject->mSkinning->SetNextAnimation("walk");
+			}
+
+			break;
+		case Behavior::kDash:
+
 			if (mObject->mSkinning->GetNowSkinCluster()->name != "run" &&
 				!mObject->mSkinning->SearchToWaitingSkinCluster("run"))
 			{
@@ -243,6 +253,7 @@ void Player::Update() {
 			}
 
 			break;
+
 		case Behavior::kAttack:
 			break;
 		case Behavior::kJump:
@@ -483,6 +494,7 @@ void Player::DrawGUI() {
 
 
 
+
 #endif // _DEBUG
 
 
@@ -530,7 +542,7 @@ void Player::Avoid()
 {
 	//  非回避状態で Aボタンで回避
 	if (mBehavior != Behavior::kAvoid &&
-		InputManager::GetInstance()->GetLongPush(Gamepad::Button::A)) {
+		InputManager::GetInstance()->GetPused(Gamepad::Button::A)) {
 
 		// パラメータの補正
 
@@ -688,33 +700,6 @@ void Player::Attack()
 
 			// コンボ有効
 			mAttackStatus.isComboRequest = true;
-
-			// 敵が近くにいる場合、敵の方を向く
-			if (mAttackStatus.isComboRequest)
-			{
-				// 敵の座標を取得
-				Vector3 enemyPos = mBoss->GetObject3D()->GetWorldTransform()->translation;
-				// プレイヤーの座標を取得
-				Vector3 playerPos = mObject->GetWorldTransform()->translation;
-				// プレイヤーの方向を更新
-				mDirection = Normalize(enemyPos - playerPos);
-				mDirection.y = 0.0f;
-
-				// 移動方向への回転を行う
-				// ここから回転処理
-				const float PI = 3.14f;
-				float rotateY = std::atan2f(mDirection.x, mDirection.z);
-				rotateY = std::fmodf(rotateY, 2.0f * PI);
-				if (rotateY > PI) {
-					rotateY -= 2.0f * PI;
-				}
-				if (rotateY < -PI) {
-					rotateY += 2.0f * PI;
-				}
-				// プレイヤーの向きを変更
-				mObject->mWorldTransform->rotation.y = rotateY;
-			}
-
 		}
 	}
 	if (mBehavior != Behavior::kAttack) { return; }
@@ -802,26 +787,39 @@ void Player::Attack()
 void Player::Move()
 {
 	// 通常/防御時に有効
-	if (mBehavior == Behavior::kRoot || mBehavior == Behavior::kMove || mBehavior == Behavior::kGuard) {
+	if (mBehavior == Behavior::kRoot || mBehavior == Behavior::kMove || mBehavior == Behavior::kDash) {
 
 		// いずれかの数値が、以上(以下)であれば移動処理を行う
 		if (Length(mDirectionForInput) != 0.0f) {
 
 			// 移動速度を設定
 			float moveSpeed = 0.10f;
-			// ガード中は移動速度を減少
-			if (mBehavior == Behavior::kGuard) {
-				moveSpeed = 0.03f;
+
+			// RBボタン長押しでダッシュ状態にする
+			if (InputManager::GetInstance()->GetLongPush(Gamepad::Button::RIGHT_SHOULDER)) {
+
+				moveSpeed *= 2.0f;
+
+				// ダッシュ状態に変更
+				if (mBehavior == Behavior::kRoot || mBehavior == Behavior::kMove) {
+					mBehavior = Behavior::kDash;
+				}
+
+			}
+			// 押されていない場合は通常の移動にする
+			else {
+
+				// 移動状態に変更
+				if (mBehavior == Behavior::kRoot || mBehavior == Behavior::kDash) {
+					mBehavior = Behavior::kMove;
+				}
+
 			}
 
 			// 平行移動を行う
 			mObject->mWorldTransform->translation += mDirectionForInput * moveSpeed;
 
-			// 移動状態に変更
-			if (mBehavior == Behavior::kRoot) {
-				mBehavior = Behavior::kMove;
-
-			}
+			
 
 		}
 
