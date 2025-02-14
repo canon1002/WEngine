@@ -51,9 +51,6 @@ public: // -- 公開 メンバ関数 -- //
 	// 能力値取得関数
 	std::shared_ptr<Status> GetStatus() { return mStatus; }
 
-	
-	
-
 	// -- 変更用関数 -- //
 
 	// 移動させる
@@ -138,6 +135,8 @@ private: // -- 非公開 メンバ変数 -- //
 
 	// ビヘイビアツリーの再実行カウント
 	float mReloadBTCount;
+	// ビヘイビアツリーを実行するか
+	bool mIsUpdateBehavior = true;
 
 	// 能力値
 	std::shared_ptr<Status> mStatus;

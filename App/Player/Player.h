@@ -238,6 +238,8 @@ private: // -- 非公開 メンバ変数 -- //
 
 	// カメラ回転ロックの有無
 	bool mIsCameraRotateLock;
+	// ターゲットロックオンの有無
+	bool mIsRockOnToTarget;
 
 	// -- エフェクト関係 -- //
 

@@ -190,6 +190,9 @@ void Player::Init() {
 	mDirectionForInput = { 0.0f,0.0f,0.0f };
 	mDirectionForPreInput = { 0.0f,0.0f,0.0f };
 
+	// ターゲットロックオンの有無
+	mIsRockOnToTarget = false;
+
 }
 
 void Player::Update() {
@@ -911,8 +914,18 @@ void Player::DebagCtr()
 	
 	// 操作変更
 	if (InputManager::GetInstance()->GetPused(Gamepad::Button::X)) {
-		MainCamera::GetInstance()->SetCameraRotarionToSearchTarget();
+		if (mIsRockOnToTarget) {
+			MainCamera::GetInstance()->SetCameraRotateControll(true);
+			mIsRockOnToTarget = false;
+		}
+		else {
+			mIsRockOnToTarget = true;
+		}
 	}	
+
+	if (mIsRockOnToTarget) {
+		MainCamera::GetInstance()->SetCameraRotarionToSearchTarget();
+	}
 
 }
 

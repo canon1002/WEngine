@@ -299,8 +299,9 @@ void BossEnemy::Update() {
 		//}
 		
 		// BehaviorTreeの更新処理を行う
-		this->UpdateBehaviorTree();
-
+		if (mIsUpdateBehavior) {
+			this->UpdateBehaviorTree();
+		}
 	}
 
 	// シェイクの更新
@@ -445,6 +446,7 @@ void BossEnemy::DrawGUI() {
 	}
 
 	ImGui::Begin("BossEnemy");
+	ImGui::Checkbox("UpdateBehaviorTree", &mIsUpdateBehavior);
 	if (ImGui::CollapsingHeader("Animation")) {
 
 		std::string strAnimeT = "AnimationTime : " + std::to_string(mObject->mSkinning->GetNowSkinCluster()->animationTime/ mObject->mSkinning->GetDurationTime());

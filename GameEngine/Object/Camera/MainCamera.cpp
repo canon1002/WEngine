@@ -173,12 +173,15 @@ void MainCamera::UpdateRotationEasing()
 		mEasedRotation.y = atan2f(direction.x, direction.z);
 	}
 
-	mWorldTransform->rotation.y = ExponentialInterpolation(mEaseBeforeRotation.y, mEasedRotation.y, mRotaionEasingTime, 1.0f);
+	mWorldTransform->rotation.y = LerpShortAngle(mWorldTransform->rotation.y, mEasedRotation.y, mRotaionEasingTime);
 	//mWorldTransform->rotation.x = ExponentialInterpolation(mEaseBeforeRotation.x,0.0f, mRotaionEasingTime, 1.0f);
 }
 
 void MainCamera::SetCameraRotarionToSearchTarget()
 {
+	// カメラ操作不可にする
+	mIsControll = true;
+
 	// 追跡対象のポインタ未所持なら 早期リターン
 	if (mSearchTarget == nullptr) {
 		return;
