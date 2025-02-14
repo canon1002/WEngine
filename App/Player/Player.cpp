@@ -42,7 +42,7 @@ void Player::Init() {
 	mObject->mSkinning = make_unique<Skinning>();
 	mObject->mSkinning->Init("player", "idle.gltf", mObject->GetModel()->modelData);
 	// モーションブレンド速度
-	mObject->mSkinning->SetMotionBlendingInterval(60.0f);
+	mObject->mSkinning->SetMotionBlendingInterval(2.0f);
 	// アニメーション再生速度
 	mObject->mSkinning->SetAnimationPlaySpeed(1.0f);
 	// 使用するアニメーションを登録しておく

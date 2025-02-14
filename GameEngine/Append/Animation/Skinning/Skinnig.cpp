@@ -14,21 +14,21 @@ void Skinning::Init(const std::string& directorypath, const std::string& filepat
 	mSkeleton = Skeleton::Create(modelData.rootNode);
 
 	// 新規にスキンクラスターを含めたデータを生成
-	mNowSkincluster = std::make_shared<SkinningStatus>();
+	mCurrentSkinCluster = std::make_shared<SkinningStatus>();
 	// スキンクラスターを生成
-	mNowSkincluster->skinCluster = SkinCluster::Create(DirectXCommon::GetInstance()->mDevice, mSkeleton, modelData);
+	mCurrentSkinCluster->skinCluster = SkinCluster::Create(DirectXCommon::GetInstance()->mDevice, mSkeleton, modelData);
 	// アニメーションに必要な情報をセット
-	mNowSkincluster->animation = Resource::LoadAnmation(directorypath, filepath);
+	mCurrentSkinCluster->animation = Resource::LoadAnmation(directorypath, filepath);
 	// スキンクラスターを生成
-	mNowSkincluster->skinCluster = SkinCluster::Create(DirectXCommon::GetInstance()->mDevice, mSkeleton, modelData);
+	mCurrentSkinCluster->skinCluster = SkinCluster::Create(DirectXCommon::GetInstance()->mDevice, mSkeleton, modelData);
 	// アニメーションの一時停止をoffに
-	mNowSkincluster->isPause = false;
+	mCurrentSkinCluster->isPause = false;
 	// ループさせる
-	mNowSkincluster->isLoop = true;
+	mCurrentSkinCluster->isLoop = true;
 	// アニメーションの開始時間を0.0fに設定
-	mNowSkincluster->animationTime = 0.0f;
+	mCurrentSkinCluster->animationTime = 0.0f;
 	// アニメーションを有効にする
-	mNowSkincluster->isActive = true;
+	mCurrentSkinCluster->isActive = true;
 
 	// モーションブレンドをしていない
 	mIsMotionBrending = false;
@@ -43,16 +43,32 @@ void Skinning::Init(const std::string& directorypath, const std::string& filepat
 void Skinning::Update()
 {
 	// 時刻を進める
-	if (mNowSkincluster->isPause == false) {
+	if (mCurrentSkinCluster->isPause == false) {
 
 		// アニメーション全体の尺を超えていた場合、加算しない	
-		if (mNowSkincluster->animationTime < mNowSkincluster->animation.duration) {
-			mNowSkincluster->animationTime += (mAnimationPlaySpeed / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetBattleSpeed();
+		if (mCurrentSkinCluster->animationTime < mCurrentSkinCluster->animation.duration) {
+			mCurrentSkinCluster->animationTime += (mAnimationPlaySpeed / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetBattleSpeed();
 		}
 	}
 	// 最後まで行ったら最初からリピート再生する(しなくてもいいし、フラグで変更しても良さそう)
-	if (mNowSkincluster->isLoop == true) {
-		mNowSkincluster->animationTime = std::fmod(mNowSkincluster->animationTime, mNowSkincluster->animation.duration);
+	if (mCurrentSkinCluster->isLoop == true) {
+		mCurrentSkinCluster->animationTime = std::fmod(mCurrentSkinCluster->animationTime, mCurrentSkinCluster->animation.duration);
+	}
+
+	// -- 前アニメーション -- //
+
+	if (mPreSkincluster) {
+		// 時刻を進める
+		if (mPreSkincluster->isPause == false) {
+
+			// アニメーション全体の尺を超えていた場合、加算しない	
+			if (mPreSkincluster->animationTime < mPreSkincluster->animation.duration) {
+				mPreSkincluster->animationTime += (mAnimationPlaySpeed / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetBattleSpeed();
+			}
+		}
+		if (mPreSkincluster->isLoop == true) {
+			mPreSkincluster->animationTime = std::fmod(mPreSkincluster->animationTime, mPreSkincluster->animation.duration);
+		}
 	}
 
 	// モーションブレンド処理
@@ -70,9 +86,7 @@ void Skinning::Update()
 			mMotionBrendingTime = 1.0f;
 			EndMotionBrend();
 		}
-		if (!mWaitingSkinClusters.empty()) {
-			mWaitingSkinClusters.front()->skinCluster.Update(mSkeleton);
-		}
+		
 	}
 
 	// アニメーションの更新を行い、骨ごとのLocal情報を更新する
@@ -80,8 +94,11 @@ void Skinning::Update()
 	// スケルトン更新
 	mSkeleton.Update();
 	// スキンクラスター 更新
-	mNowSkincluster->skinCluster.Update(mSkeleton);
-
+	if (mPreSkincluster) {
+		mPreSkincluster->skinCluster.Update(mSkeleton);
+	}
+	mCurrentSkinCluster->skinCluster.Update(mSkeleton);
+	
 
 }
 
@@ -94,9 +111,9 @@ void Skinning::ApplyAniation() {
 		{
 			// 対象のJointのAnimationがあれば、値の適用を行う。
 			// 下記のif文はC++17から可能になった初期化付きif文
-			if (auto it = mNowSkincluster->animation.nodeAnimations.find(joint.name); it != mNowSkincluster->animation.nodeAnimations.end())
+			if (auto it = mPreSkincluster->animation.nodeAnimations.find(joint.name); it != mPreSkincluster->animation.nodeAnimations.end())
 			{
-				if (auto itNext = mWaitingSkinClusters.front()->animation.nodeAnimations.find(joint.name); itNext != mWaitingSkinClusters.front()->animation.nodeAnimations.end())
+				if (auto itNext = mCurrentSkinCluster->animation.nodeAnimations.find(joint.name); itNext != mCurrentSkinCluster->animation.nodeAnimations.end())
 				{
 					// 両方のルートを取得
 					const NodeAnimation& rootAnimation = (*it).second;
@@ -106,18 +123,18 @@ void Skinning::ApplyAniation() {
 
 					// 各アニメーションの平行移動をVector3に変換し、取得
 					std::array<Vector3, 2> transration;
-					transration[0] = CalculateValue(rootAnimation.translation, mNowSkincluster->animationTime);
-					transration[1] = CalculateValue(rootAnimationNext.translation, mWaitingSkinClusters.front()->animationTime);
+					transration[0] = CalculateValue(rootAnimation.translation, mPreSkincluster->animationTime);
+					transration[1] = CalculateValue(rootAnimationNext.translation, mCurrentSkinCluster->animationTime);
 
 					// 各アニメーション回転をQuaternionに変換し、取得
 					std::array<Quaternion, 2> rotation;
-					rotation[0] = CalculateValue(rootAnimation.rotation, mNowSkincluster->animationTime);
-					rotation[1] = CalculateValue(rootAnimationNext.rotation, mWaitingSkinClusters.front()->animationTime);
+					rotation[0] = CalculateValue(rootAnimation.rotation, mPreSkincluster->animationTime);
+					rotation[1] = CalculateValue(rootAnimationNext.rotation, mCurrentSkinCluster->animationTime);
 
 					// 各アニメーションのスケールをVector3に変換し、取得
 					std::array<Vector3, 2> scale;
-					scale[0] = CalculateValue(rootAnimation.scale, mNowSkincluster->animationTime);
-					scale[1] = CalculateValue(rootAnimationNext.scale, mWaitingSkinClusters.front()->animationTime);
+					scale[0] = CalculateValue(rootAnimation.scale, mPreSkincluster->animationTime);
+					scale[1] = CalculateValue(rootAnimationNext.scale, mCurrentSkinCluster->animationTime);
 
 					// 線形補間(回転は球面線形補間)を行いモーションブレンドする
 					joint.transform.translation_ = Lerp(transration[0], transration[1], mMotionBrendingTime);
@@ -134,12 +151,12 @@ void Skinning::ApplyAniation() {
 		{
 			// 対象のJointのAnimationがあれば、値の適用を行う。
 			// 下記のif文はC++17から可能になった初期化付きif文
-			if (auto it = mNowSkincluster->animation.nodeAnimations.find(joint.name); it != mNowSkincluster->animation.nodeAnimations.end())
+			if (auto it = mCurrentSkinCluster->animation.nodeAnimations.find(joint.name); it != mCurrentSkinCluster->animation.nodeAnimations.end())
 			{
 				const NodeAnimation& rootAnimation = (*it).second;
-				joint.transform.translation_ = CalculateValue(rootAnimation.translation, mNowSkincluster->animationTime);
-				joint.transform.rotation_ = CalculateValue(rootAnimation.rotation, mNowSkincluster->animationTime);
-				joint.transform.scale_ = CalculateValue(rootAnimation.scale, mNowSkincluster->animationTime);
+				joint.transform.translation_ = CalculateValue(rootAnimation.translation, mCurrentSkinCluster->animationTime);
+				joint.transform.rotation_ = CalculateValue(rootAnimation.rotation, mCurrentSkinCluster->animationTime);
+				joint.transform.scale_ = CalculateValue(rootAnimation.scale, mCurrentSkinCluster->animationTime);
 			}
 		}
 	}
@@ -149,7 +166,7 @@ void Skinning::DrawGui()
 {
 #ifdef _DEBUG
 
-	ImGui::TextColored(ImVec4(1.0f,0.6f,0.6f,1.0f), mNowSkincluster->name.c_str());
+	ImGui::TextColored(ImVec4(1.0f,0.6f,0.6f,1.0f), mCurrentSkinCluster->name.c_str());
 
 	ImGui::DragFloat("AnimationPlaySpeed", &mAnimationPlaySpeed, 0.1f, -2.0f, 10.0f);
 
@@ -160,13 +177,13 @@ void Skinning::DrawGui()
 		ImGui::Text("MotionBrending: [OFF]");
 	}
 
-	ImGui::DragFloat("MotionBrendingInterval", &mMotionBrendingInterval, 0.1f, 1.0f, 60.0f);
+	ImGui::DragFloat("MotionBrendingInterval", &mMotionBrendingInterval, 0.01f, 1.0f, 60.0f);
 
 
-	ImGui::DragFloat("animationTime", &mNowSkincluster->animationTime);
-	ImGui::DragFloat("duration", &mNowSkincluster->animation.duration, 0.0f);
+	ImGui::DragFloat("animationTime", &mCurrentSkinCluster->animationTime);
+	ImGui::DragFloat("duration", &mCurrentSkinCluster->animation.duration, 0.0f);
 
-	if (mNowSkincluster->isLoop) {
+	if (mCurrentSkinCluster->isLoop) {
 		ImGui::Text("Loop: [ON]");
 	}
 	else {
@@ -314,14 +331,22 @@ void Skinning::StartMotionBrend()
 	// 次回アニメーションの開始時間を設定
 	mWaitingSkinClusters.front()->animationTime = 0.0f;
 
+	// 現行のアニメーションのポインタを移動
+	mPreSkincluster = mCurrentSkinCluster;
+	// 移行するアニメーションを現行部分に変更
+	mCurrentSkinCluster = mWaitingSkinClusters.front(); // アニメーションを切り替える
+	mWaitingSkinClusters.erase(mWaitingSkinClusters.begin()); // 移行して不要になったアニメーションのポインタを破棄
+
 }
 
 void Skinning::EndMotionBrend()
 {
 	// 各パラメータの設定
 	mIsMotionBrending = false; // モーションブレンドのフラグをfalseに
-	mNowSkincluster = mWaitingSkinClusters.front(); // アニメーションを切り替える
-	mWaitingSkinClusters.erase(mWaitingSkinClusters.begin()); // 移行して不要になったアニメーションのポインタを破棄
+	
+	// 前アニメーションの破棄
+	mPreSkincluster.reset();
+	mPreSkincluster = nullptr;
 
 	// 配列がからでなければ再実行
 	if (!mWaitingSkinClusters.empty()) {
@@ -350,7 +375,7 @@ std::string Skinning::ConvertMixamoName(std::string name)
 
 bool Skinning::GetIsActiveAnimation(std::string name)
 {
-	if (mNowSkincluster->name.c_str() == name.c_str()) {
+	if (mCurrentSkinCluster->name.c_str() == name.c_str()) {
 		return true;
 	}
 

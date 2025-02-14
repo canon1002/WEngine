@@ -69,23 +69,23 @@ public: // -- 公開 メンバ関数 -- //
 	/// <summary>
 	/// 一時停止する
 	/// </summary>
-	inline void Pause() { mNowSkincluster->isPause = true; }
+	inline void Pause() { mCurrentSkinCluster->isPause = true; }
 
 	/// <summary>
 	/// アニメーションを再生する(一時停止やアニメーション停止も解除する)
 	/// </summary>
-	inline void Play() { mNowSkincluster->isPause = false; }
+	inline void Play() { mCurrentSkinCluster->isPause = false; }
 
 	/// <summary>
 	/// アニメーションのループ設定(trueでループ)
 	/// </summary>
 	/// <param name="isLoop">ループさせるか</param>
-	void SetLoopMode(bool isLoop) { mNowSkincluster->isLoop = isLoop; }
+	void SetLoopMode(bool isLoop) { mCurrentSkinCluster->isLoop = isLoop; }
 
 	/// <summary>
 	/// アニメーションを行わないようにする
 	/// </summary>
-	void IsInactive() { mNowSkincluster->isActive = false; }
+	void IsInactive() { mCurrentSkinCluster->isActive = false; }
 
 	/// <summary>
 	/// 次に再生するアニメーションを設定する
@@ -127,7 +127,7 @@ public: // -- 公開 メンバ関数 -- //
 	// 現在再生しているアニメーションのスキンクラスターを取得
 	/// </summary>
 	/// <returns> スキンクラスター及びアニメーション情報</returns>
-	std::shared_ptr<SkinningStatus> GetNowSkinCluster() { return mNowSkincluster; }
+	std::shared_ptr<SkinningStatus> GetNowSkinCluster() { return mCurrentSkinCluster; }
 
 	/// <summary>
 	/// 指定した名前のスキンクラスターを取得
@@ -160,14 +160,14 @@ public: // -- 公開 メンバ関数 -- //
 	/// アニメーションが設定されているか取得(=ボーンのみ使用かの判別)
 	/// </summary>
 	/// <returns>ボーンのみ使用している場合は"false"を、それ以外は"true"を返す</returns>
-	bool GetIsActive() { return mNowSkincluster->isActive; }
+	bool GetIsActive() { return mCurrentSkinCluster->isActive; }
 
 	// <summary>
 	/// 現在再生中のアニメーションが終了しているかを取得
 	/// </summary>
 	/// <returns> 終了していれば"true"を、それ以外は"false"を返す </returns>
 	inline bool GetIsNowAnimationFinished()const {
-		if (mNowSkincluster->animationTime >= (mNowSkincluster->animation.duration)) {
+		if (mCurrentSkinCluster->animationTime >= (mCurrentSkinCluster->animation.duration)) {
 			return true;
 		}
 		return false;
@@ -211,7 +211,7 @@ public: // -- 公開 メンバ関数 -- //
 	/// 現在再生しているアニメーションの全体の尺を取得する
 	/// </summary>
 	/// <returns></returns>
-	float GetDurationTime()const { return mNowSkincluster->animation.duration; }
+	float GetDurationTime()const { return mCurrentSkinCluster->animation.duration; }
 
 	/// <summary>
 	/// アニメーション全体の尺を取得する(登録済みのアニメーションのMAPから指定する)
@@ -258,8 +258,10 @@ private: // -- 非公開 メンバ変数 -- //
 	// スケルトン
 	Skeleton mSkeleton;
 
+	// 前回のアニメーション
+	std::shared_ptr<SkinningStatus> mPreSkincluster;
 	// 現在行っているアニメーションのスキンクラスター
-	std::shared_ptr<SkinningStatus> mNowSkincluster;
+	std::shared_ptr<SkinningStatus> mCurrentSkinCluster;
 
 	// スキンクラスター(及びフラグ等)のリスト(モーションブレンド等で使用する)
 	std::map<std::string, std::shared_ptr<SkinningStatus>>mSkinClusterMap;
