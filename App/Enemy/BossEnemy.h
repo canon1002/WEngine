@@ -147,7 +147,7 @@ private: // -- 非公開 メンバ変数 -- //
 	std::array<std::unique_ptr<WorldTransform>, 2> mWorldTransformSword;
 
 	// 武器の各パーツの座標
-	std::array<Matrix4x4, 5> mWeaponWorldMat;
+	std::array<Matrix4x4, 9> mWeaponWorldMat;
 
 
 	// シェイク関連のメンバ変数

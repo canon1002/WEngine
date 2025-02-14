@@ -22,7 +22,7 @@ BossEnemy::~BossEnemy()
 void BossEnemy::Init() {
 	
 	// モデルの読み込み
-	//ModelManager::GetInstance()->LoadModel("Boss", "boss.gltf");
+	ModelManager::GetInstance()->LoadModel("twoHanded", "twoHanded.gltf");
 	ModelManager::GetInstance()->LoadModel("Boss", "Idle.gltf");
 	ModelManager::GetInstance()->LoadModel("Boss", "Run.gltf");
 	ModelManager::GetInstance()->LoadModel("Boss", "backStep.gltf");
@@ -39,7 +39,7 @@ void BossEnemy::Init() {
 
 	mObject = std::make_unique<Object3d>();
 	mObject->Init("BossEnemyObj");
-	mObject->mWorldTransform->scale = { 1.0f,1.0f,1.0f };
+	mObject->mWorldTransform->scale = { 1.5f,1.5f,1.5f };
 	mObject->mWorldTransform->translation = { 0.0f,0.0f,20.0f };
 
 	// モデルを設定
@@ -48,7 +48,7 @@ void BossEnemy::Init() {
 	// スキニングアニメーションの生成
 	mObject->mSkinning = make_unique<Skinning>();
 	mObject->mSkinning->Init("Boss", "Idle.gltf", mObject->GetModel()->modelData);
-	mObject->mSkinning->SetMotionBlendingInterval(30.0f);
+	mObject->mSkinning->SetMotionBlendingInterval(2.0f);
 	// 使用するアニメーションを登録しておく
 	mObject->mSkinning->CreateSkinningData("Boss", "Idle", ".gltf", mObject->GetModel()->modelData, true);
 	mObject->mSkinning->CreateSkinningData("Boss", "Walk", ".gltf", mObject->GetModel()->modelData, true);
@@ -58,6 +58,8 @@ void BossEnemy::Init() {
 	mObject->mSkinning->CreateSkinningData("Boss", "death", ".gltf", mObject->GetModel()->modelData);
 	
 	mObject->mSkinning->CreateSkinningData("Boss", "Slash", ".gltf", mObject->GetModel()->modelData);
+	mObject->mSkinning->CreateSkinningData("Boss", "Slash1", ".gltf", mObject->GetModel()->modelData);
+	mObject->mSkinning->CreateSkinningData("Boss", "Slash2", ".gltf", mObject->GetModel()->modelData);
 	mObject->mSkinning->CreateSkinningData("Boss", "SlashR", ".gltf", mObject->GetModel()->modelData);
 	mObject->mSkinning->CreateSkinningData("Boss", "SlashDash", ".gltf", mObject->GetModel()->modelData);
 	mObject->mSkinning->CreateSkinningData("Boss", "SlashJamp", ".gltf", mObject->GetModel()->modelData);
@@ -112,15 +114,15 @@ void BossEnemy::Init() {
 
 	mWeapon = std::make_unique<Object3d>();
 	mWeapon->Init("Weapon");
-	mWeapon->SetModel("sword.gltf");
+	mWeapon->SetModel("twoHanded.gltf");
 	mWeapon->mSkinning = make_unique<Skinning>();
-	mWeapon->GetModel()->SetCubeTexture(Skybox::GetInstance()->mTextureHandle);
-	mWeapon->mSkinning->Init("Weapons", "sword.gltf",
+	//mWeapon->GetModel()->SetCubeTexture(Skybox::GetInstance()->mTextureHandle);
+	mWeapon->mSkinning->Init("twoHanded", "twoHanded.gltf",
 		mWeapon->GetModel()->modelData);
 	mWeapon->mSkinning->IsInactive();
 	
 	// 拡大率を変更
-	mWeapon->mWorldTransform->scale = { 6.0f,6.0f,18.0f };
+	mWeapon->mWorldTransform->scale = { 4.0f,4.0f,4.0f };
 	// 回転量を変更
 	mWeapon->mWorldTransform->rotation = { 1.065f,0.0f,0.0f };
 	// 平行移動を行う
@@ -130,10 +132,10 @@ void BossEnemy::Init() {
 	mWeapon->mWorldTransform->SetParent(mRightHandWorldMat);
 
 	// 武器にコライダーをセットする
-	for (int32_t i = 0; i < 5; i++) {
+	for (int32_t i = 0; i < 8; i++) {
 		mWeaponWorldMat[i] = MakeAffineMatrix(Vector3{ 0.0f,0.0f,0.0f }, Vector3{ 0.0f,0.0f,0.0f }, Vector3{ 0.0f,0.0f,0.0f });
 		// コライダー 宣言
-		SphereCollider* newCollider = new SphereCollider(std::make_shared<WorldTransform>(), 0.45f);
+		SphereCollider* newCollider = new SphereCollider(std::make_shared<WorldTransform>(), 0.25f);
 		// 初期化
 		newCollider->Init();
 		newCollider->SetCollisionAttribute(kCollisionAttributeEnemyBullet);
@@ -188,7 +190,7 @@ void BossEnemy::InitBehavior() {
 	BT::Sequence* farAtkActions = new BT::Sequence();
 	farAtkActions->SetChild(new BT::Condition(std::bind(&BossEnemy::InvokeFarDistance, this)));
 	farAtkActions->SetChild(new BT::Action(this, "Dash"));
-	farAtkActions->SetChild(new BT::Action(this, "AttackDash"));
+	farAtkActions->SetChild(new BT::Action(this, "AttackClose"));
 
 	atkSelector->SetChild(farAtkActions); // 中遠距離
 	atkSelector->SetChild(new BT::Action(this, "AttackJump"));
@@ -378,6 +380,15 @@ void BossEnemy::UpdateObject(){
 		].skeletonSpaceMatrix, mWeapon->GetWorldTransform()->GetWorldMatrix());
 	mWeaponWorldMat[4] = Multiply(
 		mWeapon->mSkinning->GetSkeleton().joints[mWeapon->mSkinning->GetSkeleton().jointMap["Blade4"]
+		].skeletonSpaceMatrix, mWeapon->GetWorldTransform()->GetWorldMatrix());
+	mWeaponWorldMat[5] = Multiply(
+		mWeapon->mSkinning->GetSkeleton().joints[mWeapon->mSkinning->GetSkeleton().jointMap["Blade5"]
+		].skeletonSpaceMatrix, mWeapon->GetWorldTransform()->GetWorldMatrix());
+	mWeaponWorldMat[6] = Multiply(
+		mWeapon->mSkinning->GetSkeleton().joints[mWeapon->mSkinning->GetSkeleton().jointMap["Blade6"]
+		].skeletonSpaceMatrix, mWeapon->GetWorldTransform()->GetWorldMatrix());
+	mWeaponWorldMat[7] = Multiply(
+		mWeapon->mSkinning->GetSkeleton().joints[mWeapon->mSkinning->GetSkeleton().jointMap["Blade7"]
 		].skeletonSpaceMatrix, mWeapon->GetWorldTransform()->GetWorldMatrix());
 
 	// 身体の部位のワールド行列を更新

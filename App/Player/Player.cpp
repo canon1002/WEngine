@@ -33,7 +33,7 @@ void Player::Init() {
 
 	mObject = std::make_unique<Object3d>();
 	mObject->Init("PlayerObj");
-	mObject->SetScale({ 1.5f,1.5f,1.5f });
+	mObject->SetScale({ 2.5f,2.5f,2.5f });
 	mObject->SetTranslate({ 1.0f,1.0f,7.0f });
 	
 	// モデルを設定

@@ -92,8 +92,10 @@ void ACT::AttackDash::Reset()
 
 void ACT::AttackDash::SetCollider(CollisionManager* cManager){
 
-	// 未ヒット時にのみコライダーセット
-	for (Collider* collider : mBoss->mWeaponColliders) {
-		cManager->SetCollider(collider);
+	if (!mBoss->GetObject3D()->mSkinning->GetIsMotionbrending()) {
+		// 未ヒット時にのみコライダーセット
+		for (Collider* collider : mBoss->mWeaponColliders) {
+			cManager->SetCollider(collider);
+		}
 	}
 }

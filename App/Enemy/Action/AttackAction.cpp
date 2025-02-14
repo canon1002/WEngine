@@ -91,9 +91,11 @@ void ACT::AttackClose::Reset()
 
 void ACT::AttackClose::SetCollider(CollisionManager* cManager)
 {
-	// 未ヒット時にのみコライダーセット
-	for (Collider* collider : mBoss->mWeaponColliders) {
-		cManager->SetCollider(collider);
+	if (!mBoss->GetObject3D()->mSkinning->GetIsMotionbrending()) {
+		// 未ヒット時にのみコライダーセット
+		for (Collider* collider : mBoss->mWeaponColliders) {
+			cManager->SetCollider(collider);
+		}
 	}
 }
 
@@ -207,9 +209,11 @@ void ACT::AttackThrust::Reset()
 
 void ACT::AttackThrust::SetCollider(CollisionManager* cManager)
 {
-	// 未ヒット時にのみコライダーセット
-	for (Collider* collider : mBoss->mWeaponColliders) {
-		cManager->SetCollider(collider);
+	if (!mBoss->GetObject3D()->mSkinning->GetIsMotionbrending()) {
+		// 未ヒット時にのみコライダーセット
+		for (Collider* collider : mBoss->mWeaponColliders) {
+			cManager->SetCollider(collider);
+		}
 	}
 
 }
