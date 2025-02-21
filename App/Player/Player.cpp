@@ -1005,3 +1005,11 @@ void Player::ReciveDamageToBoss(float power)
 	//SetHitStopDuration(0.5f);
 
 }
+
+void Player::Save()
+{
+}
+
+void Player::Load()
+{
+}

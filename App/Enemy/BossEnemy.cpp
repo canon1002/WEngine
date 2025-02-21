@@ -8,6 +8,7 @@
 #include "GameEngine/Append/Collider/SphereCollider.h"
 #include "GameEngine/Object/Model/Skybox/Skybox.h"
 
+#include "GameEngine/Append/Collider/CollisionManager.h"
 #include "GameEngine/GameMaster/Framerate.h"
 #include "App/Enemy/Action/ActionList.h"
 
@@ -20,7 +21,7 @@ BossEnemy::~BossEnemy()
 }
 
 void BossEnemy::Init() {
-	
+
 	// モデルの読み込み
 	ModelManager::GetInstance()->LoadModel("twoHanded", "twoHanded.gltf");
 	ModelManager::GetInstance()->LoadModel("Boss", "Idle.gltf");
@@ -32,7 +33,7 @@ void BossEnemy::Init() {
 	ModelManager::GetInstance()->LoadModel("Boss", "SlashR.gltf");
 	ModelManager::GetInstance()->LoadModel("Boss", "SlashJamp.gltf");
 	ModelManager::GetInstance()->LoadModel("Boss", "SlashDash.gltf");
-	
+
 	ModelManager::GetInstance()->LoadModel("Boss", "Thrust.gltf");
 	ModelManager::GetInstance()->LoadModel("Boss", "magic.gltf");
 	ModelManager::GetInstance()->LoadModel("Boss", "kick.gltf");
@@ -56,7 +57,7 @@ void BossEnemy::Init() {
 	mObject->mSkinning->CreateSkinningData("Boss", "backStep", ".gltf", mObject->GetModel()->modelData);
 	mObject->mSkinning->CreateSkinningData("Boss", "Knockback", ".gltf", mObject->GetModel()->modelData);
 	mObject->mSkinning->CreateSkinningData("Boss", "death", ".gltf", mObject->GetModel()->modelData);
-	
+
 	mObject->mSkinning->CreateSkinningData("Boss", "Slash", ".gltf", mObject->GetModel()->modelData);
 	mObject->mSkinning->CreateSkinningData("Boss", "Slash1", ".gltf", mObject->GetModel()->modelData);
 	mObject->mSkinning->CreateSkinningData("Boss", "Slash2", ".gltf", mObject->GetModel()->modelData);
@@ -67,7 +68,7 @@ void BossEnemy::Init() {
 
 	mObject->mSkinning->CreateSkinningData("Boss", "magic", ".gltf", mObject->GetModel()->modelData);
 	mObject->mSkinning->CreateSkinningData("Boss", "kick", ".gltf", mObject->GetModel()->modelData);
-	
+
 	// アニメーションの再生速度を1.5倍速に変更
 	mObject->mSkinning->SetAnimationPlaySpeed(1.5f);
 
@@ -120,7 +121,7 @@ void BossEnemy::Init() {
 	mWeapon->mSkinning->Init("twoHanded", "twoHanded.gltf",
 		mWeapon->GetModel()->modelData);
 	mWeapon->mSkinning->IsInactive();
-	
+
 	// 拡大率を変更
 	mWeapon->mWorldTransform->scale = { 4.0f,4.0f,4.0f };
 	// 回転量を変更
@@ -180,8 +181,8 @@ void BossEnemy::InitBehavior() {
 
 	// プレイヤーが遠い場合
 	newSequence->SetChild(new BT::Condition(std::bind(&BossEnemy::InvokeFarDistance, this)));
-	newSequence->SetChild(new BT::Action(this,"MoveToPlayer"));// 接近
-	
+	newSequence->SetChild(new BT::Action(this, "MoveToPlayer"));// 接近
+
 	// 接近行動の終了時、敵の飛距離に応じた行動を取る
 	// 至近距離 : ジャンプ攻撃
 	// 中遠距離 : ダッシュ → ダッシュ攻撃
@@ -202,7 +203,7 @@ void BossEnemy::InitBehavior() {
 
 	// 接近状態だったら
 	BT::Sequence* startNear = new BT::Sequence();
-	startNear->SetChild(new BT::Action(this,"AttackThrust"));	// 刺突
+	startNear->SetChild(new BT::Action(this, "AttackThrust"));	// 刺突
 	startNear->SetChild(new BT::Condition(std::bind(&BossEnemy::InvokeNearDistance, this))); // 至近距離時
 	startNear->SetChild(new BT::Action(this, "BackStep")); // 後退する
 	ReafOneSelector->SetChild(startNear);
@@ -299,7 +300,7 @@ void BossEnemy::Update() {
 		//else {
 		//	
 		//}
-		
+
 		// BehaviorTreeの更新処理を行う
 		if (mIsUpdateBehavior) {
 			this->UpdateBehaviorTree();
@@ -314,11 +315,11 @@ void BossEnemy::Update() {
 
 }
 
-void BossEnemy::UpdateBehaviorTree(){
+void BossEnemy::UpdateBehaviorTree() {
 
 	// リロードカウントを減らす
 	mReloadBTCount -= (6.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetBattleSpeed();
-	
+
 	// リロードカウントが0以下になったら行動を実行
 	if (mReloadBTCount <= 0.0f) {
 
@@ -339,14 +340,14 @@ void BossEnemy::UpdateBehaviorTree(){
 				action.second->End();
 				action.second->Reset();
 			}
-			
+
 			// 行動クラスのポインタをnullptrにする
 			mActiveAction.reset();
 		}
 	}
 }
 
-void BossEnemy::UpdateObject(){
+void BossEnemy::UpdateObject() {
 
 	if (!mActiveAction.expired()) {
 		mActiveAction.lock()->Update();
@@ -460,7 +461,7 @@ void BossEnemy::DrawGUI() {
 	ImGui::Checkbox("UpdateBehaviorTree", &mIsUpdateBehavior);
 	if (ImGui::CollapsingHeader("Animation")) {
 
-		std::string strAnimeT = "AnimationTime : " + std::to_string(mObject->mSkinning->GetNowSkinCluster()->animationTime/ mObject->mSkinning->GetDurationTime());
+		std::string strAnimeT = "AnimationTime : " + std::to_string(mObject->mSkinning->GetNowSkinCluster()->animationTime / mObject->mSkinning->GetDurationTime());
 		ImGui::ProgressBar(mObject->mSkinning->GetNowSkinCluster()->animationTime / mObject->mSkinning->GetDurationTime(), ImVec2(-1.0f, 0.0f), strAnimeT.c_str());
 
 		std::string strNormalT = "MotionBlendingTime : " + std::to_string(mObject->mSkinning->GetMotionBlendingTime());
@@ -488,10 +489,24 @@ void BossEnemy::DrawGUI() {
 #endif // _DEBUG
 }
 
-void BossEnemy::SetAttackCollider(CollisionManager* cManager){
+void BossEnemy::SetAttackCollider(CollisionManager* cManager) {
+
+	// 行動設定時
 	if (!mActiveAction.expired()) {
-		mActiveAction.lock()->SetCollider(cManager);
+		
+		// 攻撃中 かつ 攻撃が命中していなければ
+		if (mActiveAction.lock()->GetIsOperating()&&
+			mActiveAction.lock()->GetIsHit()) {
+			
+			// コライダーセット
+			for (Collider* collider : mWeaponColliders) {
+				cManager->SetCollider(collider);
+			}
+
+		}
+
 	}
+
 }
 
 void BossEnemy::UpdateState() {
@@ -515,68 +530,11 @@ void BossEnemy::UpdateState() {
 void BossEnemy::ReciveDamageTolayer(float power)
 {
 	// プレイヤーにダメージを与える
-	StatusManager::GetInstance()->ReceiveDamage(mStatus, power, pPlayer->GetStatus());
+	StatusManager::GetInstance()->ReceiveDamage(mStatus, power, mTarget->GetStatus());
 }
 
 
 
-
-Vector3 BossEnemy::GetWorldPos()
-{
-	return mObject->GetWorldTransform()->translation;
-}
-
-Vector3 BossEnemy::GetWorldPosForTarget() {
-	return pPlayer->GetWorldPos();
-}
-
-bool BossEnemy::InvokeNearDistance() {
-	//	距離が近い場合のみ実行
-	if (Length(Vector3(
-		GetWorldPos().x - GetWorldPosForTarget().x,
-		GetWorldPos().y - GetWorldPosForTarget().y,
-		GetWorldPos().z - GetWorldPosForTarget().z))
-		<= Length(Vector3(mObject->mWorldTransform->scale))){
-		return true;
-	}
-	return false;
-}
-
-bool BossEnemy::IsNearDistance(float range){
-	//	距離が近い場合のみ実行
-	if (Length(Vector3(
-		GetWorldPos().x - GetWorldPosForTarget().x,
-		GetWorldPos().y - GetWorldPosForTarget().y,
-		GetWorldPos().z - GetWorldPosForTarget().z))
-		<= range) {
-		return true;
-	}
-	return false;
-}
-
-bool BossEnemy::InvokeFarDistance() {
-	//	距離が遠い場合のみ実行
-	if (Length(Vector3(
-		GetWorldPos().x - GetWorldPosForTarget().x,
-		GetWorldPos().y - GetWorldPosForTarget().y,
-		GetWorldPos().z - GetWorldPosForTarget().z))
-		> Length(Vector3(mObject->mWorldTransform->scale))) {
-		return true;
-	}
-	return false;
-}
-
-bool BossEnemy::IsFarDistance(float range){
-	//	距離が遠い場合のみ実行
-	if (Length(Vector3(
-		GetWorldPos().x - GetWorldPosForTarget().x,
-		GetWorldPos().y - GetWorldPosForTarget().y,
-		GetWorldPos().z - GetWorldPosForTarget().z))
-		> range) {
-		return true;
-	}
-	return false;
-}
 
 
 void BossEnemy::SetShake(float duration, float power) {
@@ -589,10 +547,10 @@ void BossEnemy::ShakeUpdate() {
 
 	// シェイク処理
 	if (mShakeTime < mShakeDuration) {
-		
+
 		// シェイク時間を加算
 		mShakeTime += (1.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetBattleSpeed();
-		
+
 		// シェイクの振幅をX方向とZ方向をそれぞれ計算
 		float shakeOffsetX = (rand() % 100 / 100.0f - 0.5f) * mShakePower;
 		float shakeOffsetZ = (rand() % 100 / 100.0f - 0.5f) * mShakePower;
@@ -601,17 +559,25 @@ void BossEnemy::ShakeUpdate() {
 	}
 }
 
-void BossEnemy::SetKnockBackCount(int32_t count){
+void BossEnemy::SetKnockBackCount(int32_t count) {
 	count;
 	if (mKnockBackCount < kNumMaxInfluence) {
 		//mKnockBackCount += count;
 	}
-	else{
+	else {
 		// 行動を終了
 		//mActiveAction.lock()->End();
 		// 行動を設定(ノックバック)
 		SetAction("knockBack");
 	}
+}
+
+void BossEnemy::Save()
+{
+}
+
+void BossEnemy::Load()
+{
 }
 
 void BossEnemy::ColliderDraw() {
@@ -627,6 +593,6 @@ void BossEnemy::ColliderDraw() {
 	for (auto& collider : mBodyPartColliders) {
 		collider.second->Draw();
 	}
-	
+
 #endif // _DEBUG
 }

@@ -451,6 +451,7 @@
     <ClCompile Include="GameEngine\Append\Collider\CapsuelCollider.cpp" />
     <ClCompile Include="App\Gladiator.cpp" />
     <ClCompile Include="App\Scene\SceneFactory.cpp" />
+    <ClCompile Include="App\BlackBoard.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameEngine\Object\Light\DirectionalLight.h">
@@ -768,6 +769,7 @@
     <ClInclude Include="App\Gladiator.h" />
     <ClInclude Include="GameEngine\Scene\AbstractSceneFactory.h" />
     <ClInclude Include="App\Scene\SceneFactory.h" />
+    <ClInclude Include="App\BlackBoard.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt">

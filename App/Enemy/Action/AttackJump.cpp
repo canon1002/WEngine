@@ -1,15 +1,15 @@
 #include "AttackJump.h"
-#include "App/Enemy/BossEnemy.h"
+#include "App/Actor/Actor.h"
 #include "GameEngine/Append/Collider/SphereCollider.h"
 #include "GameEngine/Object/Model/Skybox/Skybox.h"
 #include "GameEngine/Base/Debug/ImGuiManager.h"
 #include "GameEngine/Append/Collider/CollisionManager.h"
 #include "GameEngine/GameMaster/Framerate.h"
 
-void ACT::AttackJump::Init(BossEnemy* boss)
+void ACT::AttackJump::Init(Actor* actor)
 {
 	// ボスのポインタを取得
-	mBoss = boss;
+	mActor = actor;
 	// 初期化する
 	mCondition = Condition::IDOL;
 
@@ -29,20 +29,20 @@ void ACT::AttackJump::Update()
 		mActiveColliderCount += (2.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetBattleSpeed();
 
 
-		// 各コライダーの衝突判定を確認
-		if (!mIsHit && mIsOperating) {
-			for (Collider* collider : mBoss->mWeaponColliders) {
-				if (collider->GetOnCollisionFlag() == true) {
-					mBoss->ReciveDamageTolayer(1.0f);
-					mIsHit = true;
-					// どれか１つでも命中したらループを抜ける
-					break;
-				}
-			}
-		}
+		//// 各コライダーの衝突判定を確認
+		//if (!mIsHit && mIsOperating) {
+		//	for (Collider* collider : mActor->mWeaponColliders) {
+		//		if (collider->GetOnCollisionFlag() == true) {
+		//			mActor->ReciveDamageTolayer(1.0f);
+		//			mIsHit = true;
+		//			// どれか１つでも命中したらループを抜ける
+		//			break;
+		//		}
+		//	}
+		//}
 
 		// 終了処理
-		if (mBoss->GetObject3D()->mSkinning->GetIsAnimationFinished("SlashJamp")) {
+		if (mActor->GetObject3D()->mSkinning->GetIsAnimationFinished("SlashJamp")) {
 			mCondition = Condition::FINISHED;
 		}
 
@@ -51,12 +51,7 @@ void ACT::AttackJump::Update()
 
 void ACT::AttackJump::Draw() {
 
-	if (!mIsHit && mIsOperating) {
-		// 武器のコライダー 描画
-		for (Collider* collider : mBoss->mWeaponColliders) {
-			collider->Draw();
-		}
-	}
+
 
 }
 
@@ -65,7 +60,7 @@ void ACT::AttackJump::Start()
 	// パラメータの初期化
 
 	// アニメーションの変更
-	mBoss->GetObject3D()->mSkinning->SetNextAnimation("SlashJamp");
+	mActor->GetObject3D()->mSkinning->SetNextAnimation("SlashJamp");
 
 	mIsHit = false;
 	mIsOperating = true;
@@ -81,7 +76,7 @@ void ACT::AttackJump::End()
 	mCondition = Condition::FINISHED;
 
 	// アニメーションの変更
-	//mBoss->GetObject3D()->mSkinning->SetNextAnimation("Idle");
+	//mActor->GetObject3D()->mSkinning->SetNextAnimation("Idle");
 }
 
 void ACT::AttackJump::Reset()
@@ -90,12 +85,14 @@ void ACT::AttackJump::Reset()
 	mCondition = Condition::IDOL;
 }
 
-void ACT::AttackJump::SetCollider(CollisionManager* cManager){
+void ACT::AttackJump::Save()
+{
+}
 
-	if (!mBoss->GetObject3D()->mSkinning->GetIsMotionbrending()) {
-		// 未ヒット時にのみコライダーセット
-		for (Collider* collider : mBoss->mWeaponColliders) {
-			cManager->SetCollider(collider);
-		}
-	}
+void ACT::AttackJump::Load()
+{
+}
+
+void ACT::AttackJump::DrawGui()
+{
 }

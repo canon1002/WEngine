@@ -1,22 +1,20 @@
 #include "AttackDash.h"
-#include "App/Enemy/BossEnemy.h"
+#include "App/Actor/Actor.h"
 #include "GameEngine/Append/Collider/SphereCollider.h"
 #include "GameEngine/Object/Model/Skybox/Skybox.h"
 #include "GameEngine/Base/Debug/ImGuiManager.h"
 #include "GameEngine/Append/Collider/CollisionManager.h"
 #include "GameEngine/GameMaster/Framerate.h"
 
-void ACT::AttackDash::Init(BossEnemy* boss)
+void ACT::AttackDash::Init(Actor* boss)
 {
 	// ボスのポインタを取得
-	mBoss = boss;
+	mActor = boss;
 	// 初期化する
 	mCondition = Condition::IDOL;
 
 	//
 	mActiveColliderCount = 0.0f;
-
-
 
 }
 
@@ -29,20 +27,20 @@ void ACT::AttackDash::Update()
 		mActiveColliderCount += (2.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetBattleSpeed();
 
 
-		// 各コライダーの衝突判定を確認
-		if (!mIsHit && mIsOperating) {
-			for (Collider* collider : mBoss->mWeaponColliders) {
-				if (collider->GetOnCollisionFlag() == true) {
-					mBoss->ReciveDamageTolayer(1.0f);
-					mIsHit = true;
-					// どれか１つでも命中したらループを抜ける
-					break;
-				}
-			}
-		}
+		//// 各コライダーの衝突判定を確認
+		//if (!mIsHit && mIsOperating) {
+		//	for (Collider* collider : mActor->mWeaponColliders) {
+		//		if (collider->GetOnCollisionFlag() == true) {
+		//			mActor->ReciveDamageTolayer(1.0f);
+		//			mIsHit = true;
+		//			// どれか１つでも命中したらループを抜ける
+		//			break;
+		//		}
+		//	}
+		//}
 
 		// 終了処理
-		if (mBoss->GetObject3D()->mSkinning->GetIsAnimationFinished("SlashDash")) {
+		if (mActor->GetObject3D()->mSkinning->GetIsAnimationFinished("SlashDash")) {
 			mCondition = Condition::FINISHED;
 		}
 
@@ -51,13 +49,6 @@ void ACT::AttackDash::Update()
 
 void ACT::AttackDash::Draw() {
 
-	if (!mIsHit && mIsOperating) {
-		// 武器のコライダー 描画
-		for (Collider* collider : mBoss->mWeaponColliders) {
-			collider->Draw();
-		}
-	}
-
 }
 
 void ACT::AttackDash::Start()
@@ -65,7 +56,7 @@ void ACT::AttackDash::Start()
 	// パラメータの初期化
 
 	// アニメーションの変更
-	mBoss->GetObject3D()->mSkinning->SetNextAnimation("SlashDash");
+	mActor->GetObject3D()->mSkinning->SetNextAnimation("SlashDash");
 
 	mIsHit = false;
 	mIsOperating = true;
@@ -81,7 +72,7 @@ void ACT::AttackDash::End()
 	mCondition = Condition::FINISHED;
 
 	// アニメーションの変更
-	//mBoss->GetObject3D()->mSkinning->SetNextAnimation("Idle");
+	//mActor->GetObject3D()->mSkinning->SetNextAnimation("Idle");
 }
 
 void ACT::AttackDash::Reset()
@@ -90,12 +81,14 @@ void ACT::AttackDash::Reset()
 	mCondition = Condition::IDOL;
 }
 
-void ACT::AttackDash::SetCollider(CollisionManager* cManager){
+void ACT::AttackDash::Save()
+{
+}
 
-	if (!mBoss->GetObject3D()->mSkinning->GetIsMotionbrending()) {
-		// 未ヒット時にのみコライダーセット
-		for (Collider* collider : mBoss->mWeaponColliders) {
-			cManager->SetCollider(collider);
-		}
-	}
+void ACT::AttackDash::Load()
+{
+}
+
+void ACT::AttackDash::DrawGui()
+{
 }

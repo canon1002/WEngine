@@ -1,14 +1,14 @@
 #include "Action.h"
-#include "App/Enemy/BossEnemy.h"
+#include "App/Actor/Actor.h"
 #include "GameEngine/GameMaster/Framerate.h"
 
-void ACT::MoveToPlayer::Init(BossEnemy* boss)
+void ACT::MoveToPlayer::Init(Actor* actor)
 {
 	// ボスのポインタを取得
-	mBoss = boss;
+	mActor = actor;
 	
 	// 移動の始点
-	mStartPos = mBoss->GetWorldPos();
+	mStartPos = mActor->GetWorldPos();
 	// 移動の終点
 	mEndPos = Vector3(0,0,0);
 	// 方向の設定
@@ -34,7 +34,7 @@ void ACT::MoveToPlayer::Update()
 	if (mCondition == Condition::RUNNING) {
 		
 		// 移動させる
-		mBoss->AddTransform(mVelocity);
+		mActor->AddTransform(mVelocity);
 
 		// 追跡時間を加算する
 		if (mSearchCount < kSearchCountMax) {
@@ -54,16 +54,16 @@ void ACT::MoveToPlayer::Update()
 		}
 
 		// 計算結果をBossクラスに渡す
-		mBoss->SetRotation(Vector3(0.0f, rotateY, 0.0f));
+		mActor->SetRotation(Vector3(0.0f, rotateY, 0.0f));
 
 		// 一定時間ごとにプレイヤー座標を取得
 		mSearchTime += (1.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetBattleSpeed();
 		if (mSearchTime>= kSearchCycle) {
 			// 移動の終点
-			mEndPos = mBoss->GetWorldPosForTarget();
+			mEndPos = mActor->GetWorldPosForTarget();
 			mEndPos.y = 0.0f;
 			// 方向の設定
-			mDirection = Normalize(mEndPos - mBoss->GetWorldPos());
+			mDirection = Normalize(mEndPos - mActor->GetWorldPos());
 			mDirection.y = 0.0f;
 			// 移動速度の設定
 			mMoveSpeed = (1.0f / Framerate::GetInstance()->GetFramerate()) * 8.0f;
@@ -75,7 +75,7 @@ void ACT::MoveToPlayer::Update()
 		}
 
 		// 終了処理(攻撃範囲内に近づけた場合 または 一定時間が経過した場合)
-		if (mBoss->InvokeNearDistance() || mSearchCount > kSearchCountMax) {
+		if (mActor->InvokeNearDistance() || mSearchCount > kSearchCountMax) {
 			mCondition = Condition::FINISHED;
 		}
 	}
@@ -90,10 +90,10 @@ void ACT::MoveToPlayer::Start()
 	// パラメータの初期化
 
 	// 移動の始点
-	mStartPos = mBoss->GetWorldPos();
+	mStartPos = mActor->GetWorldPos();
 	mStartPos.y = 0.0f;
 	// 移動の終点
-	mEndPos = mBoss->GetWorldPosForTarget();
+	mEndPos = mActor->GetWorldPosForTarget();
 	mEndPos.y = 0.0f;
 	// 方向の設定
 	mDirection = Normalize(mEndPos - mStartPos);
@@ -108,7 +108,7 @@ void ACT::MoveToPlayer::Start()
 	mSearchCount = 0.0f;
 
 	// アニメーションの変更
-	mBoss->GetObject3D()->mSkinning->SetNextAnimation("Walk");
+	mActor->GetObject3D()->mSkinning->SetNextAnimation("Walk");
 
 	// 実行する
 	mCondition = Condition::RUNNING;
@@ -117,7 +117,7 @@ void ACT::MoveToPlayer::Start()
 void ACT::MoveToPlayer::End()
 {
 	// アニメーションの変更
-	//mBoss->GetObject3D()->mSkinning->SetNextAnimation("Idle");
+	//mActor->GetObject3D()->mSkinning->SetNextAnimation("Idle");
 	
 
 	// 行動を終了させる
@@ -132,10 +132,10 @@ void ACT::MoveToPlayer::Reset()
 	// パラメータの初期化
 
 	// 移動の始点
-	mStartPos = mBoss->GetWorldPos();
+	mStartPos = mActor->GetWorldPos();
 	mStartPos.y = 0.0f;
 	// 移動の終点
-	mEndPos = mBoss->GetWorldPosForTarget();
+	mEndPos = mActor->GetWorldPosForTarget();
 	mEndPos.y = 0.0f;
 	// 方向の設定
 	mDirection = Normalize(mEndPos - mStartPos);
@@ -146,19 +146,25 @@ void ACT::MoveToPlayer::Reset()
 	mVelocity = Scalar(mMoveSpeed, mDirection);
 }
 
-void ACT::MoveToPlayer::SetCollider(CollisionManager* cManager)
+void ACT::MoveToPlayer::Save()
 {
-	cManager;
 }
 
+void ACT::MoveToPlayer::Load()
+{
+}
 
-void ACT::BackStep::Init(BossEnemy* boss)
+void ACT::MoveToPlayer::DrawGui()
+{
+}
+
+void ACT::BackStep::Init(Actor* actor)
 {
 	// ボスのポインタを取得
-	mBoss = boss;
+	mActor = actor;
 
 	// 移動の始点
-	mStartPos = mBoss->GetWorldPos();
+	mStartPos = mActor->GetWorldPos();
 	// 移動の終点
 	mEndPos = Vector3(0, 0, 0);
 	// 方向の設定
@@ -179,7 +185,7 @@ void ACT::BackStep::Update()
 	// 実行時のみ処理を行う
 	if (mCondition == Condition::RUNNING) {
 		// 移動させる // XZ座標のみ逆方向にする
-		mBoss->AddTransform(mVelocity);
+		mActor->AddTransform(mVelocity);
 		
 		// 移動方向への回転を行う
 		// ここから回転処理
@@ -194,10 +200,10 @@ void ACT::BackStep::Update()
 		}
 
 		// 計算結果をBossクラスに渡す
-		mBoss->SetRotation(Vector3(0.0f, rotateY, 0.0f));
+		mActor->SetRotation(Vector3(0.0f, rotateY, 0.0f));
 
 		// 終了処理
-		if (mBoss->GetObject3D()->mSkinning->GetIsAnimationFinished("backStep")) {
+		if (mActor->GetObject3D()->mSkinning->GetIsAnimationFinished("backStep")) {
 			mCondition = Condition::FINISHED;
 		}
 	}
@@ -212,10 +218,10 @@ void ACT::BackStep::Start()
 	// パラメータの初期化
 
 	// 移動の始点
-	mStartPos = mBoss->GetWorldPos();
+	mStartPos = mActor->GetWorldPos();
 	mStartPos.y = 0.0f;
 	// 移動の終点
-	mEndPos = mBoss->GetWorldPosForTarget();
+	mEndPos = mActor->GetWorldPosForTarget();
 	mEndPos.y = 0.0f;
 	// 方向の設定
 	mDirection = Normalize(mEndPos - mStartPos);
@@ -226,11 +232,11 @@ void ACT::BackStep::Start()
 	mVelocity = Scalar(-mMoveSpeed, mDirection);
 
 	// 少しジャンプさせる
-	//mBoss->Jump(1.0f);
+	//mActor->Jump(1.0f);
 
 	// アニメーションの変更
-	mBoss->GetObject3D()->mSkinning->SetNextAnimation("backStep");
-	//mBoss->GetObject3D()->mSkinning->SetMotionBlendingInterval(30.0f);
+	mActor->GetObject3D()->mSkinning->SetNextAnimation("backStep");
+	//mActor->GetObject3D()->mSkinning->SetMotionBlendingInterval(30.0f);
 
 	// 実行する
 	mCondition = Condition::RUNNING;
@@ -242,8 +248,8 @@ void ACT::BackStep::End()
 	mCondition = Condition::FINISHED;
 
 	// アニメーション変更
-	//mBoss->GetObject3D()->mSkinning->SetNextAnimation("Idle");
-	//mBoss->GetObject3D()->mSkinning->SetMotionBlendingInterval(10.0f);
+	//mActor->GetObject3D()->mSkinning->SetNextAnimation("Idle");
+	//mActor->GetObject3D()->mSkinning->SetMotionBlendingInterval(10.0f);
 
 }
 
@@ -255,10 +261,10 @@ void ACT::BackStep::Reset()
 	// パラメータの初期化
 
 	// 移動の始点
-	mStartPos = mBoss->GetWorldPos();
+	mStartPos = mActor->GetWorldPos();
 	mStartPos.y = 0.0f;
 	// 移動の終点
-	mEndPos = mBoss->GetWorldPosForTarget();
+	mEndPos = mActor->GetWorldPosForTarget();
 	mEndPos.y = 0.0f;
 	// 方向の設定
 	mDirection = Normalize(mEndPos - mStartPos);
@@ -269,7 +275,14 @@ void ACT::BackStep::Reset()
 	mVelocity = Scalar(-mMoveSpeed, mDirection);
 }
 
-void ACT::BackStep::SetCollider(CollisionManager* cManager)
+void ACT::BackStep::Save()
 {
-	cManager;
+}
+
+void ACT::BackStep::Load()
+{
+}
+
+void ACT::BackStep::DrawGui()
+{
 }

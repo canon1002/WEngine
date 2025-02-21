@@ -53,7 +53,7 @@ void GameScene::Init() {
 
 	// 互いのポインタを渡す
 	mPlayer->SetBoss(mBoss.get());
-	mBoss->SetPlayer(mPlayer.get());
+	mBoss->SetTarget(mPlayer.get());
 
 	// オブジェクトにCubeMapのテクスチャ番号を渡す
 	mPlayer->GetModel()->SetCubeTexture(mSkybox->mTextureHandle);

@@ -63,14 +63,41 @@ public: // -- 公開 メンバ関数 -- //
 	/// 行動クラスのポインタの取得
 	/// </summary>
 	/// <param name="key">行動内容(クラス名)</param>
-	ACT::IAction* GetActionClass(const std::string& key);
+	ACT::Action* GetActionClass(const std::string& key);
 
+	void ReceiveDamage();
 
 #pragma endregion
 
+#pragma region  アクション条件・簡易行動
+
+	// 移動させる
+	void AddTransform(Vector3 velocity) { mObject->mWorldTransform->translation += velocity; }
+	// 回転量を任意の値に変更する
+	void SetRotation(Vector3 rotation) { mObject->mWorldTransform->rotation = rotation; }
+
+	// ターゲットの座標を取得
+	Vector3 GetWorldPosForTarget();
+
+	// 距離が近い場合に実行
+	bool InvokeNearDistance();
+	// 距離が近い場合に実行(距離設定可能)
+	bool IsNearDistance(float range);
+
+	// 距離が遠い場合に実行
+	bool InvokeFarDistance();
+	// 距離が遠い場合に実行(距離設定可能)
+	bool IsFarDistance(float range);
+
+#pragma endregion 
 
 
 	// -- アクセッサ -- //
+
+
+	// 能力値取得関数
+	std::shared_ptr<Status> GetStatus() { return mStatus; }
+
 
 	/// <summary>
 	/// アクターの名称を取得する
@@ -91,6 +118,11 @@ public: // -- 公開 メンバ関数 -- //
 	float GetHitStopDuration() { return mHitStopDuration; }
 
 protected: // -- 限定公開 メンバ関数 -- //
+
+	// 保存処理
+	virtual void Save();
+	// 読み込み処理
+	virtual void Load();
 
 	// -- 初期化関連 -- //
 
@@ -132,13 +164,16 @@ protected: // -- 限定公開 メンバ変数 -- //
 	// ヒットストップ時間
 	float mHitStopDuration = 0.0f;
 
+	// 能力値
+	std::shared_ptr<Status> mStatus;
 
 	// 行動マップデータ
-	std::map<string, std::shared_ptr<ACT::IAction>> mActions;
+	std::map<string, std::shared_ptr<ACT::Action>> mActions;
 	// 現在の行動
-	std::weak_ptr<ACT::IAction> mActiveAction;
+	std::weak_ptr<ACT::Action> mActiveAction;
 
-
+	// ターゲット対象のポインタ
+	Actor* mTarget;
 
 };
 

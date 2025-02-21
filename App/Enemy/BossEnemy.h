@@ -39,7 +39,7 @@ public: // -- 公開 メンバ関数 -- //
 	void SetAttackCollider(CollisionManager* cManager);
 
 	// プレイヤーのポインタをセットする
-	void SetPlayer(Player* player) { pPlayer = player; }
+	void SetTarget(Actor* target) { mTarget = target; }
 
 	// ステートの更新処理
 	void UpdateState();
@@ -48,37 +48,10 @@ public: // -- 公開 メンバ関数 -- //
 
 	// 自身の攻撃命中時に呼び出す関数
 	void ReciveDamageTolayer(float power);
-	// 能力値取得関数
-	std::shared_ptr<Status> GetStatus() { return mStatus; }
-
-	// -- 変更用関数 -- //
-
-	// 移動させる
-	void AddTransform(Vector3 velocity) { mObject->mWorldTransform->translation += velocity; }
-	// 回転量を任意の値に変更する
-	void SetRotation(Vector3 rotation) { mObject->mWorldTransform->rotation = rotation; }
-
-
 
 	// -- 取得関数 -- //
-
-	Vector3 GetWorldPos();
-	Vector3 GetWorldPosForTarget();
-	
 	const WorldTransform* GetWorldPositionSword(int32_t count) { return mWorldTransformSword.at(count).get(); }
-
-
-	// -- ActionNodeの実行条件を設定する関数 -- //
-
-	// 距離が近い場合に実行
-	bool InvokeNearDistance();
-	// 距離が近い場合に実行(距離設定可能)
-	bool IsNearDistance(float range);
-
-	// 距離が遠い場合に実行
-	bool InvokeFarDistance();
-	// 距離が遠い場合に実行(距離設定可能)
-	bool IsFarDistance(float range);
+	
 
 	// シェイク処理
 	void SetShake(float duration, float power);
@@ -100,10 +73,14 @@ public: // -- 公開 メンバ関数 -- //
 	// 武器の衝突判定
 	std::vector<Collider*> mWeaponColliders;
 
-private: // -- 非公開 メンバ変数 -- //
+private: // -- 非公開 メンバ関数 -- //
 
-	// プレイヤー(ターゲット)のポインタ
-	Player* pPlayer;
+	// 保存処理
+	virtual void Save() override;
+	// 読み込み処理
+	virtual void Load() override;
+
+private: // -- 非公開 メンバ変数 -- //
 
 	// 移動量
 	Vector3 mVelocity;
@@ -137,9 +114,6 @@ private: // -- 非公開 メンバ変数 -- //
 	float mReloadBTCount;
 	// ビヘイビアツリーを実行するか
 	bool mIsUpdateBehavior = true;
-
-	// 能力値
-	std::shared_ptr<Status> mStatus;
 
 	// -- エフェクト関係 -- //
 

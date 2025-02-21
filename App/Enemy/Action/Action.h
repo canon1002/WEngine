@@ -4,7 +4,7 @@
 #include "GameEngine/Object/3d/Object3d.h"
 
 // 前方宣言
-class BossEnemy;
+class Actor;
 class CollisionManager;
 
 // 行動
@@ -20,17 +20,17 @@ namespace ACT {
 	// ----------------------------------------------------
 	// 基底クラス 
 	// ----------------------------------------------------
-	class IAction
+	class Action
 	{
 	public: // -- 公開 メンバ関数 -- //
 
 		// コンストラクタ
-		IAction() = default;
+		Action() = default;
 		// 仮想デストラクタ
-		virtual ~IAction() = default;
+		virtual ~Action() = default;
 
 		// 初期化
-		virtual void Init(BossEnemy* boss) = 0;
+		virtual void Init(Actor* actor) = 0;
 		// 更新処理
 		virtual void Update() = 0;
 		// 描画処理
@@ -46,13 +46,24 @@ namespace ACT {
 		// 駆動状態取得関数
 		virtual ACT::Condition GetCondition()const { return mCondition; }
 
-		// コライダーをリストに追加する
-		virtual void SetCollider(CollisionManager* cManager) = 0;
+		// 保存処理
+		virtual void Save() = 0;
+		// 読み込み処理
+		virtual void Load() = 0;
+		// ImGuiの表示
+		virtual void DrawGui() = 0;
+
+		// 攻撃中であるか取得する
+		inline bool GetIsOperating()const  { return mIsOperating; }
+		// 攻撃が命中したか取得する
+		inline bool GetIsHit()const  { return mIsHit; }
+		// 衝突フラグをtrueに切り替える
+		inline void Hit() { mIsHit = true; }
 
 	protected: // -- 限定公開 メンバ変数 -- // 
 
-		// BossEnemyクラスのポインタ
-		BossEnemy* mBoss;
+		// アクターのポインタ
+		Actor* mActor;
 
 		// 駆動状態
 		Condition mCondition;
@@ -65,8 +76,7 @@ namespace ACT {
 		// 動作中であるか(攻撃判定フラグとしても扱う)
 		bool mIsOperating;	
 		// 攻撃が命中したか
-		bool mIsHit;			
-
+		bool mIsHit;	
 	};
 
 
@@ -75,14 +85,14 @@ namespace ACT {
 	// 接近
 	// ----------------------------------------------------
 	class MoveToPlayer :
-		public IAction
+		public Action
 	{
 	public:
 		MoveToPlayer() = default;
 		~MoveToPlayer() = default;
 
 		// 初期化
-		virtual void Init(BossEnemy* boss) override;
+		virtual void Init(Actor* actor) override;
 		// 更新処理
 		virtual void Update() override;
 		// 描画処理
@@ -98,8 +108,12 @@ namespace ACT {
 		// 駆動状態取得関数
 		virtual ACT::Condition GetCondition()const override { return mCondition; }
 
-		// コライダーをリストに追加する
-		virtual void SetCollider(CollisionManager* cManager)override;
+		// 保存処理
+		virtual void Save() override;
+		// 読み込み処理
+		virtual void Load() override;
+		// ImGuiの表示
+		virtual void DrawGui() override;
 
 	private:
 
@@ -127,14 +141,14 @@ namespace ACT {
 	// 後退
 	// ----------------------------------------------------
 	class BackStep :
-		public IAction
+		public Action
 	{
 	public:
 		BackStep() = default;
 		~BackStep() = default;
 
 		// 初期化
-		virtual void Init(BossEnemy* boss) override;
+		virtual void Init(Actor* actor) override;
 		// 更新処理
 		virtual void Update() override;
 		// 描画処理
@@ -150,8 +164,12 @@ namespace ACT {
 		// 駆動状態取得関数
 		virtual ACT::Condition GetCondition()const override { return mCondition; }
 
-		// コライダーをリストに追加する
-		virtual void SetCollider(CollisionManager* cManager)override;
+		// 保存処理
+		virtual void Save() override;
+		// 読み込み処理
+		virtual void Load() override;
+		// ImGuiの表示
+		virtual void DrawGui() override;
 
 	private:
 
@@ -172,14 +190,14 @@ namespace ACT {
 	// 近接攻撃
 	// ----------------------------------------------------
 	class AttackClose :
-		public IAction
+		public Action
 	{
 	public:
 		AttackClose() = default;
 		~AttackClose() = default;
 
 		// 初期化
-		virtual void Init(BossEnemy* boss) override;
+		virtual void Init(Actor* actor) override;
 		// 更新処理
 		virtual void Update() override;
 		// 描画処理
@@ -195,8 +213,12 @@ namespace ACT {
 		// 駆動状態取得関数
 		virtual ACT::Condition GetCondition()const override { return mCondition; }
 
-		// コライダーをリストに追加する
-		virtual void SetCollider(CollisionManager* cManager)override;
+		// 保存処理
+		virtual void Save() override;
+		// 読み込み処理
+		virtual void Load() override;
+		// ImGuiの表示
+		virtual void DrawGui() override;
 
 	private:
 	
@@ -209,14 +231,14 @@ namespace ACT {
 	// 刺突攻撃
 	// ----------------------------------------------------
 	class AttackThrust :
-		public IAction
+		public Action
 	{
 	public:
 		AttackThrust() = default;
 		~AttackThrust() = default;
 
 		// 初期化
-		virtual void Init(BossEnemy* boss) override;
+		virtual void Init(Actor* actor) override;
 		// 更新処理
 		virtual void Update() override;
 		// 描画処理
@@ -232,8 +254,12 @@ namespace ACT {
 		// 駆動状態取得関数
 		virtual ACT::Condition GetCondition()const override { return mCondition; }
 
-		// コライダーをリストに追加する
-		virtual void SetCollider(CollisionManager* cManager)override;
+		// 保存処理
+		virtual void Save() override;
+		// 読み込み処理
+		virtual void Load() override;
+		// ImGuiの表示
+		virtual void DrawGui() override;
 
 	private:
 

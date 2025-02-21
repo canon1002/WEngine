@@ -7,8 +7,7 @@ Actor::Actor(){
 	
 }
 
-Actor::Actor(const std::string& name)
-{
+Actor::Actor(const std::string& name){
 	mName = name;
 }
 
@@ -25,15 +24,28 @@ ACT::Condition Actor::GetActionCondition(const std::string& key) {
 	return mActions[key]->GetCondition();
 }
 
-ACT::IAction* Actor::GetActionClass(const std::string& key) {
+ACT::Action* Actor::GetActionClass(const std::string& key) {
 	// 引数で指定した行動クラスの状態を取得する
 	return mActions[key].get();
+}
+
+void Actor::ReceiveDamage()
+{
 }
 
 void Actor::SetAction(const std::string& key) {
 	// 現行アクションを設定
 	mActiveAction = mActions[key];
 	mActiveAction.lock()->Start();
+}
+
+
+void Actor::Save()
+{
+}
+
+void Actor::Load()
+{
 }
 
 void Actor::CreateBodyPartCollider(std::string name, float radius,uint32_t atribute, uint32_t mask) {
@@ -90,4 +102,60 @@ void Actor::UpdateBodyMatrix()
 
 	}
 
+}
+
+
+Vector3 Actor::GetWorldPosForTarget() {
+	if (mTarget) {
+		return mTarget->GetWorldPos();
+	}
+	return Vector3(0.0f, 0.0f, 0.0f);
+}
+
+bool Actor::InvokeNearDistance() {
+	//	距離が近い場合のみ実行
+	if (Length(Vector3(
+		GetWorldPos().x - GetWorldPosForTarget().x,
+		GetWorldPos().y - GetWorldPosForTarget().y,
+		GetWorldPos().z - GetWorldPosForTarget().z))
+		<= Length(Vector3(mObject->mWorldTransform->scale))) {
+		return true;
+	}
+	return false;
+}
+
+bool Actor::IsNearDistance(float range) {
+	//	距離が近い場合のみ実行
+	if (Length(Vector3(
+		GetWorldPos().x - GetWorldPosForTarget().x,
+		GetWorldPos().y - GetWorldPosForTarget().y,
+		GetWorldPos().z - GetWorldPosForTarget().z))
+		<= range) {
+		return true;
+	}
+	return false;
+}
+
+bool Actor::InvokeFarDistance() {
+	//	距離が遠い場合のみ実行
+	if (Length(Vector3(
+		GetWorldPos().x - GetWorldPosForTarget().x,
+		GetWorldPos().y - GetWorldPosForTarget().y,
+		GetWorldPos().z - GetWorldPosForTarget().z))
+		> Length(Vector3(mObject->mWorldTransform->scale))) {
+		return true;
+	}
+	return false;
+}
+
+bool Actor::IsFarDistance(float range) {
+	//	距離が遠い場合のみ実行
+	if (Length(Vector3(
+		GetWorldPos().x - GetWorldPosForTarget().x,
+		GetWorldPos().y - GetWorldPosForTarget().y,
+		GetWorldPos().z - GetWorldPosForTarget().z))
+		> range) {
+		return true;
+	}
+	return false;
 }

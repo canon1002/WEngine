@@ -1,14 +1,14 @@
 #include "Seartch.h"
-#include "App/Enemy/BossEnemy.h"
+#include "App/Actor/Actor.h"
 #include "GameEngine/GameMaster/Framerate.h"
 
-void ACT::Seartch::Init(BossEnemy* boss)
+void ACT::Seartch::Init(Actor* actor)
 {
 	// ボスのポインタを取得
-	mBoss = boss;
+	mActor = actor;
 
 	// 移動の始点
-	mStartPos = mBoss->GetWorldPos();
+	mStartPos = mActor->GetWorldPos();
 	// 移動の終点
 	mEndPos = Vector3(0, 0, 0);
 	// 方向の設定
@@ -31,7 +31,7 @@ void ACT::Seartch::Update()
 	// 実行時のみ処理を行う
 	if (mCondition == Condition::RUNNING) {
 		// 移動させる
-		mBoss->AddTransform(mVelocity);
+		mActor->AddTransform(mVelocity);
 
 		// 移動方向への回転を行う
 		// ここから回転処理
@@ -46,16 +46,16 @@ void ACT::Seartch::Update()
 		}
 
 		// 計算結果をBossクラスに渡す
-		mBoss->SetRotation(Vector3(0.0f, rotateY, 0.0f));
+		mActor->SetRotation(Vector3(0.0f, rotateY, 0.0f));
 
 		// 一定時間ごとにプレイヤー座標を取得
 		mSearchTime += (1.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetBattleSpeed();
 		if (mSearchTime >= kSearchCycle) {
 			// 移動の終点
-			mEndPos = mBoss->GetWorldPosForTarget();
+			mEndPos = mActor->GetWorldPosForTarget();
 			mEndPos.y = 0.0f;
 			// 方向の設定
-			mDirection = Normalize(mEndPos - mBoss->GetWorldPos());
+			mDirection = Normalize(mEndPos - mActor->GetWorldPos());
 			mDirection.y = 0.0f;
 			// 移動速度の設定
 			mMoveSpeed = (1.0f / Framerate::GetInstance()->GetFramerate()) * 8.0f;
@@ -67,7 +67,7 @@ void ACT::Seartch::Update()
 		}
 
 		// 終了処理
-		if (mBoss->InvokeNearDistance()) {
+		if (mActor->InvokeNearDistance()) {
 			mCondition = Condition::FINISHED;
 		}
 	}
@@ -82,10 +82,10 @@ void ACT::Seartch::Start()
 	// パラメータの初期化
 
 	// 移動の始点
-	mStartPos = mBoss->GetWorldPos();
+	mStartPos = mActor->GetWorldPos();
 	mStartPos.y = 0.0f;
 	// 移動の終点
-	mEndPos = mBoss->GetWorldPosForTarget();
+	mEndPos = mActor->GetWorldPosForTarget();
 	mEndPos.y = 0.0f;
 	// 方向の設定
 	mDirection = Normalize(mEndPos - mStartPos);
@@ -98,7 +98,7 @@ void ACT::Seartch::Start()
 	mSearchTime = 0.0f;
 
 	// アニメーションの変更
-	mBoss->GetObject3D()->mSkinning->SetNextAnimation("Run");
+	mActor->GetObject3D()->mSkinning->SetNextAnimation("Run");
 
 	// 実行する
 	mCondition = Condition::RUNNING;
@@ -107,7 +107,7 @@ void ACT::Seartch::Start()
 void ACT::Seartch::End()
 {
 	// アニメーションの変更
-	//mBoss->GetObject3D()->mSkinning->SetNextAnimation("Idle");
+	//mActor->GetObject3D()->mSkinning->SetNextAnimation("Idle");
 
 
 	// 行動を終了させる
@@ -122,10 +122,10 @@ void ACT::Seartch::Reset()
 	// パラメータの初期化
 
 	// 移動の始点
-	mStartPos = mBoss->GetWorldPos();
+	mStartPos = mActor->GetWorldPos();
 	mStartPos.y = 0.0f;
 	// 移動の終点
-	mEndPos = mBoss->GetWorldPosForTarget();
+	mEndPos = mActor->GetWorldPosForTarget();
 	mEndPos.y = 0.0f;
 	// 方向の設定
 	mDirection = Normalize(mEndPos - mStartPos);
@@ -136,7 +136,14 @@ void ACT::Seartch::Reset()
 	mVelocity = Scalar(mMoveSpeed, mDirection);
 }
 
-void ACT::Seartch::SetCollider(CollisionManager* cManager)
+void ACT::Seartch::Save()
 {
-	cManager;
+}
+
+void ACT::Seartch::Load()
+{
+}
+
+void ACT::Seartch::DrawGui()
+{
 }

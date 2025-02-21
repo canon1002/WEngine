@@ -117,6 +117,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="App\BlackBoard.cpp" />
     <ClCompile Include="GameEngine\Append\Collider\CapsuelCollider.cpp" />
     <ClCompile Include="GameEngine\Editor\NodeEditor\Nodes\AINodeActions.cpp" />
     <ClCompile Include="App\Actor\Actor.cpp" />
@@ -227,6 +228,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="App\Scene\SceneFactory.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="App\BlackBoard.h" />
     <ClInclude Include="GameEngine\Scene\AbstractSceneFactory.h" />
     <ClInclude Include="GameEngine\Append\Collider\CapsuelCollider.h" />
     <ClInclude Include="GameEngine\Editor\NodeEditor\Nodes\AINodeActions.h" />

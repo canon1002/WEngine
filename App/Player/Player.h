@@ -113,16 +113,12 @@ public: // -- 公開 メンバ関数 -- //
 	// 初期化
 	void Init();
 
-	// -- 更新処理 -- //
-
+	
 	// 全体更新
 	void Update();
-	
 	// 座標/アニメーション更新
 	void UpdateObject();
 
-
-	
 	// 描画
 	void Draw();
 	// デバッグUI表示
@@ -165,14 +161,16 @@ public: // -- 公開 メンバ関数 -- //
 	void SetBoss(BossEnemy* boss) { mBoss = boss; }
 	// ボスにダメージを与える
 	void ReciveDamageToBoss(float power);
-	// 能力値取得関数
-	std::shared_ptr<Status> GetStatus() { return mStatus; }
 
 	// ボスクラスのポインタ
 	BossEnemy* mBoss;
 
 private: // -- 非公開 メンバ関数 -- //
 
+	// 保存処理
+	virtual void Save() override;
+	// 読み込み処理
+	virtual void Load() override;
 	
 
 public: // -- 公開 メンバ変数 & 定数 -- //
@@ -220,11 +218,7 @@ private: // -- 非公開 メンバ変数 -- //
 	int32_t mChargeCount;
 	// 狙い撃ちの構えをしているか
 	bool mIsAimMode;
-	
 
-
-	// 能力値
-	std::shared_ptr<Status> mStatus;
 	// 攻撃関連パラメータ
 	AttackStatus mAttackStatus;
 	// 防御関連パラメータ
