@@ -71,22 +71,9 @@ namespace AINode {
 		// 実行処理
 		virtual State Tick() override;
 		// 再起動処理
-		virtual void Reset() override {};
+		virtual void Reset() override;
 		// JSONへの変換
-		inline virtual json ConvertToJson() override {
-			json j;
-			j = json::object();
-			j[mName]["index"] = mIndex;	// エディタで使用するノード番号
-			j[mName]["tag"] = mTag;		// ノードの種類(クラス名)
-			j[mName]["Pos"] = { mGuiPos.x,mGuiPos.y }; // ImGuiの座標
-
-			//if (mActor) {
-			//	j[mName]["owner"] = mActor->GetName(); // ノードを所有するアクターの名前
-			//	j[mName]["action"] = mActor->GetName(); // アクション名
-			//}
-
-			return j;
-		};
+		virtual json ConvertToJson() override;
 
 	};
 
@@ -106,29 +93,12 @@ namespace AINode {
 		};
 
 		// 実行処理3
-		virtual State Tick() override {
-			// 結果を返す
-			return State::SUCCESS;
-		}
+		virtual State Tick() override;
 		// 再起動処理
 		virtual void Reset() override {};
 
 		// JSONへの変換
-		inline virtual json ConvertToJson() override {
-
-			json j;
-			j[mName]["name"] = mName;				// ノードの名称
-			j[mName]["index"] = mIndex;			// エディタで使用するノード番号
-			j[mName]["tag"] = mTag;				// ノードの種類(クラス名)
-			j[mName]["Pos"] = { mGuiPos.x,mGuiPos.y }; // ImGuiの座標
-
-			//if (mActor) {
-			//	j[mName]["owner"] = mActor->GetName(); // ノードを所有するアクターの名前
-			//	j[mName]["action"] = mActor->GetName(); // アクション名
-			//}
-
-			return j;
-		}
+		virtual json ConvertToJson() override;
 
 	public:
 
