@@ -57,11 +57,25 @@ void GlobalVariables::Update() {
 				ImGui::DragFloat(itemName.c_str(), ptr, 0.1f, 0, 100);
 			}
 
+			// Vector2型の場合
+			else if (std::holds_alternative<Vector2>(item.value)) {
+				Vector2* ptr = std::get_if<Vector2>(&item.value);
+				// float型の配列としてImGuiに渡す
+				ImGui::DragFloat2(itemName.c_str(), reinterpret_cast<float*>(ptr), 0.1f, 0, 100);
+			}
+
 			// Vector3型の場合
 			else if (std::holds_alternative<Vector3>(item.value)) {
 				Vector3* ptr = std::get_if<Vector3>(&item.value);
 				// float型の配列としてImGuiに渡す
 				ImGui::DragFloat3(itemName.c_str(), reinterpret_cast<float*>(ptr), 0.1f, 0, 100);
+			}
+
+			// std::string型の場合
+			else if (std::holds_alternative<std::string>(item.value)) {
+				std::string* ptr = std::get_if<std::string>(&item.value);
+				// string型の配列としてImGuiに渡す
+				ImGui::Text("%s",ptr->c_str());
 			}
 
 		}
@@ -110,7 +124,29 @@ void GlobalVariables::SetValue(const std::string& groupName, const std::string& 
 	group.items[key] = newItem;
 }
 
+void GlobalVariables::SetValue(const std::string& groupName, const std::string& key, const Vector2& value)
+{
+	// グループの参照を取得
+	Group& group = mDatas[groupName];
+	// 新しい項目のデータを取得
+	Item newItem{};
+	newItem.value = value;
+	// 設定した項目をstd::mapに追加
+	group.items[key] = newItem;
+}
+
 void GlobalVariables::SetValue(const std::string& groupName, const std::string& key, const Vector3& value) {
+	// グループの参照を取得
+	Group& group = mDatas[groupName];
+	// 新しい項目のデータを取得
+	Item newItem{};
+	newItem.value = value;
+	// 設定した項目をstd::mapに追加
+	group.items[key] = newItem;
+}
+
+void GlobalVariables::SetValue(const std::string& groupName, const std::string& key, const std::string& value)
+{
 	// グループの参照を取得
 	Group& group = mDatas[groupName];
 	// 新しい項目のデータを取得
@@ -153,6 +189,22 @@ void GlobalVariables::AddItem(const std::string& groupName, const std::string& k
 	}
 }
 
+void GlobalVariables::AddItem(const std::string& groupName, const std::string& key, const Vector2& value)
+{
+	//グループを検索
+	std::map<std::string, Group>::iterator itGroup = mDatas.find(groupName);
+	//未登録チェック
+	assert(itGroup != mDatas.end());
+	//グループの参照を取得
+	Group& group = itGroup->second;
+
+	//キーを検索
+	std::map<std::string, Item>::iterator itKey = group.items.find(key);
+	if (itKey == group.items.end()) {
+		SetValue(groupName, key, value);
+	}
+}
+
 void GlobalVariables::AddItem(const std::string& groupName, const std::string& key, const Vector3& value)
 {
 	//グループを検索
@@ -168,6 +220,22 @@ void GlobalVariables::AddItem(const std::string& groupName, const std::string& k
 		SetValue(groupName, key, value);
 	}
 
+}
+
+void GlobalVariables::AddItem(const std::string& groupName, const std::string& key, const std::string& value)
+{
+	//グループを検索
+	std::map<std::string, Group>::iterator itGroup = mDatas.find(groupName);
+	//未登録チェック
+	assert(itGroup != mDatas.end());
+	//グループの参照を取得
+	Group& group = itGroup->second;
+
+	//キーを検索
+	std::map<std::string, Item>::iterator itKey = group.items.find(key);
+	if (itKey == group.items.end()) {
+		SetValue(groupName, key, value);
+	}
 }
 
 int32_t GlobalVariables::GetIntValue(const std::string& groupName, const std::string& key){
@@ -206,6 +274,26 @@ float GlobalVariables::GetFloatValue(const std::string& groupName, const std::st
 	return std::get<float>(item.value);
 }
 
+Vector2 GlobalVariables::GetVector2Value(const std::string& groupName, const std::string& key)
+{
+	// グループを検索
+	std::map<std::string, Group>::iterator itGroup = mDatas.find(groupName);
+	// 未登録チェック
+	assert(itGroup != mDatas.end());
+	// グループの参照を取得
+	Group& group = itGroup->second;
+
+	//キーを検索
+	std::map<std::string, Item>::iterator itKey = group.items.find(key);
+	// 未登録チェック
+	assert(itKey != group.items.end());
+	// 項目の参照を取得
+	Item& item = itKey->second;
+
+	// Vector2型の値を返す
+	return std::get<Vector2>(item.value);
+}
+
 Vector3 GlobalVariables::GetVector3Value(const std::string& groupName, const std::string& key)
 {
 	// グループを検索
@@ -224,6 +312,26 @@ Vector3 GlobalVariables::GetVector3Value(const std::string& groupName, const std
 
 	// Vector3型の値を返す
 	return std::get<Vector3>(item.value);
+}
+
+std::string GlobalVariables::GetStringValue(const std::string& groupName, const std::string& key)
+{
+	// グループを検索
+	std::map<std::string, Group>::iterator itGroup = mDatas.find(groupName);
+	// 未登録チェック
+	assert(itGroup != mDatas.end());
+	// グループの参照を取得
+	Group& group = itGroup->second;
+
+	//キーを検索
+	std::map<std::string, Item>::iterator itKey = group.items.find(key);
+	// 未登録チェック
+	assert(itKey != group.items.end());
+	// 項目の参照を取得
+	Item& item = itKey->second;
+
+	// std::string型の値を返す
+	return std::get<std::string>(item.value);
 }
 
 void GlobalVariables::SaveFile(const std::string& groupName) {
@@ -264,11 +372,25 @@ void GlobalVariables::SaveFile(const std::string& groupName) {
 			root[groupName][itemName] = std::get<float>(item.value);
 		}
 
+		// Vector2の場合
+		else if (std::holds_alternative<Vector2>(item.value)) {
+			// float型のjson配列登録
+			Vector2 value = std::get<Vector2>(item.value);
+			root[groupName][itemName] = json::array({ value.x,value.y });
+		}
+
 		// Vector3型の場合
 		else if (std::holds_alternative<Vector3>(item.value)) {
 			// float型のjson配列登録
 			Vector3 value = std::get<Vector3>(item.value);
 			root[groupName][itemName] = json::array({value.x,value.y,value.z});
+		}
+
+		// 文字列型の場合
+		else if (std::holds_alternative<std::string>(item.value)) {
+			// float型のjson配列登録
+			std::string value = std::get<std::string>(item.value);
+			root[groupName][itemName].push_back(value);
 		}
 
 		// グローバル変数の保存先ファイルパス
@@ -384,12 +506,26 @@ void GlobalVariables::LoadFile(const std::string& groupName){
 			SetValue(groupName, itemName, static_cast<float>(value));
 		}
 
+		// Vector2型の場合
+		else if (itItem->is_array() && itItem->size() == 2) {
+			// float型のjson配列取得
+			Vector3 value = { itItem->at(0),itItem->at(1) };
+			// Vector2型に変換した値を登録
+			SetValue(groupName, itemName, value);
+		}
+
 		// Vector3型の場合
 		else if (itItem->is_array() && itItem->size() == 3) {
 			// float型のjson配列取得
 			Vector3 value = { itItem->at(0),itItem->at(1),itItem->at(2) };
-			// float型に変換した値を登録
+			// Vector3型に変換した値を登録
 			SetValue(groupName, itemName, value);
+		}
+
+		// 文字列型の場合
+		else if (itItem->is_string()) {
+			// std::string型の値を登録
+			SetValue(groupName, itemName, itItem->get<std::string>());
 		}
 
 	}

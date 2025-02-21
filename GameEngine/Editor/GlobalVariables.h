@@ -11,7 +11,7 @@
 // 項目
 struct Item {
 	// 項目の値
-	std::variant<int32_t, float, Vector3> value;
+	std::variant<int32_t, float, Vector2, Vector3, std::string> value;
 };
 
 // グループ
@@ -40,20 +40,30 @@ public: // -- 公開 メンバ関数 -- //
 	void SetValue(const std::string& groupName, const std::string& key, int32_t value);
 	// 値のセット(float型)
 	void SetValue(const std::string& groupName, const std::string& key, float value);
+	// 値のセット(Vector2型)
+	void SetValue(const std::string& groupName, const std::string& key, const Vector2& value);
 	// 値のセット(Vector3型)
 	void SetValue(const std::string& groupName, const std::string& key, const Vector3& value);
+	// 値のセット(文字列型)
+	void SetValue(const std::string& groupName, const std::string& key, const std::string& value);
 
 	// 項目の追加(int型)
 	void AddItem(const std::string& groupName, const std::string& key, int32_t value);
 	// 項目の追加(float型)
 	void AddItem(const std::string& groupName, const std::string& key, float value);
+	// 値のセット(Vector2型)
+	void AddItem(const std::string& groupName, const std::string& key, const Vector2& value);
 	// 項目の追加(Vector3型)
 	void AddItem(const std::string& groupName, const std::string& key, const Vector3& value);
+	// 項目の追加(文字列型)
+	void AddItem(const std::string& groupName, const std::string& key, const std::string& value);
 
 	// 値の取得
 	int32_t GetIntValue(const std::string& groupName, const std::string& key);
 	float GetFloatValue(const std::string& groupName, const std::string& key);
+	Vector2 GetVector2Value(const std::string& groupName, const std::string& key);
 	Vector3 GetVector3Value(const std::string& groupName, const std::string& key);
+	std::string GetStringValue(const std::string& groupName, const std::string& key);
 
 	// ファイルへの書き出し
 	void SaveFile(const std::string& groupName);
