@@ -149,9 +149,9 @@ void TitleScene::Init() {
 
 	// -- エディタテスト -- //
 	
-	//mBTNodeTestActor = std::make_unique<Actor>("NodeTester");
-	//mBTNodeEditor = std::make_unique<BTNodeEditor>(mBTNodeTestActor.get());
-	//mBTNodeEditor->Init();
+	mBTNodeTestActor = std::make_unique<Actor>("NodeTester");
+	mBTNodeEditor = std::make_unique<BTNodeEditor>(mBTNodeTestActor.get());
+	mBTNodeEditor->Init();
 
 
 }
@@ -165,7 +165,7 @@ void TitleScene::Update() {
 	mSwordObj->Update();
 	mSwordObj->DrawGUI();
 
-	//mBTNodeEditor->Update();
+	mBTNodeEditor->Update();
 
 
 	// タイトルロゴの更新

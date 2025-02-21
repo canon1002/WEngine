@@ -15,6 +15,7 @@ public: // -- 公開 メンバ関数 -- //
 	/// コンストラクタ
 	/// </summary>
 	Actor();
+	Actor(const std::string& name);
 
 	/// <summary>
 	/// 仮想デストラクタ

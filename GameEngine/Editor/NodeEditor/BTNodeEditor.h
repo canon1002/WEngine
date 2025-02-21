@@ -42,7 +42,7 @@ public:// -- 公開 メンバ関数 -- //
 	std::shared_ptr<AINode::INode> CreateNodeByType(const AINodeType& type,const std::string& Nodeame);
 
 	// ノードの種類から色を取得
-	inline ImU32 GetNodeColor(AINodeType type) {
+	inline ImU32 GetNodeColor(const AINodeType& type) {
 		switch (type) {
 		//case AINodeType::BASE: return IM_COL32(200, 200, 200, 255); // 白
 		case AINodeType::SELECT: return IM_COL32(0, 150, 200, 255); // 水色
@@ -56,12 +56,33 @@ public:// -- 公開 メンバ関数 -- //
 
 private: // -- 非公開 メンバ関数 -- //
 
+	// 親ノードから子ノードを削除
+	bool DetachChild(std::shared_ptr<AINode::Composite> parent, std::shared_ptr<AINode::INode> child);
+	// 指定した子ノードを新しい親に接続
+	bool AttachChild(std::shared_ptr<AINode::Composite> newParent, std::shared_ptr<AINode::INode> child);
+	// ノードを削除し、親ノードからも切り離す
+	bool RemoveNode(std::shared_ptr<AINode::INode> node);
+	// ルートノードを変更
+	void SetRootNode(std::shared_ptr<AINode::Composite> newRoot);
+	// ノードの親を変更
+	bool MoveNode(std::shared_ptr<AINode::INode> node, std::shared_ptr<AINode::Composite> newParent);
+
+	// ノードの親子関係をドラッグ＆ドロップで変更
+	void HandleNodeLinking();
+	// リンクの削除
+	void LinkDeletion();
+
+	std::shared_ptr<AINode::INode> FindNodeByID(int nodeID);
+
 
 	// 保存処理 
 	void Save();
 	// 読み込み
 	void Load();
 
+	// 生成処理
+	std::shared_ptr<AINode::INode> CreateForJson(json j);
+	
 
 public: // -- 公開 メンバ変数 -- //
 
@@ -70,7 +91,7 @@ public: // -- 公開 メンバ変数 -- //
 	// 持ち主情報(文字列 ・ これがjsonファイル名になる)
 	std::string mOwnerName;
 	// ルートノード
-	std::shared_ptr<AINode::INode> mRootNode;
+	std::shared_ptr<AINode::Composite> mRootNode;
 	// ノードリスト
 	std::vector<std::shared_ptr<AINode::INode>> mNodes;
 	// ノード番号
@@ -78,5 +99,13 @@ public: // -- 公開 メンバ変数 -- //
 
 private: // -- 非公開 メンバ変数 -- //
 
+	/// <summary>
+	/// ImNodes上で使用するリンク
+	/// </summary>
+	/// <param name=" first : "> LinkID </param>
+	/// <param name=" second : "> parentID </param>
+	/// <param name=" third : "> childID </param>
+	std::vector<std::tuple<int, int, int>> mLinks;
+	int32_t mLinkIndex;
 };
 

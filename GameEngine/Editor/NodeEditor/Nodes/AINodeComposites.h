@@ -29,34 +29,31 @@ namespace AINode {
 		inline virtual json ConvertToJson() override {
 
 			nlohmann::json j;
-			j["name"] = mName;				// ノードの名称
-			j["index"] = mIndex;			// エディタで使用するノード番号
-			j["tag"] = mTag;				// ノードの種類(クラス名)
-			
+			j[mName]["index"] = mIndex;	// エディタで使用するノード番号
+			j[mName]["tag"] = mTag;		// ノードの種類(クラス名)
+			j[mName]["Pos"] = { mGuiPos.x,mGuiPos.y }; // ImGuiの座標
+
 			// 子ノードの走査
 			for (auto& child : mChildren) {
-				j["child"].push_back(child->ConvertToJson());
+				j[mName]["child"].push_back(child->ConvertToJson());
 			}
 
 			return j;
 		}
 
 		// 子ノードの番号をセットする
-		inline virtual void SetChald(const std::shared_ptr<INode>& child) {
+		inline virtual void SetChild(const std::shared_ptr<INode>& child) override{
 			mChildren.push_back(child);
 		}
 
 		// 子ノードの番号をまとめてセットする
-		inline virtual void SetChaldlen(const std::vector<std::shared_ptr<INode>>& childlen) {
+		inline virtual void SetChildlen(const std::vector<std::shared_ptr<INode>>& childlen)override {
 			for (const auto& child : childlen) {
 				mChildren.push_back(child);
 			}
 		}
 
 	public: // -- 公開 メンバ変数 -- //
-
-		// 子ノード
-		std::vector<std::shared_ptr<INode>> mChildren;
 
 	};
 

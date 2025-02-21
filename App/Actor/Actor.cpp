@@ -7,6 +7,11 @@ Actor::Actor(){
 	
 }
 
+Actor::Actor(const std::string& name)
+{
+	mName = name;
+}
+
 void Actor::SetCollider(CollisionManager* cManager)
 {
 	// コライダーをマネージャーに登録

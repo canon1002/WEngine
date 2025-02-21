@@ -19,10 +19,10 @@ namespace AINode {
 	};
 
 	// ノードクラスインターフェース
-	class INode{
+	class INode {
 
 	public: // -- 公開 メンバ関数 -- //
-		
+
 		// コンストラクタ
 		INode() = default;
 		// 仮想デストラクタ
@@ -37,6 +37,11 @@ namespace AINode {
 		// JSONへの変換
 		virtual json ConvertToJson() = 0;
 
+		// 子ノードの番号をセットする
+		virtual void SetChild(const std::shared_ptr<INode>& child) = 0;
+		// 子ノードの番号をまとめてセットする
+		virtual void SetChildlen(const std::vector<std::shared_ptr<INode>>& childlen) = 0;
+
 	public: // -- 公開 メンバ変数 -- //
 
 		// 名前
@@ -47,6 +52,12 @@ namespace AINode {
 		std::string mTag;
 		// ノード実行状況
 		State mState;
+		// ImNodes上の座標
+		Vector2 mGuiPos = { 0,0 };
+		// 子ノード(ノードによってはここが空になる)
+		std::vector<std::shared_ptr<INode>> mChildren;
+
 	};
+
 
 }
