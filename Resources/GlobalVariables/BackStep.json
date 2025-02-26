@@ -1,0 +1,7 @@
+{
+    "BackStep": {
+        "Name": "backStep",
+        "MoveSpeed": 6.0,
+        "JumpPower": 1.0
+    }
+}

@@ -6,6 +6,7 @@
 #include "GameEngine/Object/Model/Model.h"
 #include "GameEngine/Base/Debug/ImGuiManager.h"
 #include "GameEngine/GameMaster/Framerate.h"
+#include "App/BlackBoard.h"
 
 void Skinning::Init(const std::string& directorypath, const std::string& filepath, ModelData modelData)
 {
@@ -47,7 +48,7 @@ void Skinning::Update()
 
 		// アニメーション全体の尺を超えていた場合、加算しない	
 		if (mCurrentSkinCluster->animationTime < mCurrentSkinCluster->animation.duration) {
-			mCurrentSkinCluster->animationTime += (mAnimationPlaySpeed / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetBattleSpeed();
+			mCurrentSkinCluster->animationTime += BlackBoard::CombertBattleFPS(mAnimationPlaySpeed);
 		}
 	}
 	// 最後まで行ったら最初からリピート再生する(しなくてもいいし、フラグで変更しても良さそう)
@@ -63,7 +64,7 @@ void Skinning::Update()
 
 			// アニメーション全体の尺を超えていた場合、加算しない	
 			if (mPreSkincluster->animationTime < mPreSkincluster->animation.duration) {
-				mPreSkincluster->animationTime += (mAnimationPlaySpeed / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetBattleSpeed();
+				mPreSkincluster->animationTime += BlackBoard::CombertBattleFPS(mAnimationPlaySpeed);
 			}
 		}
 		if (mPreSkincluster->isLoop == true) {
@@ -77,7 +78,7 @@ void Skinning::Update()
 		// モーションブレンドの進行度を上昇させる
 		if (mMotionBrendingTime < 1.0f)
 		{
-			mMotionBrendingTime += (mMotionBrendingInterval / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetBattleSpeed();
+			mMotionBrendingTime += BlackBoard::CombertBattleFPS(mMotionBrendingInterval);
 		}
 
 		// 上限まで行ったら自動で終了する

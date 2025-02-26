@@ -84,12 +84,12 @@ namespace ACT {
 	// ----------------------------------------------------
 	// 接近
 	// ----------------------------------------------------
-	class MoveToPlayer :
+	class ChaseTarget :
 		public Action
 	{
 	public:
-		MoveToPlayer() = default;
-		~MoveToPlayer() = default;
+		ChaseTarget() = default;
+		~ChaseTarget() = default;
 
 		// 初期化
 		virtual void Init(Actor* actor) override;
@@ -127,13 +127,14 @@ namespace ACT {
 		Vector3 mVelocity;
 		// 移動速度
 		float mMoveSpeed;
+		float mMoveSpeedInFrame;
 		// 追跡周期
-		float mSearchTime;
-		const float kSearchCycle = 1.0f;
+		float mRotateTime;
+		float mRotateCycle;
 
 		// 追跡を行う時間
 		float mSearchCount;
-		const float kSearchCountMax = 1.0f;
+		float mSearchCountMax;
 
 	};
 	
@@ -183,6 +184,7 @@ namespace ACT {
 		Vector3 mVelocity;
 		// 移動速度
 		float mMoveSpeed;
+		float mMoveSpeedInFrame;
 
 	};
 
@@ -223,8 +225,8 @@ namespace ACT {
 	private:
 	
 		std::vector<Collider*> mColliders;
-		float mActiveColliderCount;
-		const Vector2 kActiveColliderCount = { 0.8f,1.4f };
+		float mColliderCount;
+		Vector2 mActiveColliderCount;
 	};
 
 	// ----------------------------------------------------
@@ -264,8 +266,8 @@ namespace ACT {
 	private:
 
 		std::vector<Collider*> mColliders;
-		float mActiveColliderCount;
-		const Vector2 kActiveColliderCount = { 0.4f,2.4f };
+		float mColliderCount;
+		Vector2 mActiveColliderCount = { 0.4f,2.4f };
 	};
 
 }

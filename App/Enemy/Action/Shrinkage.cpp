@@ -1,16 +1,16 @@
-#include "Dash.h"
+#include "Shrinkage.h"
 #include "App/Actor/Actor.h"
 #include "GameEngine/GameMaster/Framerate.h"
 #include "App/BlackBoard.h"
 
-void ACT::Dash::Init(Actor* actor){
+void ACT::Shrinkage::Init(Actor* actor){
 	// ボスのポインタを取得
 	mActor = actor;
 	// パラメータ 初期化
 	Reset();
 }
 
-void ACT::Dash::Update(){
+void ACT::Shrinkage::Update(){
 
 	// 実行時のみ処理を行う
 	if (mCondition == Condition::RUNNING) {
@@ -42,29 +42,29 @@ void ACT::Dash::Update(){
 	}
 }
 
-void ACT::Dash::Draw(){}
+void ACT::Shrinkage::Draw(){}
 
-void ACT::Dash::Start(){
+void ACT::Shrinkage::Start(){
 	// パラメータ 初期化
 	Reset();
 	// 向きの指定
 	mActor->InputDirection(mDirection);
 	// アニメーションの変更
-	mActor->GetObject3D()->mSkinning->SetNextAnimation("Dash");
+	mActor->GetObject3D()->mSkinning->SetNextAnimation("Walk");
 	// 実行する
 	mCondition = Condition::RUNNING;
 
 }
 
-void ACT::Dash::End(){
+void ACT::Shrinkage::End(){
 	// 行動を終了させる
 	mCondition = Condition::FINISHED;
 }
 
-void ACT::Dash::Reset(){
+void ACT::Shrinkage::Reset(){
 	// jsonから数値を取得
-	mMoveSpeed = BlackBoard::GetGlobalVariables()->GetFloatValue("Dash", "MoveSpeed");
-	mRotateCycle = BlackBoard::GetGlobalVariables()->GetFloatValue("Dash", "RotateCycle");
+	mMoveSpeed = BlackBoard::GetGlobalVariables()->GetFloatValue("Shrinkage", "MoveSpeed");
+	mRotateCycle = BlackBoard::GetGlobalVariables()->GetFloatValue("Shrinkage", "RotateCycle");
 
 	// 移動の始点
 	mStartPos = mActor->GetWorldPos();
@@ -85,14 +85,14 @@ void ACT::Dash::Reset(){
 	mCondition = Condition::IDOL;
 }
 
-void ACT::Dash::Save()
+void ACT::Shrinkage::Save()
 {
 }
 
-void ACT::Dash::Load()
+void ACT::Shrinkage::Load()
 {
 }
 
-void ACT::Dash::DrawGui()
+void ACT::Shrinkage::DrawGui()
 {
 }

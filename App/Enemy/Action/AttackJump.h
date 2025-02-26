@@ -39,8 +39,8 @@ namespace ACT {
 	private:
 
 		std::vector<Collider*> mColliders;
-		float mActiveColliderCount;
-		const Vector2 kActiveColliderCount = { 0.8f,1.4f };
+		float mColliderCount;
+		Vector2 mActiveColliderCount;
 		
 		
 

@@ -29,6 +29,33 @@ ACT::Action* Actor::GetActionClass(const std::string& key) {
 	return mActions[key].get();
 }
 
+
+void Actor::InputDirection(const Vector3& dir){
+	mDirectionForInput = dir;
+	// 正規化
+	if (Length(mDirectionForInput) != 0.0f) {
+		mDirectionForInput = Normalize(mDirectionForInput);
+	}
+	// y座標は移動しない
+	mDirectionForInput.y = 0.0f;
+}
+
+void Actor::AdJustDirection() {
+
+	// 方向指定をしていない場合は回転しない
+	if (Length(mDirection) == 0.0f || Length(mDirectionForInput) == 0.0f) {
+		return;
+	}
+
+	// オブジェクトを回転
+	mObject->mWorldTransform->rotation.y = LerpShortAngle(
+		mObject->mWorldTransform->rotation.y,
+		std::atan2f(mDirectionForInput.x, mDirectionForInput.z),
+		0.1f
+	);
+
+}
+
 void Actor::ReceiveDamage()
 {
 }

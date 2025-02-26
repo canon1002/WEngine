@@ -452,6 +452,7 @@
     <ClCompile Include="App\Gladiator.cpp" />
     <ClCompile Include="App\Scene\SceneFactory.cpp" />
     <ClCompile Include="App\BlackBoard.cpp" />
+    <ClCompile Include="App\Enemy\Action\Shrinkage.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameEngine\Object\Light\DirectionalLight.h">
@@ -770,6 +771,7 @@
     <ClInclude Include="GameEngine\Scene\AbstractSceneFactory.h" />
     <ClInclude Include="App\Scene\SceneFactory.h" />
     <ClInclude Include="App\BlackBoard.h" />
+    <ClInclude Include="App\Enemy\Action\Shrinkage.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt">

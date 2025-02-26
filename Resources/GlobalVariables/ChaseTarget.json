@@ -1,0 +1,10 @@
+{
+    "ChaseTarget": {
+        "MoveSpeed": 4.0,
+        "Name": [
+            "Walk"
+        ],
+        "RotateCycle": 0.10000000149011612,
+        "SearchCount": 2.0
+    }
+}

@@ -12,6 +12,8 @@
 #include "GameEngine/GameMaster/Framerate.h"
 #include "App/Enemy/Action/ActionList.h"
 
+#include "App/BlackBoard.h"
+
 BossEnemy::BossEnemy()
 {
 }
@@ -163,6 +165,10 @@ void BossEnemy::Init() {
 	// 仮ノックバック処理
 	mKnockBackCount = 0;
 
+	// 方向指定(とりあえず手前を向く)
+	mDirection = { 0.0f,0.0f,-1.0f };
+	mDirectionForInput = { 0.0f,0.0f,0.0f };
+
 }
 
 void BossEnemy::InitBehavior() {
@@ -190,7 +196,7 @@ void BossEnemy::InitBehavior() {
 
 	BT::Sequence* farAtkActions = new BT::Sequence();
 	farAtkActions->SetChild(new BT::Condition(std::bind(&BossEnemy::InvokeFarDistance, this)));
-	farAtkActions->SetChild(new BT::Action(this, "Dash"));
+	farAtkActions->SetChild(new BT::Action(this, "Shrinkage"));
 	farAtkActions->SetChild(new BT::Action(this, "AttackClose"));
 
 	atkSelector->SetChild(farAtkActions); // 中遠距離
@@ -218,12 +224,16 @@ void BossEnemy::InitActions()
 	// 各行動をmap配列に追加していく
 
 	// 接近
-	mActions["MoveToPlayer"] = make_shared<ACT::MoveToPlayer>();
+	mActions["MoveToPlayer"] = make_shared<ACT::ChaseTarget>();
 	mActions["MoveToPlayer"]->Init(this);
 
 	// ダッシュ
 	mActions["Dash"] = make_shared<ACT::Dash>();
 	mActions["Dash"]->Init(this);
+	
+	// 縮地
+	mActions["Shrinkage"] = make_shared<ACT::Shrinkage>();
+	mActions["Shrinkage"]->Init(this);
 
 	// バックステップ
 	mActions["BackStep"] = make_shared<ACT::BackStep>();
@@ -307,8 +317,12 @@ void BossEnemy::Update() {
 		}
 	}
 
+	
 	// シェイクの更新
 	ShakeUpdate();
+
+	// 方向修正
+	AdJustDirection();
 
 	// オブジェクト更新
 	UpdateObject();
@@ -318,7 +332,7 @@ void BossEnemy::Update() {
 void BossEnemy::UpdateBehaviorTree() {
 
 	// リロードカウントを減らす
-	mReloadBTCount -= (6.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetBattleSpeed();
+	mReloadBTCount -= BlackBoard::CombertBattleFPS(6.0f);
 
 	// リロードカウントが0以下になったら行動を実行
 	if (mReloadBTCount <= 0.0f) {
@@ -549,7 +563,7 @@ void BossEnemy::ShakeUpdate() {
 	if (mShakeTime < mShakeDuration) {
 
 		// シェイク時間を加算
-		mShakeTime += (1.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetBattleSpeed();
+		mShakeTime += BlackBoard::GetBattleFPS();
 
 		// シェイクの振幅をX方向とZ方向をそれぞれ計算
 		float shakeOffsetX = (rand() % 100 / 100.0f - 0.5f) * mShakePower;
@@ -586,8 +600,14 @@ void BossEnemy::ColliderDraw() {
 #ifdef _DEBUG
 
 	if (!mActiveAction.expired()) {
-		mActiveAction.lock()->Draw();
+		if(mActiveAction.lock()->GetIsOperating()&&
+			!mActiveAction.lock()->GetIsHit()) {
+			for (auto& collider : mWeaponColliders) {
+				collider->Draw();
+			}
+		}
 	}
+
 
 	// 身体の部位に合わせたコライダーを描画
 	for (auto& collider : mBodyPartColliders) {

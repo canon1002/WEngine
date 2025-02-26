@@ -30,11 +30,11 @@ void StatusManager::Init()
 	mGlobalVariables->AddItem("PlayerData", "AGI", mPlayerStatus->AGI);
 
 	// 登録済みのデータから数値を取得
-	mPlayerStatus->HP = int32_t(mGlobalVariables->GetFloatValue("PlayerData", "HP"));
-	mPlayerStatus->MAXHP = int32_t(mGlobalVariables->GetFloatValue("PlayerData", "HP"));
-	mPlayerStatus->STR = int32_t(mGlobalVariables->GetFloatValue("PlayerData", "STR"));
-	mPlayerStatus->VIT = int32_t(mGlobalVariables->GetFloatValue("PlayerData", "VIT"));
-	mPlayerStatus->AGI = int32_t(mGlobalVariables->GetFloatValue("PlayerData", "AGI"));
+	mPlayerStatus->HP = int32_t(mGlobalVariables->GetIntValue("PlayerData", "HP"));
+	mPlayerStatus->MAXHP = int32_t(mGlobalVariables->GetIntValue("PlayerData", "HP"));
+	mPlayerStatus->STR = int32_t(mGlobalVariables->GetIntValue("PlayerData", "STR"));
+	mPlayerStatus->VIT = int32_t(mGlobalVariables->GetIntValue("PlayerData", "VIT"));
+	mPlayerStatus->AGI = int32_t(mGlobalVariables->GetIntValue("PlayerData", "AGI"));
 
 	mGlobalVariables->CreateGroup("BossData");
 	mGlobalVariables->AddItem("BossData", "HP", mBossStatus->HP);
@@ -43,11 +43,11 @@ void StatusManager::Init()
 	mGlobalVariables->AddItem("BossData", "AGI", mBossStatus->AGI);
 
 	// 登録済みのデータから数値を取得
-	mBossStatus->HP = int32_t(mGlobalVariables->GetFloatValue("BossData", "HP"));
-	mBossStatus->MAXHP = int32_t(mGlobalVariables->GetFloatValue("BossData", "HP"));
-	mBossStatus->STR = int32_t(mGlobalVariables->GetFloatValue("BossData", "STR"));
-	mBossStatus->VIT = int32_t(mGlobalVariables->GetFloatValue("BossData", "VIT"));
-	mBossStatus->AGI = int32_t(mGlobalVariables->GetFloatValue("BossData", "AGI"));
+	mBossStatus->HP = int32_t(mGlobalVariables->GetIntValue("BossData", "HP"));
+	mBossStatus->MAXHP = int32_t(mGlobalVariables->GetIntValue("BossData", "HP"));
+	mBossStatus->STR = int32_t(mGlobalVariables->GetIntValue("BossData", "STR"));
+	mBossStatus->VIT = int32_t(mGlobalVariables->GetIntValue("BossData", "VIT"));
+	mBossStatus->AGI = int32_t(mGlobalVariables->GetIntValue("BossData", "AGI"));
 	
 }
 

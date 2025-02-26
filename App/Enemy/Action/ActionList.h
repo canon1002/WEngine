@@ -4,4 +4,5 @@
 #include "App/Enemy/Action/AttackDash.h"
 #include "App/Enemy/Action/AttackJump.h"
 #include "App/Enemy/Action/Dash.h"
+#include "App/Enemy/Action/Shrinkage.h"
 #include "App/Enemy/Action/KnockBack.h"

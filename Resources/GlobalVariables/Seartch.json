@@ -1,0 +1,8 @@
+{
+    "Seartch": {
+        "Name": "Run",
+        "MoveSpeed": 4.0,
+        "SearchCount": 1.0,
+        "RotateCycle": 1.0
+    }
+}

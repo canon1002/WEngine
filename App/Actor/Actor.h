@@ -65,6 +65,17 @@ public: // -- 公開 メンバ関数 -- //
 	/// <param name="key">行動内容(クラス名)</param>
 	ACT::Action* GetActionClass(const std::string& key);
 
+	/// <summary>
+	/// 向かせたい向きを指定する
+	/// </summary>
+	/// <param name="dir">方向</param>
+	void InputDirection(const Vector3& dir);
+
+	/// <summary>
+	/// Directionを徐々に入力方向に合わせる
+	/// </summary>
+	void AdJustDirection();
+
 	void ReceiveDamage();
 
 #pragma endregion
@@ -174,6 +185,11 @@ protected: // -- 限定公開 メンバ変数 -- //
 
 	// ターゲット対象のポインタ
 	Actor* mTarget;
+
+	// アクターの向き
+	Vector3 mDirection;
+	// 入力方向
+	Vector3 mDirectionForInput;
 
 };
 

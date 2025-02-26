@@ -1,6 +1,7 @@
 #include "Seartch.h"
 #include "App/Actor/Actor.h"
 #include "GameEngine/GameMaster/Framerate.h"
+#include "App/BlackBoard.h"
 
 void ACT::Seartch::Init(Actor* actor)
 {
@@ -49,7 +50,7 @@ void ACT::Seartch::Update()
 		mActor->SetRotation(Vector3(0.0f, rotateY, 0.0f));
 
 		// 一定時間ごとにプレイヤー座標を取得
-		mSearchTime += (1.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetBattleSpeed();
+		mSearchTime += BlackBoard::GetBattleFPS();
 		if (mSearchTime >= kSearchCycle) {
 			// 移動の終点
 			mEndPos = mActor->GetWorldPosForTarget();

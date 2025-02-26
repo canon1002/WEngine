@@ -10,7 +10,20 @@ Framerate* BlackBoard::GetFramerate(){
 	return Framerate::GetInstance();
 }
 
-Framerate* BlackBoard::GetGameSpeed()
+GlobalVariables* BlackBoard::GetGlobalVariables()
 {
-	return nullptr;
+	return GlobalVariables::GetInstance();
 }
+
+float BlackBoard::CombertBattleFPS(float speed)
+{
+	// 引数 * フレームレート * (ゲーム全体速度 * バトル速度)
+	return (speed * GetFramerate()->GetBattleSpeed()) / GetFramerate()->GetFramerate();
+}
+
+float BlackBoard::GetBattleFPS()
+{
+	// 引数 * フレームレート * (ゲーム全体速度 * バトル速度)
+	return (GetFramerate()->GetBattleSpeed()) / GetFramerate()->GetFramerate();
+}
+

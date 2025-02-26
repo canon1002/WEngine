@@ -18,7 +18,6 @@ namespace ACT {
 		virtual void Update() override;
 		// 描画処理
 		virtual void Draw() override;
-
 		// 開始処理
 		virtual void Start() override;
 		// 終了処理
@@ -38,8 +37,8 @@ namespace ACT {
 
 	private:
 
-		float mActiveColliderCount;
-		const Vector2 kActiveColliderCount = { 0.8f,1.4f };
+		float mColliderCount;
+		Vector2 mActiveColliderCount;
 
 	};
 }

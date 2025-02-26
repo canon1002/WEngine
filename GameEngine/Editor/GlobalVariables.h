@@ -65,6 +65,9 @@ public: // -- 公開 メンバ関数 -- //
 	Vector3 GetVector3Value(const std::string& groupName, const std::string& key);
 	std::string GetStringValue(const std::string& groupName, const std::string& key);
 
+	// グループごとの情報を引き出す
+	Group GetGroupValue(const std::string& groupName);
+
 	// ファイルへの書き出し
 	void SaveFile(const std::string& groupName);
 	// ディレクトリの全ファイル読み込み

@@ -5,6 +5,7 @@
 #include "GameEngine/Base/Debug/ImGuiManager.h"
 #include "GameEngine/Append/Collider/CollisionManager.h"
 #include "GameEngine/GameMaster/Framerate.h"
+#include "App/BlackBoard.h"
 
 void ACT::AttackDash::Init(Actor* boss)
 {
@@ -12,9 +13,8 @@ void ACT::AttackDash::Init(Actor* boss)
 	mActor = boss;
 	// 初期化する
 	mCondition = Condition::IDOL;
-
-	//
-	mActiveColliderCount = 0.0f;
+	// パラメータ初期化
+	Reset();
 
 }
 
@@ -24,20 +24,15 @@ void ACT::AttackDash::Update()
 	if (mCondition == Condition::RUNNING) {
 
 		// 衝突判定を出す時刻を進める
-		mActiveColliderCount += (2.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetBattleSpeed();
+		mColliderCount += BlackBoard::GetBattleFPS();
 
-
-		//// 各コライダーの衝突判定を確認
-		//if (!mIsHit && mIsOperating) {
-		//	for (Collider* collider : mActor->mWeaponColliders) {
-		//		if (collider->GetOnCollisionFlag() == true) {
-		//			mActor->ReciveDamageTolayer(1.0f);
-		//			mIsHit = true;
-		//			// どれか１つでも命中したらループを抜ける
-		//			break;
-		//		}
-		//	}
-		//}
+		// 衝突判定の受付時間内であれば衝突フラグをtrueにする
+		if (!mIsHit && InRange(mColliderCount, mActiveColliderCount)) {
+			mIsOperating = true;
+		}
+		else {
+			mIsOperating = false;
+		}
 
 		// 終了処理
 		if (mActor->GetObject3D()->mSkinning->GetIsAnimationFinished("SlashDash")) {
@@ -53,14 +48,10 @@ void ACT::AttackDash::Draw() {
 
 void ACT::AttackDash::Start()
 {
-	// パラメータの初期化
-
+	// パラメータ初期化
+	Reset();
 	// アニメーションの変更
 	mActor->GetObject3D()->mSkinning->SetNextAnimation("SlashDash");
-
-	mIsHit = false;
-	mIsOperating = true;
-	mActiveColliderCount = 0.0f;
 
 	// 実行する
 	mCondition = Condition::RUNNING;
@@ -79,6 +70,11 @@ void ACT::AttackDash::Reset()
 {
 	// 初期化する
 	mCondition = Condition::IDOL;
+	mIsHit = false;
+	mIsOperating = false;
+	// 衝突判定発生時間を設定
+	mColliderCount = 0.0f;
+	mActiveColliderCount = BlackBoard::GetGlobalVariables()->GetVector2Value("AttackDash", "Duration");
 }
 
 void ACT::AttackDash::Save()

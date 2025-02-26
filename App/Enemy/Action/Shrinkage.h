@@ -4,13 +4,13 @@
 namespace ACT {
 
 	// ダッシュ
-	class Dash :
+	class Shrinkage :
 		public Action
 	{
 	public: // -- 公開 メンバ関数 -- //
 
-		Dash() = default;
-		~Dash() = default;
+		Shrinkage() = default;
+		~Shrinkage() = default;
 
 		// 初期化
 		virtual void Init(Actor* actor) override;

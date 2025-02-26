@@ -1,0 +1,7 @@
+{
+    "Dash": {
+        "Name": "Run",
+        "MoveSpeed": 4.0,
+        "RotateCycle": 1.0
+    }
+}

@@ -1,0 +1,7 @@
+{
+    "Shrinkage": {
+        "Name": "Walk",
+        "MoveSpeed": 60.0,
+        "RotateCycle": 0.1
+    }
+}

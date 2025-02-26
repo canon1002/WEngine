@@ -154,9 +154,6 @@ public: // -- 公開 メンバ関数 -- //
 	// 入力状況をDirectionに保存する
 	void InputDirection();
 
-	// Directionを徐々に入力方向に合わせる
-	void AdJustDirection();
-
 	// ボスクラスのポインタをセットする
 	void SetBoss(BossEnemy* boss) { mBoss = boss; }
 	// ボスにダメージを与える
@@ -188,12 +185,8 @@ private: // -- 非公開 メンバ変数 -- //
 
 	// 移動量
 	Vector3 mVelocity;
-	// プレイヤーの現在の向き
-	Vector3 mDirection;
-	// 現在の入力方向
-	Vector3 mDirectionForInput;
-	// 最後に入力されていた方向
-	Vector3 mDirectionForPreInput;
+
+
 	// 方向入力時間
 	float mDirectionInputCount;
 	// 

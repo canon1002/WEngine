@@ -1,34 +1,18 @@
 #include "Action.h"
 #include "App/Actor/Actor.h"
 #include "GameEngine/GameMaster/Framerate.h"
+#include "App/BlackBoard.h"
 
-void ACT::MoveToPlayer::Init(Actor* actor)
+void ACT::ChaseTarget::Init(Actor* actor)
 {
 	// ボスのポインタを取得
 	mActor = actor;
-	
-	// 移動の始点
-	mStartPos = mActor->GetWorldPos();
-	// 移動の終点
-	mEndPos = Vector3(0,0,0);
-	// 方向の設定
-	mDirection = Normalize(mEndPos - mStartPos);
-	mDirection.y = 0.0f;
-	// 移動速度の設定
-	mMoveSpeed = (1.0f / Framerate::GetInstance()->GetFramerate()) * 4.0f * Framerate::GetInstance()->GetBattleSpeed();
-	// 移動量の設定
-	mVelocity = Scalar(mMoveSpeed, mDirection);
-	// 追跡までの時間をリセット
-	mSearchTime = 0.0f;
-	// 追跡を行う時間
-	mSearchCount = 0.0f;
-
-	// 初期化する
-	mCondition = Condition::IDOL;
+	// パラメータ 初期化
+	Reset();
 
 }
 
-void ACT::MoveToPlayer::Update()
+void ACT::ChaseTarget::Update()
 {
 	// 実行時のみ処理を行う
 	if (mCondition == Condition::RUNNING) {
@@ -37,124 +21,94 @@ void ACT::MoveToPlayer::Update()
 		mActor->AddTransform(mVelocity);
 
 		// 追跡時間を加算する
-		if (mSearchCount < kSearchCountMax) {
-			mSearchCount += (1.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetBattleSpeed();
+		if (mSearchCount < mSearchCountMax) {
+			mSearchCount += BlackBoard::GetBattleFPS();
 		}
-
-		// 移動方向への回転を行う
-		// ここから回転処理
-		const float PI = 3.14f;
-		float rotateY = std::atan2f(mDirection.x, mDirection.z);
-		rotateY = std::fmodf(rotateY, 2.0f * PI);
-		if (rotateY > PI) {
-			rotateY -= 2.0f * PI;
-		}
-		if (rotateY < -PI) {
-			rotateY += 2.0f * PI;
-		}
-
-		// 計算結果をBossクラスに渡す
-		mActor->SetRotation(Vector3(0.0f, rotateY, 0.0f));
 
 		// 一定時間ごとにプレイヤー座標を取得
-		mSearchTime += (1.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetBattleSpeed();
-		if (mSearchTime>= kSearchCycle) {
+		mRotateTime += BlackBoard::GetBattleFPS();
+		if (mRotateTime>= mRotateCycle) {
 			// 移動の終点
 			mEndPos = mActor->GetWorldPosForTarget();
 			mEndPos.y = 0.0f;
 			// 方向の設定
 			mDirection = Normalize(mEndPos - mActor->GetWorldPos());
 			mDirection.y = 0.0f;
-			// 移動速度の設定
-			mMoveSpeed = (1.0f / Framerate::GetInstance()->GetFramerate()) * 8.0f;
+			// 向きの指定
+			mActor->InputDirection(mDirection);
 			// 移動量の設定
-			mVelocity = Scalar(mMoveSpeed, mDirection);
+			mVelocity = Scalar(mMoveSpeedInFrame, mDirection);
 
 			// 追跡までの時間をリセット
-			mSearchTime = 0.0f;
+			mRotateTime = 0.0f;
 		}
 
 		// 終了処理(攻撃範囲内に近づけた場合 または 一定時間が経過した場合)
-		if (mActor->InvokeNearDistance() || mSearchCount > kSearchCountMax) {
+		if (mActor->InvokeNearDistance() || mSearchCount > mSearchCountMax) {
 			mCondition = Condition::FINISHED;
 		}
 	}
 }
 
-void ACT::MoveToPlayer::Draw()
+void ACT::ChaseTarget::Draw()
 {
 }
 
-void ACT::MoveToPlayer::Start()
+void ACT::ChaseTarget::Start()
 {
-	// パラメータの初期化
-
-	// 移動の始点
-	mStartPos = mActor->GetWorldPos();
-	mStartPos.y = 0.0f;
-	// 移動の終点
-	mEndPos = mActor->GetWorldPosForTarget();
-	mEndPos.y = 0.0f;
-	// 方向の設定
-	mDirection = Normalize(mEndPos - mStartPos);
-	mDirection.y = 0.0f;
-	// 移動速度の設定
-	mMoveSpeed = (1.0f / Framerate::GetInstance()->GetFramerate()) * 4.0f * Framerate::GetInstance()->GetBattleSpeed();
-	// 移動量の設定
-	mVelocity = Scalar(mMoveSpeed, mDirection);
-	// 追跡までの時間をリセット
-	mSearchTime = 0.0f;
-	// 追跡を行う時間をリセット
-	mSearchCount = 0.0f;
-
+	// パラメータ 初期化
+	Reset();
+	// 向きの指定
+	mActor->InputDirection(mDirection);
 	// アニメーションの変更
 	mActor->GetObject3D()->mSkinning->SetNextAnimation("Walk");
-
 	// 実行する
 	mCondition = Condition::RUNNING;
 }
 
-void ACT::MoveToPlayer::End()
+void ACT::ChaseTarget::End()
 {
-	// アニメーションの変更
-	//mActor->GetObject3D()->mSkinning->SetNextAnimation("Idle");
-	
-
 	// 行動を終了させる
 	mCondition = Condition::FINISHED;
 }
 
-void ACT::MoveToPlayer::Reset()
+void ACT::ChaseTarget::Reset()
 {
-	// 初期化する
-	mCondition = Condition::IDOL;
-
-	// パラメータの初期化
+	// jsonから数値を取得
+	mMoveSpeed = BlackBoard::GetGlobalVariables()->GetFloatValue("ChaseTarget", "MoveSpeed");
+	mSearchCountMax = BlackBoard::GetGlobalVariables()->GetFloatValue("ChaseTarget", "SearchCount");
+	mRotateCycle = BlackBoard::GetGlobalVariables()->GetFloatValue("ChaseTarget", "RotateCycle");
 
 	// 移動の始点
 	mStartPos = mActor->GetWorldPos();
-	mStartPos.y = 0.0f;
 	// 移動の終点
 	mEndPos = mActor->GetWorldPosForTarget();
-	mEndPos.y = 0.0f;
 	// 方向の設定
 	mDirection = Normalize(mEndPos - mStartPos);
 	mDirection.y = 0.0f;
+
 	// 移動速度の設定
-	mMoveSpeed = (1.0f / Framerate::GetInstance()->GetFramerate()) * 2.0f * Framerate::GetInstance()->GetBattleSpeed();
+	mMoveSpeedInFrame = BlackBoard::CombertBattleFPS(mMoveSpeed);
 	// 移動量の設定
-	mVelocity = Scalar(mMoveSpeed, mDirection);
+	mVelocity = Scalar(mMoveSpeedInFrame, mDirection);
+	// 追跡までの時間をリセット
+	mRotateTime = 0.0f;
+	// 追跡を行う時間
+	mSearchCount = 0.0f;
+
+	// 初期化する
+	mCondition = Condition::IDOL;
 }
 
-void ACT::MoveToPlayer::Save()
+void ACT::ChaseTarget::Save(){
+
+}
+
+void ACT::ChaseTarget::Load()
 {
 }
 
-void ACT::MoveToPlayer::Load()
-{
-}
-
-void ACT::MoveToPlayer::DrawGui()
+void ACT::ChaseTarget::DrawGui()
 {
 }
 
@@ -162,21 +116,8 @@ void ACT::BackStep::Init(Actor* actor)
 {
 	// ボスのポインタを取得
 	mActor = actor;
-
-	// 移動の始点
-	mStartPos = mActor->GetWorldPos();
-	// 移動の終点
-	mEndPos = Vector3(0, 0, 0);
-	// 方向の設定
-	mDirection = Normalize(mEndPos - mStartPos);
-	mDirection.y = 0.0f;
-	// 移動速度の設定
-	mMoveSpeed = 6.0f / (Framerate::GetInstance()->GetFramerate() * Framerate::GetInstance()->GetBattleSpeed());
-	// 移動量の設定
-	mVelocity = Scalar(-mMoveSpeed, mDirection);
-
-	// 初期化する
-	mCondition = Condition::IDOL;
+	// 初期化
+	this->Reset();
 
 }
 
@@ -215,6 +156,9 @@ void ACT::BackStep::Draw()
 
 void ACT::BackStep::Start()
 {
+	// jsonから数値を取得
+	mMoveSpeed = BlackBoard::GetGlobalVariables()->GetFloatValue("ChaseTarget", "MoveSpeed");
+
 	// パラメータの初期化
 
 	// 移動の始点
@@ -227,9 +171,9 @@ void ACT::BackStep::Start()
 	mDirection = Normalize(mEndPos - mStartPos);
 	mDirection.y = 0.0f;
 	// 移動速度の設定
-	mMoveSpeed = 6.0f / (Framerate::GetInstance()->GetFramerate() * Framerate::GetInstance()->GetBattleSpeed());
+	mMoveSpeedInFrame = BlackBoard::CombertBattleFPS(mMoveSpeed);
 	// 移動量の設定
-	mVelocity = Scalar(-mMoveSpeed, mDirection);
+	mVelocity = Scalar(-mMoveSpeedInFrame, mDirection);
 
 	// 少しジャンプさせる
 	//mActor->Jump(1.0f);
@@ -255,24 +199,22 @@ void ACT::BackStep::End()
 
 void ACT::BackStep::Reset()
 {
-	// 初期化する
-	mCondition = Condition::IDOL;
-
-	// パラメータの初期化
+	// jsonから数値を取得
+	mMoveSpeed = BlackBoard::GetGlobalVariables()->GetFloatValue("ChaseTarget", "MoveSpeed");
 
 	// 移動の始点
 	mStartPos = mActor->GetWorldPos();
-	mStartPos.y = 0.0f;
 	// 移動の終点
-	mEndPos = mActor->GetWorldPosForTarget();
-	mEndPos.y = 0.0f;
+	mEndPos = Vector3(0, 0, 0);
 	// 方向の設定
 	mDirection = Normalize(mEndPos - mStartPos);
 	mDirection.y = 0.0f;
 	// 移動速度の設定
-	mMoveSpeed = (1.0f / Framerate::GetInstance()->GetFramerate()) * 2.0f * Framerate::GetInstance()->GetBattleSpeed();
-	// 移動量の設定
-	mVelocity = Scalar(-mMoveSpeed, mDirection);
+	mMoveSpeedInFrame = BlackBoard::CombertBattleFPS(mMoveSpeed);
+	mVelocity = Scalar(-mMoveSpeedInFrame, mDirection);
+
+	// 初期化する
+	mCondition = Condition::IDOL;
 }
 
 void ACT::BackStep::Save()

@@ -1,0 +1,10 @@
+{
+    "AttackThrust": {
+        "Name": "Thrust",
+        "Duration": [
+            0.0,
+            1.0
+        ],
+        "Power": 1.2
+    }
+}

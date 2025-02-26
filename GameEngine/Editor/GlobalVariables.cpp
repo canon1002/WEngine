@@ -334,6 +334,17 @@ std::string GlobalVariables::GetStringValue(const std::string& groupName, const 
 	return std::get<std::string>(item.value);
 }
 
+Group GlobalVariables::GetGroupValue(const std::string& groupName)
+{
+	// グループを検索
+	std::map<std::string, Group>::iterator itGroup = mDatas.find(groupName);
+	// 未登録チェック
+	assert(itGroup != mDatas.end());
+	// グループの参照を取得
+	Group& group = itGroup->second;
+	return group;
+}
+
 void GlobalVariables::SaveFile(const std::string& groupName) {
 
 	// グループを検索
@@ -490,16 +501,16 @@ void GlobalVariables::LoadFile(const std::string& groupName){
 	for (json::iterator itItem = itGroup->begin(); itItem != itGroup->end(); itItem++) {
 		// アイテム名を取得
 		const std::string& itemName = itItem.key();
-
+		
 		// int32_t型の場合
-		if (itItem->is_number_float()) {
+		if (itItem->is_number_integer()) {
 			// int型の値を登録
 			int32_t value = itItem->get<int32_t>();
 			SetValue(groupName, itemName, value);
 		}
 
 		// float型の場合
-		else if (itItem->is_number_integer()) {
+		else if (itItem->is_number_float()) {
 			// double型として値を取得する
 			double value = itItem->get<double>();
 			// float型に変換した値を登録
@@ -509,7 +520,7 @@ void GlobalVariables::LoadFile(const std::string& groupName){
 		// Vector2型の場合
 		else if (itItem->is_array() && itItem->size() == 2) {
 			// float型のjson配列取得
-			Vector3 value = { itItem->at(0),itItem->at(1) };
+			Vector2 value = { itItem->at(0),itItem->at(1) };
 			// Vector2型に変換した値を登録
 			SetValue(groupName, itemName, value);
 		}

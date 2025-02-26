@@ -9,6 +9,7 @@
 #include "App/Enemy/BossEnemy.h"
 #include "App/Reaction/DamageReaction.h"
 #include "GameEngine/GameMaster/Framerate.h"
+#include "App/BlackBoard.h"
 
 Player::Player()
 {
@@ -188,7 +189,6 @@ void Player::Init() {
 	// 方向指定(とりあえず奥を向く)
 	mDirection = { 0.0f,0.0f,1.0f };
 	mDirectionForInput = { 0.0f,0.0f,0.0f };
-	mDirectionForPreInput = { 0.0f,0.0f,0.0f };
 
 	// ターゲットロックオンの有無
 	mIsRockOnToTarget = false;
@@ -767,7 +767,7 @@ void Player::Attack()
 	
 	if (mAttackStatus.motionTime <= 1.5f)
 	{
-		mAttackStatus.motionTime += (2.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetBattleSpeed();
+		mAttackStatus.motionTime += BlackBoard::GetBattleFPS();
 
 		// 攻撃が命中していない場合、攻撃フラグをtrueにする
 		if (mAttackStatus.comboCount != 3) {
@@ -822,8 +822,6 @@ void Player::Move()
 			// 平行移動を行う
 			mObject->mWorldTransform->translation += mDirectionForInput * moveSpeed;
 
-			
-
 		}
 
 		if (mDirectionInputCount <= 0.0f) {
@@ -845,7 +843,7 @@ void Player::Fall()
 
 		// 移動量を加算
 		mObject->mWorldTransform->translation.y += mVelocity.y;
-		mVelocity.y -= (9.8f * (1.0f / Framerate::GetInstance()->GetFramerate() * 6.0f)) * Framerate::GetInstance()->GetBattleSpeed();
+		mVelocity.y -= BlackBoard::CombertBattleFPS(9.8f);
 	}
 	// 地面に到達したら
 	else if (mObject->mWorldTransform->translation.y < 0.0f) {
@@ -943,7 +941,7 @@ void Player::InputDirection(){
 
 		// カウントの増加
 		if (mDirectionInputCount < 1.0f) {
-			mDirectionInputCount += 1.0f / (Framerate::GetInstance()->GetFramerate() * Framerate::GetInstance()->GetBattleSpeed());
+			mDirectionInputCount += BlackBoard::GetBattleFPS();
 			if (mDirectionInputCount > 1.0f) {
 				mDirectionInputCount = 1.0f;
 			}
@@ -973,21 +971,6 @@ void Player::InputDirection(){
 
 }
 
-void Player::AdJustDirection(){
-
-	// 方向指定をしていない場合は回転しない
-	if (Length(mDirection) == 0.0f || Length(mDirectionForInput) == 0.0f) {
-		return;
-	}
-
-	// オブジェクトを回転
-	mObject->mWorldTransform->rotation.y = LerpShortAngle(
-		mObject->mWorldTransform->rotation.y,
-		std::atan2f(mDirectionForInput.x, mDirectionForInput.z),
-		0.1f
-	);
-
-}
 
 
 void Player::ReciveDamageToBoss(float power)
