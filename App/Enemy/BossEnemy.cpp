@@ -198,6 +198,8 @@ void BossEnemy::InitBehavior() {
 	farAtkActions->SetChild(new BT::Condition(std::bind(&BossEnemy::InvokeFarDistance, this)));
 	farAtkActions->SetChild(new BT::Action(this, "Shrinkage"));
 	farAtkActions->SetChild(new BT::Action(this, "AttackClose"));
+	farAtkActions->SetChild(new BT::Action(this, "Shrinkage"));
+	farAtkActions->SetChild(new BT::Action(this, "AttackDash"));
 
 	atkSelector->SetChild(farAtkActions); // 中遠距離
 	atkSelector->SetChild(new BT::Action(this, "AttackJump"));
