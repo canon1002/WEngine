@@ -12,7 +12,7 @@ void ResultScene::Init() {
 
 	mTitleOne.sprite = std::make_unique<Sprite>();
 	mTitleOne.sprite->Init();
-	mTitleOne.sprite->SetTexture("pleaseButton.png");
+	mTitleOne.sprite->SetTexture("UI/System/Push.png");
 	mTitleOne.sprite->SetPos({ 640.0f,500.0f });
 	mTitleOne.sprite->SetScale({ 0.5f,0.5f });
 
@@ -23,7 +23,7 @@ void ResultScene::Init() {
 
 	mTitleLogo.sprite = std::make_unique<Sprite>();
 	mTitleLogo.sprite->Init();
-	mTitleLogo.sprite->SetTexture("win.png");
+	mTitleLogo.sprite->SetTexture("UI/System/Win.png");
 	mTitleLogo.sprite->SetPos({ 640.0f,160.0f });
 	mTitleLogo.sprite->SetScale({ 0.8f,0.8f });
 

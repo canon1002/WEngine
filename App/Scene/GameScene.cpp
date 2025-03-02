@@ -219,9 +219,9 @@ void GameScene::Init() {
 
 	mGameOverMessageSprite = std::make_unique<Sprite>();
 	mGameOverMessageSprite->Init();
-	mGameOverMessageSprite->SetTexture("Lose.png");
+	mGameOverMessageSprite->SetTexture("UI/System/Lose.png");
 	mGameOverMessageSprite->SetAnchorPoint(Vector2(0.5f, 0.5f));
-	mGameOverMessageSprite->SetPos(Vector2(640.0f, 200.0f));
+	mGameOverMessageSprite->SetPos(Vector2(640.0f, 100.0f));
 	mGameOverMessageSprite->SetSpriteSize(Vector2(768.0f, 256.0f));
 	mGameOverMessageSprite->SetColor(Color(1.0f, 1.0f, 1.0f, 0.0f));
 	mMessageFadeTime = 0.0f;
@@ -230,10 +230,10 @@ void GameScene::Init() {
 		mGameOverSelectUI[i] = std::make_unique<Sprite>();
 		mGameOverSelectUI[i]->Init();
 		if (i == 0) {
-			mGameOverSelectUI[0]->SetTexture("Retry.png");
+			mGameOverSelectUI[0]->SetTexture("UI/System/Retry.png");
 		}
 		else {
-			mGameOverSelectUI[1]->SetTexture("Retire.png");
+			mGameOverSelectUI[1]->SetTexture("UI/System/BackW.png");
 		}
 		mGameOverSelectUI[i]->SetAnchorPoint(Vector2(0.5f, 0.5f));
 		mGameOverSelectUI[i]->SetPos(Vector2(640.0f, ((i + 2) * 100.0f + 300.0f)));
@@ -475,6 +475,16 @@ void GameScene::Update() {
 			else if (mMessageFadeTime == 1.0f) {
 
 				if (mViggnetTime == 0.0f) {
+					if (InputManager::GetInstance()->GetPused(Gamepad::Button::UP) ||
+						InputManager::GetInstance()->GetPused(Gamepad::Button::DOWN)) {
+						if (mGameOverSelectUICount == 0) {
+							mGameOverSelectUICount = 1;
+						}
+						else {
+							mGameOverSelectUICount = 0;
+						}
+					}
+
 					if (InputManager::GetInstance()->GetPused(Gamepad::Button::B)) {
 						mViggnetTime += (1.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetGameSpeed();
 					}
@@ -493,7 +503,13 @@ void GameScene::Update() {
 					PostEffect::GetInstance()->SetRedViggnetEnable(false);
 					PostEffect::GetInstance()->SetRedViggnetMultiplier(0.0f);
 					PostEffect::GetInstance()->SetRedViggnetIndex(0.0f);
-					this->Init();
+
+					if (mGameOverSelectUICount == 0) {
+						this->Init();
+					}
+					else {
+						SceneManager::GetInstance()->ChangeScene("Title");
+					}
 				}
 
 
@@ -502,11 +518,16 @@ void GameScene::Update() {
 				case 0:
 					mGameOverSelectUI[0]->SetScale(Vector2(1.2f, 1.2f));
 					mGameOverSelectUI[1]->SetScale(Vector2(1.0f, 1.0f));
+
 					break;
-				default:
+				case 1:
 
 					mGameOverSelectUI[0]->SetScale(Vector2(1.0f, 1.0f));
 					mGameOverSelectUI[1]->SetScale(Vector2(1.2f, 1.2f));
+
+					break;
+
+				default:	
 					break;
 				}
 
@@ -517,7 +538,7 @@ void GameScene::Update() {
 			for (int32_t i = 0; i < mGameOverSelectUI.size(); i++) {
 				mGameOverSelectUI[i]->SetColor(Color(1.0f, 1.0f, 1.0f, ExponentialInterpolation(0.0f, 1.0f, mMessageFadeTime, 1.0f)));
 			}
-			//sceneNo = SCENE::RESULT;
+
 		}
 
 		break;
