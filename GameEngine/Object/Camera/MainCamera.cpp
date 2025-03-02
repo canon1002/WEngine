@@ -4,6 +4,7 @@
 #include "GameEngine/Base/Debug/ImGuiManager.h"
 #include "GameEngine/GameMaster/Framerate.h"
 #include "App/BlackBoard.h"
+#include "GameEngine/Editor/GlobalVariables.h"
 
 MainCamera* MainCamera::instance = nullptr;
 
@@ -27,13 +28,13 @@ void MainCamera::Init() {
 	viewprojectionMatrix_ = Multiply(viewMatrix_, projectionMatrix_);
 
 	// ターゲット
-	mFollowTarget = nullptr;
-	mSearchTarget = nullptr;
+	mFollowTarget = nullptr; // プレイヤーキャラ
+	mSearchTarget = nullptr; // ターゲットとなる敵キャラ
 
 	// フォロー対象が一定時間前にいた座標を保持する変数
 	mInterFollowTarget = { 0.0f,0.0f,0.0f };
 	// フォロー対象からカメラまでの距離
-	mOffset = { 0.0f,0.8f,-2.5f };
+	mOffset = { 0.0f,0.0f,0.0f };
 
 	// 遷移後回転量
 	mEaseBeforeRotation = mWorldTransform->rotation;
@@ -55,6 +56,10 @@ void MainCamera::Init() {
 }
 void MainCamera::Update()
 {
+	// カメラのオフセットを入力
+	MainCamera::GetInstance()->SetOffset(BlackBoard::GetGlobalVariables()->GetVector3Value("Camera", "Offset"));
+
+
 #ifdef _DEBUG
 	if (mWorldTransform != nullptr) {
 		ImGui::Begin("MainCamera");
@@ -175,7 +180,6 @@ void MainCamera::UpdateRotationEasing()
 	}
 
 	mWorldTransform->rotation.y = LerpShortAngle(mWorldTransform->rotation.y, mEasedRotation.y, mRotaionEasingTime);
-	//mWorldTransform->rotation.x = ExponentialInterpolation(mEaseBeforeRotation.x,0.0f, mRotaionEasingTime, 1.0f);
 }
 
 void MainCamera::SetCameraRotarionToSearchTarget()
@@ -215,6 +219,10 @@ void MainCamera::SetCameraRotationToDirection(const Vector3 direction)
 	mEasedRotation.y = atan2f(direction.x, direction.z);
 	mRotaionEasingTime = 0.0f;
 	mIsRotationEasing = true;
+}
+
+void MainCamera::SetOffset(const Vector3& offset){
+	mOffset = offset;
 }
 
 Vector3 MainCamera::GetOffset() const{

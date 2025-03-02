@@ -11,9 +11,7 @@ Object3d::Object3d(const std::string objname) {
 	mObjname = objname;
 }
 
-Object3d::~Object3d() {
-	delete mCollider;
-}
+Object3d::~Object3d() {}
 
 
 void Object3d::Init(std::string name) {
@@ -22,7 +20,7 @@ void Object3d::Init(std::string name) {
 	mObjname = name;
 
 	// ワールド座標 初期化
-	mWorldTransform = std::make_shared<WorldTransform>();
+	mWorldTransform = std::make_unique<WorldTransform>();
 	mWorldTransform->Init();
 	CreateTransformation();
 }

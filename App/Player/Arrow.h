@@ -25,7 +25,7 @@ public: // -- 公開 メンバ関数 -- //
 	void SetRotate(const Vector3& rot) { mObject->mWorldTransform->rotation = rot; }
 
 	bool GetIsActive()const { return mIsActive; }
-	Collider* GetCollider() { return mObject->mCollider; }
+	//Collider* GetCollider() { return mObject->mCollider; }
 
 private: // -- 非公開 メンバ変数 -- //
 

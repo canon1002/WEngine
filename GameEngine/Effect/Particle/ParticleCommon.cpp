@@ -13,7 +13,7 @@ void ParticleCommon::Init(){
 
 	// エミッター初期設定
 	mEmitter = {};
-	mEmitter.worldtransform = std::make_shared<WorldTransform>();
+	mEmitter.worldtransform = std::make_unique<WorldTransform>();
 	mEmitter.worldtransform->Init();
 	mEmitter.count = 3;
 	mEmitter.frequency = 1.5f;// 1.5秒ごとに発生

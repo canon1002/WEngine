@@ -4,7 +4,7 @@
 #include "GameEngine/Object/Camera/MainCamera.h"
 #include "GameEngine/Object/Model/ModelManager.h"
 
-OBBCollider::OBBCollider(std::shared_ptr<WorldTransform> worldtransform, Vector3 size) {
+OBBCollider::OBBCollider(WorldTransform* worldtransform, Vector3 size) {
 	// ワールド座標のポインタを代入
 	mWorldTransform = worldtransform;
 	// サイズを代入

@@ -13,7 +13,7 @@ void DiffusionToCircleParticle::Init() {
 
 	// エミッター初期設定
 	mEmitter = {};
-	mEmitter.worldtransform = std::shared_ptr<WorldTransform>();
+	mEmitter.worldtransform = std::unique_ptr<WorldTransform>();
 	mEmitter.worldtransform->Init();
 	mEmitter.count = 3;
 	mEmitter.frequency = 1.5f;// 1.5秒ごとに発生

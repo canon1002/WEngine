@@ -14,7 +14,7 @@ public:
     /// </summary>
     /// <param name="worldtransform"> ワールド座標のポインタ </param>
     /// <param name="radius"> コライダーの半径 </param>
-    SphereCollider(std::shared_ptr<WorldTransform> worldtransform, float radius);
+    SphereCollider(WorldTransform* world, float radius);
 
     /// <summary>
     /// 仮想デストラクタ

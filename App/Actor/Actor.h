@@ -168,9 +168,9 @@ protected: // -- 限定公開 メンバ変数 -- //
 	// オブジェクトクラス
 	std::unique_ptr<Object3d> mObject;
 	// 身体の各部位のコライダーを管理するマップ
-	std::unordered_map<std::string, std::shared_ptr<Collider>> mBodyPartColliders;
+	std::unordered_map<std::string, std::unique_ptr<Collider>> mBodyPartColliders;
 	// 身体の各部位のワールド行列を管理するマップ
-	std::unordered_map<std::string, std::shared_ptr<Matrix4x4>> mBodyPartWorldMatrix;
+	std::unordered_map<std::string, std::unique_ptr<Matrix4x4>> mBodyPartWorldMatrix;
 
 	// ヒットストップ時間
 	float mHitStopDuration = 0.0f;

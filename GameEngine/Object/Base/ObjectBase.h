@@ -75,7 +75,7 @@ public: // -- 公開 メンバ変数 -- //
 	// オブジェクト名
 	std::string mObjname;
 	// ワールド座標
-	std::shared_ptr<WorldTransform> mWorldTransform;
+	std::unique_ptr<WorldTransform> mWorldTransform;
 	// 描画フラグ
 	DrawFlags mDrawFlags;
 

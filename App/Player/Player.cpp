@@ -24,6 +24,7 @@ void Player::Init() {
 	// モデル読み込み
 	ModelManager::GetInstance()->LoadModel("player", "idle.gltf");
 	ModelManager::GetInstance()->LoadModel("player", "gatotu0.gltf");
+	ModelManager::GetInstance()->LoadModel("player", "fastSlash.gltf");
 	ModelManager::GetInstance()->LoadModel("player", "slashR.gltf");
 	ModelManager::GetInstance()->LoadModel("player", "slashL.gltf");
 	ModelManager::GetInstance()->LoadModel("player", "slashEnd.gltf");
@@ -51,6 +52,7 @@ void Player::Init() {
 	mObject->mSkinning->CreateSkinningData("player", "prepare", ".gltf", mObject->GetModel()->modelData);
 	mObject->mSkinning->CreateSkinningData("player", "gatotu0", ".gltf", mObject->GetModel()->modelData);
 
+	mObject->mSkinning->CreateSkinningData("player", "fastSlash", ".gltf", mObject->GetModel()->modelData);
 	mObject->mSkinning->CreateSkinningData("player", "slashR", ".gltf", mObject->GetModel()->modelData);
 	mObject->mSkinning->CreateSkinningData("player", "slashL", ".gltf", mObject->GetModel()->modelData);
 	mObject->mSkinning->CreateSkinningData("player", "slashEnd", ".gltf", mObject->GetModel()->modelData);
@@ -80,7 +82,7 @@ void Player::Init() {
 	mJumpCount = kJumpCountMax;
 
 	// コライダーの宣言
-	mObject->mCollider = new SphereCollider(mObject->mWorldTransform, 0.5f);
+	mObject->mCollider = std::make_unique<SphereCollider>(mObject->mWorldTransform.get(), 0.5f);
 	mObject->mCollider->Init();
 	mObject->mCollider->SetAddTranslation(Vector3(0.0f, 0.55f, -0.1f));
 	mObject->mCollider->SetCollisionAttribute(kCollisionAttributePlayer);
@@ -149,7 +151,7 @@ void Player::Init() {
 	for (int32_t i = 0; i < 5; i++) {
 		mAttackStatus.swordWorldMat[i] = MakeAffineMatrix(Vector3{ 0.0f,0.0f,0.0f }, Vector3{ 0.0f,0.0f,0.0f }, Vector3{ 0.0f,0.0f,0.0f });
 		// コライダー 宣言
-		SphereCollider* newCollider = new SphereCollider(std::make_shared<WorldTransform>(), 0.2f);
+		SphereCollider* newCollider = new SphereCollider(new WorldTransform(), 0.2f);
 		// 初期化
 		newCollider->Init();
 		newCollider->SetCollisionAttribute(kCollisionAttributePlayerBullet);
@@ -767,7 +769,7 @@ void Player::Attack()
 	
 	if (mAttackStatus.motionTime <= 1.5f)
 	{
-		mAttackStatus.motionTime += BlackBoard::GetBattleFPS();
+		mAttackStatus.motionTime += BlackBoard::CombertBattleFPS(1.5f);
 
 		// 攻撃が命中していない場合、攻撃フラグをtrueにする
 		if (mAttackStatus.comboCount != 3) {

@@ -85,7 +85,7 @@ public: // -- 公開 メンバ関数 -- //
 	/// ワールドトランスフォームの取得
 	/// </summary>
 	/// <returns>ワールドトランスフォームのポインタ</returns>
-	WorldTransform* GetWorld() { return mWorldTransform.get(); }
+	WorldTransform* GetWorld() { return mWorldTransform; }
 
 	// 衝突属性の変更・取得
 	inline uint32_t GetCollisionAttribute() { return mCollisionAttribute; }
@@ -107,12 +107,7 @@ public: // -- 公開 メンバ関数 -- //
 	virtual bool GetOnCollisionFlag()const { return mIsOnCollision; }
 
 	void SetWorld(WorldTransform* world) {
-		if (mWorldTransform == nullptr) {
-			mWorldTransform = std::make_shared<WorldTransform>();
-		}
-		mWorldTransform->scale = world->scale; 
-		mWorldTransform->rotation = world->rotation; 
-		mWorldTransform->translation = world->translation; 
+		mWorldTransform = world;
 	
 	}
 	void SetAddTranslation(Vector3 translation) { mAddtranslation = translation; }
@@ -145,7 +140,7 @@ protected: // -- 限定公開 メンバ変数 -- //
 	Microsoft::WRL::ComPtr<ID3D12Resource> mWvpResource = nullptr;
 	// データを書き込む
 	std::shared_ptr<TransformationMatrixForGrid3D> mWvpData = nullptr;
-	std::shared_ptr<WorldTransform> mWorldTransform;
+	WorldTransform* mWorldTransform;
 
 	// モデル
 	std::shared_ptr<Model> mModel;

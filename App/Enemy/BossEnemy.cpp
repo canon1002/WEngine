@@ -90,7 +90,7 @@ void BossEnemy::Init() {
 	mStatus = StatusManager::GetInstance()->GetBossStatus();
 
 	// コライダーの宣言
-	mObject->mCollider = new SphereCollider(mObject->mWorldTransform, mObject->GetWorldTransform()->scale.x);
+	mObject->mCollider = std::make_unique<SphereCollider>(mObject->mWorldTransform.get(), mObject->GetWorldTransform()->scale.x);
 	mObject->mCollider->Init();
 	mObject->mCollider->SetAddTranslation(Vector3(0.0f, mObject->GetWorldTransform()->scale.y, 0.0f));
 	mObject->mCollider->SetCollisionAttribute(kCollisionAttributeEnemy);
@@ -138,7 +138,7 @@ void BossEnemy::Init() {
 	for (int32_t i = 0; i < 8; i++) {
 		mWeaponWorldMat[i] = MakeAffineMatrix(Vector3{ 0.0f,0.0f,0.0f }, Vector3{ 0.0f,0.0f,0.0f }, Vector3{ 0.0f,0.0f,0.0f });
 		// コライダー 宣言
-		SphereCollider* newCollider = new SphereCollider(std::make_shared<WorldTransform>(), 0.25f);
+		SphereCollider* newCollider = new SphereCollider(new WorldTransform, 0.25f);
 		// 初期化
 		newCollider->Init();
 		newCollider->SetCollisionAttribute(kCollisionAttributeEnemyBullet);

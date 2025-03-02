@@ -13,7 +13,7 @@ void DashSmoke::Init() {
 
 	// エミッター初期設定
 	mEmitter = {};
-	mEmitter.worldtransform = std::make_shared<WorldTransform>();
+	mEmitter.worldtransform = std::make_unique<WorldTransform>();
 	mEmitter.worldtransform->Init();
 	mEmitter.count = 8;
 	mEmitter.frequency = 0.05f;// 0.05秒ごとに発生

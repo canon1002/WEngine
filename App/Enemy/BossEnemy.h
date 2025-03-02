@@ -34,7 +34,7 @@ public: // -- 公開 メンバ関数 -- //
 	Object3d* GetObject3D() { return mObject.get(); }
 	// モデルの取得
 	Model* GetModel() { return mObject->mModel.get(); }
-	Collider* GetCollider() { return mObject->mCollider; }
+	Collider* GetCollider() { return mObject->mCollider.get(); }
 
 	void SetAttackCollider(CollisionManager* cManager);
 

@@ -5,9 +5,9 @@
 #include "GameEngine/Object/Model/ModelManager.h"
 #include "GameEngine/Object/Model/Skybox/Skybox.h"
 
-SphereCollider::SphereCollider(std::shared_ptr<WorldTransform> worldtransform, float radius){
+SphereCollider::SphereCollider(WorldTransform* world, float radius){
 	// ワールド座標のポインタを代入
-	mWorldTransform = worldtransform;
+	mWorldTransform = world;
 	// 半径を代入
 	mRadius = radius;
 	// 追加平行移動の初期化

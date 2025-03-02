@@ -55,6 +55,8 @@ public: // -- public メンバ関数 -- //
 		mIsControll = flag;
 	}
 
+	// オフセットの入力
+	void SetOffset(const Vector3& offset);
 	// オフセットの算出・取得
 	Vector3 GetOffset()const;
 

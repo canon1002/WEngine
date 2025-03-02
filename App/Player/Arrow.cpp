@@ -44,7 +44,7 @@ void Arrow::Init(Player* player,Vector3 pos, Vector3 vel)
 
 	//コライダーの宣言
 	// コライダーの宣言
-	mObject->mCollider = new SphereCollider(mObject->mWorldTransform, 0.05f);
+	mObject->mCollider = std::make_unique<SphereCollider>(mObject->mWorldTransform.get(), 0.05f);
 	mObject->mCollider->Init();
 	mObject->mCollider->SetCollisionAttribute(kCollisionAttributePlayerBullet);
 	mObject->mCollider->SetCollisionMask(kCollisionAttributeEnemy);

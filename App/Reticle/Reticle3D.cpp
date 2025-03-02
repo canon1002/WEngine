@@ -21,7 +21,7 @@ void Reticle3D::Init(){
 	mObject->SetModel("box.gltf");
 
 	// 3Dレティクルのコライダー
-	mObject->mCollider = new SphereCollider(mObject->mWorldTransform, 0.5f);
+	mObject->mCollider = std::make_unique<SphereCollider>(mObject->mWorldTransform.get(), 0.5f);
 	mObject->mCollider->Init();
 	mObject->mCollider->SetCollisionAttribute(kCollisionAttributePlayerBullet);
 	mObject->mCollider->SetCollisionMask(kCollisionAttributeEnemy);

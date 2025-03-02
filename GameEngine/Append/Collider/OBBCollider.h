@@ -11,7 +11,7 @@ class OBBCollider :
 public: // -- 公開 メンバ関数 -- //
 
     // コンストラクタ
-    OBBCollider(std::shared_ptr<WorldTransform> worldtransform, Vector3 size);
+    OBBCollider(WorldTransform* worldtransform, Vector3 size);
 
 
     void Init()override;

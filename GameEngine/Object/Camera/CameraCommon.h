@@ -52,7 +52,7 @@ public: // -- アクセッサ -- //
 public: // -- public メンバ変数 -- //
 
 	// WorldTransform
-	std::shared_ptr<WorldTransform> mWorldTransform;
+	std::unique_ptr<WorldTransform> mWorldTransform;
 
 protected: // -- protected メンバ変数 -- //
 

@@ -39,8 +39,7 @@ public: // メンバ関数
 	void SetScale(Vector3 scale) { mWorldTransform->scale = scale; }
 	void SetRotate(Vector3 rotate) { mWorldTransform->rotation = rotate; }
 	void SetTranslate(Vector3 translate) { mWorldTransform->translation = translate; }
-	void SetWorldTransform(std::shared_ptr<WorldTransform> world) { mWorldTransform = world; }
-	const std::shared_ptr<WorldTransform> GetWorldTransform()const  { return mWorldTransform; }
+	const WorldTransform* GetWorldTransform()const  { return mWorldTransform.get(); }
 
 	Model* GetModel() { return mModel.get(); }
 	std::shared_ptr<Model>  GetModelPtr()const { return mModel; }
@@ -53,7 +52,7 @@ public: // メンバ変数
 	// Transformation用のResourceを作る
 	Microsoft::WRL::ComPtr<ID3D12Resource> mWvpResource = nullptr;
 	// データを書き込む
-	std::shared_ptr<TransformationMatrix> mWvpData = nullptr;
+	TransformationMatrix* mWvpData;
 
 	// マテリアル
 	Material material;
@@ -62,7 +61,7 @@ public: // メンバ変数
 	std::unique_ptr<Skinning> mSkinning = nullptr;
 	
 	// コライダー
-	Collider* mCollider;
+	std::unique_ptr<Collider> mCollider = nullptr;
 
 
 };

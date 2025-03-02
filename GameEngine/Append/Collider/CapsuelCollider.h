@@ -10,7 +10,7 @@ class CapsuelCollider :
     /// </summary>
     /// <param name="worldtransform"> ワールド座標のポインタ </param>
     /// <param name="radius"> コライダーの半径 </param>
-    CapsuelCollider(std::shared_ptr<WorldTransform> worldtransform, float radius);
+    CapsuelCollider(std::unique_ptr<WorldTransform> worldtransform, float radius);
 
     /// <summary>
     /// 仮想デストラクタ

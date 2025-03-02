@@ -3,7 +3,7 @@
 #include "GameEngine/Object/Camera/MainCamera.h"
 #include "GameEngine/Object/Model/ModelManager.h"
 
-AABBCollider::AABBCollider(std::shared_ptr<WorldTransform> worldtransform, Vector3 radius) {
+AABBCollider::AABBCollider(WorldTransform* worldtransform, Vector3 radius) {
 	// ワールド座標のポインタを代入
 	mWorldTransform = worldtransform;
 	// 各ベクトルの半径を代入

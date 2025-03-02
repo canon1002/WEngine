@@ -13,7 +13,7 @@ Grid3D::Grid3D(int32_t gridsize, float gridspace){
 
 void Grid3D::Init(){
 
-	mWorldTransform = std::make_shared<WorldTransform>();
+	mWorldTransform = std::make_unique<WorldTransform>();
 	mWorldTransform->Init();
 	CreateTransformation();
 	CreateGraphicsPipeline();

@@ -3,7 +3,7 @@
 #include "GameEngine/Base/DirectX/DirectXCommon.h"
 
 void CameraCommon::Init(){
-	mWorldTransform = std::make_shared<WorldTransform>();
+	mWorldTransform = std::make_unique<WorldTransform>();
 	verticalFOV_ = 0.45f;
 	aspectRatio_ = (float(WinApp::GetInstance()->kClientWidth) / float(WinApp::GetInstance()->kClientHeight));
 	nearClip_ = 0.01f;

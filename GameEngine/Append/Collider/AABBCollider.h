@@ -10,8 +10,8 @@ class AABBCollider :
 public: // -- 公開 メンバ関数 -- //
 
     // コンストラクタ
-    AABBCollider(std::shared_ptr<WorldTransform> worldtransform,Vector3 radius);
-
+    AABBCollider(WorldTransform* worldtransform,Vector3 radius);
+    ~AABBCollider() = default;
 
     void Init()override;
     void Update()override;

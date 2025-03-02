@@ -82,11 +82,11 @@ void GameScene::Init() {
 	// ダッシュ煙
 	mPlayerDashSmoke = std::make_unique<DashSmoke>();
 	mPlayerDashSmoke->Init();
-	mPlayerDashSmoke->SetEmitterWorldTransform(mPlayer->GetObject3D()->mWorldTransform);
+	mPlayerDashSmoke->SetEmitterWorldTransform(mPlayer->GetObject3D()->mWorldTransform->GetWorldPosition());
 
 	mBossDashSmoke = std::make_unique<DashSmoke>();
 	mBossDashSmoke->Init();
-	mBossDashSmoke->SetEmitterWorldTransform(mBoss->GetObject3D()->mWorldTransform);
+	mBossDashSmoke->SetEmitterWorldTransform(mBoss->GetObject3D()->mWorldTransform->GetWorldPosition());
 	mBossDashSmoke->SetActive(true);
 
 	// ゲームシーンの段階
@@ -353,8 +353,8 @@ void GameScene::Update() {
 			else if (mPlayerStartAndEnd.t >= 1.0f && mCameraTr.k >= 1.0f && mCameraRot.k >= 1.0f) {
 
 				// メインカメラをフォローカメラ仕様にする
-				MainCamera::GetInstance()->SetFollowTarget(mPlayer->GetObject3D()->GetWorldTransform().get());
-				MainCamera::GetInstance()->SetSearchTarget(mBoss->GetObject3D()->GetWorldTransform().get());
+				MainCamera::GetInstance()->SetFollowTarget(mPlayer->GetObject3D()->GetWorldTransform());
+				MainCamera::GetInstance()->SetSearchTarget(mBoss->GetObject3D()->GetWorldTransform());
 
 				// フェーズ移行
 				mPhase = Phase::BATTLE;
