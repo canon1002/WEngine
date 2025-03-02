@@ -19,7 +19,7 @@ void SRV::CreateShaderResourceView() {
 	// タンスの部分
 	srvDescriptorHeap = DirectXCommon::GetInstance()->CreateDescriptorHeap(DirectXCommon::GetInstance()->mDevice, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 128, true);
 	//defaultTexId_ = LoadTexture("uvChecker.png");
-	defaultTexId_ = LoadTexture("uvChecker.dds");
+	defaultTexId_ = LoadTexture("white2x2.dds");
 
 }
 

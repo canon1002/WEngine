@@ -50,7 +50,12 @@ public:
     virtual bool IsCollision(OBBCollider* c);
 
     // 衝突時の処理
-    virtual void OnCollision()override {};
+    virtual void OnCollision()override {
+        if (mOnCollisionCount == 0) {
+            mIsOnCollision = true;
+            mOnCollisionCount = 60;
+        }
+    };
     virtual void OnCollision(Collider* collider) override {
         collider;
         if (mOnCollisionCount == 0) {

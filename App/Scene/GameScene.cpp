@@ -442,8 +442,6 @@ void GameScene::Update() {
 			}
 		}
 		mPlayerDashSmoke->Update();
-
-
 		mBossDashSmoke->Update();
 
 		break;

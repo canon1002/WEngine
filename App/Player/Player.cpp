@@ -151,7 +151,7 @@ void Player::Init() {
 	for (int32_t i = 0; i < 5; i++) {
 		mAttackStatus.swordWorldMat[i] = MakeAffineMatrix(Vector3{ 0.0f,0.0f,0.0f }, Vector3{ 0.0f,0.0f,0.0f }, Vector3{ 0.0f,0.0f,0.0f });
 		// コライダー 宣言
-		SphereCollider* newCollider = new SphereCollider(new WorldTransform(), 0.2f);
+		SphereCollider* newCollider = new SphereCollider(new WorldTransform(), 0.4f);
 		// 初期化
 		newCollider->Init();
 		newCollider->SetCollisionAttribute(kCollisionAttributePlayerBullet);

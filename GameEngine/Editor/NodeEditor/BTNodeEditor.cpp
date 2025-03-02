@@ -15,7 +15,7 @@ BTNodeEditor::~BTNodeEditor() {
 void BTNodeEditor::Init() {
 
 	// ノードをJsonファイルから読み込む
-	Load();
+	//Load();
 
 }
 

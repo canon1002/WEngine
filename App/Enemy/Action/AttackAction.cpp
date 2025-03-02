@@ -69,7 +69,7 @@ void ACT::AttackClose::Reset()
 	// 初期化する
 	mCondition = Condition::IDOL;
 	mIsHit = false;
-	mIsOperating = false;
+	mIsOperating = true;
 	// 衝突判定発生時間を設定
 	mColliderCount = 0.0f;
 	mActiveColliderCount = BlackBoard::GetGlobalVariables()->GetVector2Value("AttackClose", "Duration");
@@ -155,7 +155,7 @@ void ACT::AttackThrust::Reset()
 	mIsOperating = false;
 	// 衝突判定発生時間を設定
 	mColliderCount = 0.0f;
-	mActiveColliderCount = BlackBoard::GetGlobalVariables()->GetVector2Value("AttackDash", "Duration");
+	mActiveColliderCount = BlackBoard::GetGlobalVariables()->GetVector2Value("AttackThrust", "Duration");
 }
 
 void ACT::AttackThrust::Save()

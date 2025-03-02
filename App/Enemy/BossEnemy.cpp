@@ -138,7 +138,7 @@ void BossEnemy::Init() {
 	for (int32_t i = 0; i < 8; i++) {
 		mWeaponWorldMat[i] = MakeAffineMatrix(Vector3{ 0.0f,0.0f,0.0f }, Vector3{ 0.0f,0.0f,0.0f }, Vector3{ 0.0f,0.0f,0.0f });
 		// コライダー 宣言
-		SphereCollider* newCollider = new SphereCollider(new WorldTransform, 0.25f);
+		SphereCollider* newCollider = new SphereCollider(new WorldTransform, 0.4f);
 		// 初期化
 		newCollider->Init();
 		newCollider->SetCollisionAttribute(kCollisionAttributeEnemyBullet);
@@ -232,7 +232,7 @@ void BossEnemy::InitActions()
 	// ダッシュ
 	mActions["Dash"] = make_shared<ACT::Dash>();
 	mActions["Dash"]->Init(this);
-	
+
 	// 縮地
 	mActions["Shrinkage"] = make_shared<ACT::Shrinkage>();
 	mActions["Shrinkage"]->Init(this);
@@ -319,7 +319,7 @@ void BossEnemy::Update() {
 		}
 	}
 
-	
+
 	// シェイクの更新
 	ShakeUpdate();
 
@@ -328,6 +328,31 @@ void BossEnemy::Update() {
 
 	// オブジェクト更新
 	UpdateObject();
+
+	// 衝突処理
+	if (!mActiveAction.expired()) {
+
+		if (mActiveAction.lock()->GetIsHit() == false &&
+			mActiveAction.lock()->GetIsOperating() == true){
+
+			for (Collider* collider : mWeaponColliders)
+			{
+				if (collider->GetOnCollisionFlag() == false)
+				{
+					continue;
+				}
+
+				// 次のフレームで消す
+				mActiveAction.lock()->Hit();
+
+				// 敵にダメージを与える
+				ReciveDamageTolayer(1.8f);
+
+			}
+		}
+	}
+
+
 
 }
 
@@ -509,11 +534,11 @@ void BossEnemy::SetAttackCollider(CollisionManager* cManager) {
 
 	// 行動設定時
 	if (!mActiveAction.expired()) {
-		
+
 		// 攻撃中 かつ 攻撃が命中していなければ
-		if (mActiveAction.lock()->GetIsOperating()&&
-			mActiveAction.lock()->GetIsHit()) {
-			
+		if (mActiveAction.lock()->GetIsOperating() &&
+			!mActiveAction.lock()->GetIsHit()) {
+
 			// コライダーセット
 			for (Collider* collider : mWeaponColliders) {
 				cManager->SetCollider(collider);
@@ -602,7 +627,7 @@ void BossEnemy::ColliderDraw() {
 #ifdef _DEBUG
 
 	if (!mActiveAction.expired()) {
-		if(mActiveAction.lock()->GetIsOperating()&&
+		if (mActiveAction.lock()->GetIsOperating() &&
 			!mActiveAction.lock()->GetIsHit()) {
 			for (auto& collider : mWeaponColliders) {
 				collider->Draw();
