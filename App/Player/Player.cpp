@@ -741,7 +741,7 @@ void Player::Attack()
 
 			case 3:
 
-				mObject->mSkinning->SetNextAnimation("slashEnd");
+				mObject->mSkinning->SetNextAnimation("slashR");
 
 				break;
 
