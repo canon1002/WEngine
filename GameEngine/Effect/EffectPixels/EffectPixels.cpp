@@ -2,6 +2,8 @@
 #include "GameEngine/Base/Debug/ImGuiManager.h"
 #include "GameEngine/Object/Camera/MainCamera.h"
 #include "GameEngine/GameMaster/Framerate.h"
+#include "GameEngine/Resource/Texture/TextureManager.h"
+
 
 void EffectPixels::Init() {
 
@@ -15,7 +17,7 @@ void EffectPixels::Init() {
 	mWorldTransform->scale = { 1.0f,1.0f,1.0f };
 
 	// テクスチャの設定
-	mTextureHandle = DirectXCommon::GetInstance()->mSrv->LoadTexture("white2x2.dds");
+	mTextureHandle = TextureManager::GetInstance()->LoadTexture("white2x2.dds");
 
 	// 生存時間
 	mActiveCountMax = 0.1f;
@@ -56,10 +58,10 @@ void EffectPixels::Draw() {
 	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootConstantBufferView(4, mCameraResource->GetGPUVirtualAddress());
 
 	// テクスチャをセット
-	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootDescriptorTable(2, DirectXCommon::GetInstance()->mSrv->mTextureData.at(mTextureHandle).textureSrvHandleGPU);
+	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->mTextureData.at(mTextureHandle).textureSrvHandleGPU);
 	// CueMapのテクスチャをセット
 	if (mTextureHandleCubeMap != 0) {
-		DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootDescriptorTable(5, DirectXCommon::GetInstance()->mSrv->mTextureData.at(mTextureHandleCubeMap).textureSrvHandleGPU);
+		DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootDescriptorTable(5, TextureManager::GetInstance()->mTextureData.at(mTextureHandleCubeMap).textureSrvHandleGPU);
 	}
 
 	// インデックスを使用してドローコール

@@ -21,7 +21,7 @@ void Skybox::Init(const std::string& directrypath, const std::string& filename) 
 	mCamera = MainCamera::GetInstance();
 	mWorldTransform = new WorldTransform();
 	mWorldTransform->scale = { 512.0f,512.0f,512.0f };
-	mTextureHandle = DirectXCommon::GetInstance()->mSrv->LoadTexture(directrypath + "/" + filename);
+	mTextureHandle = TextureManager::GetInstance()->LoadTexture(directrypath + "/" + filename);
 	CreateTransformation();
 	CreateVertexResource();
 	CreateMaterialResource();
@@ -62,7 +62,7 @@ void Skybox::Draw()
 	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootConstantBufferView(4, CameraResource->GetGPUVirtualAddress());
 
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である
-	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootDescriptorTable(2, DirectXCommon::GetInstance()->mSrv->mTextureData.at(mTextureHandle).textureSrvHandleGPU);
+	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->mTextureData.at(mTextureHandle).textureSrvHandleGPU);
 
 	// インデックスを使用してドローコール
 	DirectXCommon::GetInstance()->mCommandList->DrawIndexedInstanced(36, 1, 0, 0,0);

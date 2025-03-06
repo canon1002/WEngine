@@ -91,17 +91,17 @@ protected: // -- 限定公開 メンバ変数 -- //
 	int32_t mInstancingHandle;
 
 	// モデルデータ
-	ModelData modelData_;
+	ModelData mModelData;
 	// UVTransform用の変数
-	UVTransform uvTransform_;
+	UVTransform mUVTransform;
 
 	// インスタンスの数
 	const int32_t kNumMaxInstance = 400;
-	int32_t instanceCount_;
+	int32_t mInstanceCount;
 
 	// 乱数生成機
-	std::random_device seedGenerator_;
-	std::mt19937 randomEngine_;
+	std::random_device mSeedGenerator;
+	std::mt19937 mRandomEngine;
 
 	// 発生させるか
 	bool mIsActive;

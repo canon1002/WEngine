@@ -54,7 +54,7 @@ void Triangle::Draw() {
 	//wvp用のCBufferの場所を指定
 	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootConstantBufferView(1, mWvpResource->GetGPUVirtualAddress());
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である
-	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootDescriptorTable(2, DirectXCommon::GetInstance()->mSrv->mTextureData.at(1).textureSrvHandleGPU);
+	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->mTextureData.at(1).textureSrvHandleGPU);
 
 	// インスタンス生成
 	DirectXCommon::GetInstance()->mCommandList->DrawInstanced(3, 1, 0, 0);

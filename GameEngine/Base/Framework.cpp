@@ -7,6 +7,7 @@
 #include "GameEngine/Object/ObjectAdministrator.h"
 #include "GameEngine/Resource/Audio/Audio.h"
 #include "GameEngine/Effect/PostEffect/PostEffect.h"
+#include "GameEngine/Resource/Texture/TextureManager.h"
 
 // アプリケーション部分(のうちエンジン側に移動する可能性のある要素)
 #include "App/Reaction/DamageReaction.h"
@@ -57,6 +58,8 @@ void Framework::Init(){
 	
 	// メインカメラ
 	MainCamera::GetInstance()->Init();
+	// テクスチャマネージャ 
+	TextureManager::GetInstance()->Init();
 	// オブジェクト管理者クラス
 	ObjectManager::GetInstance()->Init();
 	// モデル管理クラス

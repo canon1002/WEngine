@@ -2,6 +2,7 @@
 #include "ModelCommon.h"
 #include "../camera/MainCamera.h"
 #include "GameEngine/Base/Debug/ImGuiManager.h"
+#include "GameEngine/Resource/Texture/TextureManager.h"
 
 MultiModel::~MultiModel() {
 	CameraResource.Reset();
@@ -44,7 +45,8 @@ void MultiModel::Draw()
 		DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootConstantBufferView(4, CameraResource->GetGPUVirtualAddress());
 
 		// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である
-		DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootDescriptorTable(2, DirectXCommon::GetInstance()->mSrv->mTextureData.at(DirectXCommon::GetInstance()->mSrv->defaultTexId_).textureSrvHandleGPU);
+		DirectXCommon::GetInstance()->mSrv->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvIndex());
+			//mCommandList->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->mTextureData.at(TextureManager::GetInstance()->mDefaultTexID).textureSrvHandleGPU);
 		// インデックスを使用してドローコール
 		DirectXCommon::GetInstance()->mCommandList->DrawIndexedInstanced(UINT(modelData.meshes[0].indices.size()), 1, 0, 0, 0);
 	}

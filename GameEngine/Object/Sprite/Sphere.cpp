@@ -46,7 +46,7 @@ void SphereEntity::Draw() const {
 	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootConstantBufferView(1, mWvpResource->GetGPUVirtualAddress());
 	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootConstantBufferView(3, directionalLightResource->GetGPUVirtualAddress());
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である
-	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootDescriptorTable(2, DirectXCommon::GetInstance()->mSrv->mTextureData.at(1).textureSrvHandleGPU);
+	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->mTextureData.at(1).textureSrvHandleGPU);
 
 	// インスタンス生成
 	DirectXCommon::GetInstance()->mCommandList->DrawInstanced(((kSubdivision) * (kSubdivision) * 6), 1, 0, 0);

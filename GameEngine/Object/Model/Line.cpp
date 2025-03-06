@@ -21,7 +21,7 @@ void Line::Init() {
 	CreateTransformation();
 	CreateBufferView();
 
-	mTextureHandle = DirectXCommon::GetInstance()->mSrv->LoadTexture("white2x2.png");
+	mTextureHandle = TextureManager::GetInstance()->LoadTexture("white2x2.png");
 	//mTextureHandle = dxCommon_->srv_->CreateRenderTextureSRV(dxCommon_->rtv_->mRenderTextureResource.Get());
 }
 
@@ -67,7 +67,7 @@ void Line::Draw() {
 	//wvp用のCBufferの場所を指定
 	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootConstantBufferView(1, mWvpResource->GetGPUVirtualAddress());
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である
-	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootDescriptorTable(2, DirectXCommon::GetInstance()->mSrv->mTextureData.at(mTextureHandle).textureSrvHandleGPU);
+	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->mTextureData.at(mTextureHandle).textureSrvHandleGPU);
 
 	// インスタンス生成
 	DirectXCommon::GetInstance()->mCommandList->DrawInstanced(3, 1, 0, 0);

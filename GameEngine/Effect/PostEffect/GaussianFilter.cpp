@@ -16,7 +16,7 @@ void GaussianFilter::Init(){
 	CreateEffectResource();
 
 	// レンダーターゲットの格納番号を受け取る
-	textureHandle_ = DirectXCommon::GetInstance()->mSrv->CreateRenderTextureSRV(DirectXCommon::GetInstance()->mRtv->mRenderTextureResource.Get());
+	textureHandle_ = TextureManager::GetInstance()->CreateRenderTextureSRV(DirectXCommon::GetInstance()->mRtv->mRenderTextureResource.Get());
 }
 
 void GaussianFilter::Update(){
@@ -55,7 +55,7 @@ void GaussianFilter::Draw(){
 	// ポストエフェクトのパラメータのCBufferの場所を指定
 	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootConstantBufferView(0, mEffectResource->GetGPUVirtualAddress());
 	// SRVのDescriptorTableの先頭を設定
-	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootDescriptorTable(1, DirectXCommon::GetInstance()->mSrv->mTextureData.at(textureHandle_).textureSrvHandleGPU);
+	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootDescriptorTable(1, TextureManager::GetInstance()->mTextureData.at(textureHandle_).textureSrvHandleGPU);
 	// インスタンス生成
 	DirectXCommon::GetInstance()->mCommandList->DrawInstanced(3, 1, 0, 0);
 }

@@ -25,6 +25,9 @@ public: // -- 公開 メンバ関数 -- //
 
 	// インスタンスの取得
 	static ImGuiManager* GetInstance();
+	// デストラクタ
+	~ImGuiManager() = default;
+
 	// 初期化
 	void Init();
 	// ImGuiの開始処理
@@ -35,8 +38,7 @@ public: // -- 公開 メンバ関数 -- //
 	void Draw();
 	// 終了処理
 	void Final();
-	// デストラクタ
-	~ImGuiManager() = default;
+
 
 private: // -- 非公開 メンバ関数 -- //
 

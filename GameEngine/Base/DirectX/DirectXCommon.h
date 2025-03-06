@@ -77,23 +77,6 @@ public: // -- 公開 メンバ関数 -- //
 		Microsoft::WRL::ComPtr <ID3D12Device> device, D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors, bool shaderVisible);
 
 
-	inline D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDescriptorHandle(Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap,
-		uint32_t descriptorSize, uint32_t index) {
-		D3D12_CPU_DESCRIPTOR_HANDLE handleCPU = descriptorHeap->GetCPUDescriptorHandleForHeapStart();
-		handleCPU.ptr += (descriptorSize * index);
-		return handleCPU;
-	}
-
-	inline D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap,
-		uint32_t descriptorSize, uint32_t index) {
-		D3D12_GPU_DESCRIPTOR_HANDLE handleGPU = descriptorHeap->GetGPUDescriptorHandleForHeapStart();
-		handleGPU.ptr += (descriptorSize * index);
-		return handleGPU;
-	}
-
-	
-
-
 private: // --非公開 メンバ関数 -- //
 
 	// -- 生成・初期化関数 -- //
@@ -141,10 +124,6 @@ private: // --非公開 メンバ関数 -- //
 
 	void SetRenderTargets(ID3D12GraphicsCommandList* commandList, UINT numRenderTargets, const D3D12_CPU_DESCRIPTOR_HANDLE* rtvHandles, D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle) {
 		commandList->OMSetRenderTargets(numRenderTargets, rtvHandles, FALSE, &dsvHandle);
-	}
-
-	void SetDescriptorHeaps(ID3D12GraphicsCommandList* commandList, UINT numDescriptorHeaps, ID3D12DescriptorHeap* const* descriptorHeaps) {
-		commandList->SetDescriptorHeaps(numDescriptorHeaps, descriptorHeaps);
 	}
 
 

@@ -44,39 +44,7 @@ namespace Resource
 		return mipImages;
 	}
 
-	//テクスチャリソースの生成
-	Microsoft::WRL::ComPtr<ID3D12Resource> CreateTextureResource(Microsoft::WRL::ComPtr<ID3D12Device> device, const DirectX::TexMetadata& metdate) {
-		//metadateを基にResourceの設定
-		D3D12_RESOURCE_DESC resourceDesc{};
-		resourceDesc.Width = UINT(metdate.width);
-		resourceDesc.Height = UINT(metdate.height);
-		resourceDesc.MipLevels = UINT16(metdate.mipLevels);
-		resourceDesc.DepthOrArraySize = UINT16(metdate.arraySize);
-		resourceDesc.Format = metdate.format;
-		resourceDesc.SampleDesc.Count = 1;
-		resourceDesc.Dimension = D3D12_RESOURCE_DIMENSION(metdate.dimension);
-
-		// 利用するヒープの設定
-		D3D12_HEAP_PROPERTIES heapProperties{};
-		heapProperties.Type = D3D12_HEAP_TYPE_CUSTOM;// 細かい設定を行う
-		heapProperties.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_WRITE_BACK;
-		heapProperties.MemoryPoolPreference = D3D12_MEMORY_POOL_L0;
-
-		// リソースを生成する
-		Microsoft::WRL::ComPtr <ID3D12Resource> resource = nullptr;
-		HRESULT hr;
-		hr = device->CreateCommittedResource(
-			&heapProperties,// Heapの設定
-			D3D12_HEAP_FLAG_NONE,// Heapの特殊な設定(特になし)
-			&resourceDesc, // Resourceの設定
-			D3D12_RESOURCE_STATE_COPY_DEST,// データ転送される設定
-			nullptr,// Crear最適値。使わないのでnullptr
-			IID_PPV_ARGS(&resource));// 作成するresourceポインタへのポインタ
-		assert(SUCCEEDED(hr));
-
-		return resource;
-
-	}
+	
 
 	//ディープステンシルテクスチャリソースの生成
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateDeapStencilTextureResource(

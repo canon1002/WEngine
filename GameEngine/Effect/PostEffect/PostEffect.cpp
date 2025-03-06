@@ -1,6 +1,7 @@
 #include "PostEffect.h"
 #include "GameEngine/Object/Camera/MainCamera.h"
 #include "GameEngine/Base/Debug/ImGuiManager.h"
+#include "GameEngine/Resource/Texture/TextureManager.h"
 
 PostEffect::PostEffect() {}
 
@@ -66,10 +67,10 @@ void PostEffect::Init() {
 	
 
 	// 画像を設定(エラー回避)
-	mTextureHandle = DirectXCommon::GetInstance()->mSrv->LoadTexture("uvChecker.png");
-	mTextureHandle = DirectXCommon::GetInstance()->mSrv->CreateRenderTextureSRV(DirectXCommon::GetInstance()->mRtv->mRenderTextureResource.Get());
+	mTextureHandle = TextureManager::GetInstance()->LoadTexture("uvChecker.png");
+	mTextureHandle = TextureManager::GetInstance()->CreateRenderTextureSRV(DirectXCommon::GetInstance()->mRtv->mRenderTextureResource.Get());
 
-	mDepthStencilHandle = DirectXCommon::GetInstance()->mSrv->CreateDepthSRV(DirectXCommon::GetInstance()->mDsv->mDepthStencilTextureResource.Get());
+	mDepthStencilHandle = TextureManager::GetInstance()->CreateDepthSRV(DirectXCommon::GetInstance()->mDsv->mDepthStencilTextureResource.Get());
 }
 
 void PostEffect::Update() {
@@ -114,9 +115,9 @@ void PostEffect::Draw() {
 	//wvp用のCBufferの場所を指定
 	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootConstantBufferView(1, mWvpResource->GetGPUVirtualAddress());
 	// テクスチャをセット
-	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootDescriptorTable(2, DirectXCommon::GetInstance()->mSrv->mTextureData.at(mTextureHandle).textureSrvHandleGPU);
+	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->mTextureData.at(mTextureHandle).textureSrvHandleGPU);
 	// DepthTextureを設定
-	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootDescriptorTable(3, DirectXCommon::GetInstance()->mSrv->mTextureData.at(mDepthStencilHandle).textureSrvHandleGPU);
+	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootDescriptorTable(3, TextureManager::GetInstance()->mTextureData.at(mDepthStencilHandle).textureSrvHandleGPU);
 
 	// インスタンス生成
 	DirectXCommon::GetInstance()->mCommandList->DrawInstanced(3, 1, 0, 0);

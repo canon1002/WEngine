@@ -37,7 +37,7 @@ void GameScene::Init() {
 	ModelManager::GetInstance()->LoadModel("groundShadow", "groundShadow.gltf");
 
 	// SkyBox 読み込み
-	DirectXCommon::GetInstance()->mSrv->LoadTexture("skybox/rostock_laage_airport_4k.dds");
+	TextureManager::GetInstance()->LoadTexture("skybox/rostock_laage_airport_4k.dds");
 
 	// skyboxの宣言
 	mSkybox = Skybox::GetInstance();
@@ -83,6 +83,8 @@ void GameScene::Init() {
 	mPlayerDashSmoke = std::make_unique<DashSmoke>();
 	mPlayerDashSmoke->Init();
 	mPlayerDashSmoke->SetEmitterWorldTransform(mPlayer->GetObject3D()->mWorldTransform->GetWorldPosition());
+	mPlayerDashSmoke->SetActive(true);
+
 
 	mBossDashSmoke = std::make_unique<DashSmoke>();
 	mBossDashSmoke->Init();
@@ -431,7 +433,8 @@ void GameScene::Update() {
 
 
 		// ダッシュ煙
-		if (mPlayer->GetBehavior() == Behavior::kMove) {
+		if (mPlayer->GetBehavior() == Behavior::kMove||mPlayer->GetBehavior() == Behavior::kDash) {
+			mPlayerDashSmoke->SetEmitterWorldTransform(mPlayer->GetObject3D()->mWorldTransform->GetWorldPosition());
 			if (!mPlayerDashSmoke->GetActive()) {
 				mPlayerDashSmoke->SetActive(true);
 			}
@@ -710,7 +713,7 @@ void GameScene::DrawUI()
 
 	// ダッシュ煙
 	mPlayerDashSmoke->Draw();
-	mBossDashSmoke->Draw();
+	//mBossDashSmoke->Draw();
 
 	// 2DSprite(画像)の描画前処理
 	SpriteAdministrator::GetInstance()->PreDraw();

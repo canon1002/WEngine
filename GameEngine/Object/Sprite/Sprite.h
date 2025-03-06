@@ -24,7 +24,7 @@ public:
 	auto* GetMaterial() { return  materialResourceSprite.Get(); }
 	auto* GetWVP() { return mWvpResource.Get(); }
 	void SetTexture(std::string filepath){
-		mTextureHandle = DirectXCommon::GetInstance()->mSrv->LoadTexture(filepath);
+		mTextureHandle = TextureManager::GetInstance()->LoadTexture(filepath);
 		AdjustTextureSize();
 	}
 	void SetTexture(int32_t textureHandle) {

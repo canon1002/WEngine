@@ -34,9 +34,9 @@ void ImGuiManager::Init(){
 	ImGui_ImplDX12_Init(DirectXCommon::GetInstance()->mDevice.Get(),
 		swapChain.BufferCount,
 		DirectXCommon::GetInstance()->mRtv->rtvDesc.Format,
-		DirectXCommon::GetInstance()->mSrv->srvDescriptorHeap.Get(),
-		DirectXCommon::GetInstance()->mSrv->srvDescriptorHeap->GetCPUDescriptorHandleForHeapStart(),
-		DirectXCommon::GetInstance()->mSrv->srvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
+		DirectXCommon::GetInstance()->mSrv->mDescriptorHeap.Get(),
+		DirectXCommon::GetInstance()->mSrv->mDescriptorHeap->GetCPUDescriptorHandleForHeapStart(),
+		DirectXCommon::GetInstance()->mSrv->mDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
 
 	// imnodesを初期化
 	ImNodes::CreateContext();

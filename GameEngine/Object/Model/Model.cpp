@@ -46,10 +46,10 @@ void Model::Draw()
 	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootConstantBufferView(4, mCameraResource->GetGPUVirtualAddress());
 
 	// テクスチャをセット
-	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootDescriptorTable(2, DirectXCommon::GetInstance()->mSrv->mTextureData.at(mTextureHandle).textureSrvHandleGPU);
+	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->mTextureData.at(mTextureHandle).textureSrvHandleGPU);
 	// CueMapのテクスチャをセット
 	if (mTextureHandleCubeMap != 0) {
-		DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootDescriptorTable(5, DirectXCommon::GetInstance()->mSrv->mTextureData.at(mTextureHandleCubeMap).textureSrvHandleGPU);
+		DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootDescriptorTable(5, TextureManager::GetInstance()->mTextureData.at(mTextureHandleCubeMap).textureSrvHandleGPU);
 	}
 
 	// インデックスを使用してドローコール
@@ -136,10 +136,10 @@ void Model::CreateMaterialResource()
 	mMaterialResource->Map(0, nullptr, reinterpret_cast<void**>(&mMaterialData));
 	// テクスチャの情報を転送
 	if (modelData.material.textureFilePath.empty()) {
-		mTextureHandle = DirectXCommon::GetInstance()->mSrv->defaultTexId_;
+		mTextureHandle = TextureManager::GetInstance()->mDefaultTexID;
 	}
 	else {
-		mTextureHandle = DirectXCommon::GetInstance()->mSrv->LoadTexture(modelData.material.textureFilePath);
+		mTextureHandle = TextureManager::GetInstance()->LoadTexture(modelData.material.textureFilePath);
 	}
 	// 色の書き込み・Lightingの無効化
 	mMaterialData->color = { 1.0f, 1.0f, 1.0f, 1.0f };

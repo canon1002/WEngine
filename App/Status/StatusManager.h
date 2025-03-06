@@ -17,7 +17,7 @@ public: // -- 公開 メンバ関数 -- //
 			sprite = std::make_unique<Sprite>();
 			sprite->Init();
 			sprite->SetColor({ 1.0f,1.0f,1.0f,1.0f });
-			sprite->SetTexture(DirectXCommon::GetInstance()->mSrv->LoadTexture("white2x2.dds"));
+			sprite->SetTexture(TextureManager::GetInstance()->LoadTexture("white2x2.dds"));
 			sprite->SetAnchorPoint(Vector2(0.5f, 0.5f));
 			sprite->SetSpriteSize(Vector2(200.0f, 20.0f));
 		}

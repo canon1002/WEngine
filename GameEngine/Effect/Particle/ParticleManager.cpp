@@ -1,4 +1,6 @@
 #include "ParticleManager.h"
+#include "GameEngine/Base/DirectX/DirectXCommon.h"
+#include "GameEngine/Resource/Texture/TextureManager.h"
 
 ParticleManager* ParticleManager::instance = nullptr;
 
@@ -36,6 +38,35 @@ void ParticleManager::PreDraw(){
 }
 
 void ParticleManager::Draw(){}
+
+void ParticleManager::CreateParticleGroupe(const std::string name, const std::string textureFilePath){
+
+	// 読み込み済みである場合ならエラー
+	assert(mParticleGroups.contains(name));
+
+	// SRVマネージャのポインタを取得
+	SRV* srvManager = DirectXCommon::GetInstance()->mSrv.get();
+	// 上限チェック
+	assert(srvManager->mUseIndex >= srvManager->kMaxSRVCount);
+
+	// 新規のパーティクルグループを追加
+	mParticleGroups.insert(std::make_pair(name, ParticleGroup{}));
+
+	// 新規のパーティクルグループを参照して書き込む
+	ParticleGroup& particleGroup = mParticleGroups[name];
+	// テクスチャをよみこむ
+	TextureManager::GetInstance()->LoadTexture(textureFilePath);
+	// マテリアルにテクスチャのSRVインデックスを記録
+	particleGroup.srvIndex = TextureManager::GetInstance()->GetSrvIndex(textureFilePath);
+	// インスタンシング用のリソースを生成
+	
+	// インスタンシング用にSRVを確保してSRVインデックスを記録
+	particleGroup.srvIndex = srvManager->Allocate();
+	// SRVの生成
+	srvManager->CreateSRVforStructuredBuffer(particleGroup.srvIndex, particleGroup.instancingResource.Get(),
+		particleGroup.instanceCount, sizeof(particleGroup.instancingData));
+
+}
 
 void ParticleManager::CreateRootSignature(){
 

@@ -83,7 +83,7 @@ void Sprite::Draw() {
 	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootConstantBufferView(1, mWvpResource->GetGPUVirtualAddress());
 	
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である
-	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootDescriptorTable(2, DirectXCommon::GetInstance()->mSrv->mTextureData.at(mTextureHandle).textureSrvHandleGPU);
+	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->mTextureData.at(mTextureHandle).textureSrvHandleGPU);
 
 	// インデックスを使用してドローコール
 	DirectXCommon::GetInstance()->mCommandList->DrawIndexedInstanced(6, 1, 0, 0, 0);
@@ -108,7 +108,7 @@ void Sprite::CreateVertexResource() {
 	materialData = nullptr;
 	// テクスチャの情報を転送
 	if (mTextureHandle == 0) {
-		mTextureHandle = DirectXCommon::GetInstance()->mSrv->defaultTexId_;
+		mTextureHandle = TextureManager::GetInstance()->mDefaultTexID;
 	}
 	// 書き込むためのアドレスを取得
 	materialResourceSprite->Map(0, nullptr, reinterpret_cast<void**>(&materialData));
@@ -177,7 +177,7 @@ void Sprite::CreateBufferView() {
 void Sprite::AdjustTextureSize()
 {
 	// テクスチャメタデータ取得
-	const DirectX::TexMetadata& metadata = DirectXCommon::GetInstance()->mSrv->GetMetaData(mTextureHandle);
+	const DirectX::TexMetadata& metadata = TextureManager::GetInstance()->GetMetaData(mTextureHandle);
 	textureFullSize_.x = static_cast<float>(metadata.width);
 	textureFullSize_.y = static_cast<float>(metadata.height);
 

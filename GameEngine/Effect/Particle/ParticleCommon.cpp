@@ -9,7 +9,7 @@ void ParticleCommon::Init(){
 	mWorldTransform.rotation = { 0.0f,0.0f,0.0f };
 	mWorldTransform.translation = { 0.0f,0.0f,0.0f };
 
-	instanceCount_ = kNumMaxInstance;
+	mInstanceCount = kNumMaxInstance;
 
 	// エミッター初期設定
 	mEmitter = {};
@@ -26,12 +26,12 @@ void ParticleCommon::Init(){
 	CreateMaterial();
 	CreateInstancing();
 
-	DirectXCommon::GetInstance()->mSrv->SetInstancingBuffer(kNumMaxInstance, mInstancingResource);
+	TextureManager::GetInstance()->SetInstancingBuffer(kNumMaxInstance, mInstancingResource);
 }
 
 
 void ParticleCommon::CreateTransformation() {
-	for (int32_t index = 0; index < instanceCount_; ++index) {
+	for (int32_t index = 0; index < mInstanceCount; ++index) {
 		//particles[index] = MakeNewParticle(randomEngine_);
 	}
 	// Transformation用のResourceを作る
@@ -48,24 +48,24 @@ void ParticleCommon::CreateTransformation() {
 void ParticleCommon::CreateVertex() {
 
 	// とりあえず四角形で表示しておく
-	modelData_.vertices.push_back(VertexData{ .position = {-1.0f,  1.0f,0.0f,1.0f},.texcoord = {0.0f,0.0f},.normal = {0.0f,0.0f,1.0f} });
-	modelData_.vertices.push_back(VertexData{ .position = { 1.0f,  1.0f,0.0f,1.0f},.texcoord = {1.0f,0.0f},.normal = {0.0f,0.0f,1.0f} });
-	modelData_.vertices.push_back(VertexData{ .position = {-1.0f, -1.0f,0.0f,1.0f},.texcoord = {0.0f,1.0f},.normal = {0.0f,0.0f,1.0f} });
-	modelData_.vertices.push_back(VertexData{ .position = {-1.0f, -1.0f,0.0f,1.0f},.texcoord = {0.0f,1.0f},.normal = {0.0f,0.0f,1.0f} });
-	modelData_.vertices.push_back(VertexData{ .position = { 1.0f,  1.0f,0.0f,1.0f},.texcoord = {1.0f,0.0f},.normal = {0.0f,0.0f,1.0f} });
-	modelData_.vertices.push_back(VertexData{ .position = { 1.0f, -1.0f,0.0f,1.0f},.texcoord = {1.0f,1.0f},.normal = {0.0f,0.0f,1.0f} });
+	mModelData.vertices.push_back(VertexData{ .position = {-1.0f,  1.0f,0.0f,1.0f},.texcoord = {0.0f,0.0f},.normal = {0.0f,0.0f,1.0f} });
+	mModelData.vertices.push_back(VertexData{ .position = { 1.0f,  1.0f,0.0f,1.0f},.texcoord = {1.0f,0.0f},.normal = {0.0f,0.0f,1.0f} });
+	mModelData.vertices.push_back(VertexData{ .position = {-1.0f, -1.0f,0.0f,1.0f},.texcoord = {0.0f,1.0f},.normal = {0.0f,0.0f,1.0f} });
+	mModelData.vertices.push_back(VertexData{ .position = {-1.0f, -1.0f,0.0f,1.0f},.texcoord = {0.0f,1.0f},.normal = {0.0f,0.0f,1.0f} });
+	mModelData.vertices.push_back(VertexData{ .position = { 1.0f,  1.0f,0.0f,1.0f},.texcoord = {1.0f,0.0f},.normal = {0.0f,0.0f,1.0f} });
+	mModelData.vertices.push_back(VertexData{ .position = { 1.0f, -1.0f,0.0f,1.0f},.texcoord = {1.0f,1.0f},.normal = {0.0f,0.0f,1.0f} });
 
 	// 頂点リソースを作る
-	mVertexResource = DirectXCommon::GetInstance()->CreateBufferResource(DirectXCommon::GetInstance()->mDevice.Get(), sizeof(VertexData) * modelData_.vertices.size());
+	mVertexResource = DirectXCommon::GetInstance()->CreateBufferResource(DirectXCommon::GetInstance()->mDevice.Get(), sizeof(VertexData) * mModelData.vertices.size());
 	// リソースの先頭のアドレスから使う
 	mVertexBufferView.BufferLocation = mVertexResource->GetGPUVirtualAddress();
 	// 使用するリソースサイズは頂点分のサイズ
-	mVertexBufferView.SizeInBytes = UINT(sizeof(VertexData) * modelData_.vertices.size());
+	mVertexBufferView.SizeInBytes = UINT(sizeof(VertexData) * mModelData.vertices.size());
 	// 1頂点あたりのサイズ
 	mVertexBufferView.StrideInBytes = sizeof(VertexData);
 	// 頂点リソースにデータを書き込む
 	mVertexResource->Map(0, nullptr, reinterpret_cast<void**>(&mVertexData));// 書き込むためのアドレスを取得
-	std::memcpy(mVertexData, modelData_.vertices.data(), sizeof(VertexData) * modelData_.vertices.size());
+	std::memcpy(mVertexData, mModelData.vertices.data(), sizeof(VertexData) * mModelData.vertices.size());
 
 }
 
@@ -87,7 +87,7 @@ void ParticleCommon::CreateMaterial() {
 	mMaterialData->enableLighting = true;
 	// UVTransformを設定
 	mMaterialData->uvTransform = MakeIdentity();
-	uvTransform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
+	mUVTransform = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 
 }
 

@@ -309,8 +309,7 @@ void DirectXCommon::PreDraw() {
 	// ClearDepthStencilView(mCommandList.Get(), dsv_->mDsvHandle, 1.0f, 0); // 必要に応じて
 
 	// ディスクリプタヒープの設定
-	ID3D12DescriptorHeap* descriptorHeaps[] = { mSrv->srvDescriptorHeap.Get() };
-	SetDescriptorHeaps(mCommandList.Get(), 1, descriptorHeaps);
+	mSrv->PreDraw();
 
 	// コマンドを積み込む
 	mCommandList->RSSetViewports(1, &viewport);
@@ -337,8 +336,7 @@ void DirectXCommon::PreDrawForRenderTarget() {
 
 
 	// ディスクリプタヒープの設定
-	ID3D12DescriptorHeap* descriptorHeaps[] = { mSrv->srvDescriptorHeap.Get() };
-	SetDescriptorHeaps(mCommandList.Get(), 1, descriptorHeaps);
+	mSrv->PreDraw();
 
 	// コマンドを積み込む
 	mCommandList->RSSetViewports(1, &viewport);

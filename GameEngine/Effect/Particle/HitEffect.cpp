@@ -1,10 +1,9 @@
-#include "DashSmoke.h"
+#include "HitEffect.h"
 #include "GameEngine/Object/Camera/MainCamera.h"
-#include "GameEngine/Base/Debug/ImGuiManager.h"
+#include  "GameEngine/Base/Debug/ImGuiManager.h"
 #include "GameEngine/GameMaster/Framerate.h"
-#include <numbers>
 
-void DashSmoke::Init() {
+void HitEffect::Init() {
 
 	mWorldTransform.scale = { 1.0f,1.0f,1.0f };
 	mWorldTransform.rotation = { 0.0f,0.0f,0.0f };
@@ -16,8 +15,8 @@ void DashSmoke::Init() {
 	mEmitter = {};
 	mEmitter.worldtransform = std::make_unique<WorldTransform>();
 	mEmitter.worldtransform->Init();
-	mEmitter.count = 16;
-	mEmitter.frequency = 0.01f;// 0.01秒ごとに発生
+	mEmitter.count = 8;
+	mEmitter.frequency = 0.05f;// 0.05秒ごとに発生
 	mEmitter.frequencyTime = 0.0f;// 発生頻度用の時刻 0で初期化
 
 	// テクスチャの設定
@@ -34,13 +33,13 @@ void DashSmoke::Init() {
 	CreateInstancing();
 
 	mInstancingHandle = TextureManager::GetInstance()->SetInstancingBuffer(kNumMaxInstance, mInstancingResource);
-	
+
 	// 最初は表示しない
 	mIsActive = false;
 
 }
 
-void DashSmoke::Update() {
+void HitEffect::Update() {
 
 #ifdef _DEBUG
 	ImGui::Begin("DTCPatricle");
@@ -58,7 +57,7 @@ void DashSmoke::Update() {
 
 	// instancingCountが最大値を上回らないようにする
 	if (mInstanceCount > kNumMaxInstance) { mInstanceCount = kNumMaxInstance; }
-	
+
 	// エミッター更新処理
 	if (mIsActive) {
 		mEmitter.frequencyTime += kDeltaTime;// 時刻を進める
@@ -67,21 +66,6 @@ void DashSmoke::Update() {
 	if (mEmitter.frequency <= mEmitter.frequencyTime) {// 発生頻度より数値が大きくなったら発生
 		mParticles.splice(mParticles.end(), Emit(mEmitter, mRandomEngine));// 発生処理
 		mEmitter.frequencyTime -= mEmitter.frequency;// 余計に過ぎた時間も加味して頻度計算を行う
-	}
-
-	// ビルボード処理
-	Matrix4x4 worldMat = MakeIdentity();
-	if (mIsUseBillboard) {
-
-		Matrix4x4 backToFrontMat = MakeRoatateYMatrix(std::numbers::pi_v<float>);// Y軸でπ/2回転させる
-		// カメラ回転の適用
-		Matrix4x4 billboardMat = Multiply(backToFrontMat, MainCamera::GetInstance()->GetViewMatrix());
-		// 平行移動成分を0に
-		billboardMat.m[3][0] = 0.0f;
-		billboardMat.m[3][1] = 0.0f;
-		billboardMat.m[3][2] = 0.0f;
-		// 合成
-		worldMat = billboardMat;
 	}
 
 	// ワールド行列とWVP行列を掛け合わした行列を代入
@@ -103,7 +87,7 @@ void DashSmoke::Update() {
 		(*it).worldTransform.scale -= ((*it).vel * kDeltaTime);
 		// 経過時間の加算
 		(*it).currentTime += kDeltaTime;
-		
+
 		if (mInstanceCount < kNumMaxInstance) {
 
 			// 徐々に透明にする
@@ -160,7 +144,7 @@ void DashSmoke::Update() {
 
 }
 
-void DashSmoke::Draw() {
+void HitEffect::Draw() {
 	// isntancceCountttが1以上のときに描画処理を行う
 	if (mInstanceCount > 0) {
 		// 頂点バッファをセット
@@ -172,22 +156,22 @@ void DashSmoke::Draw() {
 
 		DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootDescriptorTable(1, TextureManager::GetInstance()->mTextureData.at(mInstancingHandle).textureSrvHandleGPU);
 		// テクスチャをセット
-		DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->mTextureData.at(mTextureHandle).textureSrvHandleGPU);
+		DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->mTextureData.at(TextureManager::GetInstance()->mDefaultTexID).textureSrvHandleGPU);
 		// ドローコール
 		DirectXCommon::GetInstance()->mCommandList->DrawInstanced(6, mInstanceCount, 0, 0);
 	}
 }
 
 
-Particle DashSmoke::Create(const Vector3& translate, std::mt19937& randomEngine){
+Particle HitEffect::Create(const Vector3& translate, std::mt19937& randomEngine) {
 
 	// 返り値
 	Particle particle{};
 	// 乱数の最小・最大値
-	std::uniform_real_distribution<float> distribution(-0.25f, 0.25f);
+	std::uniform_real_distribution<float> distribution(-0.1f, 0.1f);
 
 	// SRT・移動量・色の設定
-	particle.worldTransform.scale = { 0.25f,0.25f,0.25f };
+	particle.worldTransform.scale = { 0.1f,0.1f,0.1f };
 	particle.worldTransform.rotation = { 0.0f,0.0f,0.0f };
 	Vector3 randomTranslate = { distribution(randomEngine),0.0f,distribution(randomEngine) };
 	particle.worldTransform.translation = translate + randomTranslate;
@@ -203,13 +187,13 @@ Particle DashSmoke::Create(const Vector3& translate, std::mt19937& randomEngine)
 	return particle;
 }
 
-std::list<Particle> DashSmoke::Emit(const Emitter& emtter, std::mt19937& randomEngine)
+std::list<Particle> HitEffect::Emit(const Emitter& emtter, std::mt19937& randomEngine)
 {
 	// パーティクルのリストを生成
 	std::list<Particle> particles;
 	for (uint32_t count = 0; count < emtter.count; count++) {
 		// 新規パーティクルを生成
-		particles.push_back(Create(mEmitter.worldtransform->translation,randomEngine));
+		particles.push_back(Create(mEmitter.worldtransform->translation, randomEngine));
 	}
 	// 生成したリストを返す
 	return particles;

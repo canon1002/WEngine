@@ -16,16 +16,16 @@ DamageReaction* DamageReaction::GetInstance(){
 void DamageReaction::Init(){
     
     // 数値用の画像を設定
-    mNumberTex.push_back(DirectXCommon::GetInstance()->mSrv->LoadTexture("number/0.png"));
-    mNumberTex.push_back(DirectXCommon::GetInstance()->mSrv->LoadTexture("number/1.png"));
-    mNumberTex.push_back(DirectXCommon::GetInstance()->mSrv->LoadTexture("number/2.png"));
-    mNumberTex.push_back(DirectXCommon::GetInstance()->mSrv->LoadTexture("number/3.png"));
-    mNumberTex.push_back(DirectXCommon::GetInstance()->mSrv->LoadTexture("number/4.png"));
-    mNumberTex.push_back(DirectXCommon::GetInstance()->mSrv->LoadTexture("number/5.png"));
-    mNumberTex.push_back(DirectXCommon::GetInstance()->mSrv->LoadTexture("number/6.png"));
-    mNumberTex.push_back(DirectXCommon::GetInstance()->mSrv->LoadTexture("number/7.png"));
-    mNumberTex.push_back(DirectXCommon::GetInstance()->mSrv->LoadTexture("number/8.png"));
-    mNumberTex.push_back(DirectXCommon::GetInstance()->mSrv->LoadTexture("number/9.png"));
+    mNumberTex.push_back(TextureManager::GetInstance()->LoadTexture("number/0.png"));
+    mNumberTex.push_back(TextureManager::GetInstance()->LoadTexture("number/1.png"));
+    mNumberTex.push_back(TextureManager::GetInstance()->LoadTexture("number/2.png"));
+    mNumberTex.push_back(TextureManager::GetInstance()->LoadTexture("number/3.png"));
+    mNumberTex.push_back(TextureManager::GetInstance()->LoadTexture("number/4.png"));
+    mNumberTex.push_back(TextureManager::GetInstance()->LoadTexture("number/5.png"));
+    mNumberTex.push_back(TextureManager::GetInstance()->LoadTexture("number/6.png"));
+    mNumberTex.push_back(TextureManager::GetInstance()->LoadTexture("number/7.png"));
+    mNumberTex.push_back(TextureManager::GetInstance()->LoadTexture("number/8.png"));
+    mNumberTex.push_back(TextureManager::GetInstance()->LoadTexture("number/9.png"));
 
 }
 
