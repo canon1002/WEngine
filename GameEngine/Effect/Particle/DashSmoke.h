@@ -4,7 +4,10 @@
 class DashSmoke :
     public ParticleCommon
 {
-public: // -- 公開 メンバ変数 -- //
+public: // -- 公開 メンバ関数 -- //
+
+	DashSmoke() = default;
+	~DashSmoke() = default;
 
 	virtual void Init() override;
 	virtual void Update() override;

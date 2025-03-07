@@ -10,41 +10,6 @@
 
 namespace Resource
 {
-	// テクスチャ読み込み
-	DirectX::ScratchImage LoadTextrue(const std::string& filePath)
-	{
-		// テクスチャファイルを読んでプログラムで使えるようにする
-		DirectX::ScratchImage image{};
-		const std::string& fullPath = "Resources/objs/" + filePath;
-		std::wstring filePathW = WinApp::ConvertString(fullPath);
-
-		// .ddsで終わっていれば.ddsとみなす。別の方法も存在するらしい
-		HRESULT hr;
-		if (filePathW.ends_with(L".dds")) {
-			hr = DirectX::LoadFromDDSFile(filePathW.c_str(), DirectX::DDS_FLAGS_NONE, nullptr, image);
-		}
-		else {
-			hr = DirectX::LoadFromWICFile(filePathW.c_str(), DirectX::WIC_FLAGS_FORCE_SRGB, nullptr, image);
-		}
-		assert(SUCCEEDED(hr));
-
-		// ミニマップの作成
-		DirectX::ScratchImage mipImages{};
-		// 圧縮データかどうか確認する
-		if (DirectX::IsCompressed(image.GetMetadata().format)) {
-			// 圧縮データであればそのまま使うのでmoveする
-			mipImages = std::move(image);
-		}
-		else {
-			hr = DirectX::GenerateMipMaps(image.GetImages(), image.GetImageCount(), image.GetMetadata(), DirectX::TEX_FILTER_SRGB, 0, mipImages);
-		}
-		assert(SUCCEEDED(hr));
-
-		// ミニマップ付きのデータを渡す
-		return mipImages;
-	}
-
-	
 
 	//ディープステンシルテクスチャリソースの生成
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateDeapStencilTextureResource(
@@ -135,47 +100,6 @@ namespace Resource
 	}
 
 
-
-	// データを転送する
-	void UpdateTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages) {
-		// Mate情報を取得
-		const DirectX::TexMetadata& metadate = mipImages.GetMetadata();
-		// 全MipMapについて 
-		for (size_t mipLevel = 0; mipLevel < metadate.mipLevels; ++mipLevel) {
-			// MipMapを指定して各Imageを取得
-			const DirectX::Image* img = mipImages.GetImage(mipLevel, 0, 0);
-			// Textureに転送
-			HRESULT hr;
-			hr = texture->WriteToSubresource(
-				UINT(mipLevel),
-				nullptr,
-				img->pixels,
-				UINT(img->rowPitch),
-				UINT(img->slicePitch)
-			);
-			assert(SUCCEEDED(hr));
-		}
-	}
-
-	[[nodiscard]]
-	Microsoft::WRL::ComPtr<ID3D12Resource>UpdateTextureData(Microsoft::WRL::ComPtr <ID3D12Resource> texture, const DirectX::ScratchImage& mipImages)
-	{
-		std::vector<D3D12_SUBRESOURCE_DATA> subresources;
-		DirectX::PrepareUpload(DirectXCommon::GetInstance()->mDevice.Get(), mipImages.GetImages(), mipImages.GetImageCount(), mipImages.GetMetadata(), subresources);
-		uint64_t intermediateSize = GetRequiredIntermediateSize(texture.Get(), 0, UINT(subresources.size()));
-		Microsoft::WRL::ComPtr <ID3D12Resource> intermediateResource = DirectXCommon::GetInstance()->CreateBufferResource(DirectXCommon::GetInstance()->mDevice.Get(), intermediateSize);
-		UpdateSubresources(DirectXCommon::GetInstance()->mCommandList.Get(), texture.Get(), intermediateResource.Get(), 0, 0, UINT(subresources.size()), subresources.data());
-		// Textureの転送後は利用できるよう、D3D12_RESOURCE_STATE_COPYからD3D12_RESOURCE_STATE_GENERIC_READへResourceStateを変更する
-		D3D12_RESOURCE_BARRIER barrier{};
-		barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-		barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;// Noneにしておく
-		barrier.Transition.pResource = texture.Get();// バリアを張る対象の
-		barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-		barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;		// 遷移前(現在)のResourceState
-		barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_GENERIC_READ;	// 遷移後のResourceState
-		DirectXCommon::GetInstance()->mCommandList->ResourceBarrier(1, &barrier);		// TransitionBarrierを張る
-		return intermediateResource;
-	}
 
 
 

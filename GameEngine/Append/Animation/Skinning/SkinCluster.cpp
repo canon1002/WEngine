@@ -11,9 +11,9 @@ SkinCluster SkinCluster::Create(const Microsoft::WRL::ComPtr<ID3D12Device>& devi
 	WellForGPU* mappedPalette = nullptr;
 	skinCluster.paletteResource_->Map(0, nullptr, reinterpret_cast<void**>(&mappedPalette));
 	skinCluster.mappedPallete_ = { mappedPalette,skeleton.joints.size() };// spanを使ってアクセスできるようにする
-	int32_t indexNum = TextureManager::GetInstance()->GetEmptyIndex();
-	skinCluster.paletteSrvHandle_.first = TextureManager::GetInstance()->mTextureData.at(indexNum).textureSrvHandleCPU;
-	skinCluster.paletteSrvHandle_.second = TextureManager::GetInstance()->mTextureData.at(indexNum).textureSrvHandleGPU;
+	int32_t indexNum = DirectXCommon::GetInstance()->mSrv->GetEmptyIndex();
+	skinCluster.paletteSrvHandle_.first = DirectXCommon::GetInstance()->mSrv->mTextureData.at(indexNum).textureSrvHandleCPU;
+	skinCluster.paletteSrvHandle_.second = DirectXCommon::GetInstance()->mSrv->mTextureData.at(indexNum).textureSrvHandleGPU;
 
 	// -- Palette用のsrvを作成 -- //
 

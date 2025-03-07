@@ -143,9 +143,9 @@ void DiffusionToCircleParticle::Draw() {
 		// マテリアルのCBufferの場所を指定
 		DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootConstantBufferView(0, mMaterialResource->GetGPUVirtualAddress());
 		// インスタンス生成
-		DirectXCommon::GetInstance()->mSrv->SetGraphicsRootDescriptorTable(1, ParticleManager::GetInstance()->());
+		DirectXCommon::GetInstance()->mSrv->SetGraphicsRootDescriptorTable(1, mInstancingHandle);
 		// テクスチャをセット
-		DirectXCommon::GetInstance()->mSrv->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvIndex());
+		DirectXCommon::GetInstance()->mSrv->SetGraphicsRootDescriptorTable(2, mTextureHandle);
 		// ドローコール
 		DirectXCommon::GetInstance()->mCommandList->DrawInstanced(6, mInstanceCount, 0, 0);
 	}

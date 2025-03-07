@@ -2,6 +2,7 @@
 #include "ModelCommon.h"
 #include "../camera/MainCamera.h"
 #include "GameEngine/Base/Debug/ImGuiManager.h"
+#include "GameEngine/Resource/Texture/TextureManager.h"
 
 Model::~Model() {
 	mVertexResource.Reset();
@@ -46,10 +47,10 @@ void Model::Draw()
 	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootConstantBufferView(4, mCameraResource->GetGPUVirtualAddress());
 
 	// テクスチャをセット
-	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->mTextureData.at(mTextureHandle).textureSrvHandleGPU);
+	DirectXCommon::GetInstance()->mSrv->SetGraphicsRootDescriptorTable(2, mTextureHandle);
 	// CueMapのテクスチャをセット
 	if (mTextureHandleCubeMap != 0) {
-		DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootDescriptorTable(5, TextureManager::GetInstance()->mTextureData.at(mTextureHandleCubeMap).textureSrvHandleGPU);
+		DirectXCommon::GetInstance()->mSrv->SetGraphicsRootDescriptorTable(5, mTextureHandleCubeMap);
 	}
 
 	// インデックスを使用してドローコール
@@ -136,7 +137,7 @@ void Model::CreateMaterialResource()
 	mMaterialResource->Map(0, nullptr, reinterpret_cast<void**>(&mMaterialData));
 	// テクスチャの情報を転送
 	if (modelData.material.textureFilePath.empty()) {
-		mTextureHandle = TextureManager::GetInstance()->mDefaultTexID;
+		mTextureHandle = TextureManager::GetInstance()->mDefaultTextureIndex;
 	}
 	else {
 		mTextureHandle = TextureManager::GetInstance()->LoadTexture(modelData.material.textureFilePath);

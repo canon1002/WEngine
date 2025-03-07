@@ -2,6 +2,7 @@
 #include "GameEngine/Object/Camera/MainCamera.h"
 #include  "GameEngine/Base/Debug/ImGuiManager.h"
 #include "GameEngine/GameMaster/Framerate.h"
+#include "GameEngine/Effect/Particle/ParticleManager.h"
 
 void ParticleCommon::Init(){
 
@@ -26,7 +27,7 @@ void ParticleCommon::Init(){
 	CreateMaterial();
 	CreateInstancing();
 
-	TextureManager::GetInstance()->SetInstancingBuffer(kNumMaxInstance, mInstancingResource);
+	mInstancingHandle = ParticleManager::GetInstance()->SetInstancingBuffer(kNumMaxInstance, mInstancingResource);
 }
 
 

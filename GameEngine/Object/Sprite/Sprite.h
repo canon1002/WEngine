@@ -4,6 +4,7 @@
 #include "GameEngine/Resource/Texture/Resource.h"
 #include "GameEngine/Append/Transform/WorldTransform.h"
 #include "GameEngine/Object/Camera/MainCamera.h"
+#include "GameEngine/Resource/Texture/TextureManager.h"
 
 class Sprite
 {

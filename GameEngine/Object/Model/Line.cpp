@@ -1,7 +1,7 @@
 #include "Line.h"
 #include "GameEngine/Object/Camera/MainCamera.h"
 #include "GameEngine/Base/Debug/ImGuiManager.h"
-
+#include "GameEngine/Resource/Texture/TextureManager.h"
 
 Line::Line() {}
 
@@ -67,7 +67,7 @@ void Line::Draw() {
 	//wvp用のCBufferの場所を指定
 	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootConstantBufferView(1, mWvpResource->GetGPUVirtualAddress());
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である
-	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->mTextureData.at(mTextureHandle).textureSrvHandleGPU);
+	DirectXCommon::GetInstance()->mSrv->SetGraphicsRootDescriptorTable(2, mTextureHandle);
 
 	// インスタンス生成
 	DirectXCommon::GetInstance()->mCommandList->DrawInstanced(3, 1, 0, 0);

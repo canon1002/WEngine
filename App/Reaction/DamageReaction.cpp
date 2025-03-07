@@ -1,6 +1,7 @@
 #include "DamageReaction.h"
 #include "GameEngine/Object/Camera/MainCamera.h"
 #include "GameEngine/Object/Sprite/SpriteAdministrator.h"
+#include "GameEngine/Resource/Texture/TextureManager.h"
 
 DamageReaction* DamageReaction::instance = nullptr;
 
@@ -16,16 +17,16 @@ DamageReaction* DamageReaction::GetInstance(){
 void DamageReaction::Init(){
     
     // 数値用の画像を設定
-    mNumberTex.push_back(TextureManager::GetInstance()->LoadTexture("number/0.png"));
-    mNumberTex.push_back(TextureManager::GetInstance()->LoadTexture("number/1.png"));
-    mNumberTex.push_back(TextureManager::GetInstance()->LoadTexture("number/2.png"));
-    mNumberTex.push_back(TextureManager::GetInstance()->LoadTexture("number/3.png"));
-    mNumberTex.push_back(TextureManager::GetInstance()->LoadTexture("number/4.png"));
-    mNumberTex.push_back(TextureManager::GetInstance()->LoadTexture("number/5.png"));
-    mNumberTex.push_back(TextureManager::GetInstance()->LoadTexture("number/6.png"));
-    mNumberTex.push_back(TextureManager::GetInstance()->LoadTexture("number/7.png"));
-    mNumberTex.push_back(TextureManager::GetInstance()->LoadTexture("number/8.png"));
-    mNumberTex.push_back(TextureManager::GetInstance()->LoadTexture("number/9.png"));
+    TextureManager::GetInstance()->LoadTexture("number/0.png");
+    TextureManager::GetInstance()->LoadTexture("number/1.png");
+    TextureManager::GetInstance()->LoadTexture("number/2.png");
+    TextureManager::GetInstance()->LoadTexture("number/3.png");
+    TextureManager::GetInstance()->LoadTexture("number/4.png");
+    TextureManager::GetInstance()->LoadTexture("number/5.png");
+    TextureManager::GetInstance()->LoadTexture("number/6.png");
+    TextureManager::GetInstance()->LoadTexture("number/7.png");
+    TextureManager::GetInstance()->LoadTexture("number/8.png");
+    TextureManager::GetInstance()->LoadTexture("number/9.png");
 
 }
 

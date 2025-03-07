@@ -57,7 +57,7 @@ void ParticleManager::CreateParticleGroupe(const std::string name, const std::st
 	// テクスチャをよみこむ
 	TextureManager::GetInstance()->LoadTexture(textureFilePath);
 	// マテリアルにテクスチャのSRVインデックスを記録
-	particleGroup.srvIndex = TextureManager::GetInstance()->GetSrvIndex(textureFilePath);
+	particleGroup.srvIndex = TextureManager::GetInstance()->LoadTexture(textureFilePath);
 	// インスタンシング用のリソースを生成
 	
 	// インスタンシング用にSRVを確保してSRVインデックスを記録
@@ -229,4 +229,17 @@ void ParticleManager::CreatePipelineState(){
 		IID_PPV_ARGS(&mGraphicsPipelineState));
 	assert(SUCCEEDED(hr));
 
+}
+
+uint32_t ParticleManager::SetInstancingBuffer(int32_t kNumInstance, Microsoft::WRL::ComPtr<ID3D12Resource> instancingResource) {
+	kNumInstance;
+	// SRVマネージャのポインタを取得
+	SRV* srvManager = DirectXCommon::GetInstance()->mSrv.get();
+	// テクスチャ枚数上限チェック
+	assert(srvManager->mUseIndex >= srvManager->kMaxSRVCount);
+
+
+	// インスタンシング用のSRVを設定
+	//srvManager->CreateSRVforStructuredBuffer(, instancingResource.Get(), kNumInstance, sizeof(ParticleForGPU));
+	return srvManager->Allocate();
 }

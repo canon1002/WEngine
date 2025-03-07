@@ -81,7 +81,7 @@ public: // -- public メンバ変数 -- //
 	D3D12_CPU_DESCRIPTOR_HANDLE srtHandles[128];
 	
 	// 最大SRVサイズ
-	static const int kMaxSRVCount = 128;
+	static const uint32_t kMaxSRVCount = 128;
 	// SRV用デスクリプタのサイズ
 	uint32_t mDescriptorSize;
 	// SRV用デスクリプタヒープ
@@ -90,8 +90,8 @@ public: // -- public メンバ変数 -- //
 	// テクスチャデータのマップ
 	std::unordered_map<int32_t, TextureData> mTextureData;
 	// 次に使用可能な番地
-	int32_t mUseIndex = 0;
-	int32_t mDefaultTexID;
+	uint32_t mUseIndex = 0;
+	uint32_t mDefaultTexID;
 	// パーティクルの使用する番地を1000~にする
 	int32_t mParticleId = 1000;
 

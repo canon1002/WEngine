@@ -83,7 +83,7 @@ void Sprite::Draw() {
 	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootConstantBufferView(1, mWvpResource->GetGPUVirtualAddress());
 	
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である
-	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->mTextureData.at(mTextureHandle).textureSrvHandleGPU);
+	DirectXCommon::GetInstance()->mSrv->SetGraphicsRootDescriptorTable(2, mTextureHandle);
 
 	// インデックスを使用してドローコール
 	DirectXCommon::GetInstance()->mCommandList->DrawIndexedInstanced(6, 1, 0, 0, 0);
@@ -108,7 +108,7 @@ void Sprite::CreateVertexResource() {
 	materialData = nullptr;
 	// テクスチャの情報を転送
 	if (mTextureHandle == 0) {
-		mTextureHandle = TextureManager::GetInstance()->mDefaultTexID;
+		mTextureHandle = TextureManager::GetInstance()->mDefaultTextureIndex;
 	}
 	// 書き込むためのアドレスを取得
 	materialResourceSprite->Map(0, nullptr, reinterpret_cast<void**>(&materialData));

@@ -1,6 +1,7 @@
 #include "Sphere.h"
 #include "GameEngine/Object/Camera/MainCamera.h"
 #include "GameEngine/Base/Debug/ImGuiManager.h"
+#include "GameEngine/Resource/Texture/TextureManager.h"
 
 SphereEntity::SphereEntity() {}
 
@@ -46,7 +47,7 @@ void SphereEntity::Draw() const {
 	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootConstantBufferView(1, mWvpResource->GetGPUVirtualAddress());
 	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootConstantBufferView(3, directionalLightResource->GetGPUVirtualAddress());
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である
-	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->mTextureData.at(1).textureSrvHandleGPU);
+	DirectXCommon::GetInstance()->mSrv->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->mDefaultTextureIndex);
 
 	// インスタンス生成
 	DirectXCommon::GetInstance()->mCommandList->DrawInstanced(((kSubdivision) * (kSubdivision) * 6), 1, 0, 0);

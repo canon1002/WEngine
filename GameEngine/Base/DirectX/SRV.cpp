@@ -20,7 +20,7 @@ void SRV::Init() {
 uint32_t SRV::Allocate() {
 
 	// 上限値に達していたらassrt
-	assert(mUseIndex > kMaxSRVCount);
+	assert(mUseIndex < kMaxSRVCount);
 	// returnする番号を一度記録
 	int32_t index = mUseIndex;
 	// 次回のために番号を1進める
@@ -125,11 +125,6 @@ int32_t SRV::CreateRenderTextureSRV(ID3D12Resource* pResource) {
 	renderTextureSrvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
 	renderTextureSrvDesc.Texture2D.MipLevels = 1;
 
-	// デスクリプタサイズを取得
-	const uint32_t descriptorSizeSRV = DirectXCommon::GetInstance()->mDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	//const uint32_t descriptorSizeRTV = dx_->device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-	//const uint32_t descriptorSizeDSV = dx_->device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
-
 	textureData.textureSrvHandleCPU = GetCPUDescriptorHandle(mUseIndex);
 	textureData.textureSrvHandleGPU = GetGPUDescriptorHandle(mUseIndex);
 
@@ -153,9 +148,6 @@ int32_t SRV::GetEmptyIndex() {
 	// 新たにデータを登録する
 	TextureData textureData;
 	++mUseIndex;
-
-	// デスクリプタサイズを取得
-	const uint32_t descriptorSizeSRV = DirectXCommon::GetInstance()->mDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
 	// CPUとGPUを取得/確保しておく
 	textureData.textureSrvHandleCPU = GetCPUDescriptorHandle(mUseIndex);

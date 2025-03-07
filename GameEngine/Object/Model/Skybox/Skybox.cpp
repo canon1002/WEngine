@@ -2,6 +2,7 @@
 #include "GameEngine/Object/Model/ModelCommon.h"
 #include "GameEngine/Object//Camera/MainCamera.h"
 #include "GameEngine/Base/Debug/ImGuiManager.h"
+#include "GameEngine/Resource/Texture/TextureManager.h"
 
 Skybox* Skybox::instance = nullptr;
 
@@ -62,7 +63,7 @@ void Skybox::Draw()
 	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootConstantBufferView(4, CameraResource->GetGPUVirtualAddress());
 
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である
-	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->mTextureData.at(mTextureHandle).textureSrvHandleGPU);
+	DirectXCommon::GetInstance()->mSrv->SetGraphicsRootDescriptorTable(2, mTextureHandle);
 
 	// インデックスを使用してドローコール
 	DirectXCommon::GetInstance()->mCommandList->DrawIndexedInstanced(36, 1, 0, 0,0);

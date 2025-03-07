@@ -11,7 +11,7 @@ void Gladiator::Init(){
 	SceneManager::GetInstance()->SetSceneFactory(mSceneFactory.get());
 
 	// 最初のシーンを生成
-	SceneManager::GetInstance()->ChangeScene("Start");
+	SceneManager::GetInstance()->ChangeScene("Title");
 	SceneManager::GetInstance()->Init();
 }
 

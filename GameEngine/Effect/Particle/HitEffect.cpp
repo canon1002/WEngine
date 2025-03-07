@@ -2,6 +2,8 @@
 #include "GameEngine/Object/Camera/MainCamera.h"
 #include  "GameEngine/Base/Debug/ImGuiManager.h"
 #include "GameEngine/GameMaster/Framerate.h"
+#include "GameEngine/Resource/Texture/TextureManager.h"
+#include "GameEngine/Effect/Particle/ParticleManager.h"
 
 void HitEffect::Init() {
 
@@ -32,7 +34,7 @@ void HitEffect::Init() {
 	CreateMaterial();
 	CreateInstancing();
 
-	mInstancingHandle = TextureManager::GetInstance()->SetInstancingBuffer(kNumMaxInstance, mInstancingResource);
+	mInstancingHandle = ParticleManager::GetInstance()->SetInstancingBuffer(kNumMaxInstance, mInstancingResource);
 
 	// 最初は表示しない
 	mIsActive = false;
@@ -154,9 +156,9 @@ void HitEffect::Draw() {
 		// マテリアルのCBufferの場所を指定
 		DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootConstantBufferView(0, mMaterialResource->GetGPUVirtualAddress());
 
-		DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootDescriptorTable(1, TextureManager::GetInstance()->mTextureData.at(mInstancingHandle).textureSrvHandleGPU);
+		DirectXCommon::GetInstance()->mSrv->SetGraphicsRootDescriptorTable(1, mInstancingHandle);
 		// テクスチャをセット
-		DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->mTextureData.at(TextureManager::GetInstance()->mDefaultTexID).textureSrvHandleGPU);
+		DirectXCommon::GetInstance()->mSrv->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->mDefaultTextureIndex);
 		// ドローコール
 		DirectXCommon::GetInstance()->mCommandList->DrawInstanced(6, mInstanceCount, 0, 0);
 	}

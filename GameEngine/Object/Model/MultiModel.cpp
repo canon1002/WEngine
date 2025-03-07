@@ -45,7 +45,7 @@ void MultiModel::Draw()
 		DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootConstantBufferView(4, CameraResource->GetGPUVirtualAddress());
 
 		// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である
-		DirectXCommon::GetInstance()->mSrv->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvIndex());
+		DirectXCommon::GetInstance()->mSrv->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->mDefaultTextureIndex);
 			//mCommandList->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->mTextureData.at(TextureManager::GetInstance()->mDefaultTexID).textureSrvHandleGPU);
 		// インデックスを使用してドローコール
 		DirectXCommon::GetInstance()->mCommandList->DrawIndexedInstanced(UINT(modelData.meshes[0].indices.size()), 1, 0, 0, 0);

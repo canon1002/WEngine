@@ -58,10 +58,10 @@ void EffectPixels::Draw() {
 	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootConstantBufferView(4, mCameraResource->GetGPUVirtualAddress());
 
 	// テクスチャをセット
-	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->mTextureData.at(mTextureHandle).textureSrvHandleGPU);
+	DirectXCommon::GetInstance()->mSrv->SetGraphicsRootDescriptorTable(2, mTextureHandle);
 	// CueMapのテクスチャをセット
 	if (mTextureHandleCubeMap != 0) {
-		DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootDescriptorTable(5, TextureManager::GetInstance()->mTextureData.at(mTextureHandleCubeMap).textureSrvHandleGPU);
+		DirectXCommon::GetInstance()->mSrv->SetGraphicsRootDescriptorTable(5, mTextureHandleCubeMap);
 	}
 
 	// インデックスを使用してドローコール

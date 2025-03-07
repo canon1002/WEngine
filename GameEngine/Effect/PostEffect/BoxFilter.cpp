@@ -16,7 +16,7 @@ void BoxFilter::Init(){
 	CreateEffectResource();
 
 	// レンダーターゲットの格納番号を受け取る
-	textureHandle_ = TextureManager::GetInstance()->CreateRenderTextureSRV(DirectXCommon::GetInstance()->mRtv->mRenderTextureResource.Get());
+	textureHandle_ = DirectXCommon::GetInstance()->mSrv->CreateRenderTextureSRV(DirectXCommon::GetInstance()->mRtv->mRenderTextureResource.Get());
 }
 
 void BoxFilter::Update(){
@@ -53,7 +53,7 @@ void BoxFilter::Draw(){
 	// ポストエフェクトのパラメータのCBufferの場所を指定
 	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootConstantBufferView(0, mEffectResource->GetGPUVirtualAddress());
 	// SRVのDescriptorTableの先頭を設定
-	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootDescriptorTable(1, TextureManager::GetInstance()->mTextureData.at(textureHandle_).textureSrvHandleGPU);
+	DirectXCommon::GetInstance()->mSrv->SetGraphicsRootDescriptorTable(1, textureHandle_);
 	// インスタンス生成
 	DirectXCommon::GetInstance()->mCommandList->DrawInstanced(3, 1, 0, 0);
 }

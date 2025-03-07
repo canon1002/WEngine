@@ -7,7 +7,7 @@ struct ParticleGroup {
 	// マテリアルデータ
 	Material* materialData;
 	// パーティクルのリスト
-	std::list<ParticleCommon> particleList;
+	//std::list<ParticleCommon> particleList;
 	// インスタンシングデータ用SRVインデックス
 	int32_t srvIndex;
 	// インスタンシングリソース
@@ -33,6 +33,9 @@ public: // -- 公開 メンバ変数 -- //
 	
 	// パーティクルグループの生成
 	void CreateParticleGroupe(const std::string name,const std::string textureFilePath);
+	
+	// 
+	uint32_t SetInstancingBuffer(int32_t kNumInstance, Microsoft::WRL::ComPtr<ID3D12Resource> instancingResource);
 
 private: // -- 非公開 メンバ関数 -- //
 
@@ -44,7 +47,9 @@ private: // -- 非公開 メンバ関数 -- //
 	ParticleManager(const ParticleManager& obj) = delete;
 	ParticleManager& operator=(const ParticleManager& obj) = delete;
 
+	// ルートシグネチャの生成
 	void CreateRootSignature();
+	// パイプラインステートの生成
 	void CreatePipelineState();
 
 private: // -- 非公開 メンバ変数 -- //

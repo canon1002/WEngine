@@ -68,19 +68,15 @@ void PostEffect::Init() {
 
 	// 画像を設定(エラー回避)
 	mTextureHandle = TextureManager::GetInstance()->LoadTexture("uvChecker.png");
-	mTextureHandle = TextureManager::GetInstance()->CreateRenderTextureSRV(DirectXCommon::GetInstance()->mRtv->mRenderTextureResource.Get());
+	mTextureHandle = DirectXCommon::GetInstance()->mSrv->CreateRenderTextureSRV(DirectXCommon::GetInstance()->mRtv->mRenderTextureResource.Get());
 
-	mDepthStencilHandle = TextureManager::GetInstance()->CreateDepthSRV(DirectXCommon::GetInstance()->mDsv->mDepthStencilTextureResource.Get());
+	mDepthStencilHandle = DirectXCommon::GetInstance()->mSrv->CreateDepthSRV(DirectXCommon::GetInstance()->mDsv->mDepthStencilTextureResource.Get());
 }
 
 void PostEffect::Update() {
 
-	// 書き込むためのアドレスを取得
-	//fullScreenResource->Map(0, nullptr, reinterpret_cast<void**>(&fullScreenData));
-
-	// 逆行列を取得しておく
+	// 逆行列を取得
 	mPostEffects->outline.depth.projectionInverse = Inverse(MainCamera::GetInstance()->GetProjectionMatrix());
-
 	// カメラのワールド行列
 	cameraM = MakeAffineMatrix(Vector3{ 1.0f,1.0f,1.0f },
 		Vector3{ 0.0f,0.0f,0.0f }, Vector3{ 0.0f,0.0f,-5.0f });
@@ -103,21 +99,17 @@ void PostEffect::PreDraw(){
 
 void PostEffect::Draw() {
 
-	
 	DirectXCommon::GetInstance()->mCommandList->IASetVertexBuffers(0, 1, &mVertexBufferView);
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけばいい
 	DirectXCommon::GetInstance()->mCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-	/// CBV設定
-
 	// マテリアルのCBufferの場所を指定
 	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootConstantBufferView(0, mPostEffectResource->GetGPUVirtualAddress());
 	//wvp用のCBufferの場所を指定
 	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootConstantBufferView(1, mWvpResource->GetGPUVirtualAddress());
 	// テクスチャをセット
-	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->mTextureData.at(mTextureHandle).textureSrvHandleGPU);
+	DirectXCommon::GetInstance()->mSrv->SetGraphicsRootDescriptorTable(2, mTextureHandle);
 	// DepthTextureを設定
-	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootDescriptorTable(3, TextureManager::GetInstance()->mTextureData.at(mDepthStencilHandle).textureSrvHandleGPU);
+	DirectXCommon::GetInstance()->mSrv->SetGraphicsRootDescriptorTable(3, mDepthStencilHandle);
 
 	// インスタンス生成
 	DirectXCommon::GetInstance()->mCommandList->DrawInstanced(3, 1, 0, 0);

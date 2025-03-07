@@ -31,12 +31,13 @@ void ImGuiManager::Init(){
 	// ImGuiの描画カラーを設定
 	ImGui::StyleColorsDark();
 	ImGui_ImplWin32_Init(WinApp::GetInstance()->GetHWND());
+	uint32_t srvIndex = DirectXCommon::GetInstance()->mSrv->Allocate();
 	ImGui_ImplDX12_Init(DirectXCommon::GetInstance()->mDevice.Get(),
 		swapChain.BufferCount,
 		DirectXCommon::GetInstance()->mRtv->rtvDesc.Format,
 		DirectXCommon::GetInstance()->mSrv->mDescriptorHeap.Get(),
-		DirectXCommon::GetInstance()->mSrv->mDescriptorHeap->GetCPUDescriptorHandleForHeapStart(),
-		DirectXCommon::GetInstance()->mSrv->mDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
+		DirectXCommon::GetInstance()->mSrv->GetCPUDescriptorHandle(srvIndex),
+		DirectXCommon::GetInstance()->mSrv->GetGPUDescriptorHandle(srvIndex));
 
 	// imnodesを初期化
 	ImNodes::CreateContext();

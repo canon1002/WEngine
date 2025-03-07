@@ -33,6 +33,9 @@ class ParticleCommon{
 
 public: // -- 公開 メンバ変数 -- //
 
+	ParticleCommon() = default;
+	virtual ~ParticleCommon() = default;
+
 	virtual void Init();
 	virtual void Update() = 0;
 	virtual void Draw() = 0;
