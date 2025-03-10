@@ -13,7 +13,8 @@
 #include "App/Player/Player.h"
 #include "App/Enemy/BossEnemy.h"
 // エフェクト
-#include "GameEngine/Effect/Particle/DiffusionToCircleParticle.h"
+#include "GameEngine/Effect/Particle/DashSmoke.h"
+#include "GameEngine/Effect/Particle/Emitter/ParticleEmitter.h"
 // マネージャー
 #include "GameEngine/Append/Collider/CollisionManager.h"
 #include "GameEngine/Input/InputManager.h"
@@ -86,7 +87,8 @@ private:
 	bool mIsTransUI;	// UI表示の遷移中であるか
 	float mUITransCount;	// UI表示切替の進行度
 
-
+	// ダッシュ煙 テスト
+	std::unique_ptr<ParticleEmitter> mDashSomke;
 
 	// -- エディタテスト -- //
 	std::unique_ptr<Actor> mBTNodeTestActor;

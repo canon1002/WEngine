@@ -23,3 +23,9 @@ struct Material2D {
 	Color color;
 	Matrix4x4 uvTransform;
 };
+
+struct MaterialParticle {
+	Material* materialData;
+	std::string filePath;
+	uint32_t srvIndex;
+};

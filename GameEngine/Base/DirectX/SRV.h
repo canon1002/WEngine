@@ -42,8 +42,6 @@ public: // -- 公開 メンバ関数 -- //
 	void PreDraw();
 
 
-	// インスタンシング用のSRVを設定する
-	int SetInstancingBuffer(int32_t kNumInstance, Microsoft::WRL::ComPtr<ID3D12Resource> instancingResource);
 	
 	int32_t CreateRenderTextureSRV(ID3D12Resource* pResource);
 
@@ -78,7 +76,7 @@ private: // -- private メンバ関数 -- //
 public: // -- public メンバ変数 -- // 
 
 	// SRVはディスクリプタを128つ
-	D3D12_CPU_DESCRIPTOR_HANDLE srtHandles[128];
+	//D3D12_CPU_DESCRIPTOR_HANDLE srtHandles[128];
 	
 	// 最大SRVサイズ
 	static const uint32_t kMaxSRVCount = 128;
@@ -91,13 +89,7 @@ public: // -- public メンバ変数 -- //
 	std::unordered_map<int32_t, TextureData> mTextureData;
 	// 次に使用可能な番地
 	uint32_t mUseIndex = 0;
-	uint32_t mDefaultTexID;
-	// パーティクルの使用する番地を1000~にする
-	int32_t mParticleId = 1000;
 
-	// インスタンシング
-	D3D12_CPU_DESCRIPTOR_HANDLE instancingSrvHandleCPU;
-	D3D12_GPU_DESCRIPTOR_HANDLE instancingSrvHandleGPU;
 
 	// -- RenderTexture用 -- //
 

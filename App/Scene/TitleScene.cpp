@@ -22,8 +22,10 @@ void TitleScene::Init() {
 	// カメラ設定
 	mCamera = MainCamera::GetInstance();
 	mCamera->Init();
-	mCamera->mWorldTransform->rotation = { -0.07f ,0.0f,0.0f };
-	mCamera->mWorldTransform->translation = { 0.0f,2.2f ,-20.0f };
+	//mCamera->mWorldTransform->rotation = { -0.07f ,0.0f,0.0f };
+	//mCamera->mWorldTransform->translation = { 0.0f,2.2f ,-20.0f };
+
+	mCamera->mWorldTransform->translation = { 0.0f,0.0f ,-30.0f };
 
 	// 地面
 	mGroundObj = std::make_unique<Object3d>();
@@ -145,6 +147,14 @@ void TitleScene::Init() {
 	mUITransCount = 0.0f;
 
 #pragma endregion
+
+	// パーティクルマネージャの初期化
+	ParticleManager::GetInstance()->Init();
+	ParticleManager::GetInstance()->CreateParticleGroupe("Smoke", "uvChecker.dds");
+	
+	// エミッター初期化
+	mDashSomke = std::make_unique<ParticleEmitter>("Smoke");
+	mDashSomke->Init();
 
 
 	// -- エディタテスト -- //
@@ -404,15 +414,27 @@ void TitleScene::Update() {
 		break;
 	}
 	
-	
+	ParticleManager::GetInstance()->Update();
+
+	// ダッシュ煙の更新
+	//mDashSomke->Update();
+	ImGui::Begin("Particle");
+	if(ImGui::Button("Smoke Emit")) {
+		mDashSomke->Emit();
+	}
+	ImGui::End();
+
 
 }
 
 void TitleScene::Draw() {
 
 	ModelManager::GetInstance()->PreDrawForShadow();
-	mGroundObj->Draw();
-	mSwordObj->Draw();
+	//mGroundObj->Draw();
+	//mSwordObj->Draw();
+
+	ParticleManager::GetInstance()->PreDraw();
+	ParticleManager::GetInstance()->Draw();
 
 }
 

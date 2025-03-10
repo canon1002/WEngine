@@ -229,6 +229,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="GameEngine\Effect\Particle\TrailEffect.cpp" />
     <ClCompile Include="App\Enemy\Action\Seartch.cpp" />
     <ClCompile Include="App\Scene\SceneFactory.cpp" />
+    <ClCompile Include="GameEngine\Effect\Particle\Emitter\ParticleEmitter.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App\BlackBoard.h" />
@@ -354,6 +355,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="App\Gladiator.h" />
     <ClInclude Include="App\Scene\SceneFactory.h" />
     <ClInclude Include="GameEngine\Effect\Particle\HitEffect.h" />
+    <ClInclude Include="GameEngine\Effect\Particle\Emitter\ParticleEmitter.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt" />
