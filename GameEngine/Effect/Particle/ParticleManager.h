@@ -1,6 +1,9 @@
 #pragma once
 #include "ParticleCommon.h"
+#include "GameEngine/Object/Model/Model.h"
 #include <unordered_map>
+#include <random>
+#include <list>
 
 // パーティクルグループ
 struct ParticleGroup {
@@ -84,7 +87,6 @@ private: // -- 非公開 メンバ変数 -- //
 	// 乱数生成機
 	std::random_device mSeedGenerator;
 	std::mt19937 mRandomEngine;
-
 
 	// グラフィックパイプライン
 	Microsoft::WRL::ComPtr <ID3D12PipelineState> mGraphicsPipelineState = nullptr;

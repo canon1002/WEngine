@@ -167,6 +167,11 @@ void TitleScene::Init() {
 	mBTNodeEditor->Init();
 
 
+	// SkyBox
+	/*TextureManager::GetInstance()->LoadTexture("skybox/skybox.dds");
+	mSkybox = Skybox::GetInstance();
+	mSkybox->Init("skybox", "skybox.dds");*/
+
 }
 
 void TitleScene::Update() {
@@ -177,8 +182,9 @@ void TitleScene::Update() {
 	mGroundObj->DrawGUI();
 	mSwordObj->Update();
 	mSwordObj->DrawGUI();
-	mUVChecker->Update();
-	mUVChecker->DrawGUI();
+
+	// スカイボックス
+	//mSkybox->Update();
 
 	mBTNodeEditor->Update();
 
@@ -434,10 +440,13 @@ void TitleScene::Update() {
 
 void TitleScene::Draw() {
 
+	// Skyboxの描画前処理
+	//mSkybox->PreDraw();
+	//mSkybox->Draw();
+
 	ModelManager::GetInstance()->PreDrawForShadow();
 	mGroundObj->Draw();
 	mSwordObj->Draw();
-	mUVChecker->Draw();
 
 	ParticleManager::GetInstance()->PreDraw();
 	ParticleManager::GetInstance()->Draw();

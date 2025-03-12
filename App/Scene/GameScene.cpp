@@ -79,18 +79,6 @@ void GameScene::Init() {
 	mBossTrailEffect->Init();
 	mBossTrailEffect->SetColor(Color(1.0f, 0.1f, 0.1f, 0.8f));
 
-	// ダッシュ煙
-	mPlayerDashSmoke = std::make_unique<DashSmoke>();
-	mPlayerDashSmoke->Init();
-	mPlayerDashSmoke->SetEmitterWorldTransform(mPlayer->GetObject3D()->mWorldTransform->GetWorldPosition());
-	mPlayerDashSmoke->SetActive(true);
-
-
-	mBossDashSmoke = std::make_unique<DashSmoke>();
-	mBossDashSmoke->Init();
-	mBossDashSmoke->SetEmitterWorldTransform(mBoss->GetObject3D()->mWorldTransform->GetWorldPosition());
-	mBossDashSmoke->SetActive(true);
-
 	// ゲームシーンの段階
 	mPhase = Phase::BEGIN;
 	// 開始前のビネット
@@ -432,20 +420,6 @@ void GameScene::Update() {
 		}
 
 
-		// ダッシュ煙
-		if (mPlayer->GetBehavior() == Behavior::kMove||mPlayer->GetBehavior() == Behavior::kDash) {
-			mPlayerDashSmoke->SetEmitterWorldTransform(mPlayer->GetObject3D()->mWorldTransform->GetWorldPosition());
-			if (!mPlayerDashSmoke->GetActive()) {
-				mPlayerDashSmoke->SetActive(true);
-			}
-		}
-		else {
-			if (mPlayerDashSmoke->GetActive()) {
-				mPlayerDashSmoke->SetActive(false);
-			}
-		}
-		mPlayerDashSmoke->Update();
-		mBossDashSmoke->Update();
 
 		break;
 	case Phase::LOSE:
@@ -702,18 +676,17 @@ void GameScene::Draw() {
 	mPlayer->Draw();
 	mBoss->Draw();
 
+	// パーティクル
+	ParticleManager::GetInstance()->PreDraw();
+	ParticleManager::GetInstance()->Draw();
+
 }
 
 void GameScene::DrawUI()
 {
 
-	ParticleManager::GetInstance()->PreDraw();
 
-	// mDTCParticle->Draw();
 
-	// ダッシュ煙
-	mPlayerDashSmoke->Draw();
-	//mBossDashSmoke->Draw();
 
 	// 2DSprite(画像)の描画前処理
 	SpriteAdministrator::GetInstance()->PreDraw();

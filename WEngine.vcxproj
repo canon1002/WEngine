@@ -130,10 +130,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Externals\imgui\imnodes.cpp" />
     <ClCompile Include="GameEngine\Editor\NodeEditor\BTNodeEditor.cpp" />
     <ClCompile Include="GameEngine\Effect\EffectPixels\EffectPixels.cpp" />
-    <ClCompile Include="GameEngine\Effect\Particle\DashSmoke.cpp" />
     <ClCompile Include="GameEngine\Input\Controller.cpp" />
     <ClCompile Include="GameEngine\GameMaster\Framerate.cpp" />
-    <ClCompile Include="GameEngine\Effect\Particle\DiffusionToCircleParticle.cpp" />
     <ClCompile Include="App\Enemy\Action\Action.cpp" />
     <ClCompile Include="App\Enemy\Action\AttackAction.cpp" />
     <ClCompile Include="App\Reaction\DamageReaction.cpp" />
@@ -202,10 +200,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="App\IObjectBase.cpp" />
     <ClCompile Include="GameEngine\Editor\GlobalVariables.cpp" />
     <ClCompile Include="GameEngine\Editor\LevelEditor.cpp" />
-    <ClCompile Include="GameEngine\Effect\Particle\ParticleCommon.cpp" />
     <ClCompile Include="App\Enemy\Action\KnockBack.cpp" />
     <ClCompile Include="App\Gladiator.cpp" />
-    <ClCompile Include="GameEngine\Effect\Particle\HitEffect.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="GameEngine\Object\3d\Object3d.cpp" />
     <ClCompile Include="GameEngine\Object\Model\ModelManager.cpp" />
@@ -250,10 +246,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="GameEngine\Editor\NodeEditor\Nodes\AINodeBase.h" />
     <ClInclude Include="GameEngine\Editor\NodeEditor\Nodes\AINodeComposites.h" />
     <ClInclude Include="GameEngine\Effect\EffectPixels\EffectPixels.h" />
-    <ClInclude Include="GameEngine\Effect\Particle\DashSmoke.h" />
     <ClInclude Include="GameEngine\Input\Controller.h" />
     <ClInclude Include="GameEngine\GameMaster\Framerate.h" />
-    <ClInclude Include="GameEngine\Effect\Particle\DiffusionToCircleParticle.h" />
     <ClInclude Include="App\Enemy\Action\Action.h" />
     <ClInclude Include="App\Reaction\DamageReaction.h" />
     <ClInclude Include="App\Player\Arrow.h" />
@@ -354,7 +348,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="App\Enemy\Action\KnockBack.h" />
     <ClInclude Include="App\Gladiator.h" />
     <ClInclude Include="App\Scene\SceneFactory.h" />
-    <ClInclude Include="GameEngine\Effect\Particle\HitEffect.h" />
     <ClInclude Include="GameEngine\Effect\Particle\Emitter\ParticleEmitter.h" />
   </ItemGroup>
   <ItemGroup>

@@ -101,28 +101,6 @@ void ParticleManager::Update(){
 			it++;
 		}
 
-		///// マテリアル・UVTransform
-		//Matrix4x4 uvTransformMatrix = MakeAffineMatrix(
-		//	itGroup->second.uvTransform.scale,
-		//	Vector3{ 0.0f,0.0f, itGroup->second.uvTransform.rotation.z },
-		//	itGroup->second.uvTransform.translation
-		//	);
-		//// 変換したデータを代入する
-		//itGroup->second.material.materialData->uvTransform = uvTransformMatrix;
-
-		//// テクスチャサイズを合わせる
-		//
-		//// テクスチャメタデータ取得
-		//const DirectX::TexMetadata& metadata = TextureManager::GetInstance()->GetMetaData(itGroup->second.material.srvIndex);
-		//Vector2 texSize = Vector2(static_cast<float>(metadata.width),static_cast<float>(metadata.height));
-		//// 頂点リソースにデータを書き込む
-		//mVertexData[0].texcoord = { 0,0 };
-		//mVertexData[1].texcoord = { texSize.x,0 };
-		//mVertexData[2].texcoord = { 0,texSize.y };
-		//mVertexData[3].texcoord = { 0,texSize.y };
-		//mVertexData[4].texcoord = { texSize.x,0 };
-		//mVertexData[5].texcoord = { texSize.x,texSize.y};
-
 	}
 
 }

@@ -13,7 +13,6 @@
 #include "App/Player/Player.h"
 #include "App/Enemy/BossEnemy.h"
 // エフェクト
-#include "GameEngine/Effect/Particle/DashSmoke.h"
 #include "GameEngine/Effect/Particle/Emitter/ParticleEmitter.h"
 // マネージャー
 #include "GameEngine/Append/Collider/CollisionManager.h"
@@ -45,8 +44,12 @@ private:
 	
 	// カメラ
 	CameraCommon* mCamera;
+	// スカイボックス
+	Skybox* mSkybox;
 	// 地面
 	std::unique_ptr<Object3d> mGroundObj;
+	// プレイヤーオブジェクト
+	std::unique_ptr<Object3d> mPlayerObj;
 	// 剣
 	std::unique_ptr<Object3d> mSwordObj;
 

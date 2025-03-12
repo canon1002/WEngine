@@ -389,9 +389,6 @@
     <ClCompile Include="GameEngine\Effect\PostEffect\DepthOutline.cpp">
       <Filter>GameEngine\Effect\PostEffect</Filter>
     </ClCompile>
-    <ClCompile Include="GameEngine\Effect\Particle\DiffusionToCircleParticle.cpp">
-      <Filter>GameEngine\Effect\PostEffect</Filter>
-    </ClCompile>
     <ClCompile Include="GameEngine\Effect\PostEffect\GaussianFilter.cpp">
       <Filter>GameEngine\Effect\PostEffect</Filter>
     </ClCompile>
@@ -403,9 +400,6 @@
     </ClCompile>
     <ClCompile Include="GameEngine\Effect\PostEffect\LuminanceOutline.cpp">
       <Filter>GameEngine\Effect\PostEffect</Filter>
-    </ClCompile>
-    <ClCompile Include="GameEngine\Effect\Particle\ParticleCommon.cpp">
-      <Filter>GameEngine\Effect\Particle</Filter>
     </ClCompile>
     <ClCompile Include="GameEngine\Effect\Particle\ParticleManager.cpp">
       <Filter>GameEngine\Effect\Particle</Filter>
@@ -438,7 +432,6 @@
     <ClCompile Include="GameEngine\Effect\Particle\TrailEffect.cpp" />
     <ClCompile Include="GameEngine\Effect\EffectPixels\EffectPixels.cpp" />
     <ClCompile Include="App\Enemy\Action\AttackDash.cpp" />
-    <ClCompile Include="GameEngine\Effect\Particle\DashSmoke.cpp" />
     <ClCompile Include="App\Enemy\Action\Seartch.cpp" />
     <ClCompile Include="App\Enemy\Action\AttackJump.cpp" />
     <ClCompile Include="App\Actor\Actor.cpp" />
@@ -453,7 +446,6 @@
     <ClCompile Include="App\Scene\SceneFactory.cpp" />
     <ClCompile Include="App\BlackBoard.cpp" />
     <ClCompile Include="App\Enemy\Action\Shrinkage.cpp" />
-    <ClCompile Include="GameEngine\Effect\Particle\HitEffect.cpp" />
     <ClCompile Include="GameEngine\Resource\Texture\TextureManager.cpp" />
     <ClCompile Include="GameEngine\Effect\Particle\Emitter\ParticleEmitter.cpp" />
   </ItemGroup>
@@ -704,9 +696,6 @@
     <ClInclude Include="GameEngine\Effect\PostEffect\DepthOutline.h">
       <Filter>GameEngine\Effect\PostEffect</Filter>
     </ClInclude>
-    <ClInclude Include="GameEngine\Effect\Particle\DiffusionToCircleParticle.h">
-      <Filter>GameEngine\Effect\PostEffect</Filter>
-    </ClInclude>
     <ClInclude Include="GameEngine\Effect\PostEffect\GaussianFilter.h">
       <Filter>GameEngine\Effect\PostEffect</Filter>
     </ClInclude>
@@ -757,7 +746,6 @@
     <ClInclude Include="GameEngine\Effect\EffectPixels\EffectPixels.h" />
     <ClInclude Include="App\Enemy\Action\AttackDash.h" />
     <ClInclude Include="App\Enemy\Action\ActionList.h" />
-    <ClInclude Include="GameEngine\Effect\Particle\DashSmoke.h" />
     <ClInclude Include="App\Enemy\Action\Seartch.h" />
     <ClInclude Include="App\Enemy\Action\AttackJump.h" />
     <ClInclude Include="App\Actor\Actor.h" />
@@ -775,7 +763,6 @@
     <ClInclude Include="App\Scene\SceneFactory.h" />
     <ClInclude Include="App\BlackBoard.h" />
     <ClInclude Include="App\Enemy\Action\Shrinkage.h" />
-    <ClInclude Include="GameEngine\Effect\Particle\HitEffect.h" />
     <ClInclude Include="GameEngine\Resource\Texture\TextureManager.h" />
     <ClInclude Include="GameEngine\Effect\Particle\Emitter\ParticleEmitter.h" />
   </ItemGroup>
