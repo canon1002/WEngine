@@ -85,7 +85,7 @@ namespace Resource // ここから関数の宣言と定義を行う
 
 	// レンダーテクスチャの生成
 	Microsoft::WRL::ComPtr <ID3D12Resource> CreateRenderTextureResource(
-		Microsoft::WRL::ComPtr <ID3D12Device> device, int32_t width, int32_t height,
+		Microsoft::WRL::ComPtr <ID3D12Device> device, uint32_t width, uint32_t height,
 		DXGI_FORMAT format, const Vector4& clearColor
 	);
 

@@ -69,6 +69,7 @@ void ParticleManager::Update(){
 
 				itGroup->second.instancingData[itGroup->second.instanceCount].WVP = Multiply((*it).worldTransform.GetWorldMatrix(), MainCamera::GetInstance()->GetViewProjectionMatrix());
 				itGroup->second.instancingData[itGroup->second.instanceCount].World = (*it).worldTransform.GetWorldMatrix();
+				(*it).color.a = alpha;
 				itGroup->second.instancingData[itGroup->second.instanceCount].color = (*it).color;
 				itGroup->second.instancingData[itGroup->second.instanceCount].color.a = alpha;
 
@@ -84,8 +85,8 @@ void ParticleManager::Update(){
 					ImGui::DragFloat3("Tranlate", &(*it).worldTransform.translation.x);
 					ImGui::DragFloat("lifeTime", &(*it).lifeTime);
 					ImGui::Spacing();
-					ImGui::DragFloat2("UVScale", &itGroup->second.uvTransform.scale.x, 0.01f, -10.0f, 10.0f);
-					ImGui::DragFloat2("UVTranlate", &itGroup->second.uvTransform.translation.x, 0.01f, -10.0f, 10.0f);
+					ImGui::DragFloat3("UVScale", &itGroup->second.uvTransform.scale.x, 0.01f, -10.0f, 10.0f);
+					ImGui::DragFloat3("UVTranlate", &itGroup->second.uvTransform.translation.x, 0.01f, -10.0f, 10.0f);
 					ImGui::SliderAngle("UVRotate", &itGroup->second.uvTransform.rotation.z);
 					ImGui::ColorEdit4("Color", &(*it).color.r);
 					ImGui::TreePop();
@@ -100,14 +101,27 @@ void ParticleManager::Update(){
 			it++;
 		}
 
-		/// マテリアル・UVTransform
-		Matrix4x4 uvTransformMatrix = MakeAffineMatrix(
-			itGroup->second.uvTransform.scale,
-			Vector3{ 0.0f,0.0f, itGroup->second.uvTransform.rotation.z },
-			itGroup->second.uvTransform.translation
-			);
-		// 変換したデータを代入する
-		itGroup->second.material.materialData->uvTransform = uvTransformMatrix;
+		///// マテリアル・UVTransform
+		//Matrix4x4 uvTransformMatrix = MakeAffineMatrix(
+		//	itGroup->second.uvTransform.scale,
+		//	Vector3{ 0.0f,0.0f, itGroup->second.uvTransform.rotation.z },
+		//	itGroup->second.uvTransform.translation
+		//	);
+		//// 変換したデータを代入する
+		//itGroup->second.material.materialData->uvTransform = uvTransformMatrix;
+
+		//// テクスチャサイズを合わせる
+		//
+		//// テクスチャメタデータ取得
+		//const DirectX::TexMetadata& metadata = TextureManager::GetInstance()->GetMetaData(itGroup->second.material.srvIndex);
+		//Vector2 texSize = Vector2(static_cast<float>(metadata.width),static_cast<float>(metadata.height));
+		//// 頂点リソースにデータを書き込む
+		//mVertexData[0].texcoord = { 0,0 };
+		//mVertexData[1].texcoord = { texSize.x,0 };
+		//mVertexData[2].texcoord = { 0,texSize.y };
+		//mVertexData[3].texcoord = { 0,texSize.y };
+		//mVertexData[4].texcoord = { texSize.x,0 };
+		//mVertexData[5].texcoord = { texSize.x,texSize.y};
 
 	}
 
@@ -170,8 +184,6 @@ void ParticleManager::CreateParticleGroupe(const std::string name, const std::st
 	ParticleGroup& particleGroup = mParticleGroups[name];
 	// マテリアルデータにテクスチャファイルを記録
 	particleGroup.material.filePath = textureFilePath;
-	// マテリアルにテクスチャのSRVインデックスを記録
-	particleGroup.material.srvIndex = TextureManager::GetInstance()->LoadTexture(textureFilePath);
 	// マテリアルリソースの生成
 	CreateMaterialResource(particleGroup);
 	// インスタンシングリソースの生成
@@ -212,8 +224,8 @@ Particle ParticleManager::Create(const Vector3& pos){
 	// 移動量
 	particle.vel = { distribution(mRandomEngine),distribution(mRandomEngine),0.0f };
 	// 色・透明度
-	//particle.color = { distribution(mRandomEngine),distribution(mRandomEngine),distribution(mRandomEngine),0.5f };
-	particle.color = { 1.0f,1.0f,1.0f,1.0f };
+	particle.color = { distribution(mRandomEngine),distribution(mRandomEngine),distribution(mRandomEngine),0.9f };
+	//particle.color = { 1.0f,1.0f,1.0f,1.0f };
 
 	// 生存時間用に乱数の最小・最大値を設定
 	std::uniform_real_distribution<float> distTime(1.0f, 3.0f);
@@ -322,14 +334,13 @@ void ParticleManager::CreatePipelineState(){
 	inputLayoutDesc.pInputElementDescs = inputElementDescs;
 	inputLayoutDesc.NumElements = _countof(inputElementDescs);
 
-	// BlendStateの設定を行う(P.34)
+	// BlendStateの設定を行う(パーティクルはAdd Blendにする)
 	D3D12_BLEND_DESC blendDesc{};
-	// すべての色要素を書き込む
 	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
 	blendDesc.RenderTarget[0].BlendEnable = TRUE;
 	blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
 	blendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
-	blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
+	blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_ONE;
 	blendDesc.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
 	blendDesc.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
 	blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;
@@ -369,6 +380,7 @@ void ParticleManager::CreatePipelineState(){
 	// どのように色を打ち込むかの設定(気にしなくていい)
 	graphicsPipelineStateDesc.SampleDesc.Count = 1;
 	graphicsPipelineStateDesc.SampleMask = D3D12_DEFAULT_SAMPLE_MASK;
+	
 	//  DepthStencilの設定を行う
 	D3D12_DEPTH_STENCIL_DESC depthStencilDesc{};
 	// Depthの機能を有効化
@@ -424,9 +436,14 @@ void ParticleManager::CreateMaterialResource(ParticleGroup& particleGroup){
 	// 書き込むためのアドレスを取得
 	particleGroup.materialResource->Map(0, nullptr,
 		reinterpret_cast<void**>(&particleGroup.material.materialData));
+
+	// テクスチャの情報を転送
+	particleGroup.material.srvIndex = TextureManager::GetInstance()->LoadTexture(particleGroup.material.filePath);
+
 	// 色の書き込み・Lightingの無効化
 	particleGroup.material.materialData->color = { 1.0f, 1.0f, 1.0f, 1.0f };
 	particleGroup.material.materialData->enableLighting = 0;
+	particleGroup.material.materialData->shininess = 0.0f;
 	// UVTransformを設定
 	particleGroup.material.materialData->uvTransform = MakeIdentity();
 	particleGroup.uvTransform = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
@@ -448,7 +465,7 @@ void ParticleManager::CreateInstancingResource(ParticleGroup& particleGroup){
 		particleGroup.instancingData[index].WVP = MakeIdentity();
 		particleGroup.instancingData[index].World = MakeIdentity();
 		// カラーは透明にしておく
-		particleGroup.instancingData[index].color = Color(1.0f, 1.0f, 1.0f, 1.0f);
+		particleGroup.instancingData[index].color = Color(1.0f, 1.0f, 1.0f, 0.0f);
 	}
 
 }

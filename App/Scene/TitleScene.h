@@ -89,6 +89,7 @@ private:
 
 	// ダッシュ煙 テスト
 	std::unique_ptr<ParticleEmitter> mDashSomke;
+	std::unique_ptr<Object3d> mUVChecker;
 
 	// -- エディタテスト -- //
 	std::unique_ptr<Actor> mBTNodeTestActor;

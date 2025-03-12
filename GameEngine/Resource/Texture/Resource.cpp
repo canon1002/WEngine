@@ -56,7 +56,7 @@ namespace Resource
 	}
 
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateRenderTextureResource(Microsoft::WRL::ComPtr<ID3D12Device> device,
-		int32_t width, int32_t height, DXGI_FORMAT format, const Vector4& clearColor) {
+		uint32_t width, uint32_t height, DXGI_FORMAT format, const Vector4& clearColor) {
 
 		//Resourceの設定
 		D3D12_RESOURCE_DESC resourceDesc{};
@@ -83,17 +83,14 @@ namespace Resource
 
 		// Resourceの生成
 		Microsoft::WRL::ComPtr <ID3D12Resource> resource = nullptr;
-		HRESULT hr;
-		hr =
-			device->CreateCommittedResource(
-				&heapProperties,
-				D3D12_HEAP_FLAG_NONE,
-				&resourceDesc,
-				D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
-				//D3D12_RESOURCE_STATE_RENDER_TARGET,
-				&clearValue,
-				IID_PPV_ARGS(&resource));
-		assert(SUCCEEDED(hr));
+		device->CreateCommittedResource(
+			&heapProperties,
+			D3D12_HEAP_FLAG_NONE,
+			&resourceDesc,
+			//D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+			D3D12_RESOURCE_STATE_RENDER_TARGET,
+			&clearValue,
+			IID_PPV_ARGS(&resource));
 
 		// 作成したら値を返す
 		return resource;
@@ -591,7 +588,7 @@ namespace Resource
 	{
 		// 構造体の宣言
 		Animation animation;
-		
+
 		// AssimpのImporterを利用してファイルを読み込む
 		Assimp::Importer impoter;
 		std::string fullPath = "Resources/objs/" + directoryPath + "/" + filePath;
@@ -611,7 +608,7 @@ namespace Resource
 			}
 
 		}
-		
+
 		// アニメーションが見つからなかった場合はエラー
 		if (animationAssimp == nullptr) {
 			// エラーメッセージを表示して停止
@@ -673,7 +670,7 @@ namespace Resource
 		return animation;
 	}
 
-	void LoadAnimations(const std::string& directoryPath, const std::string& filePath, std::vector<Animation> vector){
+	void LoadAnimations(const std::string& directoryPath, const std::string& filePath, std::vector<Animation> vector) {
 		directoryPath;
 		filePath;
 		vector;

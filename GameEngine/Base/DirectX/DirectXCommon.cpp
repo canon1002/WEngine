@@ -293,29 +293,7 @@ void DirectXCommon::CreateFence() {
 
 }
 
-/// 描画前処理
-void DirectXCommon::PreDraw() {
-	UINT backBufferIndex = mSwapChain->GetCurrentBackBufferIndex();
-
-	// バリアの設定
-	SetResourceBarrier(mCommandList.Get(), mSwapChainResources[backBufferIndex].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
-
-	// 描画対象の設定
-	SetRenderTargets(mCommandList.Get(), 1, &mRtv->rtvHandles[backBufferIndex], mDsv->mDsvHandle);
-
-	// クリア処理
-	float clearColor[] = { 0.1f,0.25f,0.5f,1.0f }; // 青っぽい色 RGBAの順
-	ClearRenderTargetView(mCommandList.Get(), mRtv->rtvHandles[backBufferIndex], clearColor);
-	// ClearDepthStencilView(mCommandList.Get(), dsv_->mDsvHandle, 1.0f, 0); // 必要に応じて
-
-	// ディスクリプタヒープの設定
-	mSrv->PreDraw();
-
-	// コマンドを積み込む
-	mCommandList->RSSetViewports(1, &viewport);
-	mCommandList->RSSetScissorRects(1, &scissorRect);
-}
-
+// レンダーターゲット書き込み前処理
 void DirectXCommon::PreDrawForRenderTarget() {
 	// バリアの設定
 	SetResourceBarrier(mCommandList.Get(), mRtv->mRenderTextureResource.Get(), D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
@@ -328,7 +306,7 @@ void DirectXCommon::PreDrawForRenderTarget() {
 
 	// 深度情報のクリア
 	ClearDepthStencilView(mCommandList.Get(), mDsv->mDsvHandle, 1.0f, 0);
-	
+
 	//mCommandList->OMSetRenderTargets(
 	//	0, nullptr, FALSE,
 	//	&dsv_->mDsvHandle);
@@ -343,12 +321,37 @@ void DirectXCommon::PreDrawForRenderTarget() {
 	mCommandList->RSSetScissorRects(1, &scissorRect);
 }
 
+// レンダーターゲット書き込み後処理
 void DirectXCommon::PostDrawForRenderTarget() {
 	// バリアの設定
 	SetResourceBarrier(mCommandList.Get(), mRtv->mRenderTextureResource.Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 
 }
 
+/// 描画前処理
+void DirectXCommon::PreDraw() {
+	UINT backBufferIndex = mSwapChain->GetCurrentBackBufferIndex();
+
+	// バリアの設定
+	SetResourceBarrier(mCommandList.Get(), mSwapChainResources[backBufferIndex].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
+
+	// 描画対象の設定
+	SetRenderTargets(mCommandList.Get(), 1, &mRtv->rtvHandles[backBufferIndex], mDsv->mDsvHandle);
+
+	// クリア処理
+	//float clearColor[] = { 0.1f,0.25f,0.5f,1.0f }; // 青っぽい色 RGBAの順
+	//ClearRenderTargetView(mCommandList.Get(), mRtv->rtvHandles[backBufferIndex], clearColor);
+	// ClearDepthStencilView(mCommandList.Get(), dsv_->mDsvHandle, 1.0f, 0); // 必要に応じて
+
+	// ディスクリプタヒープの設定
+	mSrv->PreDraw();
+
+	// コマンドを積み込む
+	mCommandList->RSSetViewports(1, &viewport);
+	mCommandList->RSSetScissorRects(1, &scissorRect);
+}
+
+// 描画後処理
 void DirectXCommon::PostDraw() {
 	UINT backBufferIndex = mSwapChain->GetCurrentBackBufferIndex();
 

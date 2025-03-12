@@ -22,10 +22,8 @@ void TitleScene::Init() {
 	// カメラ設定
 	mCamera = MainCamera::GetInstance();
 	mCamera->Init();
-	//mCamera->mWorldTransform->rotation = { -0.07f ,0.0f,0.0f };
-	//mCamera->mWorldTransform->translation = { 0.0f,2.2f ,-20.0f };
-
-	mCamera->mWorldTransform->translation = { 0.0f,0.0f ,-30.0f };
+	mCamera->mWorldTransform->rotation = { -0.07f ,0.0f,0.0f };
+	mCamera->mWorldTransform->translation = { 0.0f,2.2f ,-20.0f };
 
 	// 地面
 	mGroundObj = std::make_unique<Object3d>();
@@ -150,12 +148,17 @@ void TitleScene::Init() {
 
 	// パーティクルマネージャの初期化
 	ParticleManager::GetInstance()->Init();
-	ParticleManager::GetInstance()->CreateParticleGroupe("Smoke", "uvChecker.dds");
+	ParticleManager::GetInstance()->CreateParticleGroupe("Smoke", "circle.png");
 	
 	// エミッター初期化
 	mDashSomke = std::make_unique<ParticleEmitter>("Smoke");
 	mDashSomke->Init();
 
+	// 地面
+	mUVChecker = std::make_unique<Object3d>();
+	mUVChecker->Init("UVChecker");
+	ModelManager::GetInstance()->LoadModel("checker", "uvChecker.gltf");
+	mUVChecker->SetModel("uvChecker.gltf");
 
 	// -- エディタテスト -- //
 	
@@ -174,6 +177,8 @@ void TitleScene::Update() {
 	mGroundObj->DrawGUI();
 	mSwordObj->Update();
 	mSwordObj->DrawGUI();
+	mUVChecker->Update();
+	mUVChecker->DrawGUI();
 
 	mBTNodeEditor->Update();
 
@@ -430,8 +435,9 @@ void TitleScene::Update() {
 void TitleScene::Draw() {
 
 	ModelManager::GetInstance()->PreDrawForShadow();
-	//mGroundObj->Draw();
-	//mSwordObj->Draw();
+	mGroundObj->Draw();
+	mSwordObj->Draw();
+	mUVChecker->Draw();
 
 	ParticleManager::GetInstance()->PreDraw();
 	ParticleManager::GetInstance()->Draw();

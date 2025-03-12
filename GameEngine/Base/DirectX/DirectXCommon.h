@@ -61,13 +61,18 @@ public: // -- 公開 メンバ関数 -- //
 	/// 終了処理
 	void Final();
 
-	// 描画前処理
+	// -- 描画関係処理 -- //
+
+	// RenderTargetへの描画前処理
 	void PreDrawForRenderTarget();
-	void PreDraw();
-	
-	// 描画後処理
+	// RenderTargetへの描画後処理
 	void PostDrawForRenderTarget();
+	// Swapchainへの描画前処理	
+	void PreDraw();
+	// Swapchainへの描画後処理
 	void PostDraw();
+
+
 
 	/// バッファリソースの生成
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(ID3D12Device* device, size_t sizeInBytes);

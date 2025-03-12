@@ -145,10 +145,11 @@ void Model::CreateMaterialResource()
 	// 色の書き込み・Lightingの無効化
 	mMaterialData->color = { 1.0f, 1.0f, 1.0f, 1.0f };
 	mMaterialData->enableLighting = true;
+	mMaterialData->shininess = 100.0f;
 	// UVTransformを設定
 	mMaterialData->uvTransform = MakeIdentity();
 	mUvTransform = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
-	mMaterialData->shininess = 100.0f;
+	
 
 	// Light
 	mDirectionalLightResource = DirectXCommon::GetInstance()->CreateBufferResource(DirectXCommon::GetInstance()->mDevice.Get(), sizeof(DirectionalLight));
