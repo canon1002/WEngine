@@ -759,7 +759,7 @@ void GameScene::DrawUI()
 		mPlayer->GetReticle3D()->Draw2DReticle();
 
 		// ダメージ画像の表記
-		DamageReaction::GetInstance()->DrawSprite();
+		//DamageReaction::GetInstance()->DrawSprite();
 
 		break;
 	case Phase::LOSE:

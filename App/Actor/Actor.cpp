@@ -38,20 +38,21 @@ void Actor::InputDirection(const Vector3& dir){
 	}
 	// y座標は移動しない
 	mDirectionForInput.y = 0.0f;
+	mDirection = mDirectionForInput;
 }
 
 void Actor::AdJustDirection() {
 
 	// 方向指定をしていない場合は回転しない
-	if (Length(mDirection) == 0.0f || Length(mDirectionForInput) == 0.0f) {
+	if (Length(mDirection) == 0.0f) {
 		return;
 	}
 
 	// オブジェクトを回転
 	mObject->mWorldTransform->rotation.y = LerpShortAngle(
 		mObject->mWorldTransform->rotation.y,
-		std::atan2f(mDirectionForInput.x, mDirectionForInput.z),
-		0.1f
+		std::atan2f(mDirection.x, mDirection.z),
+		0.2f
 	);
 
 }

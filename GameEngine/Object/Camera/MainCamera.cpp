@@ -179,13 +179,13 @@ void MainCamera::UpdateRotationEasing()
 		mEasedRotation.y = atan2f(direction.x, direction.z);
 	}
 
+	// X軸Y軸をそれぞれ回転させる
+	mWorldTransform->rotation.x = LerpShortAngle(mWorldTransform->rotation.x, mEasedRotation.x, 0.5f);
 	mWorldTransform->rotation.y = LerpShortAngle(mWorldTransform->rotation.y, mEasedRotation.y, 0.5f);
 }
 
 void MainCamera::SetCameraRotarionToSearchTarget()
 {
-	// カメラ操作不可にする
-	mIsControll = true;
 
 	// 追跡対象のポインタ未所持なら 早期リターン
 	if (mSearchTarget == nullptr) {
@@ -202,11 +202,8 @@ void MainCamera::SetCameraRotarionToSearchTarget()
 		mEasedRotation.y = atan2f(direction.x, direction.z);
 	}
 
-	// X軸の計算
-	if (Length(mSearchTarget->translation - mWorldTransform->translation) != 0.0f) {
-		Vector3 direction = Normalize(mSearchTarget->translation - mWorldTransform->translation);
-		mEasedRotation.x = -atan2f(direction.y, direction.z);
-	}
+	// X軸の計算(現時点では固定する)
+	mEasedRotation.x = 0.2f;
 
 	mRotaionEasingTime = 0.0f;
 	mIsRotationEasing = true;

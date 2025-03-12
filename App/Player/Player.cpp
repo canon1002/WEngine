@@ -308,9 +308,9 @@ void Player::Update() {
 				// 敵にダメージを与える
 				ReciveDamageToBoss(1.2f);
 
-				// ダメージ表示
-				int32_t damage = static_cast<int32_t>(static_cast<int32_t>(mStatus->STR / 2.0f) * 1.0f) - static_cast<int32_t>(mBoss->GetStatus()->VIT / 4.0f);;
-				DamageReaction::GetInstance()->Reaction(mReticle->GetWorld3D(), damage, MainCamera::GetInstance());
+				//// ダメージ表示
+				//int32_t damage = static_cast<int32_t>(static_cast<int32_t>(mStatus->STR / 2.0f) * 1.0f) - static_cast<int32_t>(mBoss->GetStatus()->VIT / 4.0f);;
+				//DamageReaction::GetInstance()->Reaction(mReticle->GetWorld3D(), damage, MainCamera::GetInstance());
 			}
 		}
 	}
@@ -719,21 +719,15 @@ void Player::Attack()
 			switch (mAttackStatus.comboCount)
 			{
 			case 1:
-
 				mObject->mSkinning->SetNextAnimation("slashR");
-
 				break;
 
 			case 2:
-
 				mObject->mSkinning->SetNextAnimation("slashL");
-
 				break;
 
 			case 3:
-
 				mObject->mSkinning->SetNextAnimation("slashR");
-
 				break;
 
 			default:
@@ -777,6 +771,11 @@ void Player::Move()
 {
 	// 通常/防御時に有効
 	if (mBehavior == Behavior::kRoot || mBehavior == Behavior::kMove || mBehavior == Behavior::kDash) {
+
+		// ターゲットロックオン状態の場合
+		if (mIsRockOnToTarget) {
+			// (ToDo)左右移動時、現在の距離をほぼほぼ維持したまま回り込むような動き方をする
+		}
 
 		// いずれかの数値が、以上(以下)であれば移動処理を行う
 		if (Length(mDirectionForInput) != 0.0f) {
@@ -896,22 +895,7 @@ void Player::DebagCtr()
 	//}
 
 	
-	//	ターゲットロックオン
-	if (InputManager::GetInstance()->GetPused(Gamepad::Button::X)) {
-
-		if (mIsRockOnToTarget) {
-			MainCamera::GetInstance()->SetCameraRotateControll(true);
-			mIsRockOnToTarget = false;
-		}
-		else {
-			mIsRockOnToTarget = true;
-		}
-	}	
-
-	// ロックオン中のカメラ処理
-	if (mIsRockOnToTarget) {
-		MainCamera::GetInstance()->SetCameraRotarionToSearchTarget();
-	}
+	
 
 }
 
@@ -920,6 +904,8 @@ void Player::InputDirection(){
 
 	// 入力方向の初期化
 	mDirectionForInput = { 0.0f ,0.0f ,0.0f };
+	// 方向の初期化
+	mDirection = { 0.0f ,0.0f ,0.0f };
 
 	// スティック入力の量
 	const static int stickValue = 8000;
@@ -954,7 +940,38 @@ void Player::InputDirection(){
 
 	}
 	else {
+		// 入力がなければカウントを0に戻す
 		mDirectionInputCount = 0.0f;
+	}
+
+	//	ターゲットロックオンの切り替え
+	if (InputManager::GetInstance()->GetPused(Gamepad::Button::X)) {
+
+		// ターゲットロックオン状態を解除する
+		if (mIsRockOnToTarget) {
+			MainCamera::GetInstance()->SetCameraRotateControll(true);
+			mIsRockOnToTarget = false;
+		}
+		// ターゲットロックオン状態にする
+		else {
+			MainCamera::GetInstance()->SetCameraRotateControll(false);
+			mIsRockOnToTarget = true;
+		}
+	}
+
+	// ロックオン中のカメラ処理
+	if (mIsRockOnToTarget) {
+
+		// ターゲット方向にカメラを向ける
+		MainCamera::GetInstance()->SetCameraRotarionToSearchTarget();
+		// ターゲット方向に体を向ける
+		mDirection = TransformNomal(Vector3(0.0f,0.0f,1.0f), MainCamera::GetInstance()->mWorldTransform->GetWorldMatrix());
+	}
+	// 非ロックオン時
+	else {
+
+		// 入力方向を向くようにする
+		mDirection = mDirectionForInput;
 	}
 
 }
@@ -973,7 +990,7 @@ void Player::ReciveDamageToBoss(float power)
 	//mBoss->SetShake(0.25f, 0.1f);
 
 	// ヒットストップの時間を設定
-	//SetHitStopDuration(0.5f);
+	SetHitStopDuration(0.5f);
 
 }
 
