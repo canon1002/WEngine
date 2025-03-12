@@ -52,6 +52,7 @@ private:
 	std::unique_ptr<Object3d> mPlayerObj;
 	// 剣
 	std::unique_ptr<Object3d> mSwordObj;
+	Matrix4x4 mWeaponParentMat;
 
 	// シーン内選択段階
 	SelectStep mSelectStep;

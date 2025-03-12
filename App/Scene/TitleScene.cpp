@@ -22,24 +22,55 @@ void TitleScene::Init() {
 	// カメラ設定
 	mCamera = MainCamera::GetInstance();
 	mCamera->Init();
-	mCamera->mWorldTransform->rotation = { -0.07f ,0.0f,0.0f };
-	mCamera->mWorldTransform->translation = { 0.0f,2.2f ,-20.0f };
+	mCamera->mWorldTransform->rotation = { 0.35f ,0.3f,0.0f };
+	mCamera->mWorldTransform->translation = { -15.0f,15.5f ,-30.0f };
 
 	// 地面
 	mGroundObj = std::make_unique<Object3d>();
 	mGroundObj->Init("Title Ground");
 	ModelManager::GetInstance()->LoadModel("MapObjects", "Plane.gltf");
 	mGroundObj->SetModel("Plane.gltf");
-	mGroundObj->SetScale(Vector3(1024.0f, 1.0f, 1024.0f));
+	mGroundObj->SetScale(Vector3(1.0f, 1.0f, 1.0f));
+
+	// スキニングアニメーションを生成
+	ModelManager::GetInstance()->LoadModel("player", "idle.gltf");
+	ModelManager::GetInstance()->LoadModel("player", "idleNB.gltf");
+	ModelManager::GetInstance()->LoadModel("player", "run.gltf");
+	ModelManager::GetInstance()->LoadModel("player", "jump.gltf");
+	ModelManager::GetInstance()->LoadModel("player", "falling.gltf");
+
+	// プレイヤーオブジェクト
+	mPlayerObj = std::make_unique<Object3d>();
+	mPlayerObj->Init("Title PlayerObj");
+	mPlayerObj->SetScale({ 5.0f,5.0f,5.0f });
+	mPlayerObj->SetTranslate({ 1.0f,1.0f,-4.4f });
+	// モデルを設定
+	mPlayerObj->SetModel("idle.gltf");
+	mPlayerObj->mSkinning = make_unique<Skinning>();
+	mPlayerObj->mSkinning->Init("player", "idleNB.gltf", mPlayerObj->GetModel()->modelData);
+	// モーションブレンド速度
+	mPlayerObj->mSkinning->SetMotionBlendingInterval(2.0f);
+	// アニメーション再生速度
+	mPlayerObj->mSkinning->SetAnimationPlaySpeed(1.0f);
+	// アニメーション登録
+	mPlayerObj->mSkinning->CreateSkinningData("player", "idleNB", ".gltf", mPlayerObj->GetModel()->modelData, true);
+	mPlayerObj->mSkinning->CreateSkinningData("player", "run", ".gltf", mPlayerObj->GetModel()->modelData, true);
+	mPlayerObj->mSkinning->CreateSkinningData("player", "jump", ".gltf", mPlayerObj->GetModel()->modelData, true);
+	mPlayerObj->mSkinning->CreateSkinningData("player", "falling", ".gltf", mPlayerObj->GetModel()->modelData, true);
 
 	// 剣
 	mSwordObj = std::make_unique<Object3d>();
 	mSwordObj->Init("Title Sword");
 	ModelManager::GetInstance()->LoadModel("Weapons", "sword.gltf");
 	mSwordObj->SetModel("sword.gltf");
-	mSwordObj->mWorldTransform->scale = { 2.0f,2.0f,2.0f };
-	mSwordObj->mWorldTransform->rotation = { -1.563f,0.0628f,-0.471f };
-	mSwordObj->mWorldTransform->translation = { 2.0f,8.0f,0.0f };
+	mSwordObj->mWorldTransform->scale = { 0.1f,0.1f,0.175f };
+	mSwordObj->mWorldTransform->rotation = { 2.0f,-0.6f,1.4f };
+	mSwordObj->mWorldTransform->translation = { 0.05f,0.0f,0.05f };
+
+	// ペアレント
+	mWeaponParentMat = MakeIdentity();
+	mSwordObj->mWorldTransform->SetParent(mWeaponParentMat);
+	
 
 	mGameStartVignnetingTime = 0.0f;
 	
@@ -176,12 +207,19 @@ void TitleScene::Init() {
 
 void TitleScene::Update() {
 
+	// 右手のワールド行列を更新
+	mWeaponParentMat = Multiply(
+		mPlayerObj->mSkinning->GetSkeleton().joints[mPlayerObj->mSkinning->GetSkeleton().jointMap["mixamorig:RightHand"]
+		].skeletonSpaceMatrix, mPlayerObj->GetWorldTransform()->GetWorldMatrix());
+
 	// オブジェクト更新
 	mCamera->Update();
 	mGroundObj->Update();
 	mGroundObj->DrawGUI();
 	mSwordObj->Update();
 	mSwordObj->DrawGUI();
+	mPlayerObj->Update();
+	mPlayerObj->DrawGUI();
 
 	// スカイボックス
 	//mSkybox->Update();
@@ -222,19 +260,19 @@ void TitleScene::Update() {
 		mPushStartUI.sprite->Update();
 		mPushStartBackUI.sprite->Update();
 
-		// Bボタンを押したらゲーム選択画面に移行する
-		// ボタンかキーボード入力でタイトルの選択受付に移行する
-		if (InputManager::GetInstance()->GetPused(Gamepad::Button::B) ||
-			InputManager::GetInstance()->GetTriggerKey(DIK_RETURN)) {
-
-			// UI表示の遷移を行う
-			mIsTransUI = true;
-			// UI表示切替の進行度をリセット
-			mUITransCount = 0.0f;
-		}
-
 		// UIが非遷移中の場合
 		if(!mIsTransUI){
+
+			// Bボタンを押したらゲーム選択画面に移行する
+			// ボタンかキーボード入力でタイトルの選択受付に移行する
+			if (InputManager::GetInstance()->GetPused(Gamepad::Button::B) ||
+				InputManager::GetInstance()->GetTriggerKey(DIK_RETURN)) {
+
+				// UI表示の遷移を行う
+				mIsTransUI = true;
+				// UI表示切替の進行度をリセット
+				mUITransCount = 0.0f;
+			}
 
 			// UI背景を点滅させる
 			if (mIsUpperBackUICount) {
@@ -392,7 +430,9 @@ void TitleScene::Update() {
 				mGameStartVignnetingTime = 0.0f;
 				// ゲーム開始演出に移行
 				mSelectStep = SelectStep::GAMESTART;
-				
+				// プレイヤーのアニメーションを変更
+				mPlayerObj->mSkinning->SetNextAnimation("run");
+
 			}
 		}
 
@@ -403,22 +443,36 @@ void TitleScene::Update() {
 		mSelectingBackUI.sprite->Update();
 
 		break;
+	
 	case SelectStep::GAMESTART:
 
-		// ゲームシーンへの遷移処理
-		if (mGameStartVignnetingTime < 1.0f) {
-			mGameStartVignnetingTime += (1.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetGameSpeed();
+		// ゲーム開始前の演出処理
+		Vector3 pos = mPlayerObj->GetWorldTransform()->GetWorldPosition();
+		pos += {0.0f, 0.0f, 0.2f};
+		mPlayerObj->SetTranslate(pos);
+
+
+		if (pos.z >= 2.0f) {
+			// プレイヤーをジャンプさせる
+			mPlayerObj->mSkinning->SetNextAnimation("jump");
 		}
+		if (pos.z >= 3.0f) {
 
-		// 画面をどんどん暗くする
-		PostEffect::GetInstance()->SetViggnetIndex(ExponentialInterpolation(0.0f, 10.0f, mGameStartVignnetingTime, 1.0f));
+			// ゲームシーンへの遷移処理
+			if (mGameStartVignnetingTime < 1.0f) {
+				mGameStartVignnetingTime += (1.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetGameSpeed();
+			}
 
-		// 遷移が終了したら
-		if (mGameStartVignnetingTime >= 1.0f) {
-			// ゲームシーンへ移行する
-			SceneManager::GetInstance()->ChangeScene("Game");
+			// 画面をどんどん暗くする
+			PostEffect::GetInstance()->SetViggnetIndex(ExponentialInterpolation(0.0f, 10.0f, mGameStartVignnetingTime, 1.0f));
+
+			// 遷移が終了したら
+			if (mGameStartVignnetingTime >= 1.0f) {
+				// ゲームシーンへ移行する
+				SceneManager::GetInstance()->ChangeScene("Game");
+			}
+
 		}
-
 
 		break;
 	default:
@@ -444,9 +498,13 @@ void TitleScene::Draw() {
 	//mSkybox->PreDraw();
 	//mSkybox->Draw();
 
-	ModelManager::GetInstance()->PreDrawForShadow();
+	
+	ModelManager::GetInstance()->PreDraw();
 	mGroundObj->Draw();
 	mSwordObj->Draw();
+
+	ModelManager::GetInstance()->PreDrawForSkinning();
+	mPlayerObj->Draw();
 
 	ParticleManager::GetInstance()->PreDraw();
 	ParticleManager::GetInstance()->Draw();

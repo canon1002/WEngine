@@ -23,6 +23,7 @@ void Player::Init() {
 
 	// モデル読み込み
 	ModelManager::GetInstance()->LoadModel("player", "idle.gltf");
+	ModelManager::GetInstance()->LoadModel("player", "run.gltf");
 	ModelManager::GetInstance()->LoadModel("player", "gatotu0.gltf");
 	ModelManager::GetInstance()->LoadModel("player", "fastSlash.gltf");
 	ModelManager::GetInstance()->LoadModel("player", "slashR.gltf");
@@ -30,7 +31,6 @@ void Player::Init() {
 	ModelManager::GetInstance()->LoadModel("player", "slashEnd.gltf");
 	ModelManager::GetInstance()->LoadModel("player", "avoid.gltf");
 	ModelManager::GetInstance()->LoadModel("player", "backStep.gltf");
-	ModelManager::GetInstance()->LoadModel("player", "run.gltf");
 	ModelManager::GetInstance()->LoadModel("player", "thrust.gltf");
 
 	mObject = std::make_unique<Object3d>();
