@@ -179,7 +179,7 @@ void MainCamera::UpdateRotationEasing()
 		mEasedRotation.y = atan2f(direction.x, direction.z);
 	}
 
-	mWorldTransform->rotation.y = LerpShortAngle(mWorldTransform->rotation.y, mEasedRotation.y, mRotaionEasingTime);
+	mWorldTransform->rotation.y = LerpShortAngle(mWorldTransform->rotation.y, mEasedRotation.y, 0.5f);
 }
 
 void MainCamera::SetCameraRotarionToSearchTarget()

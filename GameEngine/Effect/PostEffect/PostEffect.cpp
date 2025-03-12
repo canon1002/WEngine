@@ -32,7 +32,6 @@ void PostEffect::Init() {
 
 	CreateVertexResource();
 	CreateTransformation();
-	CreateBufferView();
 
 	// PostEffect用のResourceを作る
 	mPostEffects = nullptr;
@@ -67,10 +66,10 @@ void PostEffect::Init() {
 	
 
 	// 画像を設定(エラー回避)
-	mTextureHandle = TextureManager::GetInstance()->LoadTexture("uvChecker.png");
+	//mTextureHandle = TextureManager::GetInstance()->LoadTexture("uvChecker.png");
 	mTextureHandle = DirectXCommon::GetInstance()->mSrv->CreateRenderTextureSRV(DirectXCommon::GetInstance()->mRtv->mRenderTextureResource.Get());
-
 	mDepthStencilHandle = DirectXCommon::GetInstance()->mSrv->CreateDepthSRV(DirectXCommon::GetInstance()->mDsv->mDepthStencilTextureResource.Get());
+
 }
 
 void PostEffect::Update() {
@@ -339,26 +338,6 @@ void PostEffect::CreateVertexResource() {
 	// VertexResourceを生成する(P.42)
 	// 実際に頂点リソースを作る
 	mVertexResource = DirectXCommon::GetInstance()->CreateBufferResource(DirectXCommon::GetInstance()->mDevice.Get(), sizeof(VertexData) * 3);
-
-}
-
-//
-void PostEffect::CreateTransformation() {
-
-	// Transformation用のResourceを作る
-	mWvpResource = DirectXCommon::GetInstance()->CreateBufferResource(DirectXCommon::GetInstance()->mDevice.Get(), sizeof(Matrix4x4));
-	// データを書き込む
-	// 書き込むためのアドレスを取得
-	mWvpResource->Map(0, nullptr, reinterpret_cast<void**>(&mWvpData));
-	// 単位行列を書き込む
-	*mWvpData = MainCamera::GetInstance()->GetViewProjectionMatrix();
-
-}
-
-//
-void PostEffect::CreateBufferView() {
-
-	// VertexBufferViewを作成する(P.43)
 	// 頂点バッファビューを作成する
 	mVertexBufferView = {};
 	// リソースの先頭のアドレスから使う
@@ -381,5 +360,17 @@ void PostEffect::CreateBufferView() {
 	// 右下
 	mVertexData[2].position = { 0.5f,-0.5f,0.0f,1.0f };
 	mVertexData[2].texcoord = { 1.0f,1.0f };
+}
+
+//
+void PostEffect::CreateTransformation() {
+
+	// Transformation用のResourceを作る
+	mWvpResource = DirectXCommon::GetInstance()->CreateBufferResource(DirectXCommon::GetInstance()->mDevice.Get(), sizeof(Matrix4x4));
+	// データを書き込む
+	// 書き込むためのアドレスを取得
+	mWvpResource->Map(0, nullptr, reinterpret_cast<void**>(&mWvpData));
+	// 単位行列を書き込む
+	*mWvpData = MainCamera::GetInstance()->GetViewProjectionMatrix();
 
 }

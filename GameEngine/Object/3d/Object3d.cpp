@@ -87,30 +87,7 @@ void Object3d::DrawGUI()
 	ImGui::DragFloat3("Scale", &mWorldTransform->scale.x, 0.05f, -10.0f, 10.0f);
 	ImGui::DragFloat3("Rotate", &mWorldTransform->rotation.x, 0.01f, -6.28f, 6.28f);
 	ImGui::DragFloat3("translate", &mWorldTransform->translation.x, 0.1f, -100.0f, 100.0f);
-	if (ImGui::TreeNode("WVPData")) {
-		if (ImGui::TreeNode("WVP")) {
-			for (int i = 0; i < 4; ++i) {
-				// Floatの4x4行列内の数値を表示
-				ImGui::DragFloat4(("Row " + std::to_string(i)).c_str(), mWvpData->WVP.m[i]);
-			}
-			ImGui::TreePop();
-		}
-		if (ImGui::TreeNode("World")) {
-			for (int i = 0; i < 4; ++i) {
-				// Floatの4x4行列内の数値を表示
-				ImGui::DragFloat4(("Row " + std::to_string(i)).c_str(), mWvpData->World.m[i]);
-			}
-			ImGui::TreePop();
-		}
-		if (ImGui::TreeNode("InverseTransWorld")) {
-			for (int i = 0; i < 4; ++i) {
-				// Floatの4x4行列内の数値を表示
-				ImGui::DragFloat4(("Row " + std::to_string(i)).c_str(), mWvpData->InverseTransposeWorld.m[i]);
-			}
-			ImGui::TreePop();
-		}
-		ImGui::TreePop();
-	}
+
 	if (mCollider != nullptr) {
 		if (ImGui::TreeNode("Collider")) {
 			ImGui::SliderAngle("RotateX", &mCollider->GetWorld()->rotation.x);
@@ -128,22 +105,13 @@ void Object3d::DrawGUI()
 		mModel->DrawGUI(mObjname + "Model");
 
 		if (mSkinning != nullptr) {
-			if (ImGui::TreeNode("Skinning")) {
-				if (ImGui::Button("再生")) {
-					mSkinning->Play();
-				}
-				if (ImGui::Button("停止")) {
-					mSkinning->Pause();
-				}
+			if (ImGui::CollapsingHeader("Animation")) {
 
-				if (ImGui::Button("忍び足")) {
-					mSkinning->Init("human", "sneakWalk.gltf", GetModel()->modelData);
-				}
-				if (ImGui::Button("歩き")) {
-					mSkinning->Init("human", "walk.gltf", GetModel()->modelData);
-				}
+				std::string strNormalT = "MotionBlendingTime : " + std::to_string(mSkinning->GetMotionBlendingTime());
+				ImGui::ProgressBar(mSkinning->GetMotionBlendingTime(), ImVec2(-1.0f, 0.0f), strNormalT.c_str());
 
-				ImGui::TreePop();
+				// Skinning
+				mSkinning->DrawGui();
 			}
 		}
 	}
@@ -165,30 +133,7 @@ void Object3d::DrawGuiTree()
 	ImGui::DragFloat3("Scale", &mWorldTransform->scale.x, 0.05f, -10.0f, 10.0f);
 	ImGui::DragFloat3("Rotate", &mWorldTransform->rotation.x, 0.01f, -6.28f, 6.28f);
 	ImGui::DragFloat3("translate", &mWorldTransform->translation.x, 0.1f, -100.0f, 100.0f);
-	if (ImGui::TreeNode("WVPData")) {
-		if (ImGui::TreeNode("WVP")) {
-			for (int i = 0; i < 4; ++i) {
-				// Floatの4x4行列内の数値を表示
-				ImGui::DragFloat4(("Row " + std::to_string(i)).c_str(), mWvpData->WVP.m[i]);
-			}
-			ImGui::TreePop();
-		}
-		if (ImGui::TreeNode("World")) {
-			for (int i = 0; i < 4; ++i) {
-				// Floatの4x4行列内の数値を表示
-				ImGui::DragFloat4(("Row " + std::to_string(i)).c_str(), mWvpData->World.m[i]);
-			}
-			ImGui::TreePop();
-		}
-		if (ImGui::TreeNode("InverseTransWorld")) {
-			for (int i = 0; i < 4; ++i) {
-				// Floatの4x4行列内の数値を表示
-				ImGui::DragFloat4(("Row " + std::to_string(i)).c_str(), mWvpData->InverseTransposeWorld.m[i]);
-			}
-			ImGui::TreePop();
-		}
-		ImGui::TreePop();
-	}
+	
 	if (mCollider != nullptr) {
 		if (ImGui::TreeNode("Collider")) {
 			ImGui::SliderAngle("RotateX", &mCollider->GetWorld()->rotation.x);
@@ -206,23 +151,17 @@ void Object3d::DrawGuiTree()
 		mModel->DrawGUI(mObjname + "Model");
 
 		if (mSkinning != nullptr) {
-			if (ImGui::TreeNode("Skinning")) {
-				if (ImGui::Button("再生")) {
-					mSkinning->Play();
-				}
-				if (ImGui::Button("停止")) {
-					mSkinning->Pause();
-				}
+		
+			if (ImGui::CollapsingHeader("Animation")) {
 
-				if (ImGui::Button("忍び足")) {
-					mSkinning->Init("human", "sneakWalk.gltf", GetModel()->modelData);
-				}
-				if (ImGui::Button("歩き")) {
-					mSkinning->Init("human", "walk.gltf", GetModel()->modelData);
-				}
+				std::string strNormalT = "MotionBlendingTime : " + std::to_string(mSkinning->GetMotionBlendingTime());
+				ImGui::ProgressBar(mSkinning->GetMotionBlendingTime(), ImVec2(-1.0f, 0.0f), strNormalT.c_str());
 
-				ImGui::TreePop();
+				// Skinning
+				mSkinning->DrawGui();
 			}
+
+
 		}
 	}
 

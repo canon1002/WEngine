@@ -141,9 +141,16 @@ private:	// -- private メンバ関数 -- //
 	/// </summary>
 	void CreateGraphicsPipeline();
 
+	/// <summary>
+	/// 頂点リソースの生成
+	/// </summary>
 	void CreateVertexResource();
+
+	/// <summary>
+	/// 座標リソースの生成
+	/// </summary>
 	void CreateTransformation();
-	void CreateBufferView();
+
 
 public:
 

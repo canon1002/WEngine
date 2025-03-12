@@ -55,7 +55,7 @@ void TitleScene::Init() {
 	// アニメーション登録
 	mPlayerObj->mSkinning->CreateSkinningData("player", "idleNB", ".gltf", mPlayerObj->GetModel()->modelData, true);
 	mPlayerObj->mSkinning->CreateSkinningData("player", "run", ".gltf", mPlayerObj->GetModel()->modelData, true);
-	mPlayerObj->mSkinning->CreateSkinningData("player", "jump", ".gltf", mPlayerObj->GetModel()->modelData, true);
+	mPlayerObj->mSkinning->CreateSkinningData("player", "jump", ".gltf", mPlayerObj->GetModel()->modelData);
 	mPlayerObj->mSkinning->CreateSkinningData("player", "falling", ".gltf", mPlayerObj->GetModel()->modelData, true);
 
 	// 剣
@@ -448,15 +448,33 @@ void TitleScene::Update() {
 
 		// ゲーム開始前の演出処理
 		Vector3 pos = mPlayerObj->GetWorldTransform()->GetWorldPosition();
-		pos += {0.0f, 0.0f, 0.2f};
-		mPlayerObj->SetTranslate(pos);
-
-
-		if (pos.z >= 2.0f) {
+		pos += {0.0f, 0.0f, 0.1f};
+		
+		if (pos.z >= 1.0f) {
 			// プレイヤーをジャンプさせる
-			mPlayerObj->mSkinning->SetNextAnimation("jump");
+			if (mPlayerObj->mSkinning->GetNowSkinCluster()->name == "run" &&
+				!mPlayerObj->mSkinning->SearchToWaitingSkinCluster("jump")) {
+				mPlayerObj->mSkinning->SetNextAnimation("jump");
+			}
+
+			if (mPlayerObj->mSkinning->GetNowSkinCluster()->name == "jump") {
+
+				pos.y += 0.25f;
+
+				if (mPlayerObj->mSkinning->GetIsAnimationFinished("jump")) {
+
+					mPlayerObj->mSkinning->SetNextAnimation("falling");
+					mPlayerObj->mSkinning->SetAnimationPlaySpeed(2.5f);
+					mPlayerObj->mSkinning->SetMotionBlendingInterval(4.0f);
+				}
+			}
+			else {
+				pos.y -= 0.2f;
+			}
+			
 		}
-		if (pos.z >= 3.0f) {
+		if (pos.z >= 8.5f) {
+			pos.y -= 0.2f;
 
 			// ゲームシーンへの遷移処理
 			if (mGameStartVignnetingTime < 1.0f) {
@@ -473,6 +491,8 @@ void TitleScene::Update() {
 			}
 
 		}
+
+		mPlayerObj->SetTranslate(pos);
 
 		break;
 	default:

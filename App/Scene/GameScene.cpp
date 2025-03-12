@@ -65,7 +65,7 @@ void GameScene::Init() {
 
 
 	// パーティクル
-	ParticleManager::GetInstance()->Init();
+	//ParticleManager::GetInstance()->Init();
 	//mDTCParticle = std::make_unique<DiffusionToCircleParticle>();
 	//mDTCParticle->Init();
 
@@ -637,7 +637,7 @@ void GameScene::Update() {
 	LevelEditor::GetInstance()->Update();
 
 	// パーティクル
-	ParticleManager::GetInstance()->Update();
+	//ParticleManager::GetInstance()->Update();
 	//mDTCParticle->Update();
 
 	mGameOverFadeSprite->Update();
@@ -677,8 +677,8 @@ void GameScene::Draw() {
 	mBoss->Draw();
 
 	// パーティクル
-	ParticleManager::GetInstance()->PreDraw();
-	ParticleManager::GetInstance()->Draw();
+	//ParticleManager::GetInstance()->PreDraw();
+	//ParticleManager::GetInstance()->Draw();
 
 }
 

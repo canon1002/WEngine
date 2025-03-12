@@ -414,15 +414,6 @@ void Player::DrawGUI() {
 
 	ImGui::ListBox("Current State", &behaviorNumber, str, IM_ARRAYSIZE(str));
 
-	if (ImGui::CollapsingHeader("Animation")) {
-
-		std::string strNormalT = "MotionBlendingTime : " + std::to_string(mObject->mSkinning->GetMotionBlendingTime());
-		ImGui::ProgressBar(mObject->mSkinning->GetMotionBlendingTime(), ImVec2(-1.0f, 0.0f), strNormalT.c_str());
-
-		// Skinning
-		mObject->mSkinning->DrawGui();
-	}
-
 	// コライダー
 	if (ImGui::CollapsingHeader("Collider")) {
 
@@ -772,15 +763,8 @@ void Player::Attack()
 		mAttackStatus.motionTime += BlackBoard::CombertBattleFPS(1.5f);
 
 		// 攻撃が命中していない場合、攻撃フラグをtrueにする
-		if (mAttackStatus.comboCount != 3) {
-			if (mAttackStatus.motionTime > 0.4f && !mAttackStatus.isHit && !mAttackStatus.isOperating) {
-				mAttackStatus.isOperating = true;
-			}
-		}
-		else {
-			if (mAttackStatus.motionTime > 0.5f && !mAttackStatus.isHit && !mAttackStatus.isOperating) {
-				mAttackStatus.isOperating = true;
-			}
+		if (mAttackStatus.motionTime > 0.4f && !mAttackStatus.isHit && !mAttackStatus.isOperating) {
+			mAttackStatus.isOperating = true;
 		}
 
 	}
@@ -912,8 +896,9 @@ void Player::DebagCtr()
 	//}
 
 	
-	// 操作変更
+	//	ターゲットロックオン
 	if (InputManager::GetInstance()->GetPused(Gamepad::Button::X)) {
+
 		if (mIsRockOnToTarget) {
 			MainCamera::GetInstance()->SetCameraRotateControll(true);
 			mIsRockOnToTarget = false;
@@ -923,6 +908,7 @@ void Player::DebagCtr()
 		}
 	}	
 
+	// ロックオン中のカメラ処理
 	if (mIsRockOnToTarget) {
 		MainCamera::GetInstance()->SetCameraRotarionToSearchTarget();
 	}

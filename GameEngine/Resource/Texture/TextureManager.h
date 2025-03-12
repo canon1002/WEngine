@@ -14,8 +14,6 @@ public: // -- 公開 メンバ関数 -- //
 
 	// テクスチャの読み込み
 	uint32_t LoadTexture(const std::string& filePath);
-	// テクスチャの読み込み(インスタンス数指定)
-	void SetInstancingBuffer(int32_t kNumInstance, Microsoft::WRL::ComPtr<ID3D12Resource> instancingResource);
 
 	// メタデータ取得
 	const DirectX::TexMetadata& GetMetaData(const uint32_t& srvIndex);

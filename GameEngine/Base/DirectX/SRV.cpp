@@ -140,7 +140,7 @@ int32_t SRV::CreateDepthSRV(Microsoft::WRL::ComPtr<ID3D12Resource> depthStencilR
 {
 	// 新たにデータを登録する
 	TextureData textureData;
-	uint32_t index = Allocate();;
+	uint32_t index = Allocate();
 
 	// SRVの設定をおこなう
 	D3D12_SHADER_RESOURCE_VIEW_DESC depthTextureSrvDesc{};

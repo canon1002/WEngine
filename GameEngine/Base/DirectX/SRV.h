@@ -75,11 +75,8 @@ private: // -- private メンバ関数 -- //
 
 public: // -- public メンバ変数 -- // 
 
-	// SRVはディスクリプタを128つ
-	//D3D12_CPU_DESCRIPTOR_HANDLE srtHandles[128];
-	
 	// 最大SRVサイズ
-	static const uint32_t kMaxSRVCount = 128;
+	static const uint32_t kMaxSRVCount = 1024;
 	// SRV用デスクリプタのサイズ
 	uint32_t mDescriptorSize;
 	// SRV用デスクリプタヒープ
@@ -90,9 +87,7 @@ public: // -- public メンバ変数 -- //
 	// 次に使用可能な番地
 	uint32_t mUseIndex = 0;
 
-
 	// -- RenderTexture用 -- //
-
 	Microsoft::WRL::ComPtr<ID3D12Resource> mRenderTextureResource = nullptr;
 
 private: // -- private メンバ変数 -- // 
