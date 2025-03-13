@@ -147,8 +147,10 @@ void ParticleManager::Draw(){
 
 void ParticleManager::CreateParticleGroupe(const std::string name, const std::string textureFilePath){
 
-	// 読み込み済みである場合ならエラー
-	assert(!mParticleGroups.contains(name));
+	// 読み込み済みである場合なら早期リターン
+	if (mParticleGroups.contains(name)) {
+		return;
+	}
 
 	// SRVマネージャのポインタを取得
 	SRV* srvManager = DirectXCommon::GetInstance()->mSrv.get();

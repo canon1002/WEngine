@@ -16,17 +16,18 @@ DamageReaction* DamageReaction::GetInstance(){
 
 void DamageReaction::Init(){
     
-    // 数値用の画像を設定
-    TextureManager::GetInstance()->LoadTexture("number/0.png");
-    TextureManager::GetInstance()->LoadTexture("number/1.png");
-    TextureManager::GetInstance()->LoadTexture("number/2.png");
-    TextureManager::GetInstance()->LoadTexture("number/3.png");
-    TextureManager::GetInstance()->LoadTexture("number/4.png");
-    TextureManager::GetInstance()->LoadTexture("number/5.png");
-    TextureManager::GetInstance()->LoadTexture("number/6.png");
-    TextureManager::GetInstance()->LoadTexture("number/7.png");
-    TextureManager::GetInstance()->LoadTexture("number/8.png");
-    TextureManager::GetInstance()->LoadTexture("number/9.png");
+	// ディレクトリとファイル拡張子の文字列を設定
+    const std::string directryPath = "number/";
+    const std::string fileExt = ".png";
+
+    // 数値用の画像を設定    
+    for (int32_t i = 0; i < mNumberTex.size(); i++) {
+        
+        // テクスチャのファイルパスを合成する
+		std::string filePath = directryPath + std::to_string(i) + fileExt;
+		// テクスチャを読み込む
+        mNumberTex[i]= TextureManager::GetInstance()->LoadTexture(filePath);
+    }
 
 }
 

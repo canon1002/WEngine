@@ -308,9 +308,9 @@ void Player::Update() {
 				// 敵にダメージを与える
 				ReciveDamageToBoss(1.2f);
 
-				//// ダメージ表示
-				//int32_t damage = static_cast<int32_t>(static_cast<int32_t>(mStatus->STR / 2.0f) * 1.0f) - static_cast<int32_t>(mBoss->GetStatus()->VIT / 4.0f);;
-				//DamageReaction::GetInstance()->Reaction(mReticle->GetWorld3D(), damage, MainCamera::GetInstance());
+				// ダメージ表示
+				int32_t damage = static_cast<int32_t>(static_cast<int32_t>(mStatus->STR / 2.0f) * 1.0f) - static_cast<int32_t>(mBoss->GetStatus()->VIT / 4.0f);;
+				DamageReaction::GetInstance()->Reaction(mReticle->GetWorld3D(), damage, MainCamera::GetInstance());
 			}
 		}
 	}
@@ -990,7 +990,7 @@ void Player::ReciveDamageToBoss(float power)
 	//mBoss->SetShake(0.25f, 0.1f);
 
 	// ヒットストップの時間を設定
-	SetHitStopDuration(0.5f);
+	// SetHitStopDuration(0.5f);
 
 }
 

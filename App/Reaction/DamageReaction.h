@@ -68,7 +68,7 @@ private: // -- 非公開 メンバ変数 -- //
 
 	
 	// 0~9までの数値画像の配列
-	std::vector<int32_t> mNumberTex;
+	std::array<int32_t,10> mNumberTex;
 
 	// スプライト配列のリスト
 	std::list<std::vector<DamageData*>> mDataList;
