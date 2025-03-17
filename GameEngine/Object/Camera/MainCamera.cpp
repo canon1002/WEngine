@@ -132,12 +132,8 @@ void MainCamera::Update()
 					mWorldTransform->rotation.y = 3.14f;
 				}
 
-
 			}
-			
-
 		}
-
 	}
 
 	//SetCameraRotarionToSearchTarget();

@@ -35,7 +35,7 @@ struct EasingToVector3 {
 class GameScene :
 	public BaseScene
 {
-public:
+public: // -- 公開 メンバ関数 -- //
 
 	~GameScene() {};
 
@@ -48,26 +48,32 @@ public:
 
 	// ヒットストップの開始
 	void StartHitStop(float duration);
-
 	// ヒットストップの更新
 	void UpdateHitStop();
 
-private:
+private: // -- 非公開 メンバ関数 -- //
 
-	// 入力マネージャー
-	
+	// 各フェーズをメンバ関数ポインタで管理する
+	void (GameScene::*mPhaseFunc)();
+	void BeginPhase();
+	void BattlePhase();
+	void LosePhase();
+	void WinPhase();
+
+
+private: // -- 非公開 メンバ変数 -- //
+
+	// ゲームシーンの段階
+	Phase mPhase;
+
 	// 衝突判定マネージャ
 	std::unique_ptr<CollisionManager> mCollisionManager;
-
-	// スカイボックス
-	Skybox* mSkybox;
 	// プレイヤーキャラ
 	std::unique_ptr<Player> mPlayer;
 	// 敵キャラ
 	std::unique_ptr<BossEnemy> mBoss;
 
-	// ゲームシーンの段階
-	Phase mPhase;
+	
 
 	// 開始前のビネット
 	float mViggnetTime;
@@ -85,9 +91,15 @@ private:
 	EasingToVector3 mCameraRot;
 	EasingToVector3 mCameraTr;
 
-	// UI
+	// -- UI -- //
+
+	// 操作ガイド
 	UISet mMoveUI;
 	UISet mActionUI;
+
+	// 演出中、スクリーンの上下に表示する黒画像
+	std::array<UISet, 2> mMovieScreen;
+	
 
 	// ボタンの間隔
 	const Vector2 kButtonSpacing = { 20.0f,30.0f };
@@ -95,9 +107,9 @@ private:
 	const float kActionSpacing = 15.0f;
 
 	// ボタン入力の表示UI
-	std::array<std::shared_ptr<Sprite>, 4> mButtonUI;
+	std::array<std::shared_ptr<Sprite>, 5> mButtonUI;
 	// 行動内容表示UI
-	std::array<std::shared_ptr<Sprite>, 4> mActionsUI;
+	std::array<std::shared_ptr<Sprite>, 5> mActionsUI;
 
 	// 動くオブジェクトの地面影
 	std::array<std::unique_ptr<Object3d>, 2> mGroundShadow;

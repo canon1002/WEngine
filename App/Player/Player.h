@@ -148,8 +148,6 @@ public: // -- 公開 メンバ関数 -- //
 	void Move();
 	// 落下処理
 	void Fall();
-	// Debag用
-	void DebagCtr();
 
 	// 入力状況をDirectionに保存する
 	void InputDirection();

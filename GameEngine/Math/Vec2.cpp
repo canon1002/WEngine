@@ -7,3 +7,11 @@ bool InRange(float value, Vector2 range)
 	}
 	return false;
 }
+
+Vector2 Scalar(float scalar, const Vector2& v)
+{
+	Vector2 result{};
+	result.x = scalar * v.x;
+	result.y = scalar * v.y;
+	return result;
+}

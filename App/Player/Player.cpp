@@ -220,12 +220,7 @@ void Player::Update() {
 
 		// 方向修正
 		AdJustDirection();
-
-		// デバッグ操作
-#ifdef _DEBUG
-
-#endif // _DEBUG
-		DebagCtr();
+		
 		switch (mBehavior)
 		{
 		case Behavior::kRoot:
@@ -586,7 +581,7 @@ void Player::Avoid()
 		}
 		// スティック入力がなければバックステップを行う
 		else {
-
+			
 			// 移動方向をプレイヤーの向きの反対方向にを終点に設定
 			mAvoidStatus.mAvoidMoveEndPos = mObject->mWorldTransform->translation + Scalar(-mAvoidStatus.mAvoidRange, mDirection);
 			// 回避状態に変更
@@ -828,7 +823,8 @@ void Player::Fall()
 
 		// 移動量を加算
 		mObject->mWorldTransform->translation.y += mVelocity.y;
-		mVelocity.y -= BlackBoard::CombertBattleFPS(9.8f);
+		mVelocity.y -= BlackBoard::CombertBattleFPS(0.98f);
+
 	}
 	// 地面に到達したら
 	else if (mObject->mWorldTransform->translation.y < 0.0f) {
@@ -844,69 +840,11 @@ void Player::Fall()
 	}
 }
 
-void Player::DebagCtr()
-{
-	
-
-	//// カメラの回転量を保持
-	//if (InputManager::GetInstance()->GetPused(Gamepad::Button::LEFT_SHOULDER) && t == 0.0f) {
-	//	mCameraPreDir = MainCamera::GetInstance()->GetRotate();
-	//}
-
-	//// 狙えるようにカメラの移動 
-	//if (InputManager::GetInstance()->GetLongPush(Gamepad::Button::LEFT_SHOULDER)) {
-
-	//	mIsAimMode = true;
-	//}
-	//else if (InputManager::GetInstance()->GetReleased(Gamepad::Button::LEFT_SHOULDER)) {
-	//	mIsAimMode = false;
-
-	//}
-	//if (mIsAimMode) {
-	//	if (t < 1.0f) {
-	//		t += (2.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetBattleSpeed();
-	//	}
-	//	else if (t > 1.0f) {
-	//		t = 1.0f;
-	//	}
-	//}
-	//else {
-	//	if (t > 0.0f) {
-	//		t -= (3.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetBattleSpeed();
-	//	}
-	//	else if (t < 0.0f) {
-	//		t = 0.0f;
-	//	}
-	//}
-
-	//if (t > 0.0f) {
-	//	mIsCameraRotateLock = true;
-	//}
-	//else {
-	//	mIsCameraRotateLock = false;
-	//}
-
-	//if (mIsCameraRotateLock) {
-	//	MainCamera::GetInstance()->SetCameraRotateControll(false);
-	//	//MainCamera::GetInstance()->SetRotate(Vector3(ExponentialInterpolation(mCameraPreDir.x, 0.55f, t, k), mCameraPreDir.y, mCameraPreDir.z));
-	//}
-	//else {
-	//	//MainCamera::GetInstance()->SetCameraRotateControll(true);
-	//}
-
-	
-	
-
-}
-
-
 void Player::InputDirection(){
 
 	// 入力方向の初期化
 	mDirectionForInput = { 0.0f ,0.0f ,0.0f };
-	// 方向の初期化
-	mDirection = { 0.0f ,0.0f ,0.0f };
-
+	
 	// スティック入力の量
 	const static int stickValue = 8000;
 	// いずれかの数値が、以上(以下)であれば移動処理を行う
@@ -971,7 +909,9 @@ void Player::InputDirection(){
 	else {
 
 		// 入力方向を向くようにする
-		mDirection = mDirectionForInput;
+		if (Length(mDirectionForInput) != 0.0f) {
+			mDirection = mDirectionForInput;
+		}
 	}
 
 }

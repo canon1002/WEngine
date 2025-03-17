@@ -154,6 +154,7 @@ void ParticleManager::CreateParticleGroupe(const std::string name, const std::st
 
 	// SRVマネージャのポインタを取得
 	SRV* srvManager = DirectXCommon::GetInstance()->mSrv.get();
+	srvManager;
 	// 上限チェック
 	assert(srvManager->mUseIndex < srvManager->kMaxSRVCount);
 
@@ -463,32 +464,3 @@ uint32_t ParticleManager::SetInstancingBuffer(int32_t kNumInstance, Microsoft::W
 	srvManager->CreateSRVforStructuredBuffer(srvIndex, instancingResource.Get(), kNumInstance, sizeof(ParticleForGPU));
 	return srvIndex;
 }
-
-//int SRV::SetInstancingBuffer(int32_t kNumInstance, Microsoft::WRL::ComPtr<ID3D12Resource> instancingResource) {
-//	// 新たにデータを登録する
-//	TextureData instaicingData;
-//	++mParticleId;
-//
-//	// SRVの設定をおこなう
-//	D3D12_SHADER_RESOURCE_VIEW_DESC instancingSrvDesc{};
-//	instancingSrvDesc.Format = DXGI_FORMAT_UNKNOWN;
-//	instancingSrvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-//	instancingSrvDesc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
-//	instancingSrvDesc.Buffer.FirstElement = 0;
-//	instancingSrvDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
-//	instancingSrvDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
-//	instancingSrvDesc.Buffer.NumElements = kNumInstance;
-//	instancingSrvDesc.Buffer.StructureByteStride = sizeof(ParticleForGPU);
-//	// デスクリプタサイズを取得
-//	const uint32_t descriptorSizeSRV = DirectXCommon::GetInstance()->mDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-//	instaicingData.textureSrvHandleCPU = DirectXCommon::GetInstance()->GetCPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, mParticleId);
-//	instaicingData.textureSrvHandleGPU = DirectXCommon::GetInstance()->GetGPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, mParticleId);
-//	instaicingData.textureSrvHandleCPU = GetCPUDescriptorHandle(mParticleId);
-//	instaicingData.textureSrvHandleGPU = GetGPUDescriptorHandle(mParticleId);
-//	DirectXCommon::GetInstance()->mDevice->CreateShaderResourceView(instancingResource.Get(), &instancingSrvDesc, instaicingData.textureSrvHandleCPU);
-//
-//	mTextureData.insert(std::make_pair(mParticleId, instaicingData));
-//
-//	return  mParticleId;
-//
-//}

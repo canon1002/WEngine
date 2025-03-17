@@ -39,13 +39,15 @@ void GameScene::Init() {
 	// SkyBox 読み込み
 	TextureManager::GetInstance()->LoadTexture("skybox/rostock_laage_airport_4k.dds");
 
-	// skyboxの宣言
-	mSkybox = Skybox::GetInstance();
-	mSkybox->Init("skybox", "rostock_laage_airport_4k.dds");
+	// skybox
+	Skybox::GetInstance()->Init("skybox", "rostock_laage_airport_4k.dds");
+
+#pragma region Actor
 
 	// プレイヤー
 	mPlayer = std::make_unique<Player>();
 	mPlayer->Init();
+	mPlayer->GetObject3D()->SetTranslate(Vector3(0.0f, 100.0f, -8.0f));
 
 	// ボス
 	mBoss = std::make_unique<BossEnemy>();
@@ -56,12 +58,24 @@ void GameScene::Init() {
 	mBoss->SetTarget(mPlayer.get());
 
 	// オブジェクトにCubeMapのテクスチャ番号を渡す
-	mPlayer->GetModel()->SetCubeTexture(mSkybox->mTextureHandle);
-	mPlayer->GetCollider()->GetModel()->SetCubeTexture(mSkybox->mTextureHandle);
-	mBoss->GetModel()->SetCubeTexture(mSkybox->mTextureHandle);
-	mBoss->GetCollider()->GetModel()->SetCubeTexture(mSkybox->mTextureHandle);
-	mPlayer->GetReticle3D()->SetCubeMap(mSkybox->mTextureHandle);
-	LevelEditor::GetInstance()->SetTextureCubeMap(mSkybox->mTextureHandle);
+	mPlayer->GetModel()->SetCubeTexture(Skybox::GetInstance()->mTextureHandle);
+	mPlayer->GetCollider()->GetModel()->SetCubeTexture(Skybox::GetInstance()->mTextureHandle);
+	mBoss->GetModel()->SetCubeTexture(Skybox::GetInstance()->mTextureHandle);
+	mBoss->GetCollider()->GetModel()->SetCubeTexture(Skybox::GetInstance()->mTextureHandle);
+	mPlayer->GetReticle3D()->SetCubeMap(Skybox::GetInstance()->mTextureHandle);
+
+#pragma endregion
+
+
+	// メインカメラをフォローカメラ仕様にする
+	MainCamera* mainCamera = MainCamera::GetInstance();
+	mainCamera->SetFollowTarget(mPlayer->GetObject3D()->GetWorldTransform());
+	mainCamera->SetSearchTarget(mBoss->GetObject3D()->GetWorldTransform());
+	mainCamera->SetTranslate(Vector3(0.0f, 60.0f, -5.0f));
+	mainCamera->SetRotate(Vector3(1.57f, 0.0f, 0.0f));
+
+	
+	LevelEditor::GetInstance()->SetTextureCubeMap(Skybox::GetInstance()->mTextureHandle);
 
 
 	// パーティクル
@@ -81,10 +95,12 @@ void GameScene::Init() {
 
 	// ゲームシーンの段階
 	mPhase = Phase::BEGIN;
+	mPhaseFunc = &GameScene::BeginPhase;
+
 	// 開始前のビネット
 	mViggnetTime = 0.0f;
 
-	// 以下 UI
+	// 操作ガイド
 	mActionUI.sprite = std::make_unique<Sprite>();
 	mActionUI.sprite->Init();
 	mActionUI.sprite->SetTexture("UI/UI0.png");
@@ -95,7 +111,6 @@ void GameScene::Init() {
 	mActionUI.displayCount = 0.0f;
 	mActionUI.isActive = true;
 
-	// 以下 UI
 	mMoveUI.sprite = std::make_unique<Sprite>();
 	mMoveUI.sprite->Init();
 	mMoveUI.sprite->SetTexture("UI/UI1.png");
@@ -106,6 +121,22 @@ void GameScene::Init() {
 	mMoveUI.displayCount = 0.0f;
 	mMoveUI.isActive = true;
 
+	// 演出中、スクリーンの上下に表示する黒画像
+	for (int32_t i = 0; i < mMovieScreen.size(); i++) {
+		mMovieScreen[i].sprite = std::make_unique<Sprite>();
+		mMovieScreen[i].sprite->Init();
+		mMovieScreen[i].sprite->SetTexture("white2x2.dds");
+		mMovieScreen[i].sprite->SetScale({ 1.0f,1.0f });
+		mMovieScreen[i].sprite->SetSpriteSize({ mainCamera->GetWindowSize().x,mainCamera->GetWindowSize().y * 0.1f });
+		mMovieScreen[i].sprite->SetPos(Vector2(mainCamera->GetWindowSize().x * 0.5f, mainCamera->GetWindowSize().y * float(i)));
+		mMovieScreen[i].sprite->SetAnchorPoint({ 0.5f,float(i) });
+		mMovieScreen[i].sprite->SetColor({ 0.0f,0.0f,0.0f,1.0f, });
+		mMovieScreen[i].t = 0.0f;
+		mMovieScreen[i].displayCount = 0.0f;
+		mMovieScreen[i].isActive = true;
+	}
+
+
 	// ボタン入力
 	for (int32_t i = 0; i < mButtonUI.size(); i++) {
 		mButtonUI[i] = std::make_shared<Sprite>();
@@ -115,8 +146,8 @@ void GameScene::Init() {
 
 		// 基準になる座標(右下に配置)
 		Vector2 basePos{};
-		basePos.x = MainCamera::GetInstance()->GetWindowSize().x * 0.9f;
-		basePos.y = MainCamera::GetInstance()->GetWindowSize().y * 0.9f;
+		basePos.x = mainCamera->GetWindowSize().x * 0.9f;
+		basePos.y = mainCamera->GetWindowSize().y * 0.9f;
 
 		switch (i) {
 		case 0:
@@ -141,6 +172,11 @@ void GameScene::Init() {
 			// 左位置に配置 xのみ左にずらす
 			mButtonUI[i]->SetPos({ basePos.x - kButtonSpacing.x, basePos.y });
 			break;
+		case 4:
+			filepath = "RB";
+			// 左位置に配置 xを左、yを上ににずらす
+			mButtonUI[i]->SetPos({ basePos.x - kButtonSpacing.x, basePos.y - (kButtonSpacing.y * 2.5f) });
+			break;
 		default:
 			break;
 		}
@@ -156,7 +192,7 @@ void GameScene::Init() {
 		mActionsUI[i] = std::make_shared<Sprite>();
 		mActionsUI[i]->Init();
 
-		if (i < 2) {
+		if (i < 2 || i==4) {
 			// ボタンの右側に配置
 			mActionsUI[i]->SetPos(Vector2(mButtonUI[i]->GetPos().x + kActionSpacing, mButtonUI[i]->GetPos().y));
 			mActionsUI[i]->SetAnchorPoint(Vector2(0.0f, 0.5f));
@@ -174,6 +210,7 @@ void GameScene::Init() {
 	mActionsUI[1]->SetTexture("UI/Fonts/ATK.png");
 	mActionsUI[2]->SetTexture("UI/Fonts/SATK.png");
 	mActionsUI[3]->SetTexture("UI/Fonts/RockOn.png");
+	mActionsUI[4]->SetTexture("UI/Fonts/Dash.png");
 
 	// 動くオブジェクトの地面影
 	for (int32_t i = 0; i < mGroundShadow.size(); i++) {
@@ -188,8 +225,7 @@ void GameScene::Init() {
 	mPlayerStartAndEnd.t = 0.0f;
 	mPlayerStartAndEnd.k = 1.0f;
 
-	MainCamera::GetInstance()->SetTranslate(Vector3(0.0f, 60.0f, 0.0f));
-	MainCamera::GetInstance()->SetRotate(Vector3(1.57f, 12.56f, 0.0f));
+
 
 	mCameraRot.start = { 1.57f,6.28f,0.0f };
 	mCameraRot.end = { 0.0f,0.0f,0.0f };
@@ -245,13 +281,15 @@ void GameScene::Init() {
 	mFinithUIDisplsyTime = 0.0f;
 	mIsFinishUIDisplayEnd = false;
 
-
 }
 
 void GameScene::Update() {
 
 	mMoveUI.sprite->Update();
 	mActionUI.sprite->Update();
+	for (int32_t i = 0; i < mMovieScreen.size(); i++) {
+		mMovieScreen[i].sprite->Update();
+	}
 
 	// ボタン入力 & 行動表示
 	for (int32_t i = 0; i < mButtonUI.size(); i++) {
@@ -259,401 +297,369 @@ void GameScene::Update() {
 		mActionsUI[i]->Update();
 	}
 
+	// -- デバッグ・開発用操作 -- //
+#ifdef _DEBUG
 
-	// シーン切り替え
 	// 1キーを押したうえで
-	// Bボタンまたは、Enterキーでシーン遷移
 	if (InputManager::GetInstance()->GetPushKey(DIK_1)) {
-		if (InputManager::GetInstance()->GetPused(Gamepad::Button::B) || InputManager::GetInstance()->GetTriggerKey(DIK_RETURN)) {
+
+		// Enterキーでシーン遷移
+		if (InputManager::GetInstance()->GetTriggerKey(DIK_RETURN)) {
 			// リザルトシーンへ移行する
 			SceneManager::GetInstance()->ChangeScene("Result");
 		}
+
+		// Rキーでリセット
+		if (InputManager::GetInstance()->GetPushKey(DIK_R)) {
+			Init();
+		}
+
 	}
 
-	if (InputManager::GetInstance()->GetPushKey(DIK_R)) {
-		Init();
-	}
+	// ImGuiの表示
+	Skybox::GetInstance()->DrawGUI("Skybox");
+	mPlayer->DrawGUI();
+	mBoss->DrawGUI();
 
+#endif // _DEBUG
+
+	// 各フェーズごとの処理を関数ポインタで実行する
+	(this->*mPhaseFunc)();
+
+	// フェーズ切り替え処理
 	switch (mPhase)
 	{
 	case Phase::BEGIN:
+		mPhaseFunc = &GameScene::BeginPhase;
+		break;
+	case Phase::BATTLE:
+		mPhaseFunc = &GameScene::BattlePhase;
+		break;
+	case Phase::LOSE:
+		mPhaseFunc = &GameScene::LosePhase;
+		break;
+	case Phase::WIN:
+		mPhaseFunc = &GameScene::WinPhase;
+		break;
+	default:
+		break;
+	}
 
-		// ビネットでフェードインする
-		if (mViggnetTime < 1.0f) {
+	// -- 全フェーズ共通の更新処理 -- //
 
-			// プレイヤーの初期位置を設定
-			if (mViggnetTime == 0.0f) {
+	// カメラ
+	MainCamera::GetInstance()->Update();
+	// スカイボックス
+	Skybox::GetInstance()->Update();
+	// ステータスマネージャ
+	StatusManager::GetInstance()->Update();
+	// レベルエディタ
+	LevelEditor::GetInstance()->Update();
+	// パーティクル
+	//ParticleManager::GetInstance()->Update();
 
-				// プレイヤーの初期位置を設定
-				mPlayer->GetObject3D()->mWorldTransform->translation = ExponentialInterpolation(
-					mPlayerStartAndEnd.start, mPlayerStartAndEnd.end, mPlayerStartAndEnd.t, mPlayerStartAndEnd.k);
-			}
+}
 
-			// ビネットの時間を進める
-			mViggnetTime += (1.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetGameSpeed();
-		}
+
+void GameScene::BeginPhase() {
+
+	// ビネットを調整してフェードイン
+	if (mViggnetTime < 1.0f) {
+		// ビネットの時間を進める
+		mViggnetTime += (1.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetGameSpeed();
 		// ビネットの時間が1.0fを超えたら1.0fに設定
-		else if (mViggnetTime >= 1.0f) {
+		if (mViggnetTime >= 1.0f) {
 			mViggnetTime = 1.0f;
 		}
-
-		// ビネットでフェードインする
+		// ビネットの操作
 		PostEffect::GetInstance()->SetViggnetIndex(ExponentialInterpolation(10.0f, 0.0f, mViggnetTime, 1.0f));
+	}
+	// フェードイン・プレイヤーの移動 終了後
+	else if (mPlayer->GetWorldPos().y <= 0.5f) {
 
-		// フェードインが終わったら戦闘開始
-		if (mViggnetTime == 1.0f) {
+		// カメラを徐々に回転させる
+		if (MainCamera::GetInstance()->GetRotate().x >= 0.2f) {
+			MainCamera::GetInstance()->mWorldTransform->rotation.x -= 0.01f;
+		}
 
-			if (mCameraTr.k < 1.0f || mCameraRot.k < 1.0f) {
+		// カメラの回転が終了したら
+		else {
 
-				mCameraRot.t += (1.0f / (Framerate::GetInstance()->GetFramerate() * 6.0f)) * Framerate::GetInstance()->GetGameSpeed();
-				if (mCameraRot.t > 1.0f) {
-					mCameraRot.t = 1.0f;
+			// 黒帯を縮小
+			if (mMovieScreen[0].sprite->GetScale().y > 0.0f) {
+
+				// スケールを小さくする
+				for (int32_t i = 0; i < mMovieScreen.size(); i++) {
+					Vector2 scale = mMovieScreen[i].sprite->GetScale();
+					mMovieScreen[i].sprite->SetScale({ scale.x, scale.y - 0.05f });
 				}
-
-				if (mCameraRot.t > 0.5f) {
-					mCameraTr.t += (1.0f / (Framerate::GetInstance()->GetFramerate() * 2.0f)) * Framerate::GetInstance()->GetGameSpeed();
-					if (mCameraTr.t > 1.0f) {
-						mCameraTr.t = 1.0f;
-					}
-				}
-
-				if (mCameraRot.t >= 1.0f) {
-					mCameraRot.k += (2.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetGameSpeed();
-					if (mCameraRot.k > 1.0f) {
-						mCameraRot.k = 1.0f;
-					}
-					MainCamera::GetInstance()->mWorldTransform->rotation.x = ExponentialInterpolation(mCameraRot.start.x, mCameraRot.end.x, mCameraRot.k, 1.0f);
-
-				}
-				if (mCameraRot.k >= 0.5f) {
-					mCameraTr.k += (2.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetGameSpeed();
-					if (mCameraTr.k > 1.0f) {
-						mCameraTr.k = 1.0f;
-					}
-
-					MainCamera::GetInstance()->mWorldTransform->translation.z = ExponentialInterpolation(mCameraTr.start.z, mCameraTr.end.z, mCameraTr.k, 1.0f);
-
-				}
-
-				MainCamera::GetInstance()->mWorldTransform->translation.y = ExponentialInterpolation(mCameraTr.start.y, mCameraTr.end.y, mCameraTr.t, 1.0f);
-				MainCamera::GetInstance()->mWorldTransform->rotation.y = ExponentialInterpolation(mCameraRot.start.y, mCameraRot.end.y, mCameraRot.t, 1.0f);
-
-
 			}
-			else if (mPlayerStartAndEnd.t >= 1.0f && mCameraTr.k >= 1.0f && mCameraRot.k >= 1.0f) {
+			else if (mMovieScreen[0].sprite->GetScale().y <= 0.0f) {
 
-				// メインカメラをフォローカメラ仕様にする
-				MainCamera::GetInstance()->SetFollowTarget(mPlayer->GetObject3D()->GetWorldTransform());
-				MainCamera::GetInstance()->SetSearchTarget(mBoss->GetObject3D()->GetWorldTransform());
+				// スケール修正
+				for (int32_t i = 0; i < mMovieScreen.size(); i++) {
+					mMovieScreen[i].sprite->SetScale({ 1.0f,0.0f });
+				}
 
 				// フェーズ移行
 				mPhase = Phase::BATTLE;
 			}
 		}
 
-		if (mPlayerStartAndEnd.t < 1.0f) {
+	}
 
-			mPlayerStartAndEnd.t += (1.0f / (Framerate::GetInstance()->GetFramerate() * 4.0f)) * Framerate::GetInstance()->GetGameSpeed();
+	// プレイヤーの座標を移動
+	mPlayer->Fall();
+	// プレイヤー 更新
+	mPlayer->UpdateObject();
+	// ボス 更新
+	mBoss->UpdateObject();
 
-			if (mPlayerStartAndEnd.t >= 1.0f) {
-				mPlayerStartAndEnd.t = 1.0f;
-			}
+}
 
-			mPlayer->GetObject3D()->mWorldTransform->translation = ExponentialInterpolation(mPlayerStartAndEnd.start, mPlayerStartAndEnd.end, mPlayerStartAndEnd.t, mPlayerStartAndEnd.k);
+void GameScene::BattlePhase() {
+
+	// ヒットストップの更新
+	UpdateHitStop();
+
+	// プレイヤーのHPが0になったら
+	if (mPlayer->GetStatus()->HP <= 0.0f) {
+		mPhase = Phase::LOSE;
+		mViggnetTime = 0.0f;
+		PostEffect::GetInstance()->SetRedViggnetEnable(true);
+
+	}
+	// ボスのHPが0になったら
+	if (mBoss->GetStatus()->HP <= 0.0f) {
+		mPhase = Phase::WIN;
+		mViggnetTime = 0.0f;
+		mFinishUI.isActive = true;
+		mBoss->GetObject3D()->mSkinning->SetNextAnimation("death");
+		Framerate::GetInstance()->SetBattleSpeed(0.5f);
+	}
+
+	// プレイヤー 更新
+	mPlayer->Update();
+	// ボス 更新
+	mBoss->Update();
+
+	// コライダーリストへの追加処理
+	mPlayer->SetCollider(mCollisionManager.get());
+	mPlayer->SetColliderList(mCollisionManager.get());
+	mBoss->SetCollider(mCollisionManager.get());
+	mBoss->SetAttackCollider(mCollisionManager.get());
+	// 衝突判定を行う
+	mCollisionManager->Update();
+	// コライダーリストのクリア
+	mCollisionManager->ClearColliders();
+
+
+	// 斬撃エフェクト
+	mPlayerTrailEffect->Update();
+	if (mPlayer->GetBehavior() == Behavior::kAttack) {
+		if (mPlayerTrailEffect->GetGetPositionFlag()) {
+			mPlayerTrailEffect->Create(*mPlayer->GetWorldPositionSword(0), *mPlayer->GetWorldPositionSword(1));
 		}
+	}
+	mBossTrailEffect->Update();
+	if (mBossTrailEffect->GetGetPositionFlag()) {
+		mBossTrailEffect->Create(*mBoss->GetWorldPositionSword(0), *mBoss->GetWorldPositionSword(1));
+	}
 
-		// プレイヤー 更新
-		mPlayer->UpdateObject();
-		// ボス 更新
-		mBoss->UpdateObject();
+}
 
-		break;
-	case Phase::BATTLE:
+void GameScene::LosePhase() {
 
-		// ヒットストップの更新
-		UpdateHitStop();
+	if (mIsGameOverSelect == false) {
+		if (mViggnetTime < 1.0f) {
+			mViggnetTime += (1.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetGameSpeed();
 
-		// プレイヤーのHPが0になったら
-		if (mPlayer->GetStatus()->HP <= 0.0f) {
-			mPhase = Phase::LOSE;
+			// ビネットでフェードする
+			PostEffect::GetInstance()->SetViggnetMultiplier(ExponentialInterpolation(10.0f, 20.0f, mViggnetTime, 1.0f));
+			PostEffect::GetInstance()->SetViggnetIndex(ExponentialInterpolation(0.0f, 4.0f, mViggnetTime, 1.0f));
+			PostEffect::GetInstance()->SetRedViggnetMultiplier(ExponentialInterpolation(0.0f, 0.5f, mViggnetTime, 1.0f));
+			PostEffect::GetInstance()->SetRedViggnetIndex(ExponentialInterpolation(0.0f, 0.5f, mViggnetTime, 1.0f));
+			//mGameOverFadeSprite->SetColor(Color(0.4f, 0.0f, 0.0f, ExponentialInterpolation(0.0f, 0.8f, viggnetTime, 1.0f)));
+
+		}
+		else if (mViggnetTime > 1.0f) {
+			mIsGameOverSelect = true;
+		}
+	}
+	else
+	{
+
+		if (mMessageFadeTime < 1.0f) {
+			mMessageFadeTime += 1.0f / 30.0f;
 			mViggnetTime = 0.0f;
-			PostEffect::GetInstance()->SetRedViggnetEnable(true);
-
 		}
-		// ボスのHPが0になったら
-		if (mBoss->GetStatus()->HP <= 0.0f) {
-			mPhase = Phase::WIN;
-			mViggnetTime = 0.0f;
-			mFinishUI.isActive = true;
-			mBoss->GetObject3D()->mSkinning->SetNextAnimation("death");
-			Framerate::GetInstance()->SetBattleSpeed(0.5f);
+		else if (mMessageFadeTime > 1.0f) {
+			mMessageFadeTime = 1.0f;
 		}
+		else if (mMessageFadeTime == 1.0f) {
 
-		// プレイヤー 更新
-		mPlayer->Update();
+			if (mViggnetTime == 0.0f) {
+				if (InputManager::GetInstance()->GetPused(Gamepad::Button::UP) ||
+					InputManager::GetInstance()->GetPused(Gamepad::Button::DOWN)) {
+					if (mGameOverSelectUICount == 0) {
+						mGameOverSelectUICount = 1;
+					}
+					else {
+						mGameOverSelectUICount = 0;
+					}
+				}
 
-		// ボス
-		mBoss->Update();
-
-		// コライダーリストへの追加処理
-		mPlayer->SetCollider(mCollisionManager.get());
-		mPlayer->SetColliderList(mCollisionManager.get());
-		mBoss->SetCollider(mCollisionManager.get());
-		mBoss->SetAttackCollider(mCollisionManager.get());
-
-		// 衝突判定を行う
-		mCollisionManager->Update();
-
-		// コライダーリストのクリア
-		mCollisionManager->ClearColliders();
-
-		// 斬撃エフェクト
-		mPlayerTrailEffect->Update();
-		if (mPlayer->GetBehavior() == Behavior::kAttack) {
-			if (mPlayerTrailEffect->GetGetPositionFlag()) {
-				mPlayerTrailEffect->Create(*mPlayer->GetWorldPositionSword(0), *mPlayer->GetWorldPositionSword(1));
+				if (InputManager::GetInstance()->GetPused(Gamepad::Button::B)) {
+					mViggnetTime += (1.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetGameSpeed();
+				}
 			}
-		}
-		mBossTrailEffect->Update();
-		if (mBossTrailEffect->GetGetPositionFlag()) {
-			mBossTrailEffect->Create(*mBoss->GetWorldPositionSword(0), *mBoss->GetWorldPositionSword(1));
-		}
+			else if (mViggnetTime < 1.0f) {
 
-
-
-		break;
-	case Phase::LOSE:
-		if (mIsGameOverSelect == false) {
-			if (mViggnetTime < 1.0f) {
 				mViggnetTime += (1.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetGameSpeed();
 
 				// ビネットでフェードする
-				PostEffect::GetInstance()->SetViggnetMultiplier(ExponentialInterpolation(10.0f, 20.0f, mViggnetTime, 1.0f));
-				PostEffect::GetInstance()->SetViggnetIndex(ExponentialInterpolation(0.0f, 4.0f, mViggnetTime, 1.0f));
+				PostEffect::GetInstance()->SetViggnetMultiplier(ExponentialInterpolation(20.0f, 10.0f, mViggnetTime, 1.0f));
+				PostEffect::GetInstance()->SetViggnetIndex(ExponentialInterpolation(4.0f, 10.0f, mViggnetTime, 1.0f));
 				PostEffect::GetInstance()->SetRedViggnetMultiplier(ExponentialInterpolation(0.0f, 0.5f, mViggnetTime, 1.0f));
 				PostEffect::GetInstance()->SetRedViggnetIndex(ExponentialInterpolation(0.0f, 0.5f, mViggnetTime, 1.0f));
-				//mGameOverFadeSprite->SetColor(Color(0.4f, 0.0f, 0.0f, ExponentialInterpolation(0.0f, 0.8f, viggnetTime, 1.0f)));
-
 			}
-			else if (mViggnetTime > 1.0f) {
-				mIsGameOverSelect = true;
-			}
-		}
-		else
-		{
+			else if (mViggnetTime >= 1.0f) {
+				PostEffect::GetInstance()->SetRedViggnetEnable(false);
+				PostEffect::GetInstance()->SetRedViggnetMultiplier(0.0f);
+				PostEffect::GetInstance()->SetRedViggnetIndex(0.0f);
 
-			if (mMessageFadeTime < 1.0f) {
-				mMessageFadeTime += 1.0f / 30.0f;
-				mViggnetTime = 0.0f;
-			}
-			else if (mMessageFadeTime > 1.0f) {
-				mMessageFadeTime = 1.0f;
-			}
-			else if (mMessageFadeTime == 1.0f) {
-
-				if (mViggnetTime == 0.0f) {
-					if (InputManager::GetInstance()->GetPused(Gamepad::Button::UP) ||
-						InputManager::GetInstance()->GetPused(Gamepad::Button::DOWN)) {
-						if (mGameOverSelectUICount == 0) {
-							mGameOverSelectUICount = 1;
-						}
-						else {
-							mGameOverSelectUICount = 0;
-						}
-					}
-
-					if (InputManager::GetInstance()->GetPused(Gamepad::Button::B)) {
-						mViggnetTime += (1.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetGameSpeed();
-					}
+				if (mGameOverSelectUICount == 0) {
+					this->Init();
 				}
-				else if (mViggnetTime < 1.0f) {
-
-					mViggnetTime += (1.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetGameSpeed();
-
-					// ビネットでフェードする
-					PostEffect::GetInstance()->SetViggnetMultiplier(ExponentialInterpolation(20.0f, 10.0f, mViggnetTime, 1.0f));
-					PostEffect::GetInstance()->SetViggnetIndex(ExponentialInterpolation(4.0f, 10.0f, mViggnetTime, 1.0f));
-					PostEffect::GetInstance()->SetRedViggnetMultiplier(ExponentialInterpolation(0.0f, 0.5f, mViggnetTime, 1.0f));
-					PostEffect::GetInstance()->SetRedViggnetIndex(ExponentialInterpolation(0.0f, 0.5f, mViggnetTime, 1.0f));
+				else {
+					SceneManager::GetInstance()->ChangeScene("Title");
 				}
-				else if (mViggnetTime >= 1.0f) {
-					PostEffect::GetInstance()->SetRedViggnetEnable(false);
-					PostEffect::GetInstance()->SetRedViggnetMultiplier(0.0f);
-					PostEffect::GetInstance()->SetRedViggnetIndex(0.0f);
-
-					if (mGameOverSelectUICount == 0) {
-						this->Init();
-					}
-					else {
-						SceneManager::GetInstance()->ChangeScene("Title");
-					}
-				}
-
-
-				switch (mGameOverSelectUICount)
-				{
-				case 0:
-					mGameOverSelectUI[0]->SetScale(Vector2(1.2f, 1.2f));
-					mGameOverSelectUI[1]->SetScale(Vector2(1.0f, 1.0f));
-
-					break;
-				case 1:
-
-					mGameOverSelectUI[0]->SetScale(Vector2(1.0f, 1.0f));
-					mGameOverSelectUI[1]->SetScale(Vector2(1.2f, 1.2f));
-
-					break;
-
-				default:	
-					break;
-				}
-
 			}
 
-			mGameOverMessageSprite->SetColor(Color(1.0f, 1.0f, 1.0f, ExponentialInterpolation(0.0f, 1.0f, mMessageFadeTime, 1.0f)));
 
-			for (int32_t i = 0; i < mGameOverSelectUI.size(); i++) {
-				mGameOverSelectUI[i]->SetColor(Color(1.0f, 1.0f, 1.0f, ExponentialInterpolation(0.0f, 1.0f, mMessageFadeTime, 1.0f)));
+			switch (mGameOverSelectUICount)
+			{
+			case 0:
+				mGameOverSelectUI[0]->SetScale(Vector2(1.2f, 1.2f));
+				mGameOverSelectUI[1]->SetScale(Vector2(1.0f, 1.0f));
+
+				break;
+			case 1:
+
+				mGameOverSelectUI[0]->SetScale(Vector2(1.0f, 1.0f));
+				mGameOverSelectUI[1]->SetScale(Vector2(1.2f, 1.2f));
+
+				break;
+
+			default:
+				break;
 			}
 
 		}
 
-		break;
-	case Phase::WIN:
+		mGameOverMessageSprite->SetColor(Color(1.0f, 1.0f, 1.0f, ExponentialInterpolation(0.0f, 1.0f, mMessageFadeTime, 1.0f)));
 
-		if (mFinishUI.isActive) {
-
-			// 終了時のUI表示が終了していない場合
-			if (!mIsFinishUIDisplayEnd) {
-
-				// UI 透明度操作
-				if (mFinishUI.t < 1.0f) {
-					mFinishUI.t += (10.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetGameSpeed();
-				}
-				// 終了時処理
-				else if (mFinishUI.t >= 1.0f) {
-					mFinishUI.t = 1.0f;
-					if (mFinithUIDisplsyTime == 0.0f) {
-						mFinithUIDisplsyTime = kFinithUIDisplsyTimeMax;
-					}
-
-					// 一定時間UIを表示
-					if (mFinithUIDisplsyTime > 0.0f) {
-						mFinithUIDisplsyTime -= (1.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetGameSpeed();
-					}
-					// 終了時処理
-					else if (mFinithUIDisplsyTime <= 0.0f) {
-						mFinithUIDisplsyTime = 0.0f;
-						mIsFinishUIDisplayEnd = true;
-						Framerate::GetInstance()->SetBattleSpeed(1.0f);
-					}
-
-				}
-
-
-			}
-			// 終了時のUI表示が終了している場合
-			else {
-
-				// UIを透明にする
-				if (mFinishUI.t > 0.0f) {
-					mFinishUI.t -= (2.0f / (Framerate::GetInstance()->GetFramerate())) * Framerate::GetInstance()->GetGameSpeed();
-				}
-				// 終了時の処理
-				else if (mFinishUI.t <= 0.0f) {
-					mFinishUI.t = 0.0f;
-					mFinishUI.isActive = false;
-				}
-
-			}
-
-			mFinishUI.sprite->SetColor(Color(1.0f, 1.0f, 1.0f, ExponentialInterpolation(0.0f, 1.0f, mFinishUI.t, 1.0f)));
+		for (int32_t i = 0; i < mGameOverSelectUI.size(); i++) {
+			mGameOverSelectUI[i]->SetColor(Color(1.0f, 1.0f, 1.0f, ExponentialInterpolation(0.0f, 1.0f, mMessageFadeTime, 1.0f)));
 		}
 
-		if (mIsFinishUIDisplayEnd && mFinishUI.t <= 0.0f) {
-			if (mBoss->GetObject3D()->mSkinning->GetIsNowAnimationFinished()) {
-				if (mViggnetTime < 1.0f) {
-					mViggnetTime += (1.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetGameSpeed();
-				}
-				else if (mViggnetTime >= 1.0f) {
-					mViggnetTime = 1.0f;
-				}
-			}
-		}
-		// ビネットでフェードインする
-		PostEffect::GetInstance()->SetViggnetIndex(ExponentialInterpolation(0.0f, 10.0f, mViggnetTime, 1.0f));
-
-		// フェードインが終わったら戦闘開始
-		if (mViggnetTime == 1.0f) {
-			//this->Init();
-			// リザルトシーンへ移行する
-			SceneManager::GetInstance()->ChangeScene("Result");
-		}
-
-		// プレイヤー 更新
-		mPlayer->UpdateObject();
-		// ボス 更新
-		mBoss->UpdateObject();
-
-		break;
-	default:
-		break;
 	}
 
 
-#ifdef _DEBUG
-	mSkybox->DrawGUI("Skybox");
-	mPlayer->DrawGUI();
-	mBoss->DrawGUI();
-	//mPlayerTrailEffect->DrawGui();
-#endif // _DEBUG
-
-	// カメラ
-	MainCamera::GetInstance()->Update();
-
-	// スカイボックス
-	mSkybox->Update();
-
-	// ステータスマネージャ
-	StatusManager::GetInstance()->Update();
-
-	// 地面影
-	mGroundShadow[0]->mWorldTransform->translation = mPlayer->GetWorldPos();
-	mGroundShadow[0]->Update();
-
-	//// プレイヤーの現在HPに応じて赤色ビネットを変化させる
-	//float playerHPRatio = (float(mPlayer->GetStatus()->MAXHP) - float(mPlayer->GetStatus()->HP)) / float(mPlayer->GetStatus()->MAXHP);
-	//if (playerHPRatio > 0.3f) {
-
-	//	if (playerHPRatio > 0.9f) {
-	//		RenderCopyImage::GetInstance()->SetRedViggnetMultiplier(ExponentialInterpolation(2.8f, 0.8f, playerHPRatio, 1.0f));
-	//	}
-
-	//	RenderCopyImage::GetInstance()->SetRedViggnetEnable(true);
-	//	RenderCopyImage::GetInstance()->SetRedViggnetIndex(ExponentialInterpolation(0.0f, 0.5f, playerHPRatio, 1.0f));
-	//}
-
-	// レベルエディタ更新/
-	LevelEditor::GetInstance()->Update();
-
-	// パーティクル
-	//ParticleManager::GetInstance()->Update();
-	//mDTCParticle->Update();
-
+	// UI 更新処理
 	mGameOverFadeSprite->Update();
 	mGameOverMessageSprite->Update();
 
 	for (int32_t i = 0; i < mGameOverSelectUI.size(); i++) {
 		mGameOverSelectUI[i]->Update();
 	}
+
+}
+
+void GameScene::WinPhase() {
+
+	if (mFinishUI.isActive) {
+
+		// 終了時のUI表示が終了していない場合
+		if (!mIsFinishUIDisplayEnd) {
+
+			// UI 透明度操作
+			if (mFinishUI.t < 1.0f) {
+				mFinishUI.t += (10.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetGameSpeed();
+			}
+			// 終了時処理
+			else if (mFinishUI.t >= 1.0f) {
+				mFinishUI.t = 1.0f;
+				if (mFinithUIDisplsyTime == 0.0f) {
+					mFinithUIDisplsyTime = kFinithUIDisplsyTimeMax;
+				}
+
+				// 一定時間UIを表示
+				if (mFinithUIDisplsyTime > 0.0f) {
+					mFinithUIDisplsyTime -= (1.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetGameSpeed();
+				}
+				// 終了時処理
+				else if (mFinithUIDisplsyTime <= 0.0f) {
+					mFinithUIDisplsyTime = 0.0f;
+					mIsFinishUIDisplayEnd = true;
+					Framerate::GetInstance()->SetBattleSpeed(1.0f);
+				}
+
+			}
+
+
+		}
+		// 終了時のUI表示が終了している場合
+		else {
+
+			// UIを透明にする
+			if (mFinishUI.t > 0.0f) {
+				mFinishUI.t -= (2.0f / (Framerate::GetInstance()->GetFramerate())) * Framerate::GetInstance()->GetGameSpeed();
+			}
+			// 終了時の処理
+			else if (mFinishUI.t <= 0.0f) {
+				mFinishUI.t = 0.0f;
+				mFinishUI.isActive = false;
+			}
+
+		}
+
+		mFinishUI.sprite->SetColor(Color(1.0f, 1.0f, 1.0f, ExponentialInterpolation(0.0f, 1.0f, mFinishUI.t, 1.0f)));
+	}
+
+	if (mIsFinishUIDisplayEnd && mFinishUI.t <= 0.0f) {
+		if (mBoss->GetObject3D()->mSkinning->GetIsNowAnimationFinished()) {
+			if (mViggnetTime < 1.0f) {
+				mViggnetTime += (1.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetGameSpeed();
+			}
+			else if (mViggnetTime >= 1.0f) {
+				mViggnetTime = 1.0f;
+			}
+		}
+	}
+	// ビネットでフェードインする
+	PostEffect::GetInstance()->SetViggnetIndex(ExponentialInterpolation(0.0f, 10.0f, mViggnetTime, 1.0f));
+
+	// フェードインが終わったら
+	if (mViggnetTime == 1.0f) {
+		// リザルトシーンへ移行する
+		SceneManager::GetInstance()->ChangeScene("Result");
+	}
+
+	// プレイヤー 更新
+	mPlayer->UpdateObject();
+	// ボス 更新
+	mBoss->UpdateObject();
+	// UI 更新処理
 	mFinishUI.sprite->Update();
 
 }
 
+
 void GameScene::Draw() {
 
 	// Skyboxの描画前処理
-	mSkybox->PreDraw();
+	Skybox::GetInstance()->PreDraw();
 	//skybox_->Draw();
 
 	// レベルデータ読み込み
@@ -684,9 +690,6 @@ void GameScene::Draw() {
 
 void GameScene::DrawUI()
 {
-
-
-
 
 	// 2DSprite(画像)の描画前処理
 	SpriteAdministrator::GetInstance()->PreDraw();
@@ -780,6 +783,10 @@ void GameScene::DrawUI()
 		break;
 	default:
 		break;
+	}
+
+	for (int32_t i = 0; i < mMovieScreen.size(); i++) {
+		mMovieScreen[i].sprite->Draw();
 	}
 
 }

@@ -28,8 +28,8 @@ void TitleScene::Init() {
 	// 地面
 	mGroundObj = std::make_unique<Object3d>();
 	mGroundObj->Init("Title Ground");
-	ModelManager::GetInstance()->LoadModel("MapObjects", "Plane.gltf");
-	mGroundObj->SetModel("Plane.gltf");
+	ModelManager::GetInstance()->LoadModel("MapObjects", "ground.gltf");
+	mGroundObj->SetModel("ground.gltf");
 	mGroundObj->SetScale(Vector3(1.0f, 1.0f, 1.0f));
 
 	// スキニングアニメーションを生成
@@ -184,12 +184,6 @@ void TitleScene::Init() {
 	// エミッター初期化
 	mDashSomke = std::make_unique<ParticleEmitter>("Smoke");
 	mDashSomke->Init();
-
-	// 地面
-	mUVChecker = std::make_unique<Object3d>();
-	mUVChecker->Init("UVChecker");
-	ModelManager::GetInstance()->LoadModel("checker", "uvChecker.gltf");
-	mUVChecker->SetModel("uvChecker.gltf");
 
 	// -- エディタテスト -- //
 	
@@ -498,17 +492,9 @@ void TitleScene::Update() {
 	default:
 		break;
 	}
-	
+
+	// パーティクル 更新
 	ParticleManager::GetInstance()->Update();
-
-	// ダッシュ煙の更新
-	//mDashSomke->Update();
-	ImGui::Begin("Particle");
-	if(ImGui::Button("Smoke Emit")) {
-		mDashSomke->Emit();
-	}
-	ImGui::End();
-
 
 }
 
