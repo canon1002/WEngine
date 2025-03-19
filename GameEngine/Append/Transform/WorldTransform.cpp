@@ -44,6 +44,19 @@ Matrix4x4 WorldTransform::GetWorldMatrix() const{
 	return result;
 }
 
+
+Matrix4x4 WorldTransform::GetScalingMatrix() const{
+
+	Matrix4x4 result = MakeScaleMatrix(scale);
+	return result;
+}
+
+Matrix4x4 WorldTransform::GetTranslationMatrix() const{
+	
+	Matrix4x4 result = MakeTranslateMatrix(translation);
+	return result;
+}
+
 Vector3 WorldTransform::GetWorldPosition()const {
 	// ワールド行列を生成
 	Matrix4x4 worldMatrix = GetWorldMatrix();

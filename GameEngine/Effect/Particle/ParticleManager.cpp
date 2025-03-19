@@ -38,8 +38,13 @@ void ParticleManager::Init(){
 void ParticleManager::Update(){
 
 	// ビルボード行列の計算 (制作途中)
+	Matrix4x4 billboardMat = MainCamera::GetInstance()->mWorldTransform->GetWorldMatrix();
+	// カメラのワールド行列から平行移動成分を抜いたものを作成
+	billboardMat.m[3][0] = 0.0f;
+	billboardMat.m[3][1] = 0.0f;
+	billboardMat.m[3][2] = 0.0f;
 
-	// その他行列の取得・更新5
+	// その他行列の取得・更新
 
 	std::unordered_map<std::string, ParticleGroup>::iterator itGroup = mParticleGroups.begin();
 	for (itGroup; itGroup != mParticleGroups.end(); itGroup++) {
@@ -67,8 +72,12 @@ void ParticleManager::Update(){
 				// 徐々に透明にする
 				float alpha = 1.0f - ((*it).currentTime / (*it).lifeTime);
 
-				itGroup->second.instancingData[itGroup->second.instanceCount].WVP = Multiply((*it).worldTransform.GetWorldMatrix(), MainCamera::GetInstance()->GetViewProjectionMatrix());
-				itGroup->second.instancingData[itGroup->second.instanceCount].World = (*it).worldTransform.GetWorldMatrix();
+				Matrix4x4 worldMat = Multiply(Multiply((*it).worldTransform.GetScalingMatrix(), billboardMat),
+					(*it).worldTransform.GetTranslationMatrix());
+
+				itGroup->second.instancingData[itGroup->second.instanceCount].WVP = Multiply(
+					worldMat, MainCamera::GetInstance()->GetViewProjectionMatrix());
+				itGroup->second.instancingData[itGroup->second.instanceCount].World = worldMat;
 				(*it).color.a = alpha;
 				itGroup->second.instancingData[itGroup->second.instanceCount].color = (*it).color;
 				itGroup->second.instancingData[itGroup->second.instanceCount].color.a = alpha;
@@ -174,45 +183,51 @@ void ParticleManager::CreateParticleGroupe(const std::string name, const std::st
 	
 }
 
-void ParticleManager::Emit(const std::string& name, const Vector3& pos, uint32_t count){
+void ParticleManager::Emit(const std::string& name, const Emitter& emitter){
 
 	// パーティクルグループが存在しない場合はエラー
 	assert(mParticleGroups.contains(name));
 
-	for (uint32_t index = 0; index < count; index++) {
+	for (uint32_t index = 0; index < emitter.count; index++) {
 		// パーティクルを生成し、指定されたグループに登録する
-		mParticleGroups[name].particleList.push_back(Create(pos));
+		mParticleGroups[name].particleList.push_back(Create(emitter));
 	}
 
 }
 
-Particle ParticleManager::Create(const Vector3& pos){
+Particle ParticleManager::Create(Emitter emitter){
 	
 	// 戻り値
 	Particle particle{};
-	// 一律で乱数の最小・最大値を設定
-	std::uniform_real_distribution<float> distribution(-1.0f, 1.0f);
-
-	// -- SRT・移動量・色の設定 -- //
-
 	// スケール
-	particle.worldTransform.scale = { 1.0f,1.0f,1.0f };
-	// 回転量
+	particle.worldTransform.scale = Vector3(
+		emitter.scaleDistr(mRandomEngine),
+		emitter.scaleDistr(mRandomEngine),
+		emitter.scaleDistr(mRandomEngine));
+	// 回転量(今のところは固定)
 	particle.worldTransform.rotation = { 0.0f,0.0f,0.0f };
 	// 乱数で座標をずらす
-	Vector3 randomTranslate = { distribution(mRandomEngine),distribution(mRandomEngine),0.0f };
-	particle.worldTransform.translation = pos + randomTranslate;
+	particle.worldTransform.translation = Vector3(
+		emitter.pos.x + emitter.posXDistr(mRandomEngine),
+		emitter.pos.y + emitter.posYDistr(mRandomEngine),
+		emitter.pos.z + emitter.posZDistr(mRandomEngine)
+		);
 	// 移動量
-	particle.vel = { distribution(mRandomEngine),distribution(mRandomEngine),0.0f };
+	particle.vel = Vector3(
+		emitter.velXDistr(mRandomEngine),
+		emitter.velYDistr(mRandomEngine),
+		emitter.velZDistr(mRandomEngine)
+		);
 	// 色・透明度
-	particle.color = { distribution(mRandomEngine),distribution(mRandomEngine),distribution(mRandomEngine),0.9f };
-	//particle.color = { 1.0f,1.0f,1.0f,1.0f };
-
-	// 生存時間用に乱数の最小・最大値を設定
-	std::uniform_real_distribution<float> distTime(1.0f, 3.0f);
-
+	float colorVal = emitter.colorDistr(mRandomEngine);
+	particle.color = Color(
+		colorVal,
+		colorVal,
+		colorVal,
+		0.9f
+		);
 	// 生存時間の設定
-	particle.lifeTime = distTime(mRandomEngine);
+	particle.lifeTime = emitter.timeDistr(mRandomEngine);
 	particle.currentTime = 0;
 
 	// 生成したパーティクルを返す

@@ -23,6 +23,18 @@ public: // -- public メンバ関数 -- //
 	Matrix4x4 GetWorldMatrix() const;
 
 	/// <summary>
+	/// 拡大縮小行列を返す
+	/// </summary>
+	/// <returns></returns>
+	Matrix4x4 GetScalingMatrix() const;
+
+	/// <summary>
+	/// 平行移動行列の取得
+	/// </summary>
+	/// <returns></returns>
+	Matrix4x4 GetTranslationMatrix() const;
+
+	/// <summary>
 	/// ワールド座標を返す
 	/// </summary>
 	/// <returns></returns>

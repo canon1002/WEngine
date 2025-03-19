@@ -176,12 +176,14 @@ void TitleScene::Init() {
 
 	// パーティクルマネージャの初期化
 	ParticleManager::GetInstance()->Init();
-	ParticleManager::GetInstance()->CreateParticleGroupe("Smoke", "circle.png");
-	
-	// エミッター初期化
-	mDashSomke = std::make_unique<ParticleEmitter>("Smoke");
-	mDashSomke->Init();
 
+	// エミッター初期化
+	mDashSmoke = std::make_unique<ParticleEmitter>("DashSmoke");
+	mDashSmoke->Init();
+	ParticleManager::GetInstance()->CreateParticleGroupe(mDashSmoke->mName, "circle.png");
+	
+	
+	
 	// -- エディタテスト -- //
 	mBTNodeTestActor = std::make_unique<Actor>("NodeTester");
 	mBTNodeEditor = std::make_unique<BTNodeEditor>(mBTNodeTestActor.get());
@@ -486,6 +488,16 @@ void TitleScene::Update() {
 		break;
 	default:
 		break;
+	}
+
+	// 発生座標の更新
+	mDashSmoke->SetEmitterPos(mPlayerObj->GetWorldTransform()->GetWorldPosition());
+	// ダッシュ煙を発生させる
+	mDashSmoke->Update();
+
+	// プレイヤーが走っている場合
+	if (mPlayerObj->mSkinning->GetNowSkinCluster()->name == "run") {
+	
 	}
 
 	// パーティクル 更新

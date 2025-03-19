@@ -41,10 +41,10 @@ public: // -- 公開 メンバ変数 -- //
 	void CreateParticleGroupe(const std::string name,const std::string textureFilePath);
 	
 	// パーティクルの発生処理
-	void Emit(const std::string& name, const Vector3& pos, uint32_t count);
+	void Emit(const std::string& name, const Emitter& emitter);
 
 	//	パーティクル 生成処理
-	Particle Create(const Vector3& pos);
+	Particle Create(Emitter emitter);
 
 	// 
 	uint32_t SetInstancingBuffer(int32_t kNumInstance, Microsoft::WRL::ComPtr<ID3D12Resource> instancingResource);

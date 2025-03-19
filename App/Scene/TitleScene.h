@@ -88,7 +88,7 @@ private:
 	float mUITransCount;	// UI表示切替の進行度
 
 	// パーティクル テスト
-	std::unique_ptr<ParticleEmitter> mDashSomke;
+	std::unique_ptr<ParticleEmitter> mDashSmoke;
 
 	// -- エディタテスト -- //
 	std::unique_ptr<Actor> mBTNodeTestActor;

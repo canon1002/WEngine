@@ -79,9 +79,7 @@ void GameScene::Init() {
 
 
 	// パーティクル
-	//ParticleManager::GetInstance()->Init();
-	//mDTCParticle = std::make_unique<DiffusionToCircleParticle>();
-	//mDTCParticle->Init();
+	ParticleManager::GetInstance()->Init();
 
 
 	// 軌道エフェクト
@@ -356,7 +354,7 @@ void GameScene::Update() {
 	// レベルエディタ
 	LevelEditor::GetInstance()->Update();
 	// パーティクル
-	//ParticleManager::GetInstance()->Update();
+	ParticleManager::GetInstance()->Update();
 
 }
 
