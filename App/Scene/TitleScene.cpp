@@ -490,14 +490,14 @@ void TitleScene::Update() {
 		break;
 	}
 
-	// 発生座標の更新
-	mDashSmoke->SetEmitterPos(mPlayerObj->GetWorldTransform()->GetWorldPosition());
-	// ダッシュ煙を発生させる
-	mDashSmoke->Update();
+
 
 	// プレイヤーが走っている場合
 	if (mPlayerObj->mSkinning->GetNowSkinCluster()->name == "run") {
-	
+		// 発生座標の更新
+		mDashSmoke->SetEmitterPos(mPlayerObj->GetWorldTransform()->GetWorldPosition());
+		// ダッシュ煙を発生させる
+		mDashSmoke->Update();
 	}
 
 	// パーティクル 更新

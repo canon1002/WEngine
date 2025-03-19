@@ -80,7 +80,11 @@ void GameScene::Init() {
 
 	// パーティクル
 	ParticleManager::GetInstance()->Init();
-
+	
+	// ダッシュ煙 初期化
+	mDashSmoke = std::make_unique<ParticleEmitter>("DashSmoke");
+	mDashSmoke->Init();
+	ParticleManager::GetInstance()->CreateParticleGroupe(mDashSmoke->mName, "circle.png");
 
 	// 軌道エフェクト
 	mPlayerTrailEffect = std::make_unique<TrailEffect>();
@@ -452,6 +456,13 @@ void GameScene::BattlePhase() {
 	mCollisionManager->ClearColliders();
 
 
+	// プレイヤーが走っている場合
+	if (mPlayer->GetObject3D()->mSkinning->GetNowSkinCluster()->name == "run") {
+		// 発生座標の更新
+		mDashSmoke->SetEmitterPos(mPlayer->GetObject3D()->GetWorldTransform()->GetWorldPosition());
+		// ダッシュ煙を発生させる
+		mDashSmoke->Update();
+	}
 	// 斬撃エフェクト
 	mPlayerTrailEffect->Update();
 	if (mPlayer->GetBehavior() == Behavior::kAttack) {
@@ -681,8 +692,8 @@ void GameScene::Draw() {
 	mBoss->Draw();
 
 	// パーティクル
-	//ParticleManager::GetInstance()->PreDraw();
-	//ParticleManager::GetInstance()->Draw();
+	ParticleManager::GetInstance()->PreDraw();
+	ParticleManager::GetInstance()->Draw();
 
 }
 

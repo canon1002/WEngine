@@ -10,6 +10,7 @@
 
 // エフェクト
 #include "GameEngine/Effect/Particle/ParticleManager.h"
+#include "GameEngine/Effect/Particle/Emitter/ParticleEmitter.h"
 #include "GameEngine/Effect/Particle/TrailEffect.h"
 
 // マネージャー
@@ -131,6 +132,8 @@ private: // -- 非公開 メンバ変数 -- //
 	std::unique_ptr<TrailEffect> mPlayerTrailEffect;// プレイヤー用
 	std::unique_ptr<TrailEffect> mBossTrailEffect;
 
+	// ダッシュ煙
+	std::unique_ptr<ParticleEmitter> mDashSmoke;
 
 };
 
