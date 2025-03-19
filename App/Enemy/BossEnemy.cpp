@@ -14,13 +14,9 @@
 
 #include "App/BlackBoard.h"
 
-BossEnemy::BossEnemy()
-{
-}
+BossEnemy::BossEnemy(){}
 
-BossEnemy::~BossEnemy()
-{
-}
+BossEnemy::~BossEnemy(){}
 
 void BossEnemy::Init() {
 
@@ -36,10 +32,14 @@ void BossEnemy::Init() {
 	ModelManager::GetInstance()->LoadModel("Boss", "SlashJamp.gltf");
 	ModelManager::GetInstance()->LoadModel("Boss", "SlashDash.gltf");
 
+	ModelManager::GetInstance()->LoadModel("Boss", "ShotBullet.gltf");
 	ModelManager::GetInstance()->LoadModel("Boss", "Thrust.gltf");
 	ModelManager::GetInstance()->LoadModel("Boss", "magic.gltf");
 	ModelManager::GetInstance()->LoadModel("Boss", "kick.gltf");
 
+	ModelManager::GetInstance()->LoadModel("Sphere", "Sphere.gltf");
+
+	// オブジェクト生成
 	mObject = std::make_unique<Object3d>();
 	mObject->Init("BossEnemyObj");
 	mObject->mWorldTransform->scale = { 1.5f,1.5f,1.5f };
@@ -67,6 +67,7 @@ void BossEnemy::Init() {
 	mObject->mSkinning->CreateSkinningData("Boss", "SlashDash", ".gltf", mObject->GetModel()->modelData);
 	mObject->mSkinning->CreateSkinningData("Boss", "SlashJamp", ".gltf", mObject->GetModel()->modelData);
 	mObject->mSkinning->CreateSkinningData("Boss", "Thrust", ".gltf", mObject->GetModel()->modelData);
+	mObject->mSkinning->CreateSkinningData("Boss", "ShotBullet", ".gltf", mObject->GetModel()->modelData);
 
 	mObject->mSkinning->CreateSkinningData("Boss", "magic", ".gltf", mObject->GetModel()->modelData);
 	mObject->mSkinning->CreateSkinningData("Boss", "kick", ".gltf", mObject->GetModel()->modelData);
@@ -187,6 +188,7 @@ void BossEnemy::InitBehavior() {
 
 	// プレイヤーが遠い場合
 	newSequence->SetChild(new BT::Condition(std::bind(&BossEnemy::InvokeFarDistance, this)));
+	newSequence->SetChild(new BT::Action(this, "ShotBullet"));// 射撃
 	newSequence->SetChild(new BT::Action(this, "MoveToPlayer"));// 接近
 
 	// 接近行動の終了時、敵の飛距離に応じた行動を取る
@@ -256,6 +258,10 @@ void BossEnemy::InitActions()
 	// ジャンプ攻撃
 	mActions["AttackJump"] = make_shared<ACT::AttackJump>();
 	mActions["AttackJump"]->Init(this);
+
+	// 射撃
+	mActions["ShotBullet"] = make_shared<ACT::ShotBullet>();
+	mActions["ShotBullet"]->Init(this);
 
 	// のけぞり
 	mActions["knockBack"] = make_shared<ACT::KnockBack>();
@@ -390,6 +396,7 @@ void BossEnemy::UpdateBehaviorTree() {
 
 void BossEnemy::UpdateObject() {
 
+	// アクションの中身が存在する場合はアクションクラスの更新を行う
 	if (!mActiveAction.expired()) {
 		mActiveAction.lock()->Update();
 	}
@@ -399,11 +406,25 @@ void BossEnemy::UpdateObject() {
 	mObject->mWorldTransform->translation.x = std::clamp(mObject->mWorldTransform->translation.x, -20.0f, 20.0f);
 	mObject->mWorldTransform->translation.z = std::clamp(mObject->mWorldTransform->translation.z, -20.0f, 20.0f);
 
+	// 弾の更新処理
+	for (auto& bullet : mBullets) {
+		bullet->Update();
+	}
+
+	// 弾の消滅処理
+	mBullets.remove_if([](auto& bullet) {
+		if (bullet->IsDead()) {
+			return true;
+		}
+		return false;
+		});
+
 	// 右手のワールド行列を更新
 	mRightHandWorldMat = Multiply(
 		GetObject3D()->mSkinning->GetSkeleton().joints[GetObject3D()->mSkinning->GetSkeleton().jointMap["mixamorig:RightHandThumb1"]
 		].skeletonSpaceMatrix, GetObject3D()->GetWorldTransform()->GetWorldMatrix());
 
+	// 武器の更新処理
 	mWeapon->Update();
 
 
@@ -548,6 +569,12 @@ void BossEnemy::SetAttackCollider(CollisionManager* cManager) {
 
 	}
 
+	// 弾のコライダーを登録
+	for (auto& bullet : mBullets) {
+		cManager->SetCollider(bullet->GetObject3d()->mCollider.get());
+	}
+
+
 }
 
 void BossEnemy::UpdateState() {
@@ -622,7 +649,15 @@ void BossEnemy::Load()
 }
 
 void BossEnemy::ColliderDraw() {
+	
+	// 武器の描画
 	mWeapon->Draw();
+
+	// 弾の描画
+	for (auto& bullet : mBullets) {
+		bullet->Draw();
+	}
+
 
 #ifdef _DEBUG
 

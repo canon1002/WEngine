@@ -6,3 +6,4 @@
 #include "App/Enemy/Action/Dash.h"
 #include "App/Enemy/Action/Shrinkage.h"
 #include "App/Enemy/Action/KnockBack.h"
+#include "App/Enemy/Action/ShotBullet.h"

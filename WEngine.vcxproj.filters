@@ -448,6 +448,8 @@
     <ClCompile Include="App\Enemy\Action\Shrinkage.cpp" />
     <ClCompile Include="GameEngine\Resource\Texture\TextureManager.cpp" />
     <ClCompile Include="GameEngine\Effect\Particle\Emitter\ParticleEmitter.cpp" />
+    <ClCompile Include="App\Enemy\Action\ShotBullet.cpp" />
+    <ClCompile Include="App\Bullet\Bullet.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameEngine\Object\Light\DirectionalLight.h">
@@ -765,6 +767,8 @@
     <ClInclude Include="App\Enemy\Action\Shrinkage.h" />
     <ClInclude Include="GameEngine\Resource\Texture\TextureManager.h" />
     <ClInclude Include="GameEngine\Effect\Particle\Emitter\ParticleEmitter.h" />
+    <ClInclude Include="App\Enemy\Action\ShotBullet.h" />
+    <ClInclude Include="App\Bullet\Bullet.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt">

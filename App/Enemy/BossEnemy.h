@@ -5,6 +5,7 @@
 #include "App/AI/BehaviorTree/IBehavior.h"
 #include "App/Status/StatusManager.h"
 
+
 // 前方宣言
 class Player;
 
@@ -49,10 +50,9 @@ public: // -- 公開 メンバ関数 -- //
 	// 自身の攻撃命中時に呼び出す関数
 	void ReciveDamageTolayer(float power);
 
-	// -- 取得関数 -- //
+	// ワールド座標を取得
 	const WorldTransform* GetWorldPositionSword(int32_t count) { return mWorldTransformSword.at(count).get(); }
 	
-
 	// シェイク処理
 	void SetShake(float duration, float power);
 
@@ -64,14 +64,7 @@ public: // -- 公開 メンバ関数 -- //
 
 #pragma endregion
 
-	// 右手のワールド座標
-	Matrix4x4 mRightHandWorldMat;
 
-	// 武器
-	std::unique_ptr<Object3d> mWeapon;
-
-	// 武器の衝突判定
-	std::vector<Collider*> mWeaponColliders;
 
 private: // -- 非公開 メンバ関数 -- //
 
@@ -79,6 +72,16 @@ private: // -- 非公開 メンバ関数 -- //
 	virtual void Save() override;
 	// 読み込み処理
 	virtual void Load() override;
+
+public: // -- 公開 メンバ変数 -- //
+
+	// 右手のワールド座標
+	Matrix4x4 mRightHandWorldMat;
+	// 武器
+	std::unique_ptr<Object3d> mWeapon;
+	// 武器の衝突判定
+	std::vector<Collider*> mWeaponColliders;
+
 
 private: // -- 非公開 メンバ変数 -- //
 
@@ -94,8 +97,7 @@ private: // -- 非公開 メンバ変数 -- //
 	// ジャンプ初速
 	const float kJumpFirstSpeed = 0.4f;
 
-	// 最大コンボ回数
-	const int32_t kComboCountMax = 3;
+	
 
 	// メンバ関数ポインタ
 	static void(BossEnemy::*CommandTable[])();

@@ -7,8 +7,6 @@
 #include "GameEngine/Effect/Particle/ParticleManager.h"
 #include "GameEngine/Effect/PostEffect/PostEffect.h"
 #include "GameEngine/GameMaster/Framerate.h"
-#include "GameEngine/Append/Collider/CollisionManager.h"
-
 #include "GameEngine/Scene/SceneManager.h"
 
 void TitleScene::Final() {}
@@ -71,17 +69,16 @@ void TitleScene::Init() {
 	mWeaponParentMat = MakeIdentity();
 	mSwordObj->mWorldTransform->SetParent(mWeaponParentMat);
 	
-
+	// ビネットの調整
 	mGameStartVignnetingTime = 0.0f;
-	
 	mIsTransitionForPreScene = true;
 	viggnetOnlyTime = 0.0f;
 
 	// ビネット初期設定(透明)
-	PostEffect* render = PostEffect::GetInstance();
-	render->SetViggnetColor(Vector4(0.0f, 0.0f, 0.0f, 0.0f));
-	render->SetViggnetIndex(10.0f);
-	render->SetViggnetMultiplier(10.0f);
+	PostEffect* postEfeect = PostEffect::GetInstance();
+	postEfeect->SetViggnetColor(Vector4(0.0f, 0.0f, 0.0f, 0.0f));
+	postEfeect->SetViggnetIndex(10.0f);
+	postEfeect->SetViggnetMultiplier(10.0f);
 
 #pragma region UI関連の初期化
 	
@@ -186,11 +183,9 @@ void TitleScene::Init() {
 	mDashSomke->Init();
 
 	// -- エディタテスト -- //
-	
 	mBTNodeTestActor = std::make_unique<Actor>("NodeTester");
 	mBTNodeEditor = std::make_unique<BTNodeEditor>(mBTNodeTestActor.get());
 	mBTNodeEditor->Init();
-
 
 	// SkyBox
 	/*TextureManager::GetInstance()->LoadTexture("skybox/skybox.dds");
@@ -500,18 +495,20 @@ void TitleScene::Update() {
 
 void TitleScene::Draw() {
 
-	// Skyboxの描画前処理
+	//// Skybox 描画
 	//mSkybox->PreDraw();
 	//mSkybox->Draw();
 
-	
+	// 通常モデル 描画
 	ModelManager::GetInstance()->PreDraw();
 	mGroundObj->Draw();
 	mSwordObj->Draw();
 
+	// アニメーションモデル 描画
 	ModelManager::GetInstance()->PreDrawForSkinning();
 	mPlayerObj->Draw();
 
+	// パーティクル 描画
 	ParticleManager::GetInstance()->PreDraw();
 	ParticleManager::GetInstance()->Draw();
 

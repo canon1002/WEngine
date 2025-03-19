@@ -23,7 +23,7 @@ void TextureManager::Init() {
 	mTextureData.reserve(SRV::kMaxSRVCount);
 
 	// デフォルトテクスチャの読み込み
-	mDefaultTextureIndex = LoadTexture("uvChecker.dds");
+	mDefaultTextureIndex = LoadTexture("white2x2.dds");
 
 }
 

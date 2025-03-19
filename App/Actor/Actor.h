@@ -2,6 +2,7 @@
 #include "GameEngine/Object/3d/Object3d.h"
 #include "App/Status/StatusManager.h"
 #include "App/Enemy/Action/Action.h"
+#include "App/Bullet/Bullet.h"
 
 // 前方宣言
 class CollisionManager;
@@ -128,6 +129,14 @@ public: // -- 公開 メンバ関数 -- //
 	/// <returns></returns>
 	float GetHitStopDuration() { return mHitStopDuration; }
 
+	/// <summary>
+	/// 新規の弾をリストに追加
+	/// </summary>
+	/// <param name="bullet"> 作成した弾クラス </param>
+	inline void SetNewBullet(std::unique_ptr<Bullet> bullet) {
+			mBullets.push_back(std::move(bullet));
+		}
+
 protected: // -- 限定公開 メンバ関数 -- //
 
 	// 保存処理
@@ -182,6 +191,9 @@ protected: // -- 限定公開 メンバ変数 -- //
 	std::map<string, std::shared_ptr<ACT::Action>> mActions;
 	// 現在の行動
 	std::weak_ptr<ACT::Action> mActiveAction;
+
+	// 射撃攻撃の弾のリスト
+	std::list<std::unique_ptr<Bullet>> mBullets;
 
 	// ターゲット対象のポインタ
 	Actor* mTarget;

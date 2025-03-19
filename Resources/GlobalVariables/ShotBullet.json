@@ -1,0 +1,9 @@
+{
+    "ShotBullet": {
+        "Radius": 1.0,
+        "MoveSpeed": 0.25,
+        "LifeTime": 15.0,
+        "Power": 1.0,
+        "KnockBack": 0
+    }
+}

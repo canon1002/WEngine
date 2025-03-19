@@ -44,8 +44,6 @@ private:
 	
 	// カメラ
 	CameraCommon* mCamera;
-	// スカイボックス
-	Skybox* mSkybox;
 	// 地面
 	std::unique_ptr<Object3d> mGroundObj;
 	// プレイヤーオブジェクト
@@ -84,16 +82,13 @@ private:
 	// UI関連の変数
 	const float kUIPositionSpace = 40.0f;	// 各UI(選択肢)の間隔
 	const float kUIBasePosition = 480.0f;	// UI(選択肢)の基本となる座標
-	
 	int32_t mUISelectingNum;	// 選択中のUI番号
 	bool mIsUpperBackUICount;	// 背景UIのカウントが上昇中であるか
-
 	bool mIsTransUI;	// UI表示の遷移中であるか
 	float mUITransCount;	// UI表示切替の進行度
 
-	// ダッシュ煙 テスト
+	// パーティクル テスト
 	std::unique_ptr<ParticleEmitter> mDashSomke;
-	std::unique_ptr<Object3d> mUVChecker;
 
 	// -- エディタテスト -- //
 	std::unique_ptr<Actor> mBTNodeTestActor;

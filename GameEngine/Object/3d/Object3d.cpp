@@ -193,11 +193,6 @@ void Object3d::SetModel(const std::string& filepath)
 	//mModelManager->LoadModel(filepath);
 	mModel = ModelManager::GetInstance()->FindModelPtr(filepath);
 
-	// モデル内にアニメーションがある場合はアニメーション及びスキンクラスターなどを生成
-	if (0) {
-		mSkinning;
-	}
-
 }
 
 void Object3d::SetModelFullPath(const string& directryPath, const string& filePath){

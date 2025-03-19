@@ -118,7 +118,9 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="App\BlackBoard.cpp" />
+    <ClCompile Include="App\Enemy\Action\ShotBullet.cpp" />
     <ClCompile Include="App\Enemy\Action\Shrinkage.cpp" />
+    <ClCompile Include="App\Bullet\Bullet.cpp" />
     <ClCompile Include="GameEngine\Append\Collider\CapsuelCollider.cpp" />
     <ClCompile Include="GameEngine\Editor\NodeEditor\Nodes\AINodeActions.cpp" />
     <ClCompile Include="App\Actor\Actor.cpp" />
@@ -229,7 +231,9 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App\BlackBoard.h" />
+    <ClInclude Include="App\Enemy\Action\ShotBullet.h" />
     <ClInclude Include="App\Enemy\Action\Shrinkage.h" />
+    <ClInclude Include="App\Bullet\Bullet.h" />
     <ClInclude Include="GameEngine\Resource\Texture\TextureManager.h" />
     <ClInclude Include="GameEngine\Scene\AbstractSceneFactory.h" />
     <ClInclude Include="GameEngine\Append\Collider\CapsuelCollider.h" />
