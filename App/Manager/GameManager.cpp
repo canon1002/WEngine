@@ -79,6 +79,10 @@ void GameManager::Update() {
 				continue;
 			}
 
+			// 敵キャラ側の攻撃衝突フラグの切り替え ・ プレイヤーの無敵時間を設定
+			mBoss->Hit();
+			mPlayer->SetInvincible(1.0f);
+
 			// (ToDo)ジャスト回避判定
 
 
@@ -102,6 +106,9 @@ void GameManager::Update() {
 			if (!collider.lock()->collider->GetOnCollisionFlag()) {
 				continue;
 			}
+
+			// プレイヤーの無敵時間を設定
+			mPlayer->SetInvincible(1.0f);
 
 			// (ToDo)ジャスト回避判定
 

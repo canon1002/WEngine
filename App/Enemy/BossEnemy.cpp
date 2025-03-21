@@ -327,37 +327,10 @@ void BossEnemy::Update() {
 
 	// シェイクの更新
 	ShakeUpdate();
-
 	// 方向修正
 	AdJustDirection();
-
 	// オブジェクト更新
 	UpdateObject();
-
-	// 衝突処理
-	if (!mActiveAction.expired()) {
-
-		if (mActiveAction.lock()->GetIsHit() == false &&
-			mActiveAction.lock()->GetIsOperating() == true) {
-
-			for (auto& collider : mWeaponColliders)
-			{
-				if (collider->collider->GetOnCollisionFlag() == false)
-				{
-					continue;
-				}
-
-				// 次のフレームで消す
-				mActiveAction.lock()->Hit();
-				// 敵にダメージを与える
-				ReciveDamageTolayer(1.8f);
-
-			}
-		}
-	}
-
-
-
 }
 
 void BossEnemy::UpdateBehaviorTree() {
@@ -453,12 +426,7 @@ void BossEnemy::UpdateObject() {
 		].skeletonSpaceMatrix, mWeapon->GetWorldTransform()->GetWorldMatrix());
 
 	// 身体の部位のワールド行列を更新
-	UpdateBodyMatrix();
-
-	// 身体の部位に合わせたコライダーを更新
-	for (auto& collider : mBodyPartColliders) {
-		collider.second->collider->Update();
-	}
+	UpdateBodyCollider();
 
 	// 武器のコライダー 更新
 	for (auto& collider : mWeaponColliders) {

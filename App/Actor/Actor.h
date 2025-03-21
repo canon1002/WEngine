@@ -177,9 +177,9 @@ protected: // -- 限定公開 メンバ関数 -- //
 	//void UpdateObject();
 
 	/// <summary>
-	/// 部位コライダーやワールド座標の更新
+	/// 部位コライダーのコライダーやワールド座標の更新
 	/// </summary>
-	void UpdateBodyMatrix();
+	void UpdateBodyCollider();
 
 
 

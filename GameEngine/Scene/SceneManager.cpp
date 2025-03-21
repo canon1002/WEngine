@@ -34,7 +34,8 @@ SceneManager::~SceneManager() {
 
 // 初期化
 void SceneManager::Init(){
-
+	// 終了リクエスト
+	mEndRequest = false;
 }
 
 void SceneManager::Update(){
@@ -58,13 +59,17 @@ void SceneManager::Update(){
 		mCurrentScene->Init();
 	}
 
-
 	// TODO:メニューシーンとの切り替え処理
 
-
-	// 実行中のシーンの更新
+	//// メニューシーンの実行
+	//if (mMenuScene->IsActive()) {
+	//
+	//}
+	//// 実行中のシーンの更新
+	//else {
+	//	
+	//}
 	mCurrentScene->Update();
-
 }
 
 void SceneManager::Draw(){

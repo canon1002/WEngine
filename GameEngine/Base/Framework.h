@@ -36,6 +36,8 @@ public: // -- 公開 メンバ変数 -- //
 	// 終了リクエスト
 	bool mEndRequest;
 
+protected: // -- 限定公開 メンバ変数 -- //
+
 	// WinApp
 	WinApp* mWinApp = nullptr;
 	// DirectXCommon
@@ -45,8 +47,6 @@ public: // -- 公開 メンバ変数 -- //
 #ifdef _DEBUG
 	std::unique_ptr<ImGuiManager> mImGuiManager = nullptr;
 #endif // _DEBUG
-
-protected: // -- 限定公開 メンバ変数 -- //
 
 	// シーン工場(抽象)
 	std::unique_ptr<AbstractSceneFactory> mSceneFactory;

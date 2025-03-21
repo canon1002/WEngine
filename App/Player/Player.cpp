@@ -190,21 +190,14 @@ void Player::Update() {
 
 		// 方向入力
 		InputDirection();
-
 		// 落下処理
 		Fall();
 		// 移動処理
 		Move();
-
 		// 回避関連処理
 		Avoid();
-		// 防御関連処理
-		//Guard();
-
-		
 		// 攻撃関連処理
 		Attack();
-
 		// 方向修正
 		AdJustDirection();
 		
@@ -265,35 +258,8 @@ void Player::Update() {
 
 	// オブジェクト更新
 	UpdateObject();
-
 	// UI更新
 	mStatus->Update();
-
-	//
-	//// 衝突時の処理
-	//if (mBehavior == Behavior::kAttack || mBehavior == Behavior::kChargeAttack) {
-	//	if ((mAttackStatus.isOperating == true || mChargeStatus.isCharge == true) && mAttackStatus.isHit == false)
-	//	{
-	//		for (GameCollider* collider : mAttackStatus.swordColliders)
-	//		{
-	//			if (collider->GetOnCollisionFlag() == false)
-	//			{
-	//				continue;
-	//			}
-
-	//			// 次のフレームで消す
-	//			mAttackStatus.isHit = true;
-
-	//			// 敵にダメージを与える
-	//			ReciveDamageToBoss(1.2f);
-
-	//			// ダメージ表示
-	//			int32_t damage = static_cast<int32_t>(static_cast<int32_t>(mStatus->STR / 2.0f) * 1.0f) - static_cast<int32_t>(mBoss->GetStatus()->VIT / 4.0f);;
-	//			DamageReaction::GetInstance()->Reaction(mReticle->GetWorld3D(), damage, MainCamera::GetInstance());
-	//		}
-	//	}
-	//}
-
 }
 
 void Player::UpdateObject()
@@ -324,12 +290,9 @@ void Player::UpdateObject()
 	mObject->mCollider->Update();
 
 	// 身体の部位のワールド行列を更新
-	UpdateBodyMatrix();
+	UpdateBodyCollider();
 
-	// 身体の部位に合わせたコライダーを更新
-	for (auto& collider : mBodyPartColliders) {
-		collider.second->collider->Update();
-	}
+	
 
 
 	// 右手のワールド行列を更新
@@ -739,9 +702,10 @@ void Player::Move()
 
 		}
 
+		// 入力がなければ
 		if (mDirectionInputCount <= 0.0f) {
 
-			if (mBehavior == Behavior::kMove) {
+			if (mBehavior == Behavior::kMove || mBehavior == Behavior::kDash) {
 				// 通常状態に戻す
 				mBehavior = Behavior::kRoot;
 			}

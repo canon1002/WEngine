@@ -116,8 +116,7 @@ void Actor::CreateBodyPartCollider(std::string name, float radius, uint32_t coll
 //{
 //}
 
-void Actor::UpdateBodyMatrix()
-{
+void Actor::UpdateBodyCollider(){
 
 	// for文を利用して各部位の行列を更新
 	for (auto& collider : mBodyPartColliders) {
@@ -127,6 +126,8 @@ void Actor::UpdateBodyMatrix()
 			GetObject3D()->mSkinning->GetBoneMatrix(GetObject3D()->mSkinning->ConvertMixamoName(collider.first)),
 			GetObject3D()->GetWorldTransform()->GetWorldMatrix());
 
+		// コライダーを更新
+		collider.second->collider->Update();
 	}
 
 }

@@ -32,13 +32,18 @@ public: // -- 公開 メンバ関数 -- //
 	/// <param name="sceneName"> シーン名 </param>
 	void ChangeScene(const std::string& sceneName);
 
-private: // -- 非公開 メンバ変数 -- //
+private: // -- 非公開 メンバ関数 -- //
 
 	// コンストラクタ
 	SceneManager() = default;
 	// コピーコンストラクタと演算子オーバーロードの禁止
 	SceneManager(const SceneManager& obj) = delete;
 	SceneManager& operator=(const SceneManager& obj) = delete;
+
+public: // -- 公開 メンバ変数 -- //
+
+	// 終了リクエスト
+	bool mEndRequest;
 
 private: // -- 非公開 メンバ変数 -- //
 
@@ -50,6 +55,7 @@ private: // -- 非公開 メンバ変数 -- //
 	std::unique_ptr<BaseScene> mMenuScene = nullptr;
 	// シーン工場のポインタ(解放禁止)
 	AbstractSceneFactory* mSceneFactory;
+	
 
 	// インスタンス
 	static SceneManager* mInstance;

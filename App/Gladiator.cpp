@@ -17,6 +17,13 @@ void Gladiator::Init(){
 
 void Gladiator::Update(){
 
+	// 終了リクエストの確認
+	if (SceneManager::GetInstance()->mEndRequest) {
+
+		// true だったらゲームの終了リクエストを基底クラスに送る
+		mEndRequest = true;
+	}
+
 	// 基底クラスの更新処理
 	Framework::Update();
 }
