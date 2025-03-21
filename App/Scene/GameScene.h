@@ -121,8 +121,12 @@ class GameScene :
 		bool mIsFinishUIDisplayEnd;
 
 		// ヒットストップ・スロー関連のメンバ変数
+
+		// ヒットストップ中か
 		bool mIsHitStopActive = false;
+		// ヒットストップの発生期間
 		float mHitStopDuration = 0.0f;
+		// ヒットストップが開始されてからどのくらい経ったか
 		float mHitStopTimer = 0.0f;
 
 

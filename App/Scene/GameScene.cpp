@@ -455,6 +455,10 @@ void GameScene::BattlePhase() {
 
 	// ヒットストップ中は演出以外を停止
 	if (mHitStopTimer > 0.0f) {
+		// オブジェクトの更新は行う
+		//mPlayer->UpdateObject();
+		//mBoss->UpdateObject();
+
 		// 早期リターン
 		return;
 	}
@@ -812,17 +816,17 @@ void GameScene::StartHitStop(float duration)
 
 void GameScene::UpdateHitStop() {
 
-	// プレイヤーまたは敵がHitStopをリクエストしているとき
-	if (mPlayer->GetHitStopDuration() != 0.0f) {
-		StartHitStop(mPlayer->GetHitStopDuration());
-		Framerate::GetInstance()->SetBattleSpeed(0.25f);
-		mPlayer->SetHitStopDuration(0.0f);
-	}
+	// ゲームマネージャからヒットストップのリクエストを受け付ける
+	if (!mIsHitStopActive) {
+		GameManager* gameManager = GameManager::GetInstance();
+		if (gameManager->GetHitStopRequest()) {
 
-	if (mBoss->GetHitStopDuration() != 0.0f) {
-		StartHitStop(mBoss->GetHitStopDuration());
-		Framerate::GetInstance()->SetBattleSpeed(0.5f);
-		mBoss->SetHitStopDuration(0.0f);
+			// ヒットストップの発生時間を取得する
+			mHitStopDuration = gameManager->GetHitStopDuration();
+			// ヒットストップの実行
+			mIsHitStopActive = true;
+
+		}
 	}
 
 	// HitStop中の処理
@@ -832,7 +836,8 @@ void GameScene::UpdateHitStop() {
 		mHitStopTimer += 1.0f / Framerate::GetInstance()->GetFramerate();
 		if (mHitStopTimer >= mHitStopDuration) {
 			mIsHitStopActive = false;
-			Framerate::GetInstance()->SetBattleSpeed(1.0f);
+			mHitStopTimer = 0.0f;
+			mHitStopDuration = 0.0f;
 		}
 	}
 }

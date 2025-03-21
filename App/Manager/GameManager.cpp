@@ -54,7 +54,8 @@ void GameManager::Update() {
 
 
 			// ヒットストップ発生判定
-			 
+			mIsRequestHitStop = true;
+			mHitStopDuration = 0.2f;
 
 			// ヒットエフェクトの発生処理
 
@@ -87,7 +88,7 @@ void GameManager::Update() {
 
 
 			// ヒットストップ発生判定
-
+		
 
 			// ヒットエフェクトの発生処理
 

@@ -150,7 +150,7 @@ void Player::Init() {
 		mAttackStatus.swordWorldMat[i] = MakeAffineMatrix(Vector3{ 0.0f,0.0f,0.0f }, Vector3{ 0.0f,0.0f,0.0f }, Vector3{ 0.0f,0.0f,0.0f });
 		// コライダー 宣言
 		std::shared_ptr<GameCollider> newCollider = std::make_shared<GameCollider>();
-		newCollider->collider = std::make_unique<SphereCollider>(new WorldTransform(), 0.4f);
+		newCollider->collider = std::make_unique<SphereCollider>(new WorldTransform(), 0.2f);
 		// 初期化
 		newCollider->collider->Init();
 		newCollider->collider->SetTypeID(static_cast<uint32_t>(CollisionTypeId::kPlayerWeapon));
