@@ -150,7 +150,7 @@ void Player::Init() {
 		mAttackStatus.swordWorldMat[i] = MakeAffineMatrix(Vector3{ 0.0f,0.0f,0.0f }, Vector3{ 0.0f,0.0f,0.0f }, Vector3{ 0.0f,0.0f,0.0f });
 		// コライダー 宣言
 		std::shared_ptr<GameCollider> newCollider = std::make_shared<GameCollider>();
-		newCollider->collider = std::make_unique<SphereCollider>(new WorldTransform(), 0.2f);
+		newCollider->collider = std::make_unique<SphereCollider>(new WorldTransform(), 0.25f);
 		// 初期化
 		newCollider->collider->Init();
 		newCollider->collider->SetTypeID(static_cast<uint32_t>(CollisionTypeId::kPlayerWeapon));
@@ -265,6 +265,10 @@ void Player::Update() {
 void Player::UpdateObject()
 {
 
+	// 無敵時間時の処理
+	InvincibleObjectUpdate();
+
+
 	// 補間数値
 	static float t = 0.0f;
 	// 勾配
@@ -272,7 +276,6 @@ void Player::UpdateObject()
 	// 始点と終点
 	static Vector3 s = { 0.0f,0.5f,-8.0f };
 	static Vector3 e = { 0.0f,1.8f,-26.0f };
-
 
 	// 補間後の数値を計算
 	Vector3 cVel = ExponentialInterpolation(s, e, t, k);
@@ -291,8 +294,6 @@ void Player::UpdateObject()
 
 	// 身体の部位のワールド行列を更新
 	UpdateBodyCollider();
-
-	
 
 
 	// 右手のワールド行列を更新

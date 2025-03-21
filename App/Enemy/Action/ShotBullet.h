@@ -40,6 +40,9 @@ namespace ACT {
 
 		// 弾のパラメータ
 		BulletStatus mBulletStatus;
+		// 射撃を行ったか
+		bool mIsShot;
+
 
 	};
 }

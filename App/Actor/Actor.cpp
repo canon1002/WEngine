@@ -1,7 +1,7 @@
 #include "Actor.h"
 #include "GameEngine/Append/Collider/SphereCollider.h"
 #include "GameEngine/Append/Collider/CollisionManager.h"
-
+#include "App/BlackBoard.h"
 
 Actor::Actor(){
 	
@@ -54,6 +54,34 @@ void Actor::AdJustDirection() {
 		std::atan2f(mDirection.x, mDirection.z),
 		0.2f
 	);
+
+}
+
+void Actor::InvincibleObjectUpdate(){
+
+	// 無敵時間中でなければ早期リターン
+	if (mInvincibleTime <= 0.0f) {
+		return;
+	}
+
+	// 時間を減産
+	mInvincibleCurrent += BlackBoard::GetBattleFPS();
+
+	// 無敵時間前半は赤くする
+	if (mInvincibleCurrent < (mInvincibleTime * 0.5f)) {
+		mObject->mModel->mMaterialData->color = { 1.0f,0.0f,0.0f,1.0f };
+	}
+	// 無敵時間後半に色を戻す
+	else{
+		mObject->mModel->mMaterialData->color = { 1.0f,1.0f,1.0f,1.0f };
+	}
+
+	// 無敵時間が終了したら
+	if (mInvincibleCurrent >= mInvincibleTime) {
+		// 無敵時間を0秒に補正する
+		mInvincibleCurrent = 0.0f;
+		mInvincibleTime = 0.0f;
+	}
 
 }
 

@@ -50,12 +50,12 @@ void GameManager::Update() {
 			}
 			// プレイヤー側の攻撃衝突フラグの切り替え ・ 敵キャラの無敵時間を設定
 			mPlayer->Hit();
-			mBoss->SetInvincible(1.0f);
+			mBoss->SetInvincible(0.8f);
 
 
 			// ヒットストップ発生判定
 			mIsRequestHitStop = true;
-			mHitStopDuration = 0.2f;
+			mHitStopDuration = 0.1f;
 
 			// ヒットエフェクトの発生処理
 
@@ -82,7 +82,7 @@ void GameManager::Update() {
 
 			// 敵キャラ側の攻撃衝突フラグの切り替え ・ プレイヤーの無敵時間を設定
 			mBoss->Hit();
-			mPlayer->SetInvincible(1.0f);
+			mPlayer->SetInvincible(0.8f);
 
 			// (ToDo)ジャスト回避判定
 

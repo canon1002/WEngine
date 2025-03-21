@@ -367,6 +367,10 @@ void BossEnemy::UpdateBehaviorTree() {
 
 void BossEnemy::UpdateObject() {
 
+
+	// 無敵時間時の処理
+	InvincibleObjectUpdate();
+
 	// アクションの中身が存在する場合はアクションクラスの更新を行う
 	if (!mActiveAction.expired()) {
 		mActiveAction.lock()->Update();

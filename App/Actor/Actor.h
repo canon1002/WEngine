@@ -91,6 +91,9 @@ public: // -- 公開 メンバ関数 -- //
 		mInvincibleTime = time;
 	}
 
+	// 被弾後の無敵時間中に点滅させる処理
+	void InvincibleObjectUpdate();
+
 	void ReceiveDamage();
 
 #pragma endregion
@@ -202,6 +205,9 @@ protected: // -- 限定公開 メンバ変数 -- //
 	std::shared_ptr<Status> mStatus;
 	// 無敵時間
 	float mInvincibleTime;
+	// 無敵発生時からいくら経ったか
+	float mInvincibleCurrent;
+
 
 	// 行動マップデータ
 	std::map<string, std::shared_ptr<ACT::Action>> mActions;

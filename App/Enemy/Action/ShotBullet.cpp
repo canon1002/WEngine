@@ -24,10 +24,10 @@ void ACT::ShotBullet::Update()
 	if (mCondition == Condition::RUNNING) {
 
 		// 攻撃処理
-		if (!mIsOperating && mActor->GetObject3D()->mSkinning->GetAnimationTimeRate("ShotBullet") >= 0.5f) {
+		if (!mIsShot && mActor->GetObject3D()->mSkinning->GetAnimationTimeRate("ShotBullet") >= 0.5f) {
 			
 			// 攻撃済みに設定
-			mIsOperating = true;
+			mIsShot = true;
 
 			// 弾のパラメータのうち、座標関連のみを補正する
 
@@ -90,8 +90,14 @@ void ACT::ShotBullet::Reset()
 {
 	// 初期化する
 	mCondition = Condition::IDOL;
+
+	// 以下の2つの変数は衝突判定関係で不具合が発生するため使用しない
+	// (例) 弾の射撃中に武器の衝突判定が発生し「理不尽な」ダメージが発生する
 	mIsHit = false;
 	mIsOperating = false;
+
+	// 射撃行動フラグをfalseに
+	mIsShot = false;
 
 	// 弾のパラメータを設定する
 	mBulletStatus.pos = mActor->GetWorldPos();
