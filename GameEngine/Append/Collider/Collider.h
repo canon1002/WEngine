@@ -74,7 +74,6 @@ public: // -- 公開 メンバ関数 -- //
 	/// <param name="collider">衝突対象</param>
 	virtual void OnCollision(Collider* collider) = 0;
 
-
 	/// <summary>
 	/// ワールド座標の取得
 	/// </summary>
@@ -87,11 +86,10 @@ public: // -- 公開 メンバ関数 -- //
 	/// <returns>ワールドトランスフォームのポインタ</returns>
 	WorldTransform* GetWorld() { return mWorldTransform; }
 
-	// 衝突属性の変更・取得
-	inline uint32_t GetCollisionAttribute() { return mCollisionAttribute; }
-	inline void SetCollisionAttribute(uint32_t collisionAttribute) { mCollisionAttribute = collisionAttribute; }
-	inline uint32_t GetCollisionMask() { return mCollisionMask; }
-	inline void SetCollisionMask(uint32_t collisionMask) { mCollisionMask = collisionMask; }
+	// 種別IDを取得
+	uint32_t GetTypeID()const { return mTypeID; }
+	// 種別IDを設定
+	void SetTypeID(uint32_t typeID) { mTypeID = typeID; }
 
 	// コライダー同士の衝突判定(マネージャで呼び出す用)
 	virtual bool IsCollision(Collider* c) = 0;
@@ -106,10 +104,11 @@ public: // -- 公開 メンバ関数 -- //
 	// 衝突フラグ取得
 	virtual bool GetOnCollisionFlag()const { return mIsOnCollision; }
 
+	// ワールド座標の登録
 	void SetWorld(WorldTransform* world) {
 		mWorldTransform = world;
-	
 	}
+	// 追加の平行移動量を設定
 	void SetAddTranslation(Vector3 translation) { mAddtranslation = translation; }
 	
 protected: // -- 限定公開 メンバ関数 -- //
@@ -122,32 +121,25 @@ protected: // -- 限定公開 メンバ関数 -- //
 
 protected: // -- 限定公開 メンバ変数 -- //
 
-	// 衝突属性 自分
-	uint32_t mCollisionAttribute = 0xffffffff;
-	// 衝突属性 相手
-	uint32_t mCollisionMask = 0xffffffff;
-
+	// 種別ID
+	uint32_t mTypeID = 0u;
 	// 追加平行移動量
 	Vector3 mAddtranslation;
-
-	// -- ここから下はデバッグ用の変数 -- //
-
-
-	// 外部ポインタ
-	Matrix4x4 viewM, wvpM;
-
-	// Transformation用のResourceを作る
-	Microsoft::WRL::ComPtr<ID3D12Resource> mWvpResource = nullptr;
-	// データを書き込む
-	std::shared_ptr<TransformationMatrixForGrid3D> mWvpData = nullptr;
-	WorldTransform* mWorldTransform;
-
-	// モデル
-	std::shared_ptr<Model> mModel;
 
 	// 衝突フラグ
 	bool mIsOnCollision;
 	// 衝突フラグ解消までの時間
 	int32_t mOnCollisionCount;
+
+	// -- ここから下はデバッグ用の変数 -- //
+
+	Matrix4x4 viewM, wvpM;
+	// Transformation用のResourceを作る
+	Microsoft::WRL::ComPtr<ID3D12Resource> mWvpResource = nullptr;
+	// データを書き込む
+	std::shared_ptr<TransformationMatrixForGrid3D> mWvpData = nullptr;
+	WorldTransform* mWorldTransform;
+	// モデル
+	std::shared_ptr<Model> mModel;
 
 };

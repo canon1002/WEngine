@@ -117,10 +117,8 @@ void ACT::ShotBullet::Reset()
 	if (enableKnockback == 1) {
 		mBulletStatus.isHitKnockBack = true;
 	}
-	// 衝突属性(自分)
-	mBulletStatus.collisionAttribute = kCollisionAttributeEnemyBullet;
-	// 衝突可能な相手の属性
-	mBulletStatus.collisionMask = kCollisionAttributePlayer;
+	// 衝突属性ID
+	mBulletStatus.collisionAttribute = static_cast<uint32_t>(CollisionTypeId::kEnemyBullet);
 
 }
 

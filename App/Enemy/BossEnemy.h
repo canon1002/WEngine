@@ -3,7 +3,7 @@
 #include "App/AI/State/IBossState.h"
 #include "App/AI/State/VitalityBossState.h"
 #include "App/AI/BehaviorTree/IBehavior.h"
-#include "App/Status/StatusManager.h"
+#include "App/Manager/GameManager.h"
 
 
 // 前方宣言
@@ -36,8 +36,15 @@ public: // -- 公開 メンバ関数 -- //
 	// モデルの取得
 	Model* GetModel() { return mObject->mModel.get(); }
 	Collider* GetCollider() { return mObject->mCollider.get(); }
+	// ゲームマネージャにコライダーを渡す
+	void SetColliderList();
 
-	void SetAttackCollider(CollisionManager* cManager);
+	/// <summary>
+	/// 攻撃を当てたことをアクターに伝える
+	/// </summary>
+	virtual void Hit()override {
+		mActiveAction.lock()->Hit();
+	}
 
 	// プレイヤーのポインタをセットする
 	void SetTarget(Actor* target) { mTarget = target; }
@@ -49,6 +56,9 @@ public: // -- 公開 メンバ関数 -- //
 
 	// 自身の攻撃命中時に呼び出す関数
 	void ReciveDamageTolayer(float power);
+
+	// 自身が攻撃中であるか確認する関数
+	bool GetIsOperating()const;
 
 	// ワールド座標を取得
 	const WorldTransform* GetWorldPositionSword(int32_t count) { return mWorldTransformSword.at(count).get(); }
@@ -80,7 +90,7 @@ public: // -- 公開 メンバ変数 -- //
 	// 武器
 	std::unique_ptr<Object3d> mWeapon;
 	// 武器の衝突判定
-	std::vector<Collider*> mWeaponColliders;
+	std::vector<std::shared_ptr<GameCollider>> mWeaponColliders;
 
 
 private: // -- 非公開 メンバ変数 -- //

@@ -14,9 +14,9 @@
 
 #include "App/BlackBoard.h"
 
-BossEnemy::BossEnemy(){}
+BossEnemy::BossEnemy() {}
 
-BossEnemy::~BossEnemy(){}
+BossEnemy::~BossEnemy() {}
 
 void BossEnemy::Init() {
 
@@ -94,25 +94,24 @@ void BossEnemy::Init() {
 	mObject->mCollider = std::make_unique<SphereCollider>(mObject->mWorldTransform.get(), mObject->GetWorldTransform()->scale.x);
 	mObject->mCollider->Init();
 	mObject->mCollider->SetAddTranslation(Vector3(0.0f, mObject->GetWorldTransform()->scale.y, 0.0f));
-	mObject->mCollider->SetCollisionAttribute(kCollisionAttributeEnemy);
-	mObject->mCollider->SetCollisionMask(kCollisionAttributePlayerBullet);
+	mObject->mCollider->SetTypeID(static_cast<uint32_t>(CollisionTypeId::kEnemy));
 
 	// 身体の部位に合わせたコライダーを生成
-	CreateBodyPartCollider("Head", 0.15f, kCollisionAttributeEnemy, kCollisionAttributePlayerBullet);
-	CreateBodyPartCollider("Neck", 0.3f, kCollisionAttributeEnemy, kCollisionAttributePlayerBullet);
-	CreateBodyPartCollider("Spine", 0.4f, kCollisionAttributeEnemy, kCollisionAttributePlayerBullet);
-	CreateBodyPartCollider("Spine1", 0.4f, kCollisionAttributeEnemy, kCollisionAttributePlayerBullet);
-	CreateBodyPartCollider("Spine2", 0.4f, kCollisionAttributeEnemy, kCollisionAttributePlayerBullet);
-	CreateBodyPartCollider("LeftUpLeg", 0.15f, kCollisionAttributeEnemy, kCollisionAttributePlayerBullet);
-	CreateBodyPartCollider("LeftLeg", 0.15f, kCollisionAttributeEnemy, kCollisionAttributePlayerBullet);
-	CreateBodyPartCollider("LeftFoot", 0.15f, kCollisionAttributeEnemy, kCollisionAttributePlayerBullet);
-	CreateBodyPartCollider("RightUpLeg", 0.15f, kCollisionAttributeEnemy, kCollisionAttributePlayerBullet);
-	CreateBodyPartCollider("RightLeg", 0.15f, kCollisionAttributeEnemy, kCollisionAttributePlayerBullet);
-	CreateBodyPartCollider("RightFoot", 0.15f, kCollisionAttributeEnemy, kCollisionAttributePlayerBullet);
-	CreateBodyPartCollider("LeftForeArm", 0.15f, kCollisionAttributeEnemy, kCollisionAttributePlayerBullet);
-	CreateBodyPartCollider("LeftHand", 0.1f, kCollisionAttributeEnemy, kCollisionAttributePlayerBullet);
-	CreateBodyPartCollider("RightForeArm", 0.15f, kCollisionAttributeEnemy, kCollisionAttributePlayerBullet);
-	CreateBodyPartCollider("RightHand", 0.1f, kCollisionAttributeEnemy, kCollisionAttributePlayerBullet);
+	CreateBodyPartCollider("Head", 0.15f, static_cast<uint32_t>(CollisionTypeId::kEnemy));
+	CreateBodyPartCollider("Neck", 0.3f, static_cast<uint32_t>(CollisionTypeId::kEnemy));
+	CreateBodyPartCollider("Spine", 0.4f, static_cast<uint32_t>(CollisionTypeId::kEnemy));
+	CreateBodyPartCollider("Spine1", 0.4f, static_cast<uint32_t>(CollisionTypeId::kEnemy));
+	CreateBodyPartCollider("Spine2", 0.4f, static_cast<uint32_t>(CollisionTypeId::kEnemy));
+	CreateBodyPartCollider("LeftUpLeg", 0.15f, static_cast<uint32_t>(CollisionTypeId::kEnemy));
+	CreateBodyPartCollider("LeftLeg", 0.15f, static_cast<uint32_t>(CollisionTypeId::kEnemy));
+	CreateBodyPartCollider("LeftFoot", 0.15f, static_cast<uint32_t>(CollisionTypeId::kEnemy));
+	CreateBodyPartCollider("RightUpLeg", 0.15f, static_cast<uint32_t>(CollisionTypeId::kEnemy));
+	CreateBodyPartCollider("RightLeg", 0.15f, static_cast<uint32_t>(CollisionTypeId::kEnemy));
+	CreateBodyPartCollider("RightFoot", 0.15f, static_cast<uint32_t>(CollisionTypeId::kEnemy));
+	CreateBodyPartCollider("LeftForeArm", 0.15f, static_cast<uint32_t>(CollisionTypeId::kEnemy));
+	CreateBodyPartCollider("LeftHand", 0.1f, static_cast<uint32_t>(CollisionTypeId::kEnemy));
+	CreateBodyPartCollider("RightForeArm", 0.15f, static_cast<uint32_t>(CollisionTypeId::kEnemy));
+	CreateBodyPartCollider("RightHand", 0.1f, static_cast<uint32_t>(CollisionTypeId::kEnemy));
 
 	mRightHandWorldMat = MakeAffineMatrix(Vector3{ 0.0f,0.0f,0.0f }, Vector3{ 0.0f,0.0f,0.0f }, Vector3{ 0.0f,0.0f,0.0f });
 
@@ -139,15 +138,15 @@ void BossEnemy::Init() {
 	for (int32_t i = 0; i < 8; i++) {
 		mWeaponWorldMat[i] = MakeAffineMatrix(Vector3{ 0.0f,0.0f,0.0f }, Vector3{ 0.0f,0.0f,0.0f }, Vector3{ 0.0f,0.0f,0.0f });
 		// コライダー 宣言
-		SphereCollider* newCollider = new SphereCollider(new WorldTransform, 0.4f);
+		std::shared_ptr<GameCollider> newCollider = std::make_shared<GameCollider>();
+		newCollider->collider = std::make_unique<SphereCollider>(new WorldTransform(), 0.4f);
 		// 初期化
-		newCollider->Init();
-		newCollider->SetCollisionAttribute(kCollisionAttributeEnemyBullet);
-		newCollider->SetCollisionMask(kCollisionAttributePlayer);
+		newCollider->collider->Init();
+		newCollider->collider->SetTypeID(static_cast<uint32_t>(CollisionTypeId::kEnemyWeapon));
 		// 武器に設定したボーンのワールド座標をセット
-		newCollider->GetWorld()->SetParent(mWeaponWorldMat[i]);
-		//// 配列にプッシュする
-		mWeaponColliders.push_back(newCollider);
+		newCollider->collider->GetWorld()->SetParent(mWeaponWorldMat[i]);
+		// 配列にプッシュする
+		mWeaponColliders.push_back(std::move(newCollider));
 	}
 
 	mReloadBTCount = 10.0f;
@@ -339,18 +338,17 @@ void BossEnemy::Update() {
 	if (!mActiveAction.expired()) {
 
 		if (mActiveAction.lock()->GetIsHit() == false &&
-			mActiveAction.lock()->GetIsOperating() == true){
+			mActiveAction.lock()->GetIsOperating() == true) {
 
-			for (Collider* collider : mWeaponColliders)
+			for (auto& collider : mWeaponColliders)
 			{
-				if (collider->GetOnCollisionFlag() == false)
+				if (collider->collider->GetOnCollisionFlag() == false)
 				{
 					continue;
 				}
 
 				// 次のフレームで消す
 				mActiveAction.lock()->Hit();
-
 				// 敵にダメージを与える
 				ReciveDamageTolayer(1.8f);
 
@@ -459,12 +457,12 @@ void BossEnemy::UpdateObject() {
 
 	// 身体の部位に合わせたコライダーを更新
 	for (auto& collider : mBodyPartColliders) {
-		collider.second->Update();
+		collider.second->collider->Update();
 	}
 
 	// 武器のコライダー 更新
-	for (Collider* collider : mWeaponColliders) {
-		collider->Update();
+	for (auto& collider : mWeaponColliders) {
+		collider->collider->Update();
 	}
 
 	// オブジェクト更新
@@ -551,7 +549,15 @@ void BossEnemy::DrawGUI() {
 #endif // _DEBUG
 }
 
-void BossEnemy::SetAttackCollider(CollisionManager* cManager) {
+void BossEnemy::SetColliderList() {
+
+	// ボス敵本体の本体のコライダー
+	for (auto& collider : mBodyPartColliders) {
+		// ゲームマネージャのリストに追加
+		GameManager::GetInstance()->SetCollider(collider.second);
+	}
+
+	// ボス敵の武器コライダー
 
 	// 行動設定時
 	if (!mActiveAction.expired()) {
@@ -561,17 +567,16 @@ void BossEnemy::SetAttackCollider(CollisionManager* cManager) {
 			!mActiveAction.lock()->GetIsHit()) {
 
 			// コライダーセット
-			for (Collider* collider : mWeaponColliders) {
-				cManager->SetCollider(collider);
+			for (auto& collider : mWeaponColliders) {
+				GameManager::GetInstance()->SetCollider(collider);
 			}
-
 		}
 
 	}
 
 	// 弾のコライダーを登録
 	for (auto& bullet : mBullets) {
-		cManager->SetCollider(bullet->GetObject3d()->mCollider.get());
+		GameManager::GetInstance()->SetCollider(bullet->GetCollider());
 	}
 
 
@@ -599,6 +604,11 @@ void BossEnemy::ReciveDamageTolayer(float power)
 {
 	// プレイヤーにダメージを与える
 	StatusManager::GetInstance()->ReceiveDamage(mStatus, power, mTarget->GetStatus());
+}
+
+bool BossEnemy::GetIsOperating() const {
+	// 実行中のアクションで攻撃中であるか取得して返す
+	return mActiveAction.lock()->GetIsOperating();
 }
 
 
@@ -649,7 +659,7 @@ void BossEnemy::Load()
 }
 
 void BossEnemy::ColliderDraw() {
-	
+
 	// 武器の描画
 	mWeapon->Draw();
 
@@ -665,7 +675,7 @@ void BossEnemy::ColliderDraw() {
 		if (mActiveAction.lock()->GetIsOperating() &&
 			!mActiveAction.lock()->GetIsHit()) {
 			for (auto& collider : mWeaponColliders) {
-				collider->Draw();
+				collider->collider->Draw();
 			}
 		}
 	}
@@ -673,7 +683,7 @@ void BossEnemy::ColliderDraw() {
 
 	// 身体の部位に合わせたコライダーを描画
 	for (auto& collider : mBodyPartColliders) {
-		collider.second->Draw();
+		collider.second->collider->Draw();
 	}
 
 #endif // _DEBUG

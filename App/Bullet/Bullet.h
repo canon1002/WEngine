@@ -1,5 +1,6 @@
 #pragma once
 #include "GameEngine/Object/3d/Object3d.h"
+#include "App/Actor/Collider/GameCollider.h"
 #include <memory>
 
 // 外部から取得するパラメータ
@@ -57,6 +58,8 @@ public: // -- 公開 メンバ関数 -- //
 
 	// オブジェクトの取得
 	Object3d* GetObject3d() { return mObject.get(); }
+	// コライダー取得
+	std::shared_ptr<GameCollider> GetCollider() { return mCollider; }
 
 private: // -- 非公開 メンバ変数 -- //
 
@@ -67,7 +70,8 @@ private: // -- 非公開 メンバ変数 -- //
 
 	// オブジェクト
 	std::unique_ptr<Object3d> mObject;
-
+	// コライダー
+	std::shared_ptr<GameCollider> mCollider;
 
 };
 

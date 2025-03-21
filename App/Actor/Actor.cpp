@@ -15,7 +15,7 @@ void Actor::SetCollider(CollisionManager* cManager)
 {
 	// コライダーをマネージャーに登録
 	for (auto& collider : mBodyPartColliders) {
-		cManager->SetCollider(collider.second.get());
+		cManager->SetCollider(collider.second->collider.get());
 	}
 }
 
@@ -76,7 +76,7 @@ void Actor::Load()
 {
 }
 
-void Actor::CreateBodyPartCollider(std::string name, float radius,uint32_t atribute, uint32_t mask) {
+void Actor::CreateBodyPartCollider(std::string name, float radius, uint32_t colliderTypeID) {
 
 	// 名称が重複している場合は処理を行わない
 	if (mBodyPartColliders.find(name) != mBodyPartColliders.end()) {
@@ -99,15 +99,14 @@ void Actor::CreateBodyPartCollider(std::string name, float radius,uint32_t atrib
 	//
 
 	// 新規コライダーの宣言
-	std::unique_ptr<Collider> newCollider = std::make_unique<SphereCollider>(new WorldTransform(), radius);
+	std::shared_ptr<GameCollider> newCollider = std::make_shared<GameCollider>();
+	newCollider->collider = std::make_unique<SphereCollider>(new WorldTransform(), radius);
 	// 初期化
-	newCollider->Init();
-	// コライダーの衝突属性を設定
-	newCollider->SetCollisionAttribute(atribute);
-	// コライダーの衝突対象を設定
-	newCollider->SetCollisionMask(mask);
+	newCollider->collider->Init();
+	// コライダーの属性IDを設定
+	newCollider->collider->SetTypeID(colliderTypeID);
 	// コライダーに親行列を設定
-	newCollider->GetWorld()->SetParent(*mBodyPartWorldMatrix[name].get());
+	newCollider->collider->GetWorld()->SetParent(*mBodyPartWorldMatrix[name].get());
 
 	// コライダーの名称を設定し、リストに追加
 	mBodyPartColliders[name] = std::move(newCollider);

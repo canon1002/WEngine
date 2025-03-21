@@ -127,7 +127,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="App\AI\BehaviorTree\IBehavior.cpp" />
     <ClCompile Include="App\Enemy\Action\AttackJump.cpp" />
     <ClCompile Include="App\Enemy\Action\Dash.cpp" />
-    <ClCompile Include="App\Status\StatusManager.cpp" />
+    <ClCompile Include="App\Manager\Status\StatusManager.cpp" />
     <ClCompile Include="App\Enemy\Action\AttackDash.cpp" />
     <ClCompile Include="Externals\imgui\imnodes.cpp" />
     <ClCompile Include="GameEngine\Editor\NodeEditor\BTNodeEditor.cpp" />
@@ -136,7 +136,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="GameEngine\GameMaster\Framerate.cpp" />
     <ClCompile Include="App\Enemy\Action\Action.cpp" />
     <ClCompile Include="App\Enemy\Action\AttackAction.cpp" />
-    <ClCompile Include="App\Reaction\DamageReaction.cpp" />
+    <ClCompile Include="App\Manager\Reaction\DamageReaction.cpp" />
     <ClCompile Include="App\Player\Arrow.cpp" />
     <ClCompile Include="GameEngine\Append\Collider\AABBCollider.cpp" />
     <ClCompile Include="GameEngine\Append\Collider\OBBCollider.cpp" />
@@ -204,6 +204,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="GameEngine\Editor\LevelEditor.cpp" />
     <ClCompile Include="App\Enemy\Action\KnockBack.cpp" />
     <ClCompile Include="App\Gladiator.cpp" />
+    <ClCompile Include="App\Manager\GameManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="GameEngine\Object\3d\Object3d.cpp" />
     <ClCompile Include="GameEngine\Object\Model\ModelManager.cpp" />
@@ -230,6 +231,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="GameEngine\Effect\Particle\Emitter\ParticleEmitter.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="App\Actor\Collider\GameCollider.h" />
     <ClInclude Include="App\BlackBoard.h" />
     <ClInclude Include="App\Enemy\Action\ShotBullet.h" />
     <ClInclude Include="App\Enemy\Action\Shrinkage.h" />
@@ -242,7 +244,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="App\Enemy\Action\ActionList.h" />
     <ClInclude Include="App\Enemy\Action\AttackJump.h" />
     <ClInclude Include="App\Enemy\Action\Dash.h" />
-    <ClInclude Include="App\Status\StatusManager.h" />
+    <ClInclude Include="App\Manager\Status\StatusManager.h" />
     <ClInclude Include="App\Enemy\Action\AttackDash.h" />
     <ClInclude Include="Externals\imgui\imnodes.h" />
     <ClInclude Include="Externals\imgui\imnodes_internal.h" />
@@ -253,7 +255,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="GameEngine\Input\Controller.h" />
     <ClInclude Include="GameEngine\GameMaster\Framerate.h" />
     <ClInclude Include="App\Enemy\Action\Action.h" />
-    <ClInclude Include="App\Reaction\DamageReaction.h" />
+    <ClInclude Include="App\Manager\Reaction\DamageReaction.h" />
     <ClInclude Include="App\Player\Arrow.h" />
     <ClInclude Include="GameEngine\Append\Collider\AABBCollider.h" />
     <ClInclude Include="GameEngine\Append\Collider\OBBCollider.h" />
@@ -353,6 +355,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="App\Gladiator.h" />
     <ClInclude Include="App\Scene\SceneFactory.h" />
     <ClInclude Include="GameEngine\Effect\Particle\Emitter\ParticleEmitter.h" />
+    <ClInclude Include="App\Manager\GameManager.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt" />

@@ -374,13 +374,13 @@
     <ClCompile Include="App\Player\Action\Slash.cpp">
       <Filter>App\Player\Skill</Filter>
     </ClCompile>
-    <ClCompile Include="App\Reaction\DamageReaction.cpp">
+    <ClCompile Include="App\Manager\Reaction\DamageReaction.cpp">
       <Filter>App\Reaction</Filter>
     </ClCompile>
     <ClCompile Include="App\Reticle\Reticle3D.cpp">
       <Filter>App\Reticle</Filter>
     </ClCompile>
-    <ClCompile Include="App\Status\StatusManager.cpp">
+    <ClCompile Include="App\Manager\Status\StatusManager.cpp">
       <Filter>App\Status</Filter>
     </ClCompile>
     <ClCompile Include="GameEngine\Effect\PostEffect\BoxFilter.cpp">
@@ -450,6 +450,7 @@
     <ClCompile Include="GameEngine\Effect\Particle\Emitter\ParticleEmitter.cpp" />
     <ClCompile Include="App\Enemy\Action\ShotBullet.cpp" />
     <ClCompile Include="App\Bullet\Bullet.cpp" />
+    <ClCompile Include="App\Manager\GameManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameEngine\Object\Light\DirectionalLight.h">
@@ -683,13 +684,13 @@
     <ClInclude Include="App\Player\Action\Slash.h">
       <Filter>App\Player\Skill</Filter>
     </ClInclude>
-    <ClInclude Include="App\Reaction\DamageReaction.h">
+    <ClInclude Include="App\Manager\Reaction\DamageReaction.h">
       <Filter>App\Reaction</Filter>
     </ClInclude>
     <ClInclude Include="App\Reticle\Reticle3D.h">
       <Filter>App\Reticle</Filter>
     </ClInclude>
-    <ClInclude Include="App\Status\StatusManager.h">
+    <ClInclude Include="App\Manager\Status\StatusManager.h">
       <Filter>App\Status</Filter>
     </ClInclude>
     <ClInclude Include="GameEngine\Effect\PostEffect\BoxFilter.h">
@@ -769,6 +770,8 @@
     <ClInclude Include="GameEngine\Effect\Particle\Emitter\ParticleEmitter.h" />
     <ClInclude Include="App\Enemy\Action\ShotBullet.h" />
     <ClInclude Include="App\Bullet\Bullet.h" />
+    <ClInclude Include="App\Manager\GameManager.h" />
+    <ClInclude Include="App\Actor\Collider\GameCollider.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt">

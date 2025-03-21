@@ -5,8 +5,8 @@
 #include "GameEngine/Append/Collider/AABBCollider.h"
 #include "GameEngine/Append/Collider/SphereCollider.h"
 #include <numbers>
-#include "App/Reaction/DamageReaction.h"
-#include "App/Status/StatusManager.h"
+#include "App/Manager/Reaction/DamageReaction.h"
+#include "App/Manager/Status/StatusManager.h"
 #include "App/Player/Player.h"
 #include "App/Enemy/BossEnemy.h"
 
@@ -46,8 +46,7 @@ void Arrow::Init(Player* player,Vector3 pos, Vector3 vel)
 	// コライダーの宣言
 	mObject->mCollider = std::make_unique<SphereCollider>(mObject->mWorldTransform.get(), 0.05f);
 	mObject->mCollider->Init();
-	mObject->mCollider->SetCollisionAttribute(kCollisionAttributePlayerBullet);
-	mObject->mCollider->SetCollisionMask(kCollisionAttributeEnemy);
+	mObject->mCollider->SetTypeID(static_cast<uint32_t>(CollisionTypeId::kPlayerWeapon));
 
 	// フラグをtrueにする
 	mIsActive = true;

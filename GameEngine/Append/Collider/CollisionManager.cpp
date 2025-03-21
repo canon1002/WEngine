@@ -13,8 +13,8 @@ void CollisionManager::Draw() {}
 void CollisionManager::CheckAllCollisions() {
 
 	// リスト内のペアを総当たり
-	std::list<Collider*>::iterator itrA = m_colliders.begin();
-	for (; itrA != m_colliders.end(); ++itrA) {
+	std::list<Collider*>::iterator itrA = mColliders.begin();
+	for (; itrA != mColliders.end(); ++itrA) {
 
 		// イテレーターからコライダーを取得
 		Collider* colliderA = (*itrA);
@@ -23,7 +23,7 @@ void CollisionManager::CheckAllCollisions() {
 		std::list<Collider*>::iterator itrB = itrA;
 		itrB++;
 
-		for (; itrB != m_colliders.end(); ++itrB) {
+		for (; itrB != mColliders.end(); ++itrB) {
 
 			// イテレーターからコライダーを取得
 			Collider* colliderB = (*itrB);
@@ -35,11 +35,78 @@ void CollisionManager::CheckAllCollisions() {
 	}
 }
 
+bool CollisionManager::CheckColliderType(Collider* a, Collider* b){
+
+	switch (a->GetTypeID())
+	{
+	case static_cast<uint32_t>(CollisionTypeId::kDefault):
+		break;
+
+		// 敵キャラ
+	case static_cast<uint32_t>(CollisionTypeId::kEnemy):
+		
+		if (b->GetTypeID() == static_cast<uint32_t>(CollisionTypeId::kPlayerWeapon)) {
+			return true;
+		}
+
+		break;
+
+		// 敵キャラ - 武器
+	case static_cast<uint32_t>(CollisionTypeId::kEnemyWeapon):
+
+		if (b->GetTypeID() == static_cast<uint32_t>(CollisionTypeId::kPlayer)) {
+			return true;
+		}
+
+		break;
+		
+		// 敵キャラ - 弾
+	case static_cast<uint32_t>(CollisionTypeId::kEnemyBullet):
+
+		if (b->GetTypeID() == static_cast<uint32_t>(CollisionTypeId::kPlayer)) {
+			return true;
+		}
+
+		break;
+
+		// プレイヤーキャラ
+	case static_cast<uint32_t>(CollisionTypeId::kPlayer):
+
+		if (b->GetTypeID() == static_cast<uint32_t>(CollisionTypeId::kEnemyWeapon)) {
+			return true;
+		}
+
+		break;
+
+		// プレイヤーキャラ - 武器
+	case static_cast<uint32_t>(CollisionTypeId::kPlayerWeapon):
+
+		if (b->GetTypeID() == static_cast<uint32_t>(CollisionTypeId::kEnemy)) {
+			return true;
+		}
+
+		break;
+
+		// プレイヤーキャラ - 弾
+	case static_cast<uint32_t>(CollisionTypeId::kPlayerBullet):
+
+		if (b->GetTypeID() == static_cast<uint32_t>(CollisionTypeId::kEnemy)) {
+			return true;
+		}
+
+		break;
+	default:
+		break;
+	}
+
+	// 上記の条件に引っかからない場合は衝突しない
+	return false;
+}
+
 void CollisionManager::CheckCollisionPair(Collider* colliderA, Collider* colliderB) {
 
 	// 衝突フィルタリング
-	if ((colliderA->GetCollisionAttribute() & colliderB->GetCollisionMask()) == 0 ||
-	    (colliderB->GetCollisionAttribute() & colliderA->GetCollisionMask()) == 0) {
+	if (!CheckColliderType(colliderA,colliderB)) {
 		return;
 	}
 

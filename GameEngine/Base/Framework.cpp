@@ -10,7 +10,7 @@
 #include "GameEngine/Resource/Texture/TextureManager.h"
 
 // アプリケーション部分(のうちエンジン側に移動する可能性のある要素)
-#include "App/Reaction/DamageReaction.h"
+//#include "App/Reaction/DamageReaction.h"
 
 
 void Framework::Run(){
@@ -72,7 +72,6 @@ void Framework::Init(){
 	GlobalVariables::GetInstance()->LoadFiles();
 	// レベルデータ読み込み
 	LevelEditor::GetInstance()->CheckLevelEditorFile();
-	DamageReaction::GetInstance()->Init();
 	// フレームレート
 	Framerate::GetInstance()->Init();
 	// ポストエフェクト
@@ -103,8 +102,6 @@ void Framework::Update(){
 		SceneManager::GetInstance()->Update();
 		// ポストエフェクト
 		PostEffect::GetInstance()->Update();
-		// ダメージ表記の更新
-		DamageReaction::GetInstance()->UpdateSprite();
 	}
 
 

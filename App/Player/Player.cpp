@@ -7,7 +7,6 @@
 #include "GameEngine/Append/Collider/AABBCollider.h"
 #include "GameEngine/Append/Collider/CollisionManager.h"
 #include "App/Enemy/BossEnemy.h"
-#include "App/Reaction/DamageReaction.h"
 #include "GameEngine/GameMaster/Framerate.h"
 #include "App/BlackBoard.h"
 
@@ -85,24 +84,23 @@ void Player::Init() {
 	mObject->mCollider = std::make_unique<SphereCollider>(mObject->mWorldTransform.get(), 0.5f);
 	mObject->mCollider->Init();
 	mObject->mCollider->SetAddTranslation(Vector3(0.0f, 0.55f, -0.1f));
-	mObject->mCollider->SetCollisionAttribute(kCollisionAttributePlayer);
-	mObject->mCollider->SetCollisionMask(kCollisionAttributeEnemyBullet);
+	mObject->mCollider->SetTypeID(static_cast<uint32_t>(CollisionTypeId::kPlayer));
 
 
 	// 身体の部位に合わせたコライダーを生成
-	CreateBodyPartCollider("Head", 0.2f, kCollisionAttributePlayer, kCollisionAttributeEnemyBullet);
-	CreateBodyPartCollider("Hips", 0.15f, kCollisionAttributePlayer, kCollisionAttributeEnemyBullet);
-	CreateBodyPartCollider("LeftLeg", 0.1f, kCollisionAttributePlayer, kCollisionAttributeEnemyBullet);
-	CreateBodyPartCollider("LeftFoot", 0.1f, kCollisionAttributePlayer, kCollisionAttributeEnemyBullet);
-	CreateBodyPartCollider("RightLeg", 0.1f, kCollisionAttributePlayer, kCollisionAttributeEnemyBullet);
-	CreateBodyPartCollider("RightFoot", 0.1f, kCollisionAttributePlayer, kCollisionAttributeEnemyBullet);
-	CreateBodyPartCollider("LeftForeArm", 0.1f, kCollisionAttributePlayer, kCollisionAttributeEnemyBullet);
-	CreateBodyPartCollider("LeftHand", 0.1f, kCollisionAttributePlayer, kCollisionAttributeEnemyBullet);
-	CreateBodyPartCollider("RightForeArm", 0.1f, kCollisionAttributePlayer, kCollisionAttributeEnemyBullet);
-	CreateBodyPartCollider("RightHand", 0.1f, kCollisionAttributePlayer, kCollisionAttributeEnemyBullet);
+	CreateBodyPartCollider("Head", 0.2f, static_cast<uint32_t>(CollisionTypeId::kPlayer));
+	CreateBodyPartCollider("Hips", 0.15f, static_cast<uint32_t>(CollisionTypeId::kPlayer));
+	CreateBodyPartCollider("LeftLeg", 0.1f, static_cast<uint32_t>(CollisionTypeId::kPlayer));
+	CreateBodyPartCollider("LeftFoot", 0.1f, static_cast<uint32_t>(CollisionTypeId::kPlayer));
+	CreateBodyPartCollider("RightLeg", 0.1f, static_cast<uint32_t>(CollisionTypeId::kPlayer));
+	CreateBodyPartCollider("RightFoot", 0.1f, static_cast<uint32_t>(CollisionTypeId::kPlayer));
+	CreateBodyPartCollider("LeftForeArm", 0.1f, static_cast<uint32_t>(CollisionTypeId::kPlayer));
+	CreateBodyPartCollider("LeftHand", 0.1f, static_cast<uint32_t>(CollisionTypeId::kPlayer));
+	CreateBodyPartCollider("RightForeArm", 0.1f, static_cast<uint32_t>(CollisionTypeId::kPlayer));
+	CreateBodyPartCollider("RightHand", 0.1f, static_cast<uint32_t>(CollisionTypeId::kPlayer));
 
 	// 頭部のコライダーの座標を調整
-	mBodyPartColliders["Head"]->SetAddTranslation({ 0.0f,0.05f,0.0f });
+	mBodyPartColliders["Head"]->collider->SetAddTranslation({ 0.0f,0.05f,0.0f });
 
 	// レティクルの初期化
 	mReticle = std::make_unique<Reticle3D>();
@@ -151,27 +149,16 @@ void Player::Init() {
 	for (int32_t i = 0; i < 5; i++) {
 		mAttackStatus.swordWorldMat[i] = MakeAffineMatrix(Vector3{ 0.0f,0.0f,0.0f }, Vector3{ 0.0f,0.0f,0.0f }, Vector3{ 0.0f,0.0f,0.0f });
 		// コライダー 宣言
-		SphereCollider* newCollider = new SphereCollider(new WorldTransform(), 0.4f);
+		std::shared_ptr<GameCollider> newCollider = std::make_shared<GameCollider>();
+		newCollider->collider = std::make_unique<SphereCollider>(new WorldTransform(), 0.4f);
 		// 初期化
-		newCollider->Init();
-		newCollider->SetCollisionAttribute(kCollisionAttributePlayerBullet);
-		newCollider->SetCollisionMask(kCollisionAttributeEnemy);
+		newCollider->collider->Init();
+		newCollider->collider->SetTypeID(static_cast<uint32_t>(CollisionTypeId::kPlayerWeapon));
 		// 武器に設定したボーンのワールド座標をセット
-		newCollider->
-			GetWorld()->SetParent(mAttackStatus.swordWorldMat[i]);
+		newCollider->collider->GetWorld()->SetParent(mAttackStatus.swordWorldMat[i]);
 		//// 配列にプッシュする
-		mAttackStatus.swordColliders.push_back(newCollider);
+		mAttackStatus.swordColliders.push_back(std::move(newCollider));
 	}
-
-	// 防御関連パラメータ
-	mGuardStatus.shield = std::make_unique<Object3d>();
-	mGuardStatus.shield->Init("shield");
-	mGuardStatus.shield->SetModel("Shield.gltf");
-	mGuardStatus.shield->mWorldTransform->scale = { 0.4f,0.4f,0.4f };
-	mGuardStatus.shield->mWorldTransform->rotation = { 1.5f,0.0f,0.0f };
-	mGuardStatus.shield->mWorldTransform->translation = mObject->GetWorldTransform()->translation;
-	mGuardStatus.normalPos = { -150.0f,900.0f,0.0f };// 初期位置
-	mGuardStatus.guardPos = { 170.0f,720.0f,0.0f };// 構え位置
 
 	// ステータス取得
 	mStatus = std::make_shared<Status>();
@@ -279,36 +266,33 @@ void Player::Update() {
 	// オブジェクト更新
 	UpdateObject();
 
-	// シールド
-	mGuardStatus.shield->Update();
-
 	// UI更新
 	mStatus->Update();
 
+	//
+	//// 衝突時の処理
+	//if (mBehavior == Behavior::kAttack || mBehavior == Behavior::kChargeAttack) {
+	//	if ((mAttackStatus.isOperating == true || mChargeStatus.isCharge == true) && mAttackStatus.isHit == false)
+	//	{
+	//		for (GameCollider* collider : mAttackStatus.swordColliders)
+	//		{
+	//			if (collider->GetOnCollisionFlag() == false)
+	//			{
+	//				continue;
+	//			}
 
-	// 衝突時の処理
-	if (mBehavior == Behavior::kAttack || mBehavior == Behavior::kChargeAttack) {
-		if ((mAttackStatus.isOperating == true || mChargeStatus.isCharge == true) && mAttackStatus.isHit == false)
-		{
-			for (Collider* collider : mAttackStatus.swordColliders)
-			{
-				if (collider->GetOnCollisionFlag() == false)
-				{
-					continue;
-				}
+	//			// 次のフレームで消す
+	//			mAttackStatus.isHit = true;
 
-				// 次のフレームで消す
-				mAttackStatus.isHit = true;
+	//			// 敵にダメージを与える
+	//			ReciveDamageToBoss(1.2f);
 
-				// 敵にダメージを与える
-				ReciveDamageToBoss(1.2f);
-
-				// ダメージ表示
-				int32_t damage = static_cast<int32_t>(static_cast<int32_t>(mStatus->STR / 2.0f) * 1.0f) - static_cast<int32_t>(mBoss->GetStatus()->VIT / 4.0f);;
-				DamageReaction::GetInstance()->Reaction(mReticle->GetWorld3D(), damage, MainCamera::GetInstance());
-			}
-		}
-	}
+	//			// ダメージ表示
+	//			int32_t damage = static_cast<int32_t>(static_cast<int32_t>(mStatus->STR / 2.0f) * 1.0f) - static_cast<int32_t>(mBoss->GetStatus()->VIT / 4.0f);;
+	//			DamageReaction::GetInstance()->Reaction(mReticle->GetWorld3D(), damage, MainCamera::GetInstance());
+	//		}
+	//	}
+	//}
 
 }
 
@@ -344,7 +328,7 @@ void Player::UpdateObject()
 
 	// 身体の部位に合わせたコライダーを更新
 	for (auto& collider : mBodyPartColliders) {
-		collider.second->Update();
+		collider.second->collider->Update();
 	}
 
 
@@ -374,8 +358,8 @@ void Player::UpdateObject()
 		].skeletonSpaceMatrix, mAttackStatus.sword->GetWorldTransform()->GetWorldMatrix());
 
 	// 武器のコライダー 更新
-	for (Collider* collider : mAttackStatus.swordColliders) {
-		collider->Update();
+	for (auto& collider : mAttackStatus.swordColliders) {
+		collider->collider->Update();
 	}
 
 }
@@ -418,14 +402,14 @@ void Player::DrawGUI() {
 			if (ImGui::TreeNode(collider.first.c_str())) {
 
 				// ワールドトランスフォームのデバッグ表示
-				ImGui::DragFloat3("Scale", &collider.second->GetWorld()->scale.x);
-				ImGui::DragFloat3("Rotate", &collider.second->GetWorld()->rotation.x);
-				ImGui::DragFloat3("Translate", &collider.second->GetWorld()->translation.x);
+				ImGui::DragFloat3("Scale", &collider.second->collider->GetWorld()->scale.x);
+				ImGui::DragFloat3("Rotate", &collider.second->collider->GetWorld()->rotation.x);
+				ImGui::DragFloat3("Translate", &collider.second->collider->GetWorld()->translation.x);
 				
 				// ワールド行列の表示
 				for (int i = 0; i < 4; ++i) {
 					// Floatの4x4行列内の数値を表示
-					ImGui::DragFloat4(("Row " + std::to_string(i)).c_str(), collider.second->GetWorld()->GetWorldMatrix().m[i]);
+					ImGui::DragFloat4(("Row " + std::to_string(i)).c_str(), collider.second->collider->GetWorld()->GetWorldMatrix().m[i]);
 				}
 				
 				ImGui::TreePop();
@@ -449,15 +433,6 @@ void Player::DrawGUI() {
 		ImGui::DragFloat("AvoidTime", &mAvoidStatus.mAvoidTime);
 		ImGui::DragFloat3("Avoid Start", &mAvoidStatus.mAvoidMoveStartPos.x);
 		ImGui::DragFloat3("Avoid End", &mAvoidStatus.mAvoidMoveEndPos.x);
-
-	}
-
-	// 防御パラメータ
-	if (ImGui::CollapsingHeader("Guard")) {
-		ImGui::DragFloat3("NormalPos", &mGuardStatus.normalPos.x, 1.0f, -1000.0f, 1000.0f);
-		ImGui::DragFloat3("GuradPos", &mGuardStatus.guardPos.x, 1.0f, -1000.0f, 1000.0f);
-		ImGui::DragFloat3("Pos", &mGuardStatus.pos.x, 0.05f, -10.0f, 10.0f);
-		mGuardStatus.shield->DrawGuiTree();
 
 	}
 
@@ -498,15 +473,15 @@ void Player::ColliderDraw() {
 
 	// 身体の部位に合わせたコライダーを描画
 	for (auto& collider : mBodyPartColliders) {
-		collider.second->Draw();
+		collider.second->collider->Draw();
 	}
 
 
 	if (mBehavior == Behavior::kAttack || mBehavior == Behavior::kChargeAttack){
-		if (mAttackStatus.isOperating || mChargeStatus.isCharge){
+		if (mAttackStatus.isOperating){
 			// 武器のコライダー 描画
-			for (Collider* collider : mAttackStatus.swordColliders) {
-				collider->Draw();
+			for (auto& collider : mAttackStatus.swordColliders) {
+				collider->collider->Draw();
 			}
 		}
 	}
@@ -519,14 +494,30 @@ void Player::ColliderDraw() {
 
 }
 
-void Player::SetColliderList(CollisionManager* cManager)
-{
+void Player::SetColliderList(){
+
+	// プレイヤー本体のコライダー
+	for (auto& collider : mBodyPartColliders) {
+		// ゲームマネージャのリストに追加
+		GameManager::GetInstance()->SetCollider(collider.second);
+	}
+
+
+	// プレイヤーの武器コライダー
+
 	// 攻撃中かつ命中前であればコライダーをリストに追加する
-	if (!mAttackStatus.isHit && mAttackStatus.isOperating) {
-		for (Collider* collider : mAttackStatus.swordColliders) {
-			cManager->SetCollider(collider);
+	if (mAttackStatus.isOperating && !mAttackStatus.isHit) {
+		for (auto& collider : mAttackStatus.swordColliders) {
+
+			// ゲームマネージャのリストに追加
+			GameManager::GetInstance()->SetCollider(collider);
 		}
 	}
+}
+
+bool Player::GetIsOperating() const {
+	// 攻撃ステータスから攻撃中であるか取得
+	return mAttackStatus.isOperating;
 }
 
 void Player::Avoid()
@@ -617,62 +608,6 @@ void Player::Avoid()
 	}
 
 
-}
-
-void Player::Guard()
-{
-	// キー入力取得
-	if (InputManager::GetInstance()->GetLongPush(Gamepad::Button::RIGHT_SHOULDER)) {
-
-		// 入力中 ガードへ移行
-
-		// tを増加させ、座標を移動
-		if (mGuardStatus.t < 1.0f) {
-			mGuardStatus.t += (5.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetBattleSpeed();
-		}
-		else if (mGuardStatus.t > 1.0f) {
-			mGuardStatus.t = 1.0f;
-		}
-
-	}
-	// キー入力がなければtを減少
-	else {
-		if (mGuardStatus.t > 0.0f) {
-			mGuardStatus.t -= (5.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetBattleSpeed();
-		}
-		else if (mGuardStatus.t < 0.0f) {
-			mGuardStatus.t = 0.0f;
-		}
-	}
-
-	// 補間後の数値を計算
-	mGuardStatus.pos = ExponentialInterpolation(mGuardStatus.normalPos, mGuardStatus.guardPos, mGuardStatus.t, 1.0f);
-
-	// シールドの位置を更新(2D配置→ワールド座標に変換)
-	mGuardStatus.shield->mWorldTransform->translation = DamageReaction::GetWorldPosForScreen(Vector2(mGuardStatus.pos.x, mGuardStatus.pos.y), 1.0f, MainCamera::GetInstance());
-	// 回転量をカメラから取得
-	mGuardStatus.shield->mWorldTransform->rotation.y = MainCamera::GetInstance()->GetRotate().y;
-
-
-	// tの値に応じてflagをon/offする
-	if (mGuardStatus.t > 0.9f) {
-		mGuardStatus.flag = true;
-		mBehavior = Behavior::kGuard;
-
-	}
-	else {
-		mGuardStatus.flag = false;
-		mBehavior = Behavior::kRoot;
-	}
-
-	// flagがtrueのとき、ダメージ時軽減を行う
-	if (mGuardStatus.flag) {
-		// 防御中は守備力を倍にする
-		mStatus->VIT = StatusManager::GetInstance()->GetPlayerStatus()->VIT * 2;
-	}
-	else {
-		mStatus->VIT = StatusManager::GetInstance()->GetPlayerStatus()->VIT;
-	}
 }
 
 void Player::Attack()

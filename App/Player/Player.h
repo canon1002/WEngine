@@ -2,7 +2,7 @@
 #include "App/Actor/Actor.h"
 #include "GameEngine/Input/InputManager.h"
 #include "App/Reticle/Reticle3D.h"
-#include "App/Status/StatusManager.h"
+#include "App/Manager/GameManager.h"
 
 // 前方宣言
 class BossEnemy;
@@ -50,7 +50,7 @@ struct AttackStatus {
 	Vector3 endRot;		// 回転の最終値
 	Matrix4x4 weaponParentMat; // 親の行列
 	std::array<Matrix4x4, 5> swordWorldMat; // 武器のワールド座標
-	std::vector<Collider*> swordColliders;// 武器の衝突判定
+	std::vector<std::shared_ptr<GameCollider>> swordColliders;// 武器の衝突判定
 
 	int32_t comboCount; // 現在のコンボが何段目か
 	int32_t inComboPhase; // 現在の攻撃モーションはどの段階か
@@ -58,14 +58,6 @@ struct AttackStatus {
 	bool isComboRequest; // 入力を受けたか
 };
 
-struct GuardStatus {
-	std::unique_ptr<Object3d> shield;
-	bool flag;
-	float t;
-	Vector3 pos;
-	Vector3 normalPos;
-	Vector3 guardPos;
-};
 
 struct AvoidStatus {
 	// 回避行動リクエスト
@@ -84,23 +76,6 @@ struct AvoidStatus {
 	Vector3 mAvoidMoveStartPos;
 	// 回避終了地点
 	Vector3 mAvoidMoveEndPos;
-};
-
-// 突進攻撃 パラメータ
-struct ChargeStatus {
-	bool isCastMode;	// 攻撃準備中か
-	float castTime;		// 使用前待機時間
-	float recastTime;	// 再使用待機時間
-	float attackRange;	// 攻撃範囲(=移動距離)
-	float pushingFrame;	// ボタンを押している時間
-	Vector3 direction;	// 向き
-	float power;		// 威力
-	bool isCharge;		// 突進攻撃中か
-	Vector3 startPos;	// 移動の始点
-	Vector3 endPos;		// 移動の終点
-	float moveingTime;	// 移動時間
-	Vector3 cameraStartRot;
-	Vector3 cameraEndRot;
 };
 
 class Player : public Actor {
@@ -134,14 +109,16 @@ public: // -- 公開 メンバ関数 -- //
 	Vector3 GetWorldPos() { return mObject->GetWorldTransform()->translation; }
 	Reticle3D* GetReticle3D() { return mReticle.get(); }
 
-	void SetColliderList(CollisionManager* cManager);
+	// ゲームマネージャにコライダーを追加する
+	void SetColliderList();
 
+	// 自身のふるまい・状況を取得する
 	Behavior GetBehavior()const { return mBehavior; }
+	// 自身が攻撃中であるか確認する
+	bool GetIsOperating() const;
 
 	// 回避
 	void Avoid();
-	// 防御
-	void Guard();
 	// 攻撃処理
 	void Attack();
 	// 移動処理
@@ -156,6 +133,13 @@ public: // -- 公開 メンバ関数 -- //
 	void SetBoss(BossEnemy* boss) { mBoss = boss; }
 	// ボスにダメージを与える
 	void ReciveDamageToBoss(float power);
+
+	/// <summary>
+	/// 攻撃を当てたことをアクターに伝える
+	/// </summary>
+	virtual void Hit()override {
+		mAttackStatus.isHit = true;
+	}
 
 	// ボスクラスのポインタ
 	BossEnemy* mBoss;
@@ -212,12 +196,8 @@ private: // -- 非公開 メンバ変数 -- //
 
 	// 攻撃関連パラメータ
 	AttackStatus mAttackStatus;
-	// 防御関連パラメータ
-	GuardStatus mGuardStatus;
 	// 回避関連パラメータ
 	AvoidStatus mAvoidStatus;
-	// 突進攻撃 パラメータ
-	ChargeStatus mChargeStatus;
 
 	// -- カメラ操作関係 -- //
 

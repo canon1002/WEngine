@@ -28,10 +28,11 @@ void Bullet::Init(){
 	mObject->GetModel()->mMaterialData->color = { 1.0f,0.2f,0.2f,1.0f };
 
 	// コライダーの初期化
-	mObject->mCollider = std::make_unique<SphereCollider>(mObject->mWorldTransform.get(), mBulletStatus.radius);
-	mObject->mCollider->Init();
-	mObject->mCollider->SetCollisionAttribute(mBulletStatus.collisionAttribute);
-	mObject->mCollider->SetCollisionMask(mBulletStatus.collisionMask);
+	mCollider = std::make_shared<GameCollider>();
+	mCollider->collider = std::make_unique<SphereCollider>(mObject->mWorldTransform.get(), mBulletStatus.radius);
+	// 初期化
+	mCollider->collider->Init();
+	mCollider->collider->SetTypeID(static_cast<uint32_t>(mBulletStatus.collisionAttribute));
 
 }
 
@@ -45,7 +46,7 @@ void Bullet::Update(){
 	}
 
 	// 対象と衝突していたら消滅
-	if (mObject->mCollider->GetOnCollisionFlag()) {
+	if (mCollider->collider->GetOnCollisionFlag()) {
 		mIsDead = true;
 	}
 
@@ -59,7 +60,7 @@ void Bullet::Update(){
 
 	// オブジェクト更新
 	mObject->Update();
-	mObject->mCollider->Update();
+	mCollider->collider->Update();
 
 }
 
@@ -70,7 +71,7 @@ void Bullet::Draw(){
 
 #ifdef _DEBUG
 	// コライダー描画
-	mObject->mCollider->Draw();
+	mCollider->collider->Draw();
 #endif // _DEBUG
 
 }

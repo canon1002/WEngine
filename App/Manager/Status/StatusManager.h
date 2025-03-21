@@ -1,6 +1,5 @@
 #pragma once
 #include "GameEngine/Editor/GlobalVariables.h"
-#include "App/Reaction/DamageReaction.h"
 #include "GameEngine/Append/Transform/WorldTransform.h"
 #include "GameEngine/Object/Sprite/Sprite.h"
 
@@ -78,18 +77,25 @@ public: // -- 公開 メンバ変数 -- //
 
 class StatusManager {
 
-	static StatusManager* instance;
+private: // -- 非公開 メンバ関数 -- //
+
 	StatusManager() = default;
 	~StatusManager() = default;
 	// コピーコンストラクタと演算子オーバーロードの禁止
 	StatusManager(const StatusManager& obj) = delete;
 	StatusManager& operator=(const StatusManager& obj) = delete;
 
-public:
+public: // -- 公開 メンバ関数 -- //
 	 
+	// インスタンスを取得する
 	static StatusManager* GetInstance();
+	
+	// 初期化
 	void Init();
+	// 更新
 	void Update();
+	
+
 
 	std::shared_ptr<Status> GetPlayerStatus() { return mPlayerStatus; }
 	void GetPlayerStatus(Status& st) { 
@@ -102,11 +108,24 @@ public:
 	}
 	std::shared_ptr<Status> GetBossStatus() { return mBossStatus; }
 	
+	// ダメージ計算処理
 	void ReceiveDamage(std::shared_ptr<Status> attacker,float power, std::shared_ptr<Status> deffence);
 
-private:
-	// ポインタ
-	GlobalVariables* mGlobalVariables = nullptr;
+	// リスト内から登録済みのステータスを取得する
+	Status* GetStatus(const std::string& name) {
+		return mStatusList[name].get();
+	}
+
+	// ステータス読み込み関数
+	void LoadStatus(const std::string& name);
+
+private: // -- 非公開 メンバ変数 -- //
+
+	// インスタンス
+	static StatusManager* instance;
+
+	// 各キャラクターのステータス情報
+	std::map<std::string, std::unique_ptr<Status>> mStatusList;
 
 	// プレイヤー 
 	std::shared_ptr<Status> mPlayerStatus;

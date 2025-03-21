@@ -1,8 +1,9 @@
 #pragma once
 #include "GameEngine/Object/3d/Object3d.h"
-#include "App/Status/StatusManager.h"
+#include "App/Manager/GameManager.h"
 #include "App/Enemy/Action/Action.h"
 #include "App/Bullet/Bullet.h"
+#include "App/Actor/Collider/GameCollider.h"
 
 // 前方宣言
 class CollisionManager;
@@ -77,6 +78,19 @@ public: // -- 公開 メンバ関数 -- //
 	/// </summary>
 	void AdJustDirection();
 
+	/// <summary>
+	/// 攻撃を当てたことをアクターに伝える
+	/// </summary>
+	virtual void Hit() {};
+
+	/// <summary>
+	/// アクターに無敵時間を付与する
+	/// </summary>
+	/// <param name="time"></param>
+	void SetInvincible(const float& time) {
+		mInvincibleTime = time;
+	}
+
 	void ReceiveDamage();
 
 #pragma endregion
@@ -106,10 +120,8 @@ public: // -- 公開 メンバ関数 -- //
 
 	// -- アクセッサ -- //
 
-
 	// 能力値取得関数
 	std::shared_ptr<Status> GetStatus() { return mStatus; }
-
 
 	/// <summary>
 	/// アクターの名称を取得する
@@ -134,8 +146,10 @@ public: // -- 公開 メンバ関数 -- //
 	/// </summary>
 	/// <param name="bullet"> 作成した弾クラス </param>
 	inline void SetNewBullet(std::unique_ptr<Bullet> bullet) {
-			mBullets.push_back(std::move(bullet));
-		}
+		mBullets.push_back(std::move(bullet));
+	}
+
+	
 
 protected: // -- 限定公開 メンバ関数 -- //
 
@@ -151,7 +165,7 @@ protected: // -- 限定公開 メンバ関数 -- //
 	/// </summary>
 	/// <param name="name">部位の名称</param>
 	/// <param name="radius">コライダーの半径</param>
-	void CreateBodyPartCollider(std::string name, float radius, uint32_t atribute, uint32_t mask);
+	void CreateBodyPartCollider(std::string name, float radius, uint32_t colliderTypeID);
 
 
 	// -- 更新処理関連 -- //
@@ -177,7 +191,7 @@ protected: // -- 限定公開 メンバ変数 -- //
 	// オブジェクトクラス
 	std::unique_ptr<Object3d> mObject;
 	// 身体の各部位のコライダーを管理するマップ
-	std::unordered_map<std::string, std::unique_ptr<Collider>> mBodyPartColliders;
+	std::unordered_map<std::string, std::shared_ptr<GameCollider>> mBodyPartColliders;
 	// 身体の各部位のワールド行列を管理するマップ
 	std::unordered_map<std::string, std::unique_ptr<Matrix4x4>> mBodyPartWorldMatrix;
 
@@ -186,6 +200,8 @@ protected: // -- 限定公開 メンバ変数 -- //
 
 	// 能力値
 	std::shared_ptr<Status> mStatus;
+	// 無敵時間
+	float mInvincibleTime;
 
 	// 行動マップデータ
 	std::map<string, std::shared_ptr<ACT::Action>> mActions;

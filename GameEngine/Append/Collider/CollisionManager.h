@@ -10,27 +10,35 @@
 
 class CollisionManager 
 {
-public:
+public: // -- 公開 メンバ関数 -- //
+
 
 	CollisionManager();
 	~CollisionManager();
+
 	void Init();
 	void Update();
 	void Draw();
 
-	void SetCollider(Collider* collider) { m_colliders.push_back(collider); }
-	void ClearColliders() { m_colliders.clear(); }
+	// 衝突判定を行うコライダーをリストにセットする
+	void SetCollider(Collider* collider) { mColliders.push_back(collider); }
+	// コライダーリストのクリア
+	void ClearColliders() { mColliders.clear(); }
 	
+	// リスト内のコライダーの衝突判定を行う	
 	void CheckAllCollisions();
 
-private:
+	// コライダーが衝突可能な属性か判定する
+	bool CheckColliderType(Collider* a, Collider* b);
+
+private: // -- 非公開 メンバ関数 -- //
 
 	// コライダー同士の衝突判定を行う
 	void CheckCollisionPair(Collider* colliderA, Collider* colliderB);
 
-private:
+private:// -- 非公開 メンバ変数 -- //
 
 	// コライダーリスト
-	std::list<Collider*> m_colliders;
+	std::list<Collider*> mColliders;
 
 };

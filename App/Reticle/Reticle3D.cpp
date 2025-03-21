@@ -23,8 +23,7 @@ void Reticle3D::Init(){
 	// 3Dレティクルのコライダー
 	mObject->mCollider = std::make_unique<SphereCollider>(mObject->mWorldTransform.get(), 0.5f);
 	mObject->mCollider->Init();
-	mObject->mCollider->SetCollisionAttribute(kCollisionAttributePlayerBullet);
-	mObject->mCollider->SetCollisionMask(kCollisionAttributeEnemy);
+	mObject->mCollider->SetTypeID(static_cast<uint32_t>(CollisionTypeId::kPlayerWeapon));
 
 	// 自機から3Dレティクルへの距離
 	mReticleDistance = 0.5f;

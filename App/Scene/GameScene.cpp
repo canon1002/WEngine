@@ -6,19 +6,19 @@
 #include "GameEngine/Object/ObjectAdministrator.h"
 #include "GameEngine/Base/Debug/ImGuiManager.h"
 #include "GameEngine/Editor/LevelEditor.h"
-#include "App/Reaction/DamageReaction.h"
 #include "GameEngine/Effect/Particle/ParticleManager.h"
-#include "App/Status/StatusManager.h"
 #include "GameEngine/Effect/PostEffect/PostEffect.h"
 #include "GameEngine/GameMaster/Framerate.h"
 #include "GameEngine/Scene/SceneManager.h"
+#include "App/Manager/GameManager.h"
 
-void GameScene::Final() {}
+void GameScene::Final() {
+
+	// ゲームマネージャ 終了処理
+	GameManager::GetInstance()->Final();
+}
 
 void GameScene::Init() {
-
-	// 衝突判定マネージャ
-	mCollisionManager = std::make_unique<CollisionManager>();
 
 	// ステータスマネージャ
 	StatusManager::GetInstance()->Init();
@@ -38,9 +38,10 @@ void GameScene::Init() {
 
 	// SkyBox 読み込み
 	TextureManager::GetInstance()->LoadTexture("skybox/rostock_laage_airport_4k.dds");
-
 	// skybox
 	Skybox::GetInstance()->Init("skybox", "rostock_laage_airport_4k.dds");
+	// LevelEditorでSkyBoxのテクスチャを参照
+	LevelEditor::GetInstance()->SetTextureCubeMap(Skybox::GetInstance()->mTextureHandle);
 
 #pragma region Actor
 
@@ -66,6 +67,15 @@ void GameScene::Init() {
 
 #pragma endregion
 
+	// ゲームマネージャ宣言/初期化
+	GameManager* gameManager = GameManager::GetInstance();
+	gameManager->Init();
+	gameManager->SetPlayer(mPlayer.get()); // プレイヤーを参照
+	gameManager->SetBossEnemy(mBoss.get()); // ボス敵を参照
+
+	// ゲームシーンの段階
+	mPhase = Phase::BEGIN;
+	mPhaseFunc = &GameScene::BeginPhase;
 
 	// メインカメラをフォローカメラ仕様にする
 	MainCamera* mainCamera = MainCamera::GetInstance();
@@ -74,13 +84,9 @@ void GameScene::Init() {
 	mainCamera->SetTranslate(Vector3(0.0f, 60.0f, -5.0f));
 	mainCamera->SetRotate(Vector3(1.57f, 0.0f, 0.0f));
 
-	
-	LevelEditor::GetInstance()->SetTextureCubeMap(Skybox::GetInstance()->mTextureHandle);
-
 
 	// パーティクル
 	ParticleManager::GetInstance()->Init();
-	
 	// ダッシュ煙 初期化
 	mDashSmoke = std::make_unique<ParticleEmitter>("DashSmoke");
 	mDashSmoke->Init();
@@ -95,9 +101,7 @@ void GameScene::Init() {
 	mBossTrailEffect->Init();
 	mBossTrailEffect->SetColor(Color(1.0f, 0.1f, 0.1f, 0.8f));
 
-	// ゲームシーンの段階
-	mPhase = Phase::BEGIN;
-	mPhaseFunc = &GameScene::BeginPhase;
+#pragma region UI/演出
 
 	// 開始前のビネット
 	mViggnetTime = 0.0f;
@@ -227,8 +231,6 @@ void GameScene::Init() {
 	mPlayerStartAndEnd.t = 0.0f;
 	mPlayerStartAndEnd.k = 1.0f;
 
-
-
 	mCameraRot.start = { 1.57f,6.28f,0.0f };
 	mCameraRot.end = { 0.0f,0.0f,0.0f };
 	mCameraRot.t = 0.0f;
@@ -283,10 +285,13 @@ void GameScene::Init() {
 	mFinithUIDisplsyTime = 0.0f;
 	mIsFinishUIDisplayEnd = false;
 
+#pragma endregion
+
 }
 
 void GameScene::Update() {
 
+	// UIの更新
 	mMoveUI.sprite->Update();
 	mActionUI.sprite->Update();
 	for (int32_t i = 0; i < mMovieScreen.size(); i++) {
@@ -421,9 +426,6 @@ void GameScene::BeginPhase() {
 
 void GameScene::BattlePhase() {
 
-	// ヒットストップの更新
-	UpdateHitStop();
-
 	// プレイヤーのHPが0になったら
 	if (mPlayer->GetStatus()->HP <= 0.0f) {
 		mPhase = Phase::LOSE;
@@ -440,21 +442,8 @@ void GameScene::BattlePhase() {
 		Framerate::GetInstance()->SetBattleSpeed(0.5f);
 	}
 
-	// プレイヤー 更新
-	mPlayer->Update();
-	// ボス 更新
-	mBoss->Update();
-
-	// コライダーリストへの追加処理
-	mPlayer->SetCollider(mCollisionManager.get());
-	mPlayer->SetColliderList(mCollisionManager.get());
-	mBoss->SetCollider(mCollisionManager.get());
-	mBoss->SetAttackCollider(mCollisionManager.get());
-	// 衝突判定を行う
-	mCollisionManager->Update();
-	// コライダーリストのクリア
-	mCollisionManager->ClearColliders();
-
+	// ヒットストップの更新
+	UpdateHitStop();
 
 	// プレイヤーが走っている場合
 	if (mPlayer->GetObject3D()->mSkinning->GetNowSkinCluster()->name == "run") {
@@ -463,6 +452,20 @@ void GameScene::BattlePhase() {
 		// ダッシュ煙を発生させる
 		mDashSmoke->Update();
 	}
+
+	// ヒットストップ中は演出以外を停止
+	if (mHitStopTimer > 0.0f) {
+		// 早期リターン
+		return;
+	}
+
+	// プレイヤー 更新
+	mPlayer->Update();
+	// ボス 更新
+	mBoss->Update();
+	// ゲームマネージャ 更新
+	GameManager::GetInstance()->Update();
+
 	// 斬撃エフェクト
 	mPlayerTrailEffect->Update();
 	if (mPlayer->GetBehavior() == Behavior::kAttack) {
