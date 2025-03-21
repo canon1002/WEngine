@@ -1,5 +1,5 @@
 #include "BlackBoard.h"
-#include "App/Status/StatusManager.h"
+#include "App/Manager/GameManager.h"
 #include "GameEngine/GameMaster/Framerate.h"
 
 StatusManager* BlackBoard::GetStatusManager(){
