@@ -451,6 +451,9 @@
     <ClCompile Include="App\Enemy\Action\ShotBullet.cpp" />
     <ClCompile Include="App\Bullet\Bullet.cpp" />
     <ClCompile Include="App\Manager\GameManager.cpp" />
+    <ClCompile Include="App\Enemy\Action\MoveFieldCenter.cpp" />
+    <ClCompile Include="App\Enemy\Action\EarthSword.cpp" />
+    <ClCompile Include="App\Bullet\EarthSwordBullet.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameEngine\Object\Light\DirectionalLight.h">
@@ -772,6 +775,9 @@
     <ClInclude Include="App\Bullet\Bullet.h" />
     <ClInclude Include="App\Manager\GameManager.h" />
     <ClInclude Include="App\Actor\Collider\GameCollider.h" />
+    <ClInclude Include="App\Enemy\Action\MoveFieldCenter.h" />
+    <ClInclude Include="App\Enemy\Action\EarthSword.h" />
+    <ClInclude Include="App\Bullet\EarthSwordBullet.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt">

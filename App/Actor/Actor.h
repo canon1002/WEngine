@@ -118,6 +118,19 @@ public: // -- 公開 メンバ関数 -- //
 	// 距離が遠い場合に実行(距離設定可能)
 	bool IsFarDistance(float range);
 
+	// 自身がダメージを受けたか
+	bool IsReceivedDamage() { return mIsReceivedDamage; }
+	// 直近でターゲットに攻撃を当てたか
+	bool IsHitAttackToTarget() { return mIsHitAttackToTarget; }
+
+	// 被弾フラグのリセット
+	void ResetReceivedDamageFlag() { mIsReceivedDamage = false; }
+	// 攻撃命中フラグのリセット
+	void ResetHitAttackToTarget() { mIsHitAttackToTarget = false; }
+
+	// ステージ限界点に近いか
+	bool mIsInvokeFieldEndPosition();
+
 #pragma endregion 
 
 
@@ -213,6 +226,11 @@ protected: // -- 限定公開 メンバ変数 -- //
 	std::map<string, std::shared_ptr<ACT::Action>> mActions;
 	// 現在の行動
 	std::weak_ptr<ACT::Action> mActiveAction;
+	// 直近で被ダメージを受けたか
+	bool mIsReceivedDamage;
+	// 直近でターゲットにダメージを与えたか
+	bool mIsHitAttackToTarget;
+
 
 	// 射撃攻撃の弾のリスト
 	std::list<std::unique_ptr<Bullet>> mBullets;

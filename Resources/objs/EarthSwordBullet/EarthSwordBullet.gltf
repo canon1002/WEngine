@@ -15,17 +15,30 @@
 	"nodes":[
 		{
 			"mesh":0,
-			"name":"sphere",
+			"name":"\u5186\u9310",
 			"scale":[
-				0.5000002980232239,
-				0.5,
-				0.5000001788139343
+				0.625,
+				0.75,
+				0.625
 			]
+		}
+	],
+	"materials":[
+		{
+			"doubleSided":true,
+			"name":"Material",
+			"pbrMetallicRoughness":{
+				"baseColorTexture":{
+					"index":0
+				},
+				"metallicFactor":0,
+				"roughnessFactor":0.5
+			}
 		}
 	],
 	"meshes":[
 		{
-			"name":"\u7403",
+			"name":"\u5186\u9310",
 			"primitives":[
 				{
 					"attributes":{
@@ -33,24 +46,38 @@
 						"NORMAL":1,
 						"TEXCOORD_0":2
 					},
-					"indices":3
+					"indices":3,
+					"material":0
 				}
 			]
+		}
+	],
+	"textures":[
+		{
+			"sampler":0,
+			"source":0
+		}
+	],
+	"images":[
+		{
+			"mimeType":"image/png",
+			"name":"EarthSwordBullet.png",
+			"uri":"EarthSwordBullet.png"
 		}
 	],
 	"accessors":[
 		{
 			"bufferView":0,
 			"componentType":5126,
-			"count":2020,
+			"count":52,
 			"max":[
-				0.9999997019767761,
 				1,
-				0.9999993443489075
+				2,
+				1
 			],
 			"min":[
-				-0.9999990463256836,
 				-1,
+				0,
 				-1
 			],
 			"type":"VEC3"
@@ -58,52 +85,58 @@
 		{
 			"bufferView":1,
 			"componentType":5126,
-			"count":2020,
+			"count":52,
 			"type":"VEC3"
 		},
 		{
 			"bufferView":2,
 			"componentType":5126,
-			"count":2020,
+			"count":52,
 			"type":"VEC2"
 		},
 		{
 			"bufferView":3,
 			"componentType":5123,
-			"count":2880,
+			"count":78,
 			"type":"SCALAR"
 		}
 	],
 	"bufferViews":[
 		{
 			"buffer":0,
-			"byteLength":24240,
+			"byteLength":624,
 			"byteOffset":0,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":24240,
-			"byteOffset":24240,
+			"byteLength":624,
+			"byteOffset":624,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":16160,
-			"byteOffset":48480,
+			"byteLength":416,
+			"byteOffset":1248,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":5760,
-			"byteOffset":64640,
+			"byteLength":156,
+			"byteOffset":1664,
 			"target":34963
+		}
+	],
+	"samplers":[
+		{
+			"magFilter":9729,
+			"minFilter":9987
 		}
 	],
 	"buffers":[
 		{
-			"byteLength":70400,
-			"uri":"Sphere.bin"
+			"byteLength":1820,
+			"uri":"EarthSwordBullet.bin"
 		}
 	]
 }

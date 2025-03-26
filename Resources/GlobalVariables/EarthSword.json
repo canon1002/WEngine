@@ -1,0 +1,49 @@
+{
+    "EarthSword": {
+        "Radius": 1.5,
+        "MoveSpeed": 0.15,
+        "LifeTime": 10.0,
+        "Power": 1.0,
+        "KnockBack": 0,
+        "AttackCount":12,
+
+        "PosXDister" : [
+            -1.0,
+            1.0
+        ],
+        "PosYDister" : [
+            0.0,
+            0.0
+        ],
+        "PosZDister" : [
+            -1.0,
+            1.0
+        ],
+        "VelXDister" : [
+            0.0,
+            0.0
+        ],
+        "VelYDister" : [
+            -1.5,
+            -1.5
+        ],
+        "VelZDister" : [
+            0.0,
+            0.0
+        ],
+        "ScaleDister" : [
+            0.5,
+            0.5
+        ],
+        "ColorDister" : [
+            1.0,
+            1.0
+        ],
+        "TimeDister" : [
+            0.1,
+            0.1
+        ],
+        "Count" : 9,
+        "Frequency" : 0.05
+    }
+}

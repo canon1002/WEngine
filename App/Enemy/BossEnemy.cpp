@@ -212,7 +212,7 @@ void BossEnemy::InitBehavior() {
 
 	// 接近状態だったら
 	BT::Sequence* startNear = new BT::Sequence();
-	startNear->SetChild(new BT::Action(this, "AttackThrust"));	// 刺突
+	startNear->SetChild(new BT::Action(this, "EarthSword"));	// 複数地点攻撃
 	startNear->SetChild(new BT::Condition(std::bind(&BossEnemy::InvokeNearDistance, this))); // 至近距離時
 	startNear->SetChild(new BT::Action(this, "BackStep")); // 後退する
 	ReafOneSelector->SetChild(startNear);
@@ -265,6 +265,10 @@ void BossEnemy::InitActions()
 	// のけぞり
 	mActions["knockBack"] = make_shared<ACT::KnockBack>();
 	mActions["knockBack"]->Init(this);
+	
+	// 複数地点攻撃
+	mActions["EarthSword"] = make_shared<ACT::EarthSword>();
+	mActions["EarthSword"]->Init(this);
 
 	// 初期は行動しない
 	mActiveAction.reset();

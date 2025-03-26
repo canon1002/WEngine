@@ -1,0 +1,6 @@
+{
+    "MoveFieldCenter": {
+        "Name": "Walk",
+        "MoveSpeed": 60.0
+    }
+}

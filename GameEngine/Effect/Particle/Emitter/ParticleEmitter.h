@@ -24,6 +24,7 @@ public: // -- 公開 メンバ関数 -- //
 	// エミッターの発生座標を指定する
 	inline void SetEmitterPos(const Vector3& pos) {
 		mWorldTransform->translation = pos;
+		mEmitter.pos = pos;
 	}
 
 public: // -- 公開 メンバ変数 -- //

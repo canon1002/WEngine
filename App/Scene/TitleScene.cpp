@@ -180,9 +180,7 @@ void TitleScene::Init() {
 	mDashSmoke = std::make_unique<ParticleEmitter>("DashSmoke");
 	mDashSmoke->Init();
 	ParticleManager::GetInstance()->CreateParticleGroupe(mDashSmoke->mName, "circle.png");
-	
-	
-	
+		
 	// -- エディタテスト -- //
 	mBTNodeTestActor = std::make_unique<Actor>("NodeTester");
 	mBTNodeEditor = std::make_unique<BTNodeEditor>(mBTNodeTestActor.get());
@@ -488,8 +486,6 @@ void TitleScene::Update() {
 	default:
 		break;
 	}
-
-
 
 	// プレイヤーが走っている場合
 	if (mPlayerObj->mSkinning->GetNowSkinCluster()->name == "run") {

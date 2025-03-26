@@ -118,6 +118,9 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="App\BlackBoard.cpp" />
+    <ClCompile Include="App\Bullet\EarthSwordBullet.cpp" />
+    <ClCompile Include="App\Enemy\Action\EarthSword.cpp" />
+    <ClCompile Include="App\Enemy\Action\MoveFieldCenter.cpp" />
     <ClCompile Include="App\Enemy\Action\ShotBullet.cpp" />
     <ClCompile Include="App\Enemy\Action\Shrinkage.cpp" />
     <ClCompile Include="App\Bullet\Bullet.cpp" />
@@ -233,6 +236,9 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   <ItemGroup>
     <ClInclude Include="App\Actor\Collider\GameCollider.h" />
     <ClInclude Include="App\BlackBoard.h" />
+    <ClInclude Include="App\Bullet\EarthSwordBullet.h" />
+    <ClInclude Include="App\Enemy\Action\EarthSword.h" />
+    <ClInclude Include="App\Enemy\Action\MoveFieldCenter.h" />
     <ClInclude Include="App\Enemy\Action\ShotBullet.h" />
     <ClInclude Include="App\Enemy\Action\Shrinkage.h" />
     <ClInclude Include="App\Bullet\Bullet.h" />

@@ -35,6 +35,7 @@ void GameScene::Init() {
 	ModelManager::GetInstance()->LoadModel("Weapons", "sword.gltf");
 	ModelManager::GetInstance()->LoadModel("Shield", "Shield.gltf");
 	ModelManager::GetInstance()->LoadModel("groundShadow", "groundShadow.gltf");
+	ModelManager::GetInstance()->LoadModel("EarthSwordBullet", "EarthSwordBullet.gltf");
 
 	// SkyBox 読み込み
 	TextureManager::GetInstance()->LoadTexture("skybox/rostock_laage_airport_4k.dds");
@@ -42,6 +43,10 @@ void GameScene::Init() {
 	Skybox::GetInstance()->Init("skybox", "rostock_laage_airport_4k.dds");
 	// LevelEditorでSkyBoxのテクスチャを参照
 	LevelEditor::GetInstance()->SetTextureCubeMap(Skybox::GetInstance()->mTextureHandle);
+
+
+	// パーティクルマネージャ 初期化
+	ParticleManager::GetInstance()->Init();
 
 #pragma region Actor
 
@@ -84,9 +89,6 @@ void GameScene::Init() {
 	mainCamera->SetTranslate(Vector3(0.0f, 60.0f, -5.0f));
 	mainCamera->SetRotate(Vector3(1.57f, 0.0f, 0.0f));
 
-
-	// パーティクル
-	ParticleManager::GetInstance()->Init();
 	// ダッシュ煙 初期化
 	mDashSmoke = std::make_unique<ParticleEmitter>("DashSmoke");
 	mDashSmoke->Init();

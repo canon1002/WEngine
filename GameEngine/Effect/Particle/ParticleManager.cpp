@@ -4,6 +4,7 @@
 #include "GameEngine/Base/Debug/ImGuiManager.h"
 #include "GameEngine/GameMaster/Framerate.h"
 #include "GameEngine/Object/Camera/MainCamera.h"
+#include "App/BlackBoard.h"
 
 ParticleManager* ParticleManager::instance = nullptr;
 
@@ -64,21 +65,28 @@ void ParticleManager::Update(){
 			if (itGroup->second.instanceCount < kNumMaxInstance) {
 
 				// パーティクルの移動を行う
-				Vector3 vel = ((*it).vel * (1.0f/Framerate::GetInstance()->GetFramerate()));
+				Vector3 vel = (*it).vel * BlackBoard::GetBattleFPS();
 				(*it).worldTransform.translation -= vel;
+
 				// 経過時間の加算
-				(*it).currentTime += (1.0f / Framerate::GetInstance()->GetFramerate());
+				(*it).currentTime += BlackBoard::GetBattleFPS();
 
 				// 徐々に透明にする
 				float alpha = 1.0f - ((*it).currentTime / (*it).lifeTime);
 
+				// ワールド座標の計算
 				Matrix4x4 worldMat = Multiply(Multiply((*it).worldTransform.GetScalingMatrix(), billboardMat),
 					(*it).worldTransform.GetTranslationMatrix());
-
 				itGroup->second.instancingData[itGroup->second.instanceCount].WVP = Multiply(
 					worldMat, MainCamera::GetInstance()->GetViewProjectionMatrix());
+
+				// インスタンスごとのワールド座標を更新
 				itGroup->second.instancingData[itGroup->second.instanceCount].World = worldMat;
+
+				// 透明度を更新
 				(*it).color.a = alpha;
+
+				// 色・透明度を更新
 				itGroup->second.instancingData[itGroup->second.instanceCount].color = (*it).color;
 				itGroup->second.instancingData[itGroup->second.instanceCount].color.a = alpha;
 

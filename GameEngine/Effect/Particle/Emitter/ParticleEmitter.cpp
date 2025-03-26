@@ -84,9 +84,6 @@ void ParticleEmitter::Update(){
 	// 時刻を進める
 	mFrequencyTime += kDeltaTime;
 
-	// 座標を更新
-	mEmitter.pos = mWorldTransform->GetWorldPosition();
-
 	// 発生頻度より数値が大きくなったら発生
 	if (mFrequency <= mFrequencyTime) {
 		// 発生処理
@@ -95,7 +92,6 @@ void ParticleEmitter::Update(){
 		// 余計に過ぎた時間も加味して頻度計算を行う
 		mFrequencyTime -= mFrequency;
 	}
-
 
 }
 

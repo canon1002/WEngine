@@ -215,3 +215,22 @@ bool Actor::IsFarDistance(float range) {
 	}
 	return false;
 }
+
+bool Actor::mIsInvokeFieldEndPosition(){
+
+	// フィールド限界地点の取得
+	Vector3 fieldRad = BlackBoard::GetFieldRadius();
+	// 距離感の設定( フィールド半径/10 程度にする)
+	float distance = fieldRad.x / 10.0f;
+
+	//	距離が近い場合はtrueを返す
+	if (-fieldRad.x > (GetWorldPos().x - distance) || // 左側
+		fieldRad.x < (GetWorldPos().x + distance) || // 右側
+		fieldRad.z < (GetWorldPos().x + distance) || // 奥行き
+		-fieldRad.x >(GetWorldPos().x - distance) // 手前側
+		) {
+		return true;
+	}
+	return false;
+
+}

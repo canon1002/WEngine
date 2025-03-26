@@ -40,6 +40,11 @@ class Bullet
 public: // -- 公開 メンバ関数 -- //
 
 	/// <summary>
+	///	デフォルトコンストラクタ
+	/// </summary>
+	Bullet() {};
+
+	/// <summary>
 	/// コンストラクタ
 	/// </summary>
 	/// <param name="bulletStatus">弾の初期パラメータ</param>
@@ -47,11 +52,11 @@ public: // -- 公開 メンバ関数 -- //
 	// デストラクタ
 	~Bullet() = default;
 	// 初期化
-	void Init();
+	virtual void Init();
 	// 更新処理
-	void Update();
+	virtual void Update();
 	// 描画処理
-	void Draw();
+	virtual void Draw();
 
 	// 消滅条件を満たしたか
 	bool IsDead() const;
@@ -61,7 +66,7 @@ public: // -- 公開 メンバ関数 -- //
 	// コライダー取得
 	std::shared_ptr<GameCollider> GetCollider() { return mCollider; }
 
-private: // -- 非公開 メンバ変数 -- //
+protected: // -- 限定公開 メンバ変数 -- //
 
 	// 外部から取得するパラメータ郡
 	BulletStatus mBulletStatus;

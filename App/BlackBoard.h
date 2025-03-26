@@ -1,10 +1,13 @@
 #pragma once
+#include "GameEngine/Math/Vector3.h"
 
 // クラスの前方宣言
 class StatusManager;
 class Framerate;
 class GlobalVariables;
 
+// フィールドの限界地点(半径)
+const Vector3 kFieldRadius = { 20.0f,40.0f,20.0f };
 
 /// <summary>
 /// ブラックボード
@@ -33,7 +36,8 @@ public: // -- 公開 メンバ関数 -- //
 	// -- グローバル変数関係 -- //
 	static GlobalVariables* GetGlobalVariables();
 
-	
+	// フィールド限界地点を取得
+	static Vector3 GetFieldRadius() { return kFieldRadius; }
 
 };
 
