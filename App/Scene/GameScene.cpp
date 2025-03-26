@@ -40,7 +40,7 @@ void GameScene::Init() {
 	// SkyBox 読み込み
 	TextureManager::GetInstance()->LoadTexture("skybox/rostock_laage_airport_4k.dds");
 	// skybox
-	Skybox::GetInstance()->Init("skybox", "rostock_laage_airport_4k.dds");
+	Skybox::GetInstance()->Init("skybox", "skybox.dds");
 	// LevelEditorでSkyBoxのテクスチャを参照
 	LevelEditor::GetInstance()->SetTextureCubeMap(Skybox::GetInstance()->mTextureHandle);
 
@@ -678,7 +678,7 @@ void GameScene::Draw() {
 
 	// Skyboxの描画前処理
 	Skybox::GetInstance()->PreDraw();
-	//skybox_->Draw();
+	Skybox::GetInstance()->Draw();
 
 	// レベルデータ読み込み
 	LevelEditor::GetInstance()->Draw();
