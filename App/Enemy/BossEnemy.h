@@ -54,8 +54,6 @@ public: // -- 公開 メンバ関数 -- //
 
 #pragma region コマンド・ステート関連
 
-	// 自身の攻撃命中時に呼び出す関数
-	void ReciveDamageTolayer(float power);
 
 	// 自身が攻撃中であるか確認する関数
 	bool GetIsOperating()const;
@@ -71,6 +69,9 @@ public: // -- 公開 メンバ関数 -- //
 
 	// リアクション処理(のけぞり)
 	void SetKnockBackCount(int32_t count);
+
+	// 体の座標を取得する
+	Vector3 GetBodyPos();
 
 #pragma endregion
 

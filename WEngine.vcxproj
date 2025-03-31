@@ -140,7 +140,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="App\Enemy\Action\Action.cpp" />
     <ClCompile Include="App\Enemy\Action\AttackAction.cpp" />
     <ClCompile Include="App\Manager\Reaction\DamageReaction.cpp" />
-    <ClCompile Include="App\Player\Arrow.cpp" />
     <ClCompile Include="GameEngine\Append\Collider\AABBCollider.cpp" />
     <ClCompile Include="GameEngine\Append\Collider\OBBCollider.cpp" />
     <ClCompile Include="GameEngine\Append\Collider\PlaneCollider.cpp" />
@@ -262,7 +261,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="GameEngine\GameMaster\Framerate.h" />
     <ClInclude Include="App\Enemy\Action\Action.h" />
     <ClInclude Include="App\Manager\Reaction\DamageReaction.h" />
-    <ClInclude Include="App\Player\Arrow.h" />
     <ClInclude Include="GameEngine\Append\Collider\AABBCollider.h" />
     <ClInclude Include="GameEngine\Append\Collider\OBBCollider.h" />
     <ClInclude Include="GameEngine\Append\Collider\PlaneCollider.h" />

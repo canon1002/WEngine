@@ -36,6 +36,10 @@ public: // -- 公開 メンバ関数 -- //
 
 	// コライダーリストの更新を行う
 	void UpdateColliderList();
+	// 衝突判定 ＆ 衝突後処理
+	void UpdateCollisionManager();
+	// ステータス並びにUIの更新処理
+	void UpdateStatusManager();
 
 	// コライダーをリストに追加する
 	void SetCollider(std::shared_ptr<GameCollider> collider);
@@ -79,6 +83,9 @@ private: // -- 非公開 メンバ変数 -- //
 	// 敵キャラのポインタ
 	BossEnemy* mBoss;
 	
+
+	// -- 衝突判定関係 -- //
+
 	// 衝突判定マネージャ
 	std::unique_ptr<CollisionManager> mCollisionManager;
 	// 各属性ごとのコライダーリスト
@@ -88,6 +95,11 @@ private: // -- 非公開 メンバ変数 -- //
 	bool mIsRequestHitStop = false;
 	// ヒットストップの発生期間
 	float mHitStopDuration = 0.0f;
+
+
+	// -- ステータス関係 -- //
+
+
 
 };
 

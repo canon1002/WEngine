@@ -57,6 +57,17 @@ void StatusManager::Update(){
 
 }
 
+void StatusManager::ReceiveDamage(const std::string& offence, const std::string& deffence){
+	offence;
+	deffence;
+}
+
+void StatusManager::ReceiveDamage(const std::string& offence, const std::string& deffence, float power){
+	offence;
+	deffence;
+	power;
+}
+
 void StatusManager::ReceiveDamage(std::shared_ptr<Status> attacker,float power, std::shared_ptr<Status> deffence)
 {
 	//  [(攻撃力/2) * 攻撃倍率] - [防御力/4] でダメージを計算する

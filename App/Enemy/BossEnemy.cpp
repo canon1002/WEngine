@@ -575,20 +575,11 @@ void BossEnemy::UpdateState() {
 
 }
 
-void BossEnemy::ReciveDamageTolayer(float power)
-{
-	// プレイヤーにダメージを与える
-	StatusManager::GetInstance()->ReceiveDamage(mStatus, power, mTarget->GetStatus());
-}
 
 bool BossEnemy::GetIsOperating() const {
 	// 実行中のアクションで攻撃中であるか取得して返す
 	return mActiveAction.lock()->GetIsOperating();
 }
-
-
-
-
 
 void BossEnemy::SetShake(float duration, float power) {
 	mShakeDuration = duration;
@@ -623,6 +614,16 @@ void BossEnemy::SetKnockBackCount(int32_t count) {
 		// 行動を設定(ノックバック)
 		SetAction("knockBack");
 	}
+}
+
+Vector3 BossEnemy::GetBodyPos()
+{
+	// 体のワールド行列を更新
+	Matrix4x4 bodyWorldMat = Multiply(
+		GetObject3D()->mSkinning->GetSkeleton().joints[GetObject3D()->mSkinning->GetSkeleton().jointMap["mixamorig:Spine1"]
+		].skeletonSpaceMatrix, GetObject3D()->GetWorldTransform()->GetWorldMatrix());
+
+	return Vector3(bodyWorldMat.m[3][0],bodyWorldMat.m[3][1],bodyWorldMat.m[3][2]);
 }
 
 void BossEnemy::Save()

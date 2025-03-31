@@ -23,6 +23,9 @@ void GameManager::Init() {
 	// 衝突管理クラス
 	mCollisionManager = std::make_unique<CollisionManager>();
 
+	// ステータス管理クラス
+	//StatusManager::GetInstance()->Init();
+
 }
 
 void GameManager::Update() {
@@ -31,102 +34,17 @@ void GameManager::Update() {
 
 	// コライダーリストの更新を行う
 	UpdateColliderList();
-	// 衝突判定を行う
-	mCollisionManager->Update();
-	// コライダーリストのクリア
-	mCollisionManager->ClearColliders();
+	
 
 	// -- 衝突後処理フェーズ -- //
 
-	// 敵キャラクターの被弾処理
-	if (ChackOnCollided(static_cast<uint32_t>(CollisionTypeId::kEnemy))) {
-		
-		// 衝突相手のコライダーを検索
-		for (std::weak_ptr<GameCollider>collider : mColliderList[static_cast<uint32_t>(CollisionTypeId::kPlayerWeapon)]) {
+	// 衝突判定と衝突後の処理を行う
+	UpdateCollisionManager();
 
-			// 衝突フラグがfalseだったら次に回す
-			if (!collider.lock()->collider->GetOnCollisionFlag()) {
-				continue;
-			}
-			// プレイヤー側の攻撃衝突フラグの切り替え ・ 敵キャラの無敵時間を設定
-			mPlayer->Hit();
-			mBoss->SetInvincible(0.8f);
+	// -- ステータス更新 -- //
 
-
-			// ヒットストップ発生判定
-			mIsRequestHitStop = true;
-			mHitStopDuration = 0.1f;
-
-			// ヒットエフェクトの発生処理
-
-			 
-			// ノックバック発生判定
-
-			// ダメージ計算処理
-			StatusManager::GetInstance()->ReceiveDamage(mPlayer->GetStatus(),1.0f,mBoss->GetStatus());
-		}
-
-	}
-
-
-	// プレイヤーキャラの被弾処理
-	if (ChackOnCollided(static_cast<uint32_t>(CollisionTypeId::kPlayer))) {
-
-		// 衝突相手のコライダーを検索
-		for (std::weak_ptr<GameCollider>collider : mColliderList[static_cast<uint32_t>(CollisionTypeId::kEnemyWeapon)]) {
-
-			// 衝突フラグがfalseだったら次に回す
-			if (!collider.lock()->collider->GetOnCollisionFlag()) {
-				continue;
-			}
-
-			// 敵キャラ側の攻撃衝突フラグの切り替え ・ プレイヤーの無敵時間を設定
-			mBoss->Hit();
-			mPlayer->SetInvincible(0.8f);
-
-			// (ToDo)ジャスト回避判定
-
-
-			// ヒットストップ発生判定
-		
-
-			// ヒットエフェクトの発生処理
-
-
-			// ノックバック発生判定
-
-			// ダメージ計算処理
-			StatusManager::GetInstance()->ReceiveDamage(mBoss->GetStatus(),1.0f,mPlayer->GetStatus());
-		}
-
-		// 衝突相手のコライダーを検索(射撃)
-		for (std::weak_ptr<GameCollider>collider : mColliderList[static_cast<uint32_t>(CollisionTypeId::kEnemyBullet)]) {
-
-			// 衝突フラグがfalseだったら次に回す
-			if (!collider.lock()->collider->GetOnCollisionFlag()) {
-				continue;
-			}
-
-			// プレイヤーの無敵時間を設定
-			mPlayer->SetInvincible(1.0f);
-
-			// (ToDo)ジャスト回避判定
-
-
-
-			// ヒットストップ発生判定
-
-
-			// ヒットエフェクトの発生処理
-
-
-			// ノックバック発生判定
-
-			// ダメージ計算処理
-			StatusManager::GetInstance()->ReceiveDamage(mBoss->GetStatus(), 1.0f, mPlayer->GetStatus());
-		}
-
-	}
+	// 各キャラクターのステータスとUIの更新を行う
+	UpdateStatusManager();
 
 }
 
@@ -173,6 +91,115 @@ void GameManager::UpdateColliderList(){
 		}
 		mCollisionManager->SetCollider(collider.lock()->collider.get());
 	}
+
+}
+
+void GameManager::UpdateCollisionManager(){
+
+	// 衝突判定を行う
+	mCollisionManager->Update();
+	// コライダーリストのクリア
+	mCollisionManager->ClearColliders();
+
+	// 敵キャラクターの被弾処理
+	if (ChackOnCollided(static_cast<uint32_t>(CollisionTypeId::kEnemy))) {
+
+		// 衝突相手のコライダーを検索
+		for (std::weak_ptr<GameCollider>collider : mColliderList[static_cast<uint32_t>(CollisionTypeId::kPlayerWeapon)]) {
+
+			// 衝突フラグがfalseだったら次に回す
+			if (!collider.lock()->collider->GetOnCollisionFlag()) {
+				continue;
+			}
+			// プレイヤー側の攻撃衝突フラグの切り替え ・ 敵キャラの無敵時間を設定
+			mPlayer->Hit();
+			mBoss->SetInvincible(0.8f);
+
+
+			// ヒットストップ発生判定
+			mIsRequestHitStop = true;
+			mHitStopDuration = 0.1f;
+
+			// ヒットエフェクトの発生処理
+
+
+			// ノックバック発生判定
+
+
+			// ダメージ計算処理
+			StatusManager::GetInstance()->ReceiveDamage(mPlayer->GetStatus(), 1.0f, mBoss->GetStatus());
+		}
+
+	}
+
+
+	// プレイヤーキャラの被弾処理
+	if (ChackOnCollided(static_cast<uint32_t>(CollisionTypeId::kPlayer))) {
+
+		// 衝突相手のコライダーを検索
+		for (std::weak_ptr<GameCollider>collider : mColliderList[static_cast<uint32_t>(CollisionTypeId::kEnemyWeapon)]) {
+
+			// 衝突フラグがfalseだったら次に回す
+			if (!collider.lock()->collider->GetOnCollisionFlag()) {
+				continue;
+			}
+
+			// 敵キャラ側の攻撃衝突フラグの切り替え ・ プレイヤーの無敵時間を設定
+			mBoss->Hit();
+			mPlayer->SetInvincible(0.8f);
+
+			// (ToDo)ジャスト回避判定
+
+
+			// ヒットストップ発生判定
+
+
+			// ヒットエフェクトの発生処理
+
+
+			// ノックバック発生判定
+
+
+			// ダメージ計算処理
+			StatusManager::GetInstance()->ReceiveDamage(mBoss->GetStatus(), 1.0f, mPlayer->GetStatus());
+		}
+
+		// 衝突相手のコライダーを検索(射撃)
+		for (std::weak_ptr<GameCollider>collider : mColliderList[static_cast<uint32_t>(CollisionTypeId::kEnemyBullet)]) {
+
+			// 衝突フラグがfalseだったら次に回す
+			if (!collider.lock()->collider->GetOnCollisionFlag()) {
+				continue;
+			}
+
+			// プレイヤーの無敵時間を設定
+			mPlayer->SetInvincible(1.0f);
+
+			// (ToDo)ジャスト回避判定
+
+
+
+			// ヒットストップ発生判定
+
+
+			// ヒットエフェクトの発生処理
+
+
+			// ノックバック発生判定
+
+
+			// ダメージ計算処理
+			StatusManager::GetInstance()->ReceiveDamage(mBoss->GetStatus(), 1.0f, mPlayer->GetStatus());
+		}
+
+	}
+
+}
+
+void GameManager::UpdateStatusManager(){
+
+	// ステータス管理クラス 更新
+	StatusManager::GetInstance()->Update();
 
 }
 
@@ -224,6 +251,7 @@ void GameManager::ResolveCollision(){
 	float radiusSum = (mPlayer->GetObject3D()->GetWorldTransform()->scale.x / 2.0f) +
 		(mBoss->GetObject3D()->GetWorldTransform()->scale.x / 2.0f);
 
+	// 非衝突時は以下の押し出し処理をスキップする
 	if (distance > (radiusSum * radiusSum)) {
 		return;
 	}
@@ -231,9 +259,9 @@ void GameManager::ResolveCollision(){
 	// 平方根
 	distance = std::sqrt(distance);
 
-	// 零で割ることを避けるためのチェック
+	// 0除算避けのチェック
 	if (distance == 0.0f) {
-		// 任意の小さな値に設定して方向を与える
+		// 小さな値を設定して適当な方向を与える
 		dx = 0.01f;
 		dz = 0.01f;
 		distance = std::sqrt(dx * dx + dz * dz);
@@ -242,7 +270,7 @@ void GameManager::ResolveCollision(){
 	float overlap = distance - (mPlayer->GetObject3D()->GetWorldTransform()->scale.x / 2.0f) - 
 		(mBoss->GetObject3D()->GetWorldTransform()->scale.x / 2.0f);
 
-	// c1を押し出す
+	// プレイヤーを押し出す
 	mPlayer->GetObject3D()->mWorldTransform->translation.x -= overlap * (dx / distance);
 	mPlayer->GetObject3D()->mWorldTransform->translation.z -= overlap * (dz / distance);
 

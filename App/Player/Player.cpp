@@ -250,7 +250,13 @@ void Player::Update() {
 			break;
 		}
 
+		// ロックオン時、レティクルをターゲットに向ける
+		if (mIsRockOnToTarget) {
+			// ターゲット(ボスキャラ)の座標を取得
+			Vector3 newReticlePos = mBoss->GetBodyPos();
 
+			mReticle->SetWorldPos(newReticlePos);
+		}
 		// レティクル 更新
 		mReticle->Update();
 
@@ -296,7 +302,6 @@ void Player::UpdateObject()
 
 	// 身体の部位のワールド行列を更新
 	UpdateBodyCollider();
-
 
 	// 右手のワールド行列を更新
 	mAttackStatus.weaponParentMat = Multiply(
@@ -668,11 +673,6 @@ void Player::Move()
 	// 通常/防御時に有効
 	if (mBehavior == Behavior::kRoot || mBehavior == Behavior::kMove || mBehavior == Behavior::kDash) {
 
-		// ターゲットロックオン状態の場合
-		if (mIsRockOnToTarget) {
-			// (ToDo)左右移動時、現在の距離をほぼほぼ維持したまま回り込むような動き方をする
-		}
-
 		// いずれかの数値が、以上(以下)であれば移動処理を行う
 		if (Length(mDirectionForInput) != 0.0f) {
 
@@ -815,24 +815,6 @@ void Player::InputDirection(){
 			mDirection = mDirectionForInput;
 		}
 	}
-
-}
-
-
-
-void Player::ReciveDamageToBoss(float power)
-{
-	// ボスにダメージを与える
-	StatusManager::GetInstance()->ReceiveDamage(mStatus, power, mBoss->GetStatus());
-
-	// ボスのノックバックカウントを加算
-	mBoss->SetKnockBackCount(1);
-
-	// シェイクを発生させる
-	//mBoss->SetShake(0.25f, 0.1f);
-
-	// ヒットストップの時間を設定
-	// SetHitStopDuration(0.5f);
 
 }
 

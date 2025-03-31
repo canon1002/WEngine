@@ -95,6 +95,10 @@ public: // -- 公開 メンバ関数 -- //
 	// 更新
 	void Update();
 	
+	// 等倍ダメージ計算処理
+	void ReceiveDamage(const std::string& offence, const std::string& deffence);
+	// 倍率付きダメージ計算処理
+	void ReceiveDamage(const std::string& offence, const std::string& deffence, float power);
 
 
 	std::shared_ptr<Status> GetPlayerStatus() { return mPlayerStatus; }

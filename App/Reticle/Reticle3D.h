@@ -22,9 +22,11 @@ public: // -- 公開 メンバ関数 -- //
 	Vector3 GetWorld3D() { return mObject->GetWorldTransform()->translation; }
 	void SetCubeMap(const int32_t& textureHandle) { mObject->GetModel()->SetCubeTexture(textureHandle); }
 
+	// レティクルの距離を設定
 	void SetReticleDistance(float distance) { mReticleDistance = distance; }
 
-	//Collider* GetReticleCollider() { return mObject->mCollider; }
+	// レティクルの座標を設定
+	void SetWorldPos(const Vector3& pos) { mObject->mWorldTransform->translation = pos; }
 
 private: // -- 非公開 メンバ変数 -- //
 

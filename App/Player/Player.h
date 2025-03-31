@@ -123,6 +123,8 @@ public: // -- 公開 メンバ関数 -- //
 	Behavior GetBehavior()const { return mBehavior; }
 	// 自身が攻撃中であるか確認する
 	bool GetIsOperating() const;
+	// ロックオンの有無を取得する
+	bool GetIsRockOn()const { return mIsRockOnToTarget; }
 
 	// 回避
 	void Avoid();
@@ -138,8 +140,6 @@ public: // -- 公開 メンバ関数 -- //
 
 	// ボスクラスのポインタをセットする
 	void SetBoss(BossEnemy* boss) { mBoss = boss; }
-	// ボスにダメージを与える
-	void ReciveDamageToBoss(float power);
 
 	/// <summary>
 	/// 攻撃を当てたことをアクターに伝える
@@ -163,7 +163,6 @@ public: // -- 公開 メンバ変数 & 定数 -- //
 
 	// 最大コンボ回数
 	static const int32_t kComboCountMax = 3;
-
 	// コンボ定数表
 	static const std::array<ConstAttack, kComboCountMax> kConstAttacks;
 

@@ -253,9 +253,6 @@
     <ClCompile Include="GameEngine\Append\Collider\AABBCollider.cpp">
       <Filter>GameEngine\Append\Collider</Filter>
     </ClCompile>
-    <ClCompile Include="App\Player\Arrow.cpp">
-      <Filter>GameEngine\GameBase</Filter>
-    </ClCompile>
     <ClCompile Include="App\Enemy\BossEnemy.cpp">
       <Filter>GameEngine\GameBase</Filter>
     </ClCompile>
@@ -560,9 +557,6 @@
     </ClInclude>
     <ClInclude Include="GameEngine\Append\Collider\AABBCollider.h">
       <Filter>GameEngine\Append\Collider</Filter>
-    </ClInclude>
-    <ClInclude Include="App\Player\Arrow.h">
-      <Filter>GameEngine\GameBase</Filter>
     </ClInclude>
     <ClInclude Include="App\Enemy\BossEnemy.h">
       <Filter>GameEngine\GameBase</Filter>

@@ -360,8 +360,6 @@ void GameScene::Update() {
 	MainCamera::GetInstance()->Update();
 	// スカイボックス
 	Skybox::GetInstance()->Update();
-	// ステータスマネージャ
-	StatusManager::GetInstance()->Update();
 	// レベルエディタ
 	LevelEditor::GetInstance()->Update();
 	// パーティクル
@@ -786,8 +784,10 @@ void GameScene::DrawUI()
 		}
 
 
-		// レティクル表示
-		mPlayer->GetReticle3D()->Draw2DReticle();
+		// レティクル表示(ロックオン時のみ)
+		if (mPlayer->GetIsRockOn()) {
+			mPlayer->GetReticle3D()->Draw2DReticle();
+		}
 
 		// ダメージ画像の表記
 		DamageReaction::GetInstance()->DrawSprite();
