@@ -280,19 +280,20 @@ void BossEnemy::Update() {
 	// テーブルから関数を呼び出す
 	//(this->*CommandTable[0])();
 
-	// 一旦ここに落下処理をつくる
-	if (mObject->mWorldTransform->translation.y > 0.0f) {
-		// 移動量を加算
-		mObject->mWorldTransform->translation.y += mVelocity.y;
-		mVelocity.y -= 9.8f * (1.0f / 720.0f);
-	}
-	else if (mObject->mWorldTransform->translation.y < 0.0f) {
-		mObject->mWorldTransform->translation.y = 0.0f;
-		// 移動量修正
-		mVelocity.y = 0.0f;
-	}
-
 	if (mStatus->HP > 0.0f) {
+
+
+		// 一旦ここに落下処理をつくる
+		if (mObject->mWorldTransform->translation.y > 0.0f) {
+			// 移動量を加算
+			mObject->mWorldTransform->translation.y += mVelocity.y;
+			mVelocity.y -= 9.8f * (1.0f / 720.0f);
+		}
+		else if (mObject->mWorldTransform->translation.y < 0.0f) {
+			mObject->mWorldTransform->translation.y = 0.0f;
+			// 移動量修正
+			mVelocity.y = 0.0f;
+		}
 
 		// ステートの更新処理を行う
 		this->UpdateState();
@@ -334,7 +335,7 @@ void BossEnemy::Update() {
 	// 方向修正
 	AdJustDirection();
 	// オブジェクト更新
-	UpdateObject();
+	//UpdateObject();
 }
 
 void BossEnemy::UpdateBehaviorTree() {
@@ -371,7 +372,6 @@ void BossEnemy::UpdateBehaviorTree() {
 
 void BossEnemy::UpdateObject() {
 
-
 	// 無敵時間時の処理
 	InvincibleObjectUpdate();
 
@@ -380,10 +380,13 @@ void BossEnemy::UpdateObject() {
 		mActiveAction.lock()->Update();
 	}
 
-
 	// ステージ限界値に合わせた座標の補正
 	mObject->mWorldTransform->translation.x = std::clamp(mObject->mWorldTransform->translation.x, -20.0f, 20.0f);
 	mObject->mWorldTransform->translation.z = std::clamp(mObject->mWorldTransform->translation.z, -20.0f, 20.0f);
+
+	// オブジェクト 更新処理
+	mObject->Update();
+	mObject->mCollider->Update();
 
 	// 弾の更新処理
 	for (auto& bullet : mBullets) {
@@ -440,10 +443,6 @@ void BossEnemy::UpdateObject() {
 	for (auto& collider : mWeaponColliders) {
 		collider->collider->Update();
 	}
-
-	// オブジェクト更新
-	mObject->Update();
-	mObject->mCollider->Update();
 
 	// UI更新
 	mStatus->Update();

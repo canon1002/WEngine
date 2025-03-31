@@ -71,8 +71,6 @@ void Player::Init() {
 
 	// 移動量を初期化
 	mVelocity = { 0.0f,0.0f ,0.0f };
-	// 方向を初期化
-	mVelocity = { 0.0f,0.0f ,1.0f };
 
 	// 重力の影響を受ける
 	mIsGravity = true;
@@ -188,6 +186,8 @@ void Player::Update() {
 
 	if (mStatus->HP > 0.0f) {
 
+		mVelocity = { 0.0f,0.0f,0.0f };
+
 		// 方向入力
 		InputDirection();
 		// 落下処理
@@ -256,14 +256,16 @@ void Player::Update() {
 
 	}
 
-	// オブジェクト更新
-	UpdateObject();
 	// UI更新
 	mStatus->Update();
 }
 
 void Player::UpdateObject()
 {
+
+	// 移動量に応じた移動を行う
+	mObject->mWorldTransform->translation += mVelocity;
+
 
 	// 無敵時間時の処理
 	InvincibleObjectUpdate();
@@ -699,7 +701,7 @@ void Player::Move()
 			}
 
 			// 平行移動を行う
-			mObject->mWorldTransform->translation += mDirectionForInput * moveSpeed;
+			mVelocity = mDirectionForInput * moveSpeed;
 
 		}
 

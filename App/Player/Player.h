@@ -106,7 +106,14 @@ public: // -- 公開 メンバ関数 -- //
 	const Matrix4x4& GetSwordBoneMatrix(int32_t count) { return mAttackStatus.swordWorldMat.at(count); }
 	const WorldTransform* GetWorldPositionSword(int32_t count) { return mWorldTransformSword.at(count).get(); }
 
+	// ワールド座標の取得
 	Vector3 GetWorldPos() { return mObject->GetWorldTransform()->translation; }
+	// 移動量の取得
+	Vector3 GetVelocity()const { return mVelocity; }
+	// 移動量の設定
+	void SetVelocity(const Vector3& vel){ mVelocity = vel; }
+
+
 	Reticle3D* GetReticle3D() { return mReticle.get(); }
 
 	// ゲームマネージャにコライダーを追加する

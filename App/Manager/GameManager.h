@@ -67,6 +67,9 @@ public: // -- 公開 メンバ関数 -- //
 		return duration;
 	}
 
+	// 押し出し処理
+	void ResolveCollision();
+
 private: // -- 非公開 メンバ変数 -- //
 
 	// インスタンス

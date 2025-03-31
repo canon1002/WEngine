@@ -215,4 +215,37 @@ void GameManager::SetBossEnemy(BossEnemy* boss){
 	mBoss = boss;
 }
 
+void GameManager::ResolveCollision(){
+
+	// 簡易衝突判定(プレイヤーとボス敵)
+	float dx = mPlayer->GetWorldPos().x - mBoss->GetWorldPos().x;
+	float dz = mPlayer->GetWorldPos().z - mBoss->GetWorldPos().z;
+	float distance = dx * dx + dz * dz;
+	float radiusSum = (mPlayer->GetObject3D()->GetWorldTransform()->scale.x / 2.0f) +
+		(mBoss->GetObject3D()->GetWorldTransform()->scale.x / 2.0f);
+
+	if (distance > (radiusSum * radiusSum)) {
+		return;
+	}
+
+	// 平方根
+	distance = std::sqrt(distance);
+
+	// 零で割ることを避けるためのチェック
+	if (distance == 0.0f) {
+		// 任意の小さな値に設定して方向を与える
+		dx = 0.01f;
+		dz = 0.01f;
+		distance = std::sqrt(dx * dx + dz * dz);
+	}
+
+	float overlap = distance - (mPlayer->GetObject3D()->GetWorldTransform()->scale.x / 2.0f) - 
+		(mBoss->GetObject3D()->GetWorldTransform()->scale.x / 2.0f);
+
+	// c1を押し出す
+	mPlayer->GetObject3D()->mWorldTransform->translation.x -= overlap * (dx / distance);
+	mPlayer->GetObject3D()->mWorldTransform->translation.z -= overlap * (dz / distance);
+
+}
+
 

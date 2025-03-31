@@ -458,8 +458,8 @@ void GameScene::BattlePhase() {
 	// ヒットストップ中は演出以外を停止
 	if (mHitStopTimer > 0.0f) {
 		// オブジェクトの更新は行う
-		//mPlayer->UpdateObject();
-		//mBoss->UpdateObject();
+		mPlayer->UpdateObject();
+		mBoss->UpdateObject();
 
 		// 早期リターン
 		return;
@@ -469,6 +469,16 @@ void GameScene::BattlePhase() {
 	mPlayer->Update();
 	// ボス 更新
 	mBoss->Update();
+
+	// 簡易押し出し処理
+	GameManager::GetInstance()->ResolveCollision();
+
+	// プレイヤー オブジェクト更新
+	mPlayer->UpdateObject();
+	// ボス オブジェクト更新
+	mBoss->UpdateObject();
+	
+
 	// ゲームマネージャ 更新
 	GameManager::GetInstance()->Update();
 
