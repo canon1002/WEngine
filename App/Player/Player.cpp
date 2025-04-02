@@ -178,7 +178,7 @@ void Player::Init() {
 	mDirectionForInput = { 0.0f,0.0f,0.0f };
 
 	// ターゲットロックオンの有無
-	mIsRockOnToTarget = false;
+	mIsLockOnToTarget = false;
 
 }
 
@@ -251,12 +251,25 @@ void Player::Update() {
 		}
 
 		// ロックオン時、レティクルをターゲットに向ける
-		if (mIsRockOnToTarget) {
-			// ターゲット(ボスキャラ)の座標を取得
-			Vector3 newReticlePos = mBoss->GetBodyPos();
 
-			mReticle->SetWorldPos(newReticlePos);
+		// ターゲット(ボスキャラ)の座標を取得
+		Vector3 newReticlePos = mBoss->GetBodyPos();
+		mReticle->SetWorldPos(newReticlePos);
+
+		if (mIsLockOnToTarget) {
+			mReticle->SetReticleColor(Color(1.0f, 0.0f, 0.0f, 1.0f));
 		}
+		else {
+			if (mReticle->IsLockOn(newReticlePos)) {
+				mReticle->SetReticleColor(Color(1.0f, 1.0f, 1.0f, 1.0f));
+			}
+			else {
+				mReticle->SetReticleColor(Color(0.2f, 0.2f, 0.2f, 1.0f));
+			}
+		}
+
+		
+
 		// レティクル 更新
 		mReticle->Update();
 
@@ -788,19 +801,22 @@ void Player::InputDirection(){
 	if (InputManager::GetInstance()->GetPused(Gamepad::Button::X)) {
 
 		// ターゲットロックオン状態を解除する
-		if (mIsRockOnToTarget) {
+		if (mIsLockOnToTarget) {
 			MainCamera::GetInstance()->SetCameraRotateControll(true);
-			mIsRockOnToTarget = false;
+			MainCamera::GetInstance()->EndSearchTarget();
+			mIsLockOnToTarget = false;
 		}
+
 		// ターゲットロックオン状態にする
-		else {
+		else if (mReticle->IsLockOn(mBoss->GetBodyPos())) {
 			MainCamera::GetInstance()->SetCameraRotateControll(false);
-			mIsRockOnToTarget = true;
+			mIsLockOnToTarget = true;
 		}
+
 	}
 
 	// ロックオン中のカメラ処理
-	if (mIsRockOnToTarget) {
+	if (mIsLockOnToTarget) {
 
 		// ターゲット方向にカメラを向ける
 		MainCamera::GetInstance()->SetCameraRotarionToSearchTarget();

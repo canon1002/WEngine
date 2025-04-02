@@ -4,6 +4,7 @@
 #include "GameEngine/Object/Camera/MainCamera.h"
 #include "GameEngine/Base/Debug/ImGuiManager.h"
 #include "GameEngine/Append/Collider/CollisionManager.h"
+#include "GameEngine/Math/Vec2.h"
 
 Reticle3D::Reticle3D()
 {
@@ -110,4 +111,26 @@ void Reticle3D::Draw2DReticle(){
 
 	SpriteAdministrator::GetInstance()->PreDraw();
 	mSprite->Draw();
+}
+
+bool Reticle3D::IsLockOn(const Vector3& target){
+
+	Vector3 pos = Transform(target,MainCamera::GetInstance()->GetViewMatrix());
+
+	// 距離条件のチェック
+	if (InRange(pos.z,mLockOnDistance)) {
+
+		// カメラ前方との角度を計算
+		float arcTangent = std::atan2(
+			std::sqrt(pos.x * pos.x + pos.y * pos.y),
+			pos.z
+		);
+
+		// 角度条件のチェック
+		if (std::abs(arcTangent) <= mAngleRange) {
+			return true;
+		}
+	}
+
+	return false;
 }

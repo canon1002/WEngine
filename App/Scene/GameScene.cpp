@@ -784,10 +784,8 @@ void GameScene::DrawUI()
 		}
 
 
-		// レティクル表示(ロックオン時のみ)
-		if (mPlayer->GetIsRockOn()) {
-			mPlayer->GetReticle3D()->Draw2DReticle();
-		}
+		// レティクル表示
+		mPlayer->GetReticle3D()->Draw2DReticle();
 
 		// ダメージ画像の表記
 		DamageReaction::GetInstance()->DrawSprite();

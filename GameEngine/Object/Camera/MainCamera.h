@@ -38,6 +38,8 @@ public: // -- public メンバ関数 -- //
 	inline void SetSearchTarget(const WorldTransform* target) { mSearchTarget = target; }
 	// 追跡対象解除
 	inline void EraseSearchTarget() { mSearchTarget = nullptr; }
+	// ターゲットへのカメラ回転の解除
+	inline void EndSearchTarget() { mRotaionEasingTime = 1.0f; };
 
 	// カメラを追跡対象の方向へ向ける
 	void SetCameraRotarionToSearchTarget();

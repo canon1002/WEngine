@@ -124,7 +124,7 @@ public: // -- 公開 メンバ関数 -- //
 	// 自身が攻撃中であるか確認する
 	bool GetIsOperating() const;
 	// ロックオンの有無を取得する
-	bool GetIsRockOn()const { return mIsRockOnToTarget; }
+	bool GetIsLockOn()const { return mIsLockOnToTarget; }
 
 	// 回避
 	void Avoid();
@@ -210,7 +210,7 @@ private: // -- 非公開 メンバ変数 -- //
 	// カメラ回転ロックの有無
 	bool mIsCameraRotateLock;
 	// ターゲットロックオンの有無
-	bool mIsRockOnToTarget;
+	bool mIsLockOnToTarget;
 
 	// -- エフェクト関係 -- //
 
