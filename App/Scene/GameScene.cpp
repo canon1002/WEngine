@@ -496,6 +496,8 @@ void GameScene::BattlePhase() {
 
 void GameScene::LosePhase() {
 
+	mPlayer->GetObject3D()->GetModel()->mMaterialData->color = { 1.0f,1.0f,1.0f,1.0f };
+
 	if (mIsGameOverSelect == false) {
 		if (mViggnetTime < 1.0f) {
 			mViggnetTime += (1.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetGameSpeed();
