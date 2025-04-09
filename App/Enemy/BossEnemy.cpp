@@ -20,6 +20,9 @@ BossEnemy::~BossEnemy() {}
 
 void BossEnemy::Init() {
 
+	// クラス名を設定
+	mName = "BossEnemy";
+
 	// モデルの読み込み
 	ModelManager::GetInstance()->LoadModel("twoHanded", "twoHanded.gltf");
 	ModelManager::GetInstance()->LoadModel("Boss", "Idle.gltf");
@@ -82,10 +85,11 @@ void BossEnemy::Init() {
 	// ジャンプ回数のセット
 	mJumpCount = kJumpCountMax;
 
-	// ビヘイビアツリーの初期化
-	this->InitBehavior();
 	// 各行動クラスの初期化
 	this->InitActions();
+	// ビヘイビアツリーの初期化
+	this->InitBehavior();
+	
 
 	// ステータス取得
 	mStatus = StatusManager::GetInstance()->GetBossStatus();
@@ -119,7 +123,7 @@ void BossEnemy::Init() {
 	mWeapon->Init("Weapon");
 	mWeapon->SetModel("twoHanded.gltf");
 	mWeapon->mSkinning = make_unique<Skinning>();
-	//mWeapon->GetModel()->SetCubeTexture(Skybox::GetInstance()->mTextureHandle);
+	mWeapon->GetModel()->SetCubeTexture(Skybox::GetInstance()->mTextureHandle);
 	mWeapon->mSkinning->Init("twoHanded", "twoHanded.gltf",
 		mWeapon->GetModel()->modelData);
 	mWeapon->mSkinning->IsInactive();
@@ -178,47 +182,9 @@ void BossEnemy::InitBehavior() {
 	// 初期シーンの初期化
 	mStateArr[VITALITY]->Init(this);
 
-	// Behavior Treeを構築する 
-	mRoot = std::make_unique<BT::Sequence>();
-
-	// 接近 -> 近接攻撃
-	BT::Sequence* newSequence = new BT::Sequence();
-	BT::Selector* ReafOneSelector = new BT::Selector();
-
-	// プレイヤーが遠い場合
-	newSequence->SetChild(new BT::Condition(std::bind(&BossEnemy::InvokeFarDistance, this)));
-	newSequence->SetChild(new BT::Action(this, "ShotBullet"));// 射撃
-	newSequence->SetChild(new BT::Action(this, "MoveToPlayer"));// 接近
-
-	// 接近行動の終了時、敵の飛距離に応じた行動を取る
-	// 至近距離 : ジャンプ攻撃
-	// 中遠距離 : ダッシュ → ダッシュ攻撃
-	BT::Selector* atkSelector = new BT::Selector();
-
-	BT::Sequence* farAtkActions = new BT::Sequence();
-	farAtkActions->SetChild(new BT::Condition(std::bind(&BossEnemy::InvokeFarDistance, this)));
-	farAtkActions->SetChild(new BT::Action(this, "Shrinkage"));
-	farAtkActions->SetChild(new BT::Action(this, "AttackClose"));
-	farAtkActions->SetChild(new BT::Action(this, "Shrinkage"));
-	farAtkActions->SetChild(new BT::Action(this, "AttackDash"));
-
-	atkSelector->SetChild(farAtkActions); // 中遠距離
-	atkSelector->SetChild(new BT::Action(this, "AttackJump"));
-	newSequence->SetChild(atkSelector);
-
-	// ルートノードに追加
-	ReafOneSelector->SetChild(newSequence);
-
-
-	// 接近状態だったら
-	BT::Sequence* startNear = new BT::Sequence();
-	startNear->SetChild(new BT::Action(this, "EarthSword"));	// 複数地点攻撃
-	startNear->SetChild(new BT::Condition(std::bind(&BossEnemy::InvokeNearDistance, this))); // 至近距離時
-	startNear->SetChild(new BT::Action(this, "BackStep")); // 後退する
-	ReafOneSelector->SetChild(startNear);
-
-
-	mRoot->SetChild(ReafOneSelector);
+	// エディタ並びにノードの初期化
+	mBTNodeEditor = std::make_unique<BTNodeEditor>(this);
+	mBTNodeEditor->Init();
 
 }
 
@@ -273,6 +239,27 @@ void BossEnemy::InitActions()
 	// 初期は行動しない
 	mActiveAction.reset();
 
+	// -- 以下 条件関数の初期化 -- //
+
+	// 条件関数の設定
+	mConditionFunctions["IsNearDistance"] =
+		std::bind(&Actor::IsNearDistance, this, 10.0f); // 例として10.0fを渡す
+	mConditionFunctions["IsFarDistance"] =
+		std::bind(&Actor::IsFarDistance, this, 10.0f); // 例として10.0fを渡す
+	mConditionFunctions["InvokeNearDistance"] =
+		std::bind(&Actor::InvokeNearDistance, this);
+	mConditionFunctions["InvokeFarDistance"] =
+		std::bind(&Actor::InvokeFarDistance, this);
+	mConditionFunctions["IsReceivedDamage"] =
+		std::bind(&Actor::IsReceivedDamage, this);
+	mConditionFunctions["IsHitAttackToTarget"] =
+		std::bind(&Actor::IsHitAttackToTarget, this);
+	mConditionFunctions["IsNearFieldEdge"] =
+		std::bind(&Actor::IsNearFieldEdge, this);
+	mConditionFunctions["IsFarFieldEdge"] =
+		std::bind(&Actor::IsFarFieldEdge, this);
+
+
 }
 
 void BossEnemy::Update() {
@@ -298,34 +285,9 @@ void BossEnemy::Update() {
 		// ステートの更新処理を行う
 		this->UpdateState();
 
-		// ノックバックカウントが最大の場合はBehaviorTreeの更新を行わない
-		//if (mKnockBackCount>=kKnockBackCountMax) {
-		//
-		//	// ノックバックが終了したら
-		//	if (mActiveAction.lock()->GetCondition() == ACT::Condition::FINISHED) {
-		//		// カウント0に戻す
-		//		mKnockBackCount = 0;
-		//		
-		//		// ビヘイビアツリーをリセット
-		//		mRoot->Reset();
-
-		//		// 各アクションの初期化もしておく
-		//		for (auto& action : mActions) {
-		//			action.second->End();
-		//			action.second->Reset();
-		//		}
-
-		//		// 行動クラスのポインタをnullptrにする
-		//		mActiveAction.reset();
-		//	}
-		//}
-		//else {
-		//	
-		//}
-
 		// BehaviorTreeの更新処理を行う
 		if (mIsUpdateBehavior) {
-			this->UpdateBehaviorTree();
+			UpdateBehaviorTree();
 		}
 	}
 
@@ -350,13 +312,13 @@ void BossEnemy::UpdateBehaviorTree() {
 		mReloadBTCount = 1.0f;
 
 		// ビヘイビアツリーの実行
-		mBTStatus = mRoot->Tick();
+		mBTStatus = mBTNodeEditor->Tick();
 
-		// ビヘイビアツリーの実行結果が成功か失敗だったら
-		if (mBTStatus == BT::NodeStatus::SUCCESS || mBTStatus == BT::NodeStatus::FAILURE) {
+		// ビヘイビアツリーの実行結果が成功か失敗だったら(≒実行中ではない場合)
+		if (mBTStatus != AINode::State::RUNNING) {
 
 			// ビヘイビアツリーをリセット
-			mRoot->Reset();
+			mBTNodeEditor->Reset();
 
 			// 各アクションの初期化もしておく
 			for (auto& action : mActions) {
@@ -494,6 +456,10 @@ void BossEnemy::DrawGUI() {
 
 	ImGui::Begin("BossEnemy");
 	ImGui::Checkbox("UpdateBehaviorTree", &mIsUpdateBehavior);
+
+	// ノードエディタの更新(デバッグ表示)
+	mBTNodeEditor->Update();
+
 	if (ImGui::CollapsingHeader("Animation")) {
 
 		std::string strAnimeT = "AnimationTime : " + std::to_string(mObject->mSkinning->GetNowSkinCluster()->animationTime / mObject->mSkinning->GetDurationTime());

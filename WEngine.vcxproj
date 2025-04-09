@@ -127,7 +127,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="GameEngine\Append\Collider\CapsuelCollider.cpp" />
     <ClCompile Include="GameEngine\Editor\NodeEditor\Nodes\AINodeActions.cpp" />
     <ClCompile Include="App\Actor\Actor.cpp" />
-    <ClCompile Include="App\AI\BehaviorTree\IBehavior.cpp" />
     <ClCompile Include="App\Enemy\Action\AttackJump.cpp" />
     <ClCompile Include="App\Enemy\Action\Dash.cpp" />
     <ClCompile Include="App\Manager\Status\StatusManager.cpp" />
@@ -340,7 +339,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="GameEngine\Append\Animation\Skinning\Joint.h" />
     <ClInclude Include="GameEngine\Object\Grid3D.h" />
     <ClInclude Include="App\Player\Player.h" />
-    <ClInclude Include="App\AI\BehaviorTree\IBehavior.h" />
     <ClInclude Include="App\AI\State\IBossState.h" />
     <ClInclude Include="App\AI\State\VitalityBossState.h" />
     <ClInclude Include="App\IObjectBase.h" />

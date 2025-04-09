@@ -16,6 +16,10 @@ void TitleScene::Init() {
 	// シーン内選択段階 (最初は遷移中にする)
 	mSelectStep = SelectStep::SCENESTART;
 
+	// SkyBox
+	TextureManager::GetInstance()->LoadTexture("skybox/skybox.dds");
+	Skybox::GetInstance()->Init("skybox", "skybox.dds");
+
 	// カメラ設定
 	mCamera = MainCamera::GetInstance();
 	mCamera->Init();
@@ -176,21 +180,6 @@ void TitleScene::Init() {
 	// パーティクルマネージャの初期化
 	ParticleManager::GetInstance()->Init();
 
-	// エミッター初期化
-	mDashSmoke = std::make_unique<ParticleEmitter>("DashSmoke");
-	mDashSmoke->Init();
-	ParticleManager::GetInstance()->CreateParticleGroupe(mDashSmoke->mName, "circle.png");
-		
-	// -- エディタテスト -- //
-	mBTNodeTestActor = std::make_unique<Actor>("NodeTester");
-	mBTNodeEditor = std::make_unique<BTNodeEditor>(mBTNodeTestActor.get());
-	mBTNodeEditor->Init();
-
-	// SkyBox
-	/*TextureManager::GetInstance()->LoadTexture("skybox/skybox.dds");
-	mSkybox = Skybox::GetInstance();
-	mSkybox->Init("skybox", "skybox.dds");*/
-
 }
 
 void TitleScene::Update() {
@@ -210,10 +199,8 @@ void TitleScene::Update() {
 	mPlayerObj->DrawGUI();
 
 	// スカイボックス
-	//mSkybox->Update();
-
-	mBTNodeEditor->Update();
-
+	Skybox::GetInstance()->Update();
+	Skybox::GetInstance()->DrawGUI("Skybox");
 
 	// タイトルロゴの更新
 	mTitleLogo.sprite->Update();
@@ -487,13 +474,6 @@ void TitleScene::Update() {
 		break;
 	}
 
-	// プレイヤーが走っている場合
-	if (mPlayerObj->mSkinning->GetNowSkinCluster()->name == "run") {
-		// 発生座標の更新
-		mDashSmoke->SetEmitterPos(mPlayerObj->GetWorldTransform()->GetWorldPosition());
-		// ダッシュ煙を発生させる
-		mDashSmoke->Update();
-	}
 
 	// パーティクル 更新
 	ParticleManager::GetInstance()->Update();
@@ -502,9 +482,9 @@ void TitleScene::Update() {
 
 void TitleScene::Draw() {
 
-	//// Skybox 描画
-	//mSkybox->PreDraw();
-	//mSkybox->Draw();
+	// Skybox 描画
+	Skybox::GetInstance()->PreDraw();
+	Skybox::GetInstance()->Draw();
 
 	// 通常モデル 描画
 	ModelManager::GetInstance()->PreDraw();

@@ -4,6 +4,7 @@
 #include "App/Enemy/Action/Action.h"
 #include "App/Bullet/Bullet.h"
 #include "App/Actor/Collider/GameCollider.h"
+#include "GameEngine/Editor/NodeEditor/BTNodeEditor.h"
 
 // 前方宣言
 class CollisionManager;
@@ -108,6 +109,14 @@ public: // -- 公開 メンバ関数 -- //
 	// ターゲットの座標を取得
 	Vector3 GetWorldPosForTarget();
 
+	/// <summary>
+	/// 条件の関数ポインタを取得する
+	/// </summary>
+	/// <param name="key"> 条件関数名 </param>
+	/// <returns>指定した関数ポインタ</returns>
+	std::function<bool()> GetConditionFunction(const std::string& key);
+
+
 	// 距離が近い場合に実行
 	bool InvokeNearDistance();
 	// 距離が近い場合に実行(距離設定可能)
@@ -129,7 +138,9 @@ public: // -- 公開 メンバ関数 -- //
 	void ResetHitAttackToTarget() { mIsHitAttackToTarget = false; }
 
 	// ステージ限界点に近いか
-	bool mIsInvokeFieldEndPosition();
+	bool IsNearFieldEdge();
+	// ステージ限界点から遠いか
+	bool IsFarFieldEdge();
 
 #pragma endregion 
 
@@ -221,15 +232,20 @@ protected: // -- 限定公開 メンバ変数 -- //
 	// 無敵発生時からいくら経ったか
 	float mInvincibleCurrent;
 
+	// AINodeエディタ
+	std::unique_ptr<BTNodeEditor> mBTNodeEditor;
 
 	// 行動マップデータ
-	std::map<string, std::shared_ptr<ACT::Action>> mActions;
+	std::unordered_map<string, std::shared_ptr<ACT::Action>> mActions;
 	// 現在の行動
 	std::weak_ptr<ACT::Action> mActiveAction;
 	// 直近で被ダメージを受けたか
 	bool mIsReceivedDamage;
 	// 直近でターゲットにダメージを与えたか
 	bool mIsHitAttackToTarget;
+
+	// 条件関数のリスト
+	std::unordered_map<std::string, std::function<bool()>> mConditionFunctions;
 
 
 	// 射撃攻撃の弾のリスト

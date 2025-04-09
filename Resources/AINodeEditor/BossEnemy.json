@@ -1,0 +1,282 @@
+{
+    "root": {
+        "Pos": [
+            185.8316650390625,
+            209.20928955078125
+        ],
+        "child": [
+            {
+                "BackAndShot": {
+                    "Pos": [
+                        308.73675537109375,
+                        11.5653076171875
+                    ],
+                    "child": [
+                        {
+                            "IsFarFieldEdge": {
+                                "Pos": [
+                                    423.53045654296875,
+                                    26.485198974609375
+                                ],
+                                "action": "BossEnemy",
+                                "index": 10,
+                                "name": "IsFarFieldEdge",
+                                "owner": "BossEnemy",
+                                "tag": "CONDITION"
+                            }
+                        },
+                        {
+                            "IsNearDistance": {
+                                "Pos": [
+                                    529.8316650390625,
+                                    27.20928955078125
+                                ],
+                                "action": "BossEnemy",
+                                "index": 11,
+                                "name": "IsNearDistance",
+                                "owner": "BossEnemy",
+                                "tag": "CONDITION"
+                            }
+                        },
+                        {
+                            "BackStep": {
+                                "Pos": [
+                                    643.6492919921875,
+                                    28.3211669921875
+                                ],
+                                "action": "BossEnemy",
+                                "index": 12,
+                                "owner": "BossEnemy",
+                                "tag": "ACTION"
+                            }
+                        },
+                        {
+                            "ShotBullet": {
+                                "Pos": [
+                                    726.8316650390625,
+                                    28.20928955078125
+                                ],
+                                "action": "BossEnemy",
+                                "index": 13,
+                                "owner": "BossEnemy",
+                                "tag": "ACTION"
+                            }
+                        }
+                    ],
+                    "index": 9,
+                    "tag": "SEQUENCE"
+                }
+            },
+            {
+                "DoubleSlash": {
+                    "Pos": [
+                        309.8316650390625,
+                        356.20928955078125
+                    ],
+                    "child": [
+                        {
+                            "IsNearDistance": {
+                                "Pos": [
+                                    419.8316650390625,
+                                    370.20928955078125
+                                ],
+                                "action": "BossEnemy",
+                                "index": 7,
+                                "name": "IsNearDistance",
+                                "owner": "BossEnemy",
+                                "tag": "CONDITION"
+                            }
+                        },
+                        {
+                            "AttackClose": {
+                                "Pos": [
+                                    529.8316650390625,
+                                    370.20928955078125
+                                ],
+                                "action": "BossEnemy",
+                                "index": 4,
+                                "owner": "BossEnemy",
+                                "tag": "ACTION"
+                            }
+                        },
+                        {
+                            "AttackDash": {
+                                "Pos": [
+                                    630.8316650390625,
+                                    369.20928955078125
+                                ],
+                                "action": "BossEnemy",
+                                "index": 6,
+                                "owner": "BossEnemy",
+                                "tag": "ACTION"
+                            }
+                        }
+                    ],
+                    "index": 5,
+                    "tag": "SEQUENCE"
+                }
+            },
+            {
+                "DashActions": {
+                    "Pos": [
+                        304.8316650390625,
+                        189.20928955078125
+                    ],
+                    "child": [
+                        {
+                            "DashAndSlash": {
+                                "Pos": [
+                                    431.8316650390625,
+                                    138.209228515625
+                                ],
+                                "child": [
+                                    {
+                                        "IsFarFieldEdge": {
+                                            "Pos": [
+                                                546.8316650390625,
+                                                154.20928955078125
+                                            ],
+                                            "action": "BossEnemy",
+                                            "index": 14,
+                                            "name": "IsFarFieldEdge",
+                                            "owner": "BossEnemy",
+                                            "tag": "CONDITION"
+                                        }
+                                    },
+                                    {
+                                        "IsFarDistance": {
+                                            "Pos": [
+                                                651.8316650390625,
+                                                156.20928955078125
+                                            ],
+                                            "action": "BossEnemy",
+                                            "index": 8,
+                                            "name": "IsFarDistance",
+                                            "owner": "BossEnemy",
+                                            "tag": "CONDITION"
+                                        }
+                                    },
+                                    {
+                                        "Shrinkage": {
+                                            "Pos": [
+                                                751.8316650390625,
+                                                157.20928955078125
+                                            ],
+                                            "action": "BossEnemy",
+                                            "index": 2,
+                                            "owner": "BossEnemy",
+                                            "tag": "ACTION"
+                                        }
+                                    },
+                                    {
+                                        "AttackClose": {
+                                            "Pos": [
+                                                833.8316650390625,
+                                                159.20928955078125
+                                            ],
+                                            "action": "BossEnemy",
+                                            "index": 3,
+                                            "owner": "BossEnemy",
+                                            "tag": "ACTION"
+                                        }
+                                    }
+                                ],
+                                "index": 1,
+                                "tag": "SEQUENCE"
+                            }
+                        },
+                        {
+                            "BackAndEarth": {
+                                "Pos": [
+                                    426.8316650390625,
+                                    252.20932006835938
+                                ],
+                                "child": [
+                                    {
+                                        "IsNearDistance": {
+                                            "Pos": [
+                                                588.8316650390625,
+                                                269.20928955078125
+                                            ],
+                                            "action": "BossEnemy",
+                                            "index": 16,
+                                            "name": "IsNearDistance",
+                                            "owner": "BossEnemy",
+                                            "tag": "CONDITION"
+                                        }
+                                    },
+                                    {
+                                        "BackStep": {
+                                            "Pos": [
+                                                700.8316650390625,
+                                                268.20928955078125
+                                            ],
+                                            "action": "BossEnemy",
+                                            "index": 17,
+                                            "owner": "BossEnemy",
+                                            "tag": "ACTION"
+                                        }
+                                    },
+                                    {
+                                        "EarthSword": {
+                                            "Pos": [
+                                                774.8316650390625,
+                                                267.20928955078125
+                                            ],
+                                            "action": "BossEnemy",
+                                            "index": 18,
+                                            "owner": "BossEnemy",
+                                            "tag": "ACTION"
+                                        }
+                                    }
+                                ],
+                                "index": 22,
+                                "tag": "SEQUENCE"
+                            }
+                        }
+                    ],
+                    "index": 15,
+                    "tag": "SEQUENCE"
+                }
+            },
+            {
+                "WalkAndSlash": {
+                    "Pos": [
+                        306.8316650390625,
+                        465.20928955078125
+                    ],
+                    "child": [
+                        {
+                            "MoveToPlayer": {
+                                "Pos": [
+                                    435.19183349609375,
+                                    481.36651611328125
+                                ],
+                                "action": "BossEnemy",
+                                "index": 20,
+                                "owner": "BossEnemy",
+                                "tag": "ACTION"
+                            }
+                        },
+                        {
+                            "AttackJump": {
+                                "Pos": [
+                                    547.1918334960938,
+                                    483.36651611328125
+                                ],
+                                "action": "BossEnemy",
+                                "index": 24,
+                                "owner": "BossEnemy",
+                                "tag": "ACTION"
+                            }
+                        }
+                    ],
+                    "index": 19,
+                    "tag": "SEQUENCE"
+                }
+            }
+        ],
+        "index": 0,
+        "tag": "SELECT"
+    }
+}

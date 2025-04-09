@@ -8,7 +8,10 @@ Actor::Actor(){
 }
 
 Actor::Actor(const std::string& name){
+	
+	// アクター名を設定
 	mName = name;
+
 }
 
 void Actor::SetCollider(CollisionManager* cManager)
@@ -168,6 +171,18 @@ Vector3 Actor::GetWorldPosForTarget() {
 	return Vector3(0.0f, 0.0f, 0.0f);
 }
 
+
+std::function<bool()> Actor::GetConditionFunction(const std::string& key){
+	
+	// 引数で指定した条件関数があるか確認する
+	if (mConditionFunctions.find(key) != mConditionFunctions.end()) {
+		return mConditionFunctions[key];
+	}
+	
+	// 条件関数が存在しない場合はnullptrを返す
+	return nullptr;
+}
+
 bool Actor::InvokeNearDistance() {
 	//	距離が近い場合のみ実行
 	if (Length(Vector3(
@@ -216,7 +231,26 @@ bool Actor::IsFarDistance(float range) {
 	return false;
 }
 
-bool Actor::mIsInvokeFieldEndPosition(){
+bool Actor::IsNearFieldEdge(){
+
+	// フィールド限界地点の取得
+	Vector3 fieldRad = BlackBoard::GetFieldRadius();
+	// 距離感の設定( フィールド半径/4 程度にする)
+	float distance = fieldRad.x / 4.0f;
+
+	//	距離が近い場合はtrueを返す
+	if (-fieldRad.x > (GetWorldPos().x - distance) || // 左側
+		fieldRad.x < (GetWorldPos().x + distance) || // 右側
+		fieldRad.z < (GetWorldPos().x + distance) || // 奥行き
+		-fieldRad.x >(GetWorldPos().x - distance) // 手前側
+		) {
+		return true;
+	}
+	return false;
+
+}
+
+bool Actor::IsFarFieldEdge(){
 
 	// フィールド限界地点の取得
 	Vector3 fieldRad = BlackBoard::GetFieldRadius();
@@ -229,8 +263,7 @@ bool Actor::mIsInvokeFieldEndPosition(){
 		fieldRad.z < (GetWorldPos().x + distance) || // 奥行き
 		-fieldRad.x >(GetWorldPos().x - distance) // 手前側
 		) {
-		return true;
+		return false;
 	}
-	return false;
-
+	return true;
 }

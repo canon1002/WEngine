@@ -2,9 +2,7 @@
 #include "App/Actor/Actor.h"
 #include "App/AI/State/IBossState.h"
 #include "App/AI/State/VitalityBossState.h"
-#include "App/AI/BehaviorTree/IBehavior.h"
 #include "App/Manager/GameManager.h"
-
 
 // 前方宣言
 class Player;
@@ -118,10 +116,8 @@ private: // -- 非公開 メンバ変数 -- //
 	int mCurrentStateNo;
 	int mPrevStateNo;
 
-	// ビヘイビアツリー
-	std::unique_ptr<BT::Sequence> mRoot;
 	// ビヘイビアツリーの駆動状態
-	BT::NodeStatus mBTStatus;
+	AINode::State mBTStatus;
 
 	// ビヘイビアツリーの再実行カウント
 	float mReloadBTCount;

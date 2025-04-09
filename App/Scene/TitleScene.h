@@ -6,7 +6,6 @@
 
 // テスト用
 #include "GameEngine/Object/ShadowObject.h"
-#include "GameEngine/Editor/NodeEditor/BTNodeEditor.h"
 
 // ゲーム用
 #include"App/Actor/Actor.h"
@@ -86,14 +85,6 @@ private:
 	bool mIsUpperBackUICount;	// 背景UIのカウントが上昇中であるか
 	bool mIsTransUI;	// UI表示の遷移中であるか
 	float mUITransCount;	// UI表示切替の進行度
-
-	// パーティクル テスト
-	std::unique_ptr<ParticleEmitter> mDashSmoke;
-
-	// -- エディタテスト -- //
-	std::unique_ptr<Actor> mBTNodeTestActor;
-	std::unique_ptr<BTNodeEditor> mBTNodeEditor;
-
 	
 };
 

@@ -35,6 +35,11 @@ public:// -- 公開 メンバ関数 -- //
 	// 更新処理
 	void Update();
 
+	// BT実行処理
+	AINode::State Tick();
+	// BT再起動処理
+	void Reset();
+
 	// 新規ノード生成処理
 	void Create(const AINodeType& type, const std::string& name);
 
@@ -71,7 +76,7 @@ private: // -- 非公開 メンバ関数 -- //
 	void HandleNodeLinking();
 	// リンクの削除
 	void LinkDeletion();
-
+	// IDからノードを検索
 	std::shared_ptr<AINode::INode> FindNodeByID(int nodeID);
 
 
@@ -80,9 +85,11 @@ private: // -- 非公開 メンバ関数 -- //
 	// 読み込み
 	void Load();
 
-	// 生成処理
+	// ノード生成処理
 	std::shared_ptr<AINode::INode> CreateForJson(json j);
-	
+	// リンク生成処理
+	void CreateLink(std::shared_ptr<AINode::INode> node);
+
 
 public: // -- 公開 メンバ変数 -- //
 

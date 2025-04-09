@@ -15,20 +15,14 @@ BTNodeEditor::~BTNodeEditor() {
 void BTNodeEditor::Init() {
 
 	// ノードをJsonファイルから読み込む
-	//Load();
+	Load();
+
+	// ノードの状態をリセットしておく
+	mRootNode->Reset();
 
 }
 
 void BTNodeEditor::Update() {
-
-	// ノード実行処理
-
-
-	// 親ノードを実行し、子ノードを配列の先頭から順々に実行していく
-
-
-
-
 
 #ifdef _DEBUG
 
@@ -76,59 +70,62 @@ void BTNodeEditor::Update() {
 
 	}
 
-	// ノードの情報を表示(デバッグのデバッグ用)
-	if (ImGui::BeginTable("Node", 4)) {
-		// ヘッダーの設定
-		ImGui::TableSetupColumn("ID");
-		ImGui::TableSetupColumn("Name");
-		ImGui::TableSetupColumn("Tag");
-		ImGui::TableSetupColumn("Child ID");
-		ImGui::TableHeadersRow();
+	// ノード情報
+	if (ImGui::CollapsingHeader("Nodes")) {
+		if (ImGui::BeginTable("Node", 4)) {
+			// ヘッダーの設定
+			ImGui::TableSetupColumn("ID");
+			ImGui::TableSetupColumn("Name");
+			ImGui::TableSetupColumn("Tag");
+			ImGui::TableSetupColumn("Child ID");
+			ImGui::TableHeadersRow();
 
-		// ノード一覧の表示
-		for (const auto& node : mNodes) {
+			// ノード一覧の表示
+			for (const auto& node : mNodes) {
 
-			if (!node) { continue; }
+				if (!node) { continue; }
 
-			ImGui::TableNextRow();
+				ImGui::TableNextRow();
 
-			// ID
-			ImGui::TableNextColumn();
-			ImGui::Text("%d", node->mIndex);
+				// ID
+				ImGui::TableNextColumn();
+				ImGui::Text("%d", node->mIndex);
 
-			// Name
-			ImGui::TableNextColumn();
-			ImGui::Text("%s", node->mName.c_str());
+				// Name
+				ImGui::TableNextColumn();
+				ImGui::Text("%s", node->mName.c_str());
 
-			// Tag
-			ImGui::TableNextColumn();
-			ImGui::Text("%s", node->mTag.c_str());
+				// Tag
+				ImGui::TableNextColumn();
+				ImGui::Text("%s", node->mTag.c_str());
 
-			// Child ID の取得
-			ImGui::TableNextColumn();
+				// Child ID の取得
+				ImGui::TableNextColumn();
 
-			// 子ノード未所持
-			if (node->mChildren.empty()) {
-				ImGui::Text("None");
-			}
-
-			// 子ノード所持の場合
-			else {
-
-				std::string s = "";
-				for (auto& child : node->mChildren) {
-					s += std::to_string(child->mIndex);
-					s += ",";
+				// 子ノード未所持
+				if (node->mChildren.empty()) {
+					ImGui::Text("None");
 				}
-				ImGui::Text("%s", s.c_str());
+
+				// 子ノード所持の場合
+				else {
+
+					std::string s = "";
+					for (auto& child : node->mChildren) {
+						s += std::to_string(child->mIndex);
+						s += ",";
+					}
+					ImGui::Text("%s", s.c_str());
+				}
+
+
 			}
-			
 
+			ImGui::EndTable();
 		}
-
-		ImGui::EndTable();
 	}
 
+	// リンク情報
 	if (ImGui::CollapsingHeader("Links")) {
 		for (auto& link : mLinks) {
 			int linkID = std::get<0>(link);
@@ -213,6 +210,22 @@ void BTNodeEditor::Update() {
 	ImGui::End();
 
 #endif // _DEBUG
+}
+
+AINode::State BTNodeEditor::Tick(){
+
+	// ノード実行処理
+	// 親ノードを実行し、子ノードを配列の先頭から順々に実行していく
+	AINode::State state = mRootNode->Tick();
+
+	// 実行結果を返す
+	return state;
+}
+
+void BTNodeEditor::Reset(){
+
+	// 子ノードも含めてリセットする
+	mRootNode->Reset();
 }
 
 void BTNodeEditor::Create(const AINodeType& type, const std::string& name) {
@@ -392,8 +405,17 @@ void BTNodeEditor::LinkDeletion() {
 		// リンクを指定し、右クリックでリンク削除
 		if (ImNodes::IsLinkHovered(&linkID) && ImGui::IsMouseClicked(1)) {
 			std::cout << "Deleted link ID: " << linkID << std::endl;
+			// リンクを削除
 			mLinks.erase(it);
-			break; // イテレータが無効になるため、ループを抜ける
+
+			// 親ノードを検索
+			auto parentNode = FindNodeByID(parentID);
+			// 親ノード内の子ノードへのポインタを削除
+			auto childNode = FindNodeByID(std::abs(childID));
+			DetachChild(std::dynamic_pointer_cast<AINode::Composite>(parentNode), childNode);
+
+			// イテレータが無効になるため、ループを抜ける
+			break; 
 		}
 	}
 
@@ -495,9 +517,12 @@ void BTNodeEditor::Load() {
 	// ノードを保存
 	mRootNode = rootNode;
 
-	// デバッグ用に追加
+	// デバッグ用にエディタ内のノード座標をセット
+	#ifdef _DEBUG
 	ImVec2 guiPos = ImVec2(mRootNode->mGuiPos.x, mRootNode->mGuiPos.y);
 	ImNodes::SetNodeEditorSpacePos(mRootNode->mIndex, guiPos);
+	#endif // _DEBUG
+
 	// ノードを参照できるようにする
 	mNodes.push_back(rootNode);
 
@@ -512,6 +537,9 @@ void BTNodeEditor::Load() {
 		}
 	}
 
+	// 以下リンク生成処理
+	CreateLink(mRootNode);
+
 }
 
 std::shared_ptr<AINode::INode> BTNodeEditor::CreateForJson(json j) {
@@ -523,12 +551,10 @@ std::shared_ptr<AINode::INode> BTNodeEditor::CreateForJson(json j) {
 	std::shared_ptr<AINode::INode> node;
 
 
-
 	// ノードの種類を判別して生成
 	std::string tag = j[name]["tag"];
 	//magic_enumを利用し文字列から列挙体に変換し、引数に入力
 	node = CreateNodeByType(magic_enum::enum_cast<AINodeType>(tag).value(), name);
-
 
 	// 共通部分の設定
 	node->mTag = tag;
@@ -536,9 +562,11 @@ std::shared_ptr<AINode::INode> BTNodeEditor::CreateForJson(json j) {
 	node->mState = AINode::State::READY;
 
 	// ImNodes上の座標を代入
+	#ifdef _DEBUG
 	if (j[name].contains("Pos")) {
 		node->mGuiPos = { j[name]["Pos"].at(0),j[name]["Pos"].at(1) };
 	}
+	#endif // _DEBUG
 
 	// ノード番号の最高値の更新判定を取る
 	if (mNodeIndex <= node->mIndex) {
@@ -554,9 +582,30 @@ std::shared_ptr<AINode::INode> BTNodeEditor::CreateForJson(json j) {
 
 	// デバッグ用に参照
 	ImVec2 guiPos = ImVec2(node->mGuiPos.x, node->mGuiPos.y);
+#ifdef _DEBUG
 	ImNodes::SetNodeEditorSpacePos(node->mIndex, guiPos);
+#endif // _DEBUG
 	mNodes.push_back(node);
 
 	return node;
+
+}
+
+void BTNodeEditor::CreateLink(std::shared_ptr<AINode::INode> node){
+
+	//	子ノードを走査
+	for (auto& child : node->mChildren) {
+
+		// リンク番号をインクリメント
+		mLinkIndex++;
+		// リンクを作成し、リストに追加
+		mLinks.emplace_back(mLinkIndex, node->mIndex, -child->mIndex);
+
+		// 子ノードの子ノードが存在する場合、再帰的にリンクを作成する
+		if (child->mChildren.size() > 0) {
+			CreateLink(child);
+		}
+
+	}
 
 }

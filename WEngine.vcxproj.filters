@@ -434,7 +434,6 @@
     <ClCompile Include="App\Actor\Actor.cpp" />
     <ClCompile Include="GameEngine\Editor\NodeEditor\BTNodeEditor.cpp" />
     <ClCompile Include="Externals\imgui\imnodes.cpp" />
-    <ClCompile Include="App\AI\BehaviorTree\IBehavior.cpp" />
     <ClCompile Include="App\Enemy\Action\KnockBack.cpp" />
     <ClCompile Include="App\Enemy\Action\Dash.cpp" />
     <ClCompile Include="GameEngine\Editor\NodeEditor\Nodes\AINodeActions.cpp" />
@@ -722,9 +721,6 @@
     </ClInclude>
     <ClInclude Include="App\AI\State\VitalityBossState.h">
       <Filter>App\AI\State</Filter>
-    </ClInclude>
-    <ClInclude Include="App\AI\BehaviorTree\IBehavior.h">
-      <Filter>App\AI\BehaviorTree</Filter>
     </ClInclude>
     <ClInclude Include="GameEngine\Effect\PostEffect\Vignette.h">
       <Filter>GameEngine\Effect\PostEffect</Filter>

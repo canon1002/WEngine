@@ -56,7 +56,8 @@ namespace AINode {
 	}
 
 	void Action::Reset() {
-
+		// 待機状態にする
+		mState = State::READY;
 	}
 
 	json Action::ConvertToJson() {
@@ -80,16 +81,48 @@ namespace AINode {
 
 #pragma region コンディションノード
 
+	// コンストラクタ
+	Condition::Condition(Actor* actor, const std::string& nodeName) {
+		// Actorのポインタ取得
+		mActor = actor;
+		// ノード名をセット
+		mName = nodeName;
+		// 関数ポインタを取得する
+		mFunc = mActor->GetConditionFunction(mName);
+	};
 
+	// 実行処理
 	State Condition::Tick() {
-		// 結果を返す
-		return State::SUCCESS;
+
+		// 実行前のみ条件関数を呼び出す
+		if (mState != State::READY) {
+			
+			// 早期リターン(保持した結果を返す)
+			return mState;
+		}
+
+		// アクションの実行を開始
+		if (mFunc()) {
+
+			// 成功時
+			mState = State::SUCCESS;
+			return mState;
+		}
+
+		// 失敗時
+		mState = State::FAILURE;
+		return mState;
+	}
+
+	void Condition::Reset() {
+		// 待機状態にする
+		mState = State::READY;
 	}
 
 	json Condition::ConvertToJson(){
 
 		json j;
-		j[mName]["name"] = mName;				// ノードの名称
+		j[mName]["name"] = mName;			// ノードの名称
 		j[mName]["index"] = mIndex;			// エディタで使用するノード番号
 		j[mName]["tag"] = mTag;				// ノードの種類(クラス名)
 		j[mName]["Pos"] = { mGuiPos.x,mGuiPos.y }; // ImGuiの座標

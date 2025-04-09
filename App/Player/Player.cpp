@@ -63,8 +63,6 @@ void Player::Init() {
 	mObject->mSkinning->CreateSkinningData("player", "run", ".gltf", mObject->GetModel()->modelData, true);
 
 
-	// メインカメラをフォローカメラ仕様にする
-	//MainCamera::GetInstance()->SetFollowTarget(mObject->GetWorldTransform());
 
 	// 最初は通常状態から始める
 	mBehavior = Behavior::kRoot;
@@ -326,8 +324,9 @@ void Player::UpdateObject()
 
 	// ワールド座標更新
 	mAttackStatus.swordWorldMat[0] = Multiply(
-		mAttackStatus.sword->mSkinning->GetSkeleton().joints[mAttackStatus.sword->mSkinning->GetSkeleton().jointMap["Blade0"]
-		].skeletonSpaceMatrix, mAttackStatus.sword->GetWorldTransform()->GetWorldMatrix());
+		mAttackStatus.sword->mSkinning->GetBoneMatrix("Blade0"),
+		mAttackStatus.sword->GetWorldTransform()->GetWorldMatrix());
+	
 	mAttackStatus.swordWorldMat[1] = Multiply(
 		mAttackStatus.sword->mSkinning->GetSkeleton().joints[mAttackStatus.sword->mSkinning->GetSkeleton().jointMap["Blade1"]
 		].skeletonSpaceMatrix, mAttackStatus.sword->GetWorldTransform()->GetWorldMatrix());
@@ -641,7 +640,7 @@ void Player::Attack()
 				break;
 
 			case 3:
-				mObject->mSkinning->SetNextAnimation("slashR");
+				mObject->mSkinning->SetNextAnimation("slashEnd");
 				break;
 
 			default:

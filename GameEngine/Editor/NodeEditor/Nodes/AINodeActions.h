@@ -84,26 +84,19 @@ namespace AINode {
 	public:
 
 		// コンストラクタ
-		Condition(Actor* actor, const std::string& nodeName) {
-			
-			// Actorのポインタ取得
-			mActor = actor;
-			// ノード名をセット
-			mName = nodeName;
-		};
+		Condition(Actor* actor, const std::string& nodeName);
 
 		// 実行処理3
 		virtual State Tick() override;
 		// 再起動処理
-		virtual void Reset() override {};
-
+		virtual void Reset() override;
 		// JSONへの変換
 		virtual json ConvertToJson() override;
 
 	public:
 
 		// 条件用 関数ポインタ
-		//std::function<bool()> mFunc;
+		std::function<bool()> mFunc;
 
 	};
 
