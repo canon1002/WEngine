@@ -450,6 +450,7 @@
     <ClCompile Include="App\Enemy\Action\MoveFieldCenter.cpp" />
     <ClCompile Include="App\Enemy\Action\EarthSword.cpp" />
     <ClCompile Include="App\Bullet\EarthSwordBullet.cpp" />
+    <ClCompile Include="App\Bullet\PlayerBullet.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameEngine\Object\Light\DirectionalLight.h">
@@ -768,6 +769,7 @@
     <ClInclude Include="App\Enemy\Action\MoveFieldCenter.h" />
     <ClInclude Include="App\Enemy\Action\EarthSword.h" />
     <ClInclude Include="App\Bullet\EarthSwordBullet.h" />
+    <ClInclude Include="App\Bullet\PlayerBullet.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt">

@@ -130,6 +130,8 @@ public: // -- 公開 メンバ関数 -- //
 	void Avoid();
 	// 攻撃処理
 	void Attack();
+	// 射撃処理
+	void Shot();
 	// 移動処理
 	void Move();
 	// 落下処理

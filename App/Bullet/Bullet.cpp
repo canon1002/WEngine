@@ -58,6 +58,9 @@ void Bullet::Update(){
 		mIsDead = true;
 	}
 
+	// 進行方向を向く
+
+
 	// オブジェクト更新
 	mObject->Update();
 	mCollider->collider->Update();
@@ -71,7 +74,9 @@ void Bullet::Draw(){
 
 #ifdef _DEBUG
 	// コライダー描画
-	mCollider->collider->Draw();
+	if (mCollider != nullptr) {
+		mCollider->collider->Draw();
+	}
 #endif // _DEBUG
 
 }

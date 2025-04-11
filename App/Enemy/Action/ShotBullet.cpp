@@ -44,6 +44,10 @@ void ACT::ShotBullet::Update()
 
 				// ターゲットの座標に向かって放つ
 				mBulletStatus.direction = Normalize(mActor->GetWorldPosForTarget() - mBulletStatus.pos);
+
+				// ターゲット方向を向く
+				mActor->InputDirection(mActor->GetWorldPosForTarget() - mBulletStatus.pos);
+
 			}
 			else {
 				// 重なっていたら真下に発射する

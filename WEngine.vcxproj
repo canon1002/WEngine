@@ -230,6 +230,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="App\Enemy\Action\Seartch.cpp" />
     <ClCompile Include="App\Scene\SceneFactory.cpp" />
     <ClCompile Include="GameEngine\Effect\Particle\Emitter\ParticleEmitter.cpp" />
+    <ClCompile Include="App\Bullet\PlayerBullet.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App\Actor\Collider\GameCollider.h" />
@@ -358,6 +359,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="App\Scene\SceneFactory.h" />
     <ClInclude Include="GameEngine\Effect\Particle\Emitter\ParticleEmitter.h" />
     <ClInclude Include="App\Manager\GameManager.h" />
+    <ClInclude Include="App\Bullet\PlayerBullet.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt" />

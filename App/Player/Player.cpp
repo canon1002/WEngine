@@ -1,4 +1,5 @@
 #include "Player.h"
+#include "App/Bullet/PlayerBullet.h"
 #include "GameEngine/Object/Model/ModelManager.h"
 #include "GameEngine/Object/ObjectAdministrator.h"
 #include "GameEngine/Base/Debug/ImGuiManager.h"
@@ -277,16 +278,12 @@ void Player::Update() {
 	mStatus->Update();
 }
 
-void Player::UpdateObject()
-{
+void Player::UpdateObject(){
 
 	// 移動量に応じた移動を行う
 	mObject->mWorldTransform->translation += mVelocity;
-
-
 	// 無敵時間時の処理
 	InvincibleObjectUpdate();
-
 
 	// 補間数値
 	static float t = 0.0f;
@@ -339,6 +336,11 @@ void Player::UpdateObject()
 	mAttackStatus.swordWorldMat[4] = Multiply(
 		mAttackStatus.sword->mSkinning->GetSkeleton().joints[mAttackStatus.sword->mSkinning->GetSkeleton().jointMap["Blade4"]
 		].skeletonSpaceMatrix, mAttackStatus.sword->GetWorldTransform()->GetWorldMatrix());
+
+	// 弾 更新
+	for (auto& bullet : mBullets) {
+		bullet->Update();
+	}
 
 	// 武器のコライダー 更新
 	for (auto& collider : mAttackStatus.swordColliders) {
@@ -471,6 +473,11 @@ void Player::ColliderDraw() {
 
 #endif // _DEBUG
 	mReticle->Draw3DReticle();
+
+	// 弾
+	for (auto& bullet : mBullets) {
+		bullet->Draw();
+	}
 
 	// 剣
 	mAttackStatus.sword->Draw();
@@ -669,15 +676,57 @@ void Player::Attack()
 	{
 		mAttackStatus.motionTime += BlackBoard::CombertBattleFPS(1.5f);
 
-		// 攻撃が命中していない場合、攻撃フラグをtrueにする
+		// 攻撃が命中していない場合
 		if (mAttackStatus.motionTime > 0.4f && !mAttackStatus.isHit && !mAttackStatus.isOperating) {
+			
+			// 攻撃フラグをtrueにする
 			mAttackStatus.isOperating = true;
+
+			// 射撃(斬撃を飛ばす)
+			Shot();
+
 		}
 
 	}
 
 
 
+}
+
+void Player::Shot(){
+
+	// 弾のパラメータを設定する
+	BulletStatus bulletStatus;
+	bulletStatus.pos = mAttackStatus.sword->GetWorldTransform()->GetWorldPosition();
+	bulletStatus.radius = BlackBoard::GetGlobalVariables()->GetFloatValue("PlayerBullet", "Radius");
+	bulletStatus.moveSpeed = BlackBoard::GetGlobalVariables()->GetFloatValue("PlayerBullet", "MoveSpeed");
+
+	// 方向
+	if (Length(mBoss->GetBodyPos() - bulletStatus.pos) != 0.0f) {
+
+		// ターゲットの座標に向かって放つ
+		bulletStatus.direction = Normalize(mBoss->GetBodyPos() - bulletStatus.pos);
+	}
+	else {
+		// 重なっていたら真下に発射する
+		bulletStatus.direction = { 0.0f,-1.0f,0.0f };
+	}
+	// 生存時間
+	bulletStatus.lifeTime = BlackBoard::GetGlobalVariables()->GetFloatValue("PlayerBullet", "LifeTime");
+	// 威力
+	bulletStatus.power = BlackBoard::GetGlobalVariables()->GetFloatValue("PlayerBullet", "Power");
+	// ノックバックは1を指定されていた場合のみ発生する
+	int32_t enableKnockback = BlackBoard::GetGlobalVariables()->GetIntValue("PlayerBullet", "KnockBack");
+	if (enableKnockback == 1) {
+		bulletStatus.isHitKnockBack = true;
+	}
+	// 衝突属性ID
+	bulletStatus.collisionAttribute = static_cast<uint32_t>(CollisionTypeId::kPlayerBullet);
+
+	// 弾の作成
+	std::unique_ptr<PlayerBullet>bullet = std::make_unique<PlayerBullet>(bulletStatus);
+	// リストへの追加
+	mBullets.push_back(std::move(bullet));
 }
 
 void Player::Move()

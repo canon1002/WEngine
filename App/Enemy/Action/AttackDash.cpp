@@ -52,18 +52,17 @@ void ACT::AttackDash::Start()
 	Reset();
 	// アニメーションの変更
 	mActor->GetObject3D()->mSkinning->SetNextAnimation("SlashDash");
+	// ターゲット方向を向く
+	mActor->InputDirection(mActor->GetWorldPosForTarget() - mActor->GetWorldPos());
 
 	// 実行する
 	mCondition = Condition::RUNNING;
 }
 
-void ACT::AttackDash::End()
-{
+void ACT::AttackDash::End(){
+
 	// 行動を終了させる
 	mCondition = Condition::FINISHED;
-
-	// アニメーションの変更
-	//mActor->GetObject3D()->mSkinning->SetNextAnimation("Idle");
 }
 
 void ACT::AttackDash::Reset()

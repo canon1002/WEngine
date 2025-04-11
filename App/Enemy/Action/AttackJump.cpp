@@ -53,6 +53,8 @@ void ACT::AttackJump::Start()
 
 	// アニメーションの変更
 	mActor->GetObject3D()->mSkinning->SetNextAnimation("SlashJamp");
+	// ターゲット方向を向く
+	mActor->InputDirection(mActor->GetWorldPosForTarget() - mActor->GetWorldPos());
 
 	// 再初期化
 	Reset();
