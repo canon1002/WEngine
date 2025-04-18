@@ -2,7 +2,7 @@
     "PlayerBullet": {
         "Radius": 0.25,
         "MoveSpeed": 0.5,
-        "LifeTime": 5.0,
+        "LifeTime": 1.0,
         "Power": 1.0,
         "KnockBack": 0
     }

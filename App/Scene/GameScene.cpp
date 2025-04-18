@@ -482,14 +482,17 @@ void GameScene::BattlePhase() {
 
 	// 斬撃エフェクト
 	mPlayerTrailEffect->Update();
-	if (mPlayer->GetBehavior() == Behavior::kAttack) {
+	if (mPlayer->GetIsOperating() == true) {
 		if (mPlayerTrailEffect->GetGetPositionFlag()) {
 			mPlayerTrailEffect->Create(*mPlayer->GetWorldPositionSword(0), *mPlayer->GetWorldPositionSword(1));
 		}
 	}
+
 	mBossTrailEffect->Update();
-	if (mBossTrailEffect->GetGetPositionFlag()) {
-		mBossTrailEffect->Create(*mBoss->GetWorldPositionSword(0), *mBoss->GetWorldPositionSword(1));
+	if (mBoss->GetIsOperating() == true) {
+		if (mBossTrailEffect->GetGetPositionFlag()) {
+			mBossTrailEffect->Create(*mBoss->GetWorldPositionSword(0), *mBoss->GetWorldPositionSword(1));
+		}
 	}
 
 }
@@ -701,8 +704,8 @@ void GameScene::Draw() {
 	mPlayer->ColliderDraw();
 	mBoss->ColliderDraw();
 
-	//mPlayerTrailEffect->Draw();
-	//mBossTrailEffect->Draw();
+	mPlayerTrailEffect->Draw();
+	mBossTrailEffect->Draw();
 
 	// Object3D(Skinning)の描画前処理
 	ModelManager::GetInstance()->PreDrawForSkinning();

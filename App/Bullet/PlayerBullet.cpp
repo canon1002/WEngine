@@ -1,6 +1,7 @@
 #include "PlayerBullet.h"
 #include "App/BlackBoard.h"
 #include "GameEngine/Append/Collider/SphereCollider.h"
+#include <numbers>
 
 PlayerBullet::PlayerBullet(const BulletStatus& bulletStatus) {
 
@@ -24,6 +25,10 @@ void PlayerBullet::Init() {
 	// 座標を代入する
 	mObject->mWorldTransform->scale = Vector3(mBulletStatus.radius, mBulletStatus.radius, mBulletStatus.radius);
 	mObject->mWorldTransform->translation = mBulletStatus.pos;
+	// 進行方向を向かせる
+	Vector3 normalDir = Normalize(mBulletStatus.direction);
+	mObject->mWorldTransform->rotation.y = std::atan2f(normalDir.x, -normalDir.z);
+	
 
 	// モデルを設定
 	mObject->SetModel("PlayerBullet.gltf");
@@ -89,5 +94,4 @@ void PlayerBullet::Update(){
 		collider->collider->Update();
 	}
 	
-
 }

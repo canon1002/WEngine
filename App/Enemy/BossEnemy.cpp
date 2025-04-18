@@ -543,8 +543,14 @@ void BossEnemy::UpdateState() {
 
 
 bool BossEnemy::GetIsOperating() const {
+
 	// 実行中のアクションで攻撃中であるか取得して返す
-	return mActiveAction.lock()->GetIsOperating();
+	if (!mActiveAction.expired()) {
+		return mActiveAction.lock()->GetIsOperating();
+	}
+
+	// 実行アクションのポインタがなければ
+	return false;
 }
 
 void BossEnemy::SetShake(float duration, float power) {

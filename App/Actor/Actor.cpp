@@ -22,6 +22,12 @@ void Actor::SetCollider(CollisionManager* cManager)
 	}
 }
 
+void Actor::SetAction(const std::string& key) {
+	// 現行アクションを設定
+	mActiveAction = mActions[key];
+	mActiveAction.lock()->Start();
+}
+
 ACT::Condition Actor::GetActionCondition(const std::string& key) {
 	// 引数で指定した行動クラスの状態を取得する
 	return mActions[key]->GetCondition();
@@ -90,12 +96,6 @@ void Actor::InvincibleObjectUpdate(){
 
 void Actor::ReceiveDamage()
 {
-}
-
-void Actor::SetAction(const std::string& key) {
-	// 現行アクションを設定
-	mActiveAction = mActions[key];
-	mActiveAction.lock()->Start();
 }
 
 

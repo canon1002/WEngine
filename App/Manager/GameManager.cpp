@@ -92,6 +92,11 @@ void GameManager::UpdateColliderList(){
 		mCollisionManager->SetCollider(collider.lock()->collider.get());
 	}
 
+	// プレイヤーキャラの弾コライダー
+	for (std::weak_ptr<GameCollider>collider : mColliderList[static_cast<uint32_t>(CollisionTypeId::kPlayerBullet)]) {
+		mCollisionManager->SetCollider(collider.lock()->collider.get());
+	}
+
 }
 
 void GameManager::UpdateCollisionManager(){
@@ -119,6 +124,34 @@ void GameManager::UpdateCollisionManager(){
 			// ヒットストップ発生判定
 			mIsRequestHitStop = true;
 			mHitStopDuration = 0.1f;
+
+			// ヒットエフェクトの発生処理
+
+
+			// ノックバック発生判定
+
+
+			// ダメージ計算処理
+			StatusManager::GetInstance()->ReceiveDamage(mPlayer->GetStatus(), 1.0f, mBoss->GetStatus());
+		}
+
+		// 衝突相手のコライダーを検索(射撃)
+		for (std::weak_ptr<GameCollider>collider : mColliderList[static_cast<uint32_t>(CollisionTypeId::kPlayerBullet)]) {
+
+			// 衝突フラグがfalseだったら次に回す
+			if (!collider.lock()->collider->GetOnCollisionFlag()) {
+				continue;
+			}
+
+			// 敵キャラの無敵時間を設定
+			mBoss->SetInvincible(0.8f);
+
+			// (ToDo)ジャスト回避判定
+
+
+
+			// ヒットストップ発生判定
+
 
 			// ヒットエフェクトの発生処理
 

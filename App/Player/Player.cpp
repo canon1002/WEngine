@@ -503,6 +503,13 @@ void Player::SetColliderList(){
 			GameManager::GetInstance()->SetCollider(collider);
 		}
 	}
+
+	// 弾のコライダーを登録
+	/*for (auto& bullet : mBullets) {
+		GameManager::GetInstance()->SetCollider(bullet->GetCollider());
+	}*/
+
+
 }
 
 bool Player::GetIsOperating() const {
@@ -512,6 +519,11 @@ bool Player::GetIsOperating() const {
 
 void Player::Avoid()
 {
+	// 攻撃時は早期リターン
+	if(mBehavior == Behavior::kAttack){
+		return;
+	}
+
 	//  非回避状態で Aボタンで回避
 	if (mBehavior != Behavior::kAvoid &&
 		InputManager::GetInstance()->GetPused(Gamepad::Button::A)) {
@@ -683,7 +695,7 @@ void Player::Attack()
 			mAttackStatus.isOperating = true;
 
 			// 射撃(斬撃を飛ばす)
-			Shot();
+			//Shot();
 
 		}
 
@@ -706,6 +718,8 @@ void Player::Shot(){
 
 		// ターゲットの座標に向かって放つ
 		bulletStatus.direction = Normalize(mBoss->GetBodyPos() - bulletStatus.pos);
+		// ただし、Y座標は動かさず、正面に飛ばす
+		bulletStatus.direction.y = 0.0f;
 	}
 	else {
 		// 重なっていたら真下に発射する
