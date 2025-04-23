@@ -200,9 +200,9 @@ void Object3d::SetModelFullPath(const string& directryPath, const string& filePa
 	// モデルを検索してセット
 	mModel = ModelManager::GetInstance()->FindModelPtr(directryPath+filePath);
 	// モデル内にアニメーションがある場合はアニメーション及びスキンクラスターなどを生成
-	if (!mModel->modelData.skinClusterData.empty()) {
+	if (!mModel->mModelData.skinClusterData.empty()) {
 		mSkinning = std::make_unique<Skinning>();
-		mSkinning->Init(directryPath, filePath, mModel->modelData);
+		mSkinning->Init(directryPath, filePath, mModel->mModelData);
 	}
 
 }

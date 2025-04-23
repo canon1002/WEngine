@@ -53,27 +53,27 @@ void BossEnemy::Init() {
 	mObject->GetModel()->mMaterialData->color = { 1.0f,0.7f,0.7f,1.0f };
 	// スキニングアニメーションの生成
 	mObject->mSkinning = make_unique<Skinning>();
-	mObject->mSkinning->Init("Boss", "Idle.gltf", mObject->GetModel()->modelData);
+	mObject->mSkinning->Init("Boss", "Idle.gltf", mObject->GetModel()->mModelData);
 	mObject->mSkinning->SetMotionBlendingInterval(2.0f);
 	// 使用するアニメーションを登録しておく
-	mObject->mSkinning->CreateSkinningData("Boss", "Idle", ".gltf", mObject->GetModel()->modelData, true);
-	mObject->mSkinning->CreateSkinningData("Boss", "Walk", ".gltf", mObject->GetModel()->modelData, true);
-	mObject->mSkinning->CreateSkinningData("Boss", "Dash", ".gltf", mObject->GetModel()->modelData, true);
-	mObject->mSkinning->CreateSkinningData("Boss", "backStep", ".gltf", mObject->GetModel()->modelData);
-	mObject->mSkinning->CreateSkinningData("Boss", "Knockback", ".gltf", mObject->GetModel()->modelData);
-	mObject->mSkinning->CreateSkinningData("Boss", "death", ".gltf", mObject->GetModel()->modelData);
+	mObject->mSkinning->CreateSkinningData("Boss", "Idle", ".gltf", mObject->GetModel()->mModelData, true);
+	mObject->mSkinning->CreateSkinningData("Boss", "Walk", ".gltf", mObject->GetModel()->mModelData, true);
+	mObject->mSkinning->CreateSkinningData("Boss", "Dash", ".gltf", mObject->GetModel()->mModelData, true);
+	mObject->mSkinning->CreateSkinningData("Boss", "backStep", ".gltf", mObject->GetModel()->mModelData);
+	mObject->mSkinning->CreateSkinningData("Boss", "Knockback", ".gltf", mObject->GetModel()->mModelData);
+	mObject->mSkinning->CreateSkinningData("Boss", "death", ".gltf", mObject->GetModel()->mModelData);
 
-	mObject->mSkinning->CreateSkinningData("Boss", "Slash", ".gltf", mObject->GetModel()->modelData);
-	mObject->mSkinning->CreateSkinningData("Boss", "Slash1", ".gltf", mObject->GetModel()->modelData);
-	mObject->mSkinning->CreateSkinningData("Boss", "Slash2", ".gltf", mObject->GetModel()->modelData);
-	mObject->mSkinning->CreateSkinningData("Boss", "SlashR", ".gltf", mObject->GetModel()->modelData);
-	mObject->mSkinning->CreateSkinningData("Boss", "SlashDash", ".gltf", mObject->GetModel()->modelData);
-	mObject->mSkinning->CreateSkinningData("Boss", "SlashJamp", ".gltf", mObject->GetModel()->modelData);
-	mObject->mSkinning->CreateSkinningData("Boss", "Thrust", ".gltf", mObject->GetModel()->modelData);
-	mObject->mSkinning->CreateSkinningData("Boss", "ShotBullet", ".gltf", mObject->GetModel()->modelData);
+	mObject->mSkinning->CreateSkinningData("Boss", "Slash", ".gltf", mObject->GetModel()->mModelData);
+	mObject->mSkinning->CreateSkinningData("Boss", "Slash1", ".gltf", mObject->GetModel()->mModelData);
+	mObject->mSkinning->CreateSkinningData("Boss", "Slash2", ".gltf", mObject->GetModel()->mModelData);
+	mObject->mSkinning->CreateSkinningData("Boss", "SlashR", ".gltf", mObject->GetModel()->mModelData);
+	mObject->mSkinning->CreateSkinningData("Boss", "SlashDash", ".gltf", mObject->GetModel()->mModelData);
+	mObject->mSkinning->CreateSkinningData("Boss", "SlashJamp", ".gltf", mObject->GetModel()->mModelData);
+	mObject->mSkinning->CreateSkinningData("Boss", "Thrust", ".gltf", mObject->GetModel()->mModelData);
+	mObject->mSkinning->CreateSkinningData("Boss", "ShotBullet", ".gltf", mObject->GetModel()->mModelData);
 
-	mObject->mSkinning->CreateSkinningData("Boss", "magic", ".gltf", mObject->GetModel()->modelData);
-	mObject->mSkinning->CreateSkinningData("Boss", "kick", ".gltf", mObject->GetModel()->modelData);
+	mObject->mSkinning->CreateSkinningData("Boss", "magic", ".gltf", mObject->GetModel()->mModelData);
+	mObject->mSkinning->CreateSkinningData("Boss", "kick", ".gltf", mObject->GetModel()->mModelData);
 
 	// アニメーションの再生速度を1.5倍速に変更
 	mObject->mSkinning->SetAnimationPlaySpeed(1.5f);
@@ -125,7 +125,7 @@ void BossEnemy::Init() {
 	mWeapon->mSkinning = make_unique<Skinning>();
 	mWeapon->GetModel()->SetCubeTexture(Skybox::GetInstance()->mTextureHandle);
 	mWeapon->mSkinning->Init("twoHanded", "twoHanded.gltf",
-		mWeapon->GetModel()->modelData);
+		mWeapon->GetModel()->mModelData);
 	mWeapon->mSkinning->IsInactive();
 
 	// 拡大率を変更

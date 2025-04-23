@@ -42,26 +42,26 @@ void Player::Init() {
 	mObject->SetModel("idle.gltf");
 	// スキニングアニメーションを生成
 	mObject->mSkinning = make_unique<Skinning>();
-	mObject->mSkinning->Init("player", "idle.gltf", mObject->GetModel()->modelData);
+	mObject->mSkinning->Init("player", "idle.gltf", mObject->GetModel()->mModelData);
 	// モーションブレンド速度
 	mObject->mSkinning->SetMotionBlendingInterval(2.0f);
 	// アニメーション再生速度
 	mObject->mSkinning->SetAnimationPlaySpeed(1.0f);
 	// 使用するアニメーションを登録しておく
-	mObject->mSkinning->CreateSkinningData("player", "idle", ".gltf", mObject->GetModel()->modelData, true);
-	mObject->mSkinning->CreateSkinningData("player", "prepare", ".gltf", mObject->GetModel()->modelData);
-	mObject->mSkinning->CreateSkinningData("player", "gatotu0", ".gltf", mObject->GetModel()->modelData);
+	mObject->mSkinning->CreateSkinningData("player", "idle", ".gltf", mObject->GetModel()->mModelData, true);
+	mObject->mSkinning->CreateSkinningData("player", "prepare", ".gltf", mObject->GetModel()->mModelData);
+	mObject->mSkinning->CreateSkinningData("player", "gatotu0", ".gltf", mObject->GetModel()->mModelData);
 
-	mObject->mSkinning->CreateSkinningData("player", "fastSlash", ".gltf", mObject->GetModel()->modelData);
-	mObject->mSkinning->CreateSkinningData("player", "slashR", ".gltf", mObject->GetModel()->modelData);
-	mObject->mSkinning->CreateSkinningData("player", "slashL", ".gltf", mObject->GetModel()->modelData);
-	mObject->mSkinning->CreateSkinningData("player", "slashEnd", ".gltf", mObject->GetModel()->modelData);
-	mObject->mSkinning->CreateSkinningData("player", "thrust", ".gltf", mObject->GetModel()->modelData);
+	mObject->mSkinning->CreateSkinningData("player", "fastSlash", ".gltf", mObject->GetModel()->mModelData);
+	mObject->mSkinning->CreateSkinningData("player", "slashR", ".gltf", mObject->GetModel()->mModelData);
+	mObject->mSkinning->CreateSkinningData("player", "slashL", ".gltf", mObject->GetModel()->mModelData);
+	mObject->mSkinning->CreateSkinningData("player", "slashEnd", ".gltf", mObject->GetModel()->mModelData);
+	mObject->mSkinning->CreateSkinningData("player", "thrust", ".gltf", mObject->GetModel()->mModelData);
 	
-	mObject->mSkinning->CreateSkinningData("player", "avoid", ".gltf", mObject->GetModel()->modelData);
-	mObject->mSkinning->CreateSkinningData("player", "backStep", ".gltf", mObject->GetModel()->modelData);
-	mObject->mSkinning->CreateSkinningData("player", "walk", ".gltf", mObject->GetModel()->modelData, true);
-	mObject->mSkinning->CreateSkinningData("player", "run", ".gltf", mObject->GetModel()->modelData, true);
+	mObject->mSkinning->CreateSkinningData("player", "avoid", ".gltf", mObject->GetModel()->mModelData);
+	mObject->mSkinning->CreateSkinningData("player", "backStep", ".gltf", mObject->GetModel()->mModelData);
+	mObject->mSkinning->CreateSkinningData("player", "walk", ".gltf", mObject->GetModel()->mModelData, true);
+	mObject->mSkinning->CreateSkinningData("player", "run", ".gltf", mObject->GetModel()->mModelData, true);
 
 
 
@@ -132,7 +132,7 @@ void Player::Init() {
 	mAttackStatus.sword->mWorldTransform->translation = { 0.05f,0.0f,0.05f };
 	mAttackStatus.sword->mSkinning = make_unique<Skinning>();
 	mAttackStatus.sword->mSkinning->Init("Weapons", "sword.gltf",
-		mAttackStatus.sword->GetModel()->modelData);
+		mAttackStatus.sword->GetModel()->mModelData);
 	mAttackStatus.sword->mSkinning->IsInactive();
 
 	mAttackStatus.pos = { 1000.0f,900.0f,0.0f };// 初期位置
@@ -147,10 +147,11 @@ void Player::Init() {
 		mAttackStatus.swordWorldMat[i] = MakeAffineMatrix(Vector3{ 0.0f,0.0f,0.0f }, Vector3{ 0.0f,0.0f,0.0f }, Vector3{ 0.0f,0.0f,0.0f });
 		// コライダー 宣言
 		std::shared_ptr<GameCollider> newCollider = std::make_shared<GameCollider>();
-		newCollider->collider = std::make_unique<SphereCollider>(new WorldTransform(), 0.25f);
+		newCollider->collider = std::make_unique<SphereCollider>(new WorldTransform(), 0.35f);
 		// 初期化
 		newCollider->collider->Init();
 		newCollider->collider->SetTypeID(static_cast<uint32_t>(CollisionTypeId::kPlayerWeapon));
+			 
 		// 武器に設定したボーンのワールド座標をセット
 		newCollider->collider->GetWorld()->SetParent(mAttackStatus.swordWorldMat[i]);
 		//// 配列にプッシュする
@@ -519,10 +520,6 @@ bool Player::GetIsOperating() const {
 
 void Player::Avoid()
 {
-	// 攻撃時は早期リターン
-	if(mBehavior == Behavior::kAttack){
-		return;
-	}
 
 	//  非回避状態で Aボタンで回避
 	if (mBehavior != Behavior::kAvoid &&

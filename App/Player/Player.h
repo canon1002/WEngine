@@ -51,7 +51,6 @@ struct AttackStatus {
 	Matrix4x4 weaponParentMat; // 親の行列
 	std::array<Matrix4x4, 5> swordWorldMat; // 武器のワールド座標
 	std::vector<std::shared_ptr<GameCollider>> swordColliders;// 武器の衝突判定
-
 	int32_t comboCount; // 現在のコンボが何段目か
 	int32_t inComboPhase; // 現在の攻撃モーションはどの段階か
 	float inputWaitingTime; // 入力待ち段階
@@ -87,8 +86,6 @@ public: // -- 公開 メンバ関数 -- //
 
 	// 初期化
 	void Init();
-
-	
 	// 全体更新
 	void Update();
 	// 座標/アニメーション更新

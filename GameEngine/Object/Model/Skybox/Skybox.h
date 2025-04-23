@@ -24,7 +24,7 @@ public:	// -- public メンバ関数 -- //
 	void CreateVertexResource();
 	void CreateMaterialResource();
 
-	void SetCameraPosition(CameraCommon camera) { cameraData->worldPosition = camera.GetTranslate(); }
+	void SetCameraPosition(CameraCommon camera) { mCameraData->worldPosition = camera.GetTranslate(); }
 
 private: // -- private メンバ関数 -- //
 
@@ -55,15 +55,12 @@ public: // -- public メンバ変数 -- //
 
 	// インスタンス
 	static Skybox* instance;
-
-	// ModelCommonのポインタ
-	//ModelCommon* modelCommon_ = nullptr;
-	// DirectXのポインタ
-	
+	// カメラ
 	CameraCommon* mCamera = nullptr;
 
 	// -- Object3Dの要素 -- //
 
+	// 計算用の行列
 	Matrix4x4 cameraM, viewM, projectM, pespectiveM, wvpM;
 	// Transformation用のResourceを作る
 	Microsoft::WRL::ComPtr<ID3D12Resource> mWvpResource = nullptr;
@@ -74,7 +71,6 @@ public: // -- public メンバ変数 -- //
 
 	// -- Model 部分 -- //
 
-	
 	// ddsのテクスチャハンドル
 	int32_t mTextureHandle;
 
@@ -86,33 +82,33 @@ public: // -- public メンバ変数 -- //
 	VertexData* mVertexData = nullptr;
 
 	// Index用リソースデータ
-	Microsoft::WRL::ComPtr<ID3D12Resource> indexResource = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12Resource> mIndexResource = nullptr;
 	//　インデックスはuint32_tとする
-	D3D12_INDEX_BUFFER_VIEW indexBufferView{};
+	D3D12_INDEX_BUFFER_VIEW mIndexBufferView{};
 
 	// マテリアル用のResourceを作る
-	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12Resource> mMaterialResource = nullptr;
 
 	// マテリアルデータ
-	Material* materialData_ = nullptr;
+	Material* mMaterialData = nullptr;
 
 	// Light用のリソースデータを作る
-	Microsoft::WRL::ComPtr<ID3D12Resource> directionalLightResource = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12Resource> mDirectionalLightResource = nullptr;
 	// 平行光源　
-	DirectionalLight* directionalLightDate = nullptr;
+	DirectionalLight* mDirectionalLightDate = nullptr;
 
 	// 鏡面反射用のリソースを作る
-	Microsoft::WRL::ComPtr<ID3D12Resource> CameraResource = nullptr;
-	CameraForGPU* cameraData = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12Resource> mCameraResource = nullptr;
+	CameraForGPU* mCameraData = nullptr;
 
 	// UVTransform用の変数
-	UVTransform uvTransform_;
+	UVTransform mUVTransform;
 
 	// -- PSO やルートシグネチャ -- //
 
 	// グラフィックパイプライン
-	Microsoft::WRL::ComPtr <ID3D12PipelineState> graphicsPipelineState = nullptr;
+	Microsoft::WRL::ComPtr <ID3D12PipelineState> mGraphicsPipelineState = nullptr;
 	// ルートシグネチャー
-	Microsoft::WRL::ComPtr <ID3D12RootSignature> rootSignature = nullptr;
+	Microsoft::WRL::ComPtr <ID3D12RootSignature> mRootSignature = nullptr;
 };
 

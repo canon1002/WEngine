@@ -12,7 +12,6 @@ struct ParticleInput
 {
     float32_t4 position : POSITION0;
     float32_t2 texcoord : TEXCOORD0;
-    float32_t4 color : COLOR0;
 };
 
 VertexShaderOutput main(ParticleInput input, uint32_t instanceId : SV_InstanceID)

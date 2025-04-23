@@ -44,10 +44,6 @@ void GameScene::Init() {
 	// LevelEditorでSkyBoxのテクスチャを参照
 	LevelEditor::GetInstance()->SetTextureCubeMap(Skybox::GetInstance()->mTextureHandle);
 
-
-	// パーティクルマネージャ 初期化
-	ParticleManager::GetInstance()->Init();
-
 #pragma region Actor
 
 	// プレイヤー
@@ -482,7 +478,7 @@ void GameScene::BattlePhase() {
 
 	// 斬撃エフェクト
 	mPlayerTrailEffect->Update();
-	if (mPlayer->GetIsOperating() == true) {
+	if (mPlayer->GetBehavior() == Behavior::kAttack) {
 		if (mPlayerTrailEffect->GetGetPositionFlag()) {
 			mPlayerTrailEffect->Create(*mPlayer->GetWorldPositionSword(0), *mPlayer->GetWorldPositionSword(1));
 		}

@@ -50,17 +50,17 @@ void Skybox::Draw()
 
 
 	DirectXCommon::GetInstance()->mCommandList->IASetVertexBuffers(0, 1, &mVertexBufferView);
-	DirectXCommon::GetInstance()->mCommandList->IASetIndexBuffer(&indexBufferView);
+	DirectXCommon::GetInstance()->mCommandList->IASetIndexBuffer(&mIndexBufferView);
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけばいい
 	DirectXCommon::GetInstance()->mCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	/// CBV設定
 
 	// マテリアルのCBufferの場所を指定
-	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootConstantBufferView(0, materialResource->GetGPUVirtualAddress());
+	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootConstantBufferView(0, mMaterialResource->GetGPUVirtualAddress());
 
-	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootConstantBufferView(3, directionalLightResource->GetGPUVirtualAddress());
-	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootConstantBufferView(4, CameraResource->GetGPUVirtualAddress());
+	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootConstantBufferView(3, mDirectionalLightResource->GetGPUVirtualAddress());
+	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootConstantBufferView(4, mCameraResource->GetGPUVirtualAddress());
 
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である
 	DirectXCommon::GetInstance()->mSrv->SetGraphicsRootDescriptorTable(2, mTextureHandle);
@@ -88,15 +88,15 @@ void Skybox::DrawGUI(const std::string& label) {
 	ImGui::BeginChild(label.c_str());
 	// マテリアル
 	if (ImGui::TreeNode("マテリアル")) {
-		ImGui::DragFloat4("Color", &materialData_->color.a);
-		ImGui::DragInt("EnableLighting", &materialData_->enableLighting, 1.0f, 0, 1);
-		ImGui::DragFloat("Shininess", &materialData_->shininess);
+		ImGui::DragFloat4("Color", &mMaterialData->color.a);
+		ImGui::DragInt("EnableLighting", &mMaterialData->enableLighting, 1.0f, 0, 1);
+		ImGui::DragFloat("Shininess", &mMaterialData->shininess);
 		ImGui::TreePop();// ノードを閉じる(この場合は "マテリアル" を閉じる)
 	}
 	if (ImGui::TreeNode("平行光源")) {
-		ImGui::DragFloat4("Color", &directionalLightDate->color.r);
-		ImGui::DragFloat3("Directon", &directionalLightDate->direction.x, 0.1f, 0.0f, 1.0f);
-		ImGui::DragFloat("Intensity", &directionalLightDate->intensity, 0.1f, 0.0f, 1.0f);
+		ImGui::DragFloat4("Color", &mDirectionalLightDate->color.r);
+		ImGui::DragFloat3("Directon", &mDirectionalLightDate->direction.x, 0.1f, 0.0f, 1.0f);
+		ImGui::DragFloat("Intensity", &mDirectionalLightDate->intensity, 0.1f, 0.0f, 1.0f);
 		ImGui::TreePop();
 	}
 	if (ImGui::TreeNode("頂点データ")) {
@@ -116,8 +116,8 @@ void Skybox::DrawGUI(const std::string& label) {
 void Skybox::PreDraw() {
 
 	// RootSignatureを設定。PSOに設定しているが、別途設定が必要
-	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootSignature(rootSignature.Get());
-	DirectXCommon::GetInstance()->mCommandList->SetPipelineState(graphicsPipelineState.Get());
+	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootSignature(mRootSignature.Get());
+	DirectXCommon::GetInstance()->mCommandList->SetPipelineState(mGraphicsPipelineState.Get());
 
 }
 
@@ -183,14 +183,14 @@ void Skybox::CreateVertexResource() {
 	mVertexData[22].position = { -1.0f,-1.0f,1.0f,1.0f };
 	mVertexData[23].position = { 1.0f,-1.0f,1.0f,1.0f };
 
-	indexResource = DirectXCommon::GetInstance()->CreateBufferResource(DirectXCommon::GetInstance()->mDevice.Get(), sizeof(uint32_t) * 36);
-	indexBufferView.BufferLocation = indexResource->GetGPUVirtualAddress();
-	indexBufferView.SizeInBytes = sizeof(uint32_t) * 36;
-	indexBufferView.Format = DXGI_FORMAT_R32_UINT;
+	mIndexResource = DirectXCommon::GetInstance()->CreateBufferResource(DirectXCommon::GetInstance()->mDevice.Get(), sizeof(uint32_t) * 36);
+	mIndexBufferView.BufferLocation = mIndexResource->GetGPUVirtualAddress();
+	mIndexBufferView.SizeInBytes = sizeof(uint32_t) * 36;
+	mIndexBufferView.Format = DXGI_FORMAT_R32_UINT;
 
 	// インデックスリソースにデータを書き込む
 	uint32_t* indexData = nullptr;
-	indexResource->Map(0, nullptr, reinterpret_cast<void**>(&indexData));
+	mIndexResource->Map(0, nullptr, reinterpret_cast<void**>(&indexData));
 	indexData[0] = 0; indexData[1] = 1; indexData[2] = 2;
 	indexData[3] = 2; indexData[4] = 1; indexData[5] = 3;
 
@@ -214,36 +214,36 @@ void Skybox::CreateVertexResource() {
 void Skybox::CreateMaterialResource()
 {
 	// マテリアル用のResourceを作る
-	materialResource = DirectXCommon::GetInstance()->
+	mMaterialResource = DirectXCommon::GetInstance()->
 		CreateBufferResource(DirectXCommon::GetInstance()->
 			mDevice.Get(), sizeof(Material));
 
 	// マテリアルにデータを書き込む
-	materialData_ = nullptr;
+	mMaterialData = nullptr;
 	// 書き込むためのアドレスを取得
-	materialResource->Map(0, nullptr, reinterpret_cast<void**>(&materialData_));
+	mMaterialResource->Map(0, nullptr, reinterpret_cast<void**>(&mMaterialData));
 	// 色の書き込み・Lightingの無効化
-	materialData_->color = { 1.0f, 1.0f, 1.0f, 1.0f };
-	materialData_->enableLighting = true;
+	mMaterialData->color = { 1.0f, 1.0f, 1.0f, 1.0f };
+	mMaterialData->enableLighting = true;
 	// UVTransformを設定
-	materialData_->uvTransform = MakeIdentity();
-	uvTransform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
-	materialData_->shininess = 100.0f;
+	mMaterialData->uvTransform = MakeIdentity();
+	mUVTransform = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
+	mMaterialData->shininess = 100.0f;
 
 	// Light
-	directionalLightResource = DirectXCommon::GetInstance()->CreateBufferResource(DirectXCommon::GetInstance()->mDevice.Get(), sizeof(DirectionalLight));
+	mDirectionalLightResource = DirectXCommon::GetInstance()->CreateBufferResource(DirectXCommon::GetInstance()->mDevice.Get(), sizeof(DirectionalLight));
 	// データを書き込む
-	directionalLightResource->Map(0, nullptr, reinterpret_cast<void**>(&directionalLightDate));
-	directionalLightDate->color = { 1.0f, 1.0f, 1.0f, 1.0f };
-	directionalLightDate->direction = { 0.0f,-1.0f,0.0f };
-	directionalLightDate->intensity = 1.0f;
+	mDirectionalLightResource->Map(0, nullptr, reinterpret_cast<void**>(&mDirectionalLightDate));
+	mDirectionalLightDate->color = { 1.0f, 1.0f, 1.0f, 1.0f };
+	mDirectionalLightDate->direction = { 0.0f,-1.0f,0.0f };
+	mDirectionalLightDate->intensity = 1.0f;
 
 	// カメラデータ
-	CameraResource = DirectXCommon::GetInstance()->CreateBufferResource(DirectXCommon::GetInstance()->mDevice.Get(), sizeof(CameraForGPU));
+	mCameraResource = DirectXCommon::GetInstance()->CreateBufferResource(DirectXCommon::GetInstance()->mDevice.Get(), sizeof(CameraForGPU));
 	// データを書き込む
-	CameraResource->Map(0, nullptr, reinterpret_cast<void**>(&cameraData));
+	mCameraResource->Map(0, nullptr, reinterpret_cast<void**>(&mCameraData));
 	mCamera->Init();
-	cameraData->worldPosition = mCamera->GetTranslate();
+	mCameraData->worldPosition = mCamera->GetTranslate();
 
 }
 
@@ -315,7 +315,7 @@ void Skybox::CreateRootSignature() {
 
 	// バイナリを元に
 	hr = DirectXCommon::GetInstance()->mDevice->CreateRootSignature(0, signatureBlob->GetBufferPointer(),
-		signatureBlob->GetBufferSize(), IID_PPV_ARGS(&rootSignature));
+		signatureBlob->GetBufferSize(), IID_PPV_ARGS(&mRootSignature));
 	assert(SUCCEEDED(hr));
 
 
@@ -376,7 +376,7 @@ void Skybox::CreateGraphicsPipeline() {
 
 	// PSOを生成する(P.38)
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsPipelineStateDesc{};
-	graphicsPipelineStateDesc.pRootSignature = rootSignature.Get();
+	graphicsPipelineStateDesc.pRootSignature = mRootSignature.Get();
 	graphicsPipelineStateDesc.InputLayout = inputLayoutDesc;
 	graphicsPipelineStateDesc.VS = { vertexShaderBlob->GetBufferPointer(),
 		vertexShaderBlob->GetBufferSize() };
@@ -410,7 +410,7 @@ void Skybox::CreateGraphicsPipeline() {
 	// 実際に生成
 	HRESULT hr;
 	hr = DirectXCommon::GetInstance()->mDevice->CreateGraphicsPipelineState(&graphicsPipelineStateDesc,
-		IID_PPV_ARGS(&graphicsPipelineState));
+		IID_PPV_ARGS(&mGraphicsPipelineState));
 	assert(SUCCEEDED(hr));
 
 }

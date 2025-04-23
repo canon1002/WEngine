@@ -42,7 +42,7 @@ public:
 public: // -- 公開 メンバ変数 -- //
 
 	// モデルデータ
-	ModelData modelData;
+	ModelData mModelData;
 	// テクスチャハンドル
 	int32_t mTextureHandle;
 	int32_t mTextureHandleCubeMap;

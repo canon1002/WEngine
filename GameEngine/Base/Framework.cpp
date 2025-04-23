@@ -8,6 +8,7 @@
 #include "GameEngine/Resource/Audio/Audio.h"
 #include "GameEngine/Effect/PostEffect/PostEffect.h"
 #include "GameEngine/Resource/Texture/TextureManager.h"
+#include "GameEngine/Effect/Particle/ParticleManager.h"
 
 // アプリケーション部分(のうちエンジン側に移動する可能性のある要素)
 //#include "App/Reaction/DamageReaction.h"
@@ -74,6 +75,8 @@ void Framework::Init(){
 	LevelEditor::GetInstance()->CheckLevelEditorFile();
 	// フレームレート
 	Framerate::GetInstance()->Init();
+	// パーティクルマネージャの初期化
+	ParticleManager::GetInstance()->Init();
 	// ポストエフェクト
 	PostEffect::GetInstance()->Init();
 	// ImGuiの初期化

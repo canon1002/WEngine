@@ -34,7 +34,7 @@ void PlayerBullet::Init() {
 	mObject->SetModel("PlayerBullet.gltf");
 	// スキニング
 	mObject->mSkinning = std::make_unique<Skinning>();
-	mObject->mSkinning->Init("PlayerBullet", "PlayerBullet.gltf",mObject->GetModel()->modelData);
+	mObject->mSkinning->Init("PlayerBullet", "PlayerBullet.gltf",mObject->GetModel()->mModelData);
 	mObject->mSkinning->IsInactive();
 
 	// 武器にコライダーをセットする

@@ -16,7 +16,7 @@ void Model::Init(const std::string& directrypath, const std::string& filename){
 	mTextureHandleCubeMap = 0;
 
 	// モデル読み込み
-	modelData = Resource::LoadModelFile(directrypath, filename);
+	mModelData = Resource::LoadModelFile(directrypath, filename);
 
 	// 頂点リソース 生成
 	CreateVertexResource();
@@ -54,7 +54,7 @@ void Model::Draw()
 	}
 
 	// インデックスを使用してドローコール
-	DirectXCommon::GetInstance()->mCommandList->DrawIndexedInstanced(UINT(modelData.indices.size()), 1, 0, 0, 0);
+	DirectXCommon::GetInstance()->mCommandList->DrawIndexedInstanced(UINT(mModelData.indices.size()), 1, 0, 0, 0);
 }
 
 void Model::DrawGUI(const std::string& label){
@@ -93,34 +93,34 @@ void Model::CreateVertexResource() {
 
 	// 実際に頂点リソースを作る
 	mVertexResource = DirectXCommon::GetInstance()->CreateBufferResource(
-		DirectXCommon::GetInstance()->mDevice.Get(), sizeof(VertexData) * modelData.vertices.size());
+		DirectXCommon::GetInstance()->mDevice.Get(), sizeof(VertexData) * mModelData.vertices.size());
 
 	// リソースの先頭のアドレスから使う
 	mVertexBufferView.BufferLocation = mVertexResource->GetGPUVirtualAddress();
 	// 使用するリソースサイズは頂点分のサイズ
-	mVertexBufferView.SizeInBytes = UINT(sizeof(VertexData) * modelData.vertices.size());
+	mVertexBufferView.SizeInBytes = UINT(sizeof(VertexData) * mModelData.vertices.size());
 	// 1頂点あたりのサイズ
 	mVertexBufferView.StrideInBytes = sizeof(VertexData);
 
 	// 頂点リソースにデータを書き込む
 	mVertexResource->Map(0, nullptr, reinterpret_cast<void**>(&mVertexData));// 書き込むためのアドレスを取得
-	std::memcpy(mVertexData, modelData.vertices.data(), sizeof(VertexData) * modelData.vertices.size());
+	std::memcpy(mVertexData, mModelData.vertices.data(), sizeof(VertexData) * mModelData.vertices.size());
 
 }
 
 void Model::CreateIndexResource(){
 
 	// Indexは <uint32_t * Indexデータのサイズ> 分だけ確保する
-	mIndexResource = DirectXCommon::GetInstance()->CreateBufferResource(DirectXCommon::GetInstance()->mDevice.Get(), sizeof(uint32_t) * modelData.indices.size());
+	mIndexResource = DirectXCommon::GetInstance()->CreateBufferResource(DirectXCommon::GetInstance()->mDevice.Get(), sizeof(uint32_t) * mModelData.indices.size());
 	// GPUアドレスを取得
 	mIndexBufferView.BufferLocation = mIndexResource->GetGPUVirtualAddress();
 	// Byte数は <uint32_t * Indexデータのサイズ>分
-	mIndexBufferView.SizeInBytes = sizeof(uint32_t) * (uint32_t)modelData.indices.size();
+	mIndexBufferView.SizeInBytes = sizeof(uint32_t) * (uint32_t)mModelData.indices.size();
 	mIndexBufferView.Format = DXGI_FORMAT_R32_UINT;
 	// Rsourceに対してIndexの内容をコピーする
 	uint32_t* mappedIndex = nullptr;
 	mIndexResource->Map(0, nullptr, reinterpret_cast<void**>(&mappedIndex));
-	std::memcpy(mappedIndex, modelData.indices.data(), sizeof(uint32_t) * modelData.indices.size());
+	std::memcpy(mappedIndex, mModelData.indices.data(), sizeof(uint32_t) * mModelData.indices.size());
 
 }
 
@@ -136,11 +136,11 @@ void Model::CreateMaterialResource()
 	// 書き込むためのアドレスを取得
 	mMaterialResource->Map(0, nullptr, reinterpret_cast<void**>(&mMaterialData));
 	// テクスチャの情報を転送
-	if (modelData.material.textureFilePath.empty()) {
+	if (mModelData.material.textureFilePath.empty()) {
 		mTextureHandle = TextureManager::GetInstance()->mDefaultTextureIndex;
 	}
 	else {
-		mTextureHandle = TextureManager::GetInstance()->LoadTexture(modelData.material.textureFilePath);
+		mTextureHandle = TextureManager::GetInstance()->LoadTexture(mModelData.material.textureFilePath);
 	}
 	// 色の書き込み・Lightingの無効化
 	mMaterialData->color = { 1.0f, 1.0f, 1.0f, 1.0f };

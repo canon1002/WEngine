@@ -33,6 +33,8 @@ void ParticleManager::Init(){
 	CreatePipelineState();
 	// 頂点リソースの生成
 	CreateVertexResource();
+	// インデックスリソースの生成
+	CreateIndexResource();
 
 }
 
@@ -132,7 +134,8 @@ void ParticleManager::PreDraw(){
 	DirectXCommon::GetInstance()->mCommandList->IASetVertexBuffers(0, 1, &mVertexBufferView);
 	// 形状を三角形に設定
 	DirectXCommon::GetInstance()->mCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
+	// IndexBufferViewをセット
+	DirectXCommon::GetInstance()->mCommandList->IASetIndexBuffer(&mIndexBufferView);
 }
 
 void ParticleManager::Draw(){
@@ -154,8 +157,8 @@ void ParticleManager::Draw(){
 			DirectXCommon::GetInstance()->mSrv->SetGraphicsRootDescriptorTable(
 				2, itGroup->second.material.srvIndex);
 			// ドローコール
-			DirectXCommon::GetInstance()->mCommandList->DrawInstanced(
-				6, itGroup->second.instanceCount, 0, 0);
+			DirectXCommon::GetInstance()->mCommandList->DrawIndexedInstanced(
+				6, itGroup->second.instanceCount, 0, 0,0);
 		}
 
 	}
@@ -319,7 +322,7 @@ void ParticleManager::CreatePipelineState(){
 	CreateRootSignature();
 
 	// InputLayoutの設定を行う(P.32)
-	D3D12_INPUT_ELEMENT_DESC inputElementDescs[3] = {};
+	D3D12_INPUT_ELEMENT_DESC inputElementDescs[2] = {};
 	inputElementDescs[0].SemanticName = "POSITION";
 	inputElementDescs[0].SemanticIndex = 0;
 	inputElementDescs[0].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
@@ -328,23 +331,19 @@ void ParticleManager::CreatePipelineState(){
 	inputElementDescs[1].SemanticIndex = 0;
 	inputElementDescs[1].Format = DXGI_FORMAT_R32G32_FLOAT;
 	inputElementDescs[1].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
-	inputElementDescs[2].SemanticName = "COLOR";
-	inputElementDescs[2].SemanticIndex = 0;
-	inputElementDescs[2].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-	inputElementDescs[2].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
 
 
 	D3D12_INPUT_LAYOUT_DESC inputLayoutDesc{};
 	inputLayoutDesc.pInputElementDescs = inputElementDescs;
 	inputLayoutDesc.NumElements = _countof(inputElementDescs);
 
-	// BlendStateの設定を行う(パーティクルはAdd Blendにする)
+	// BlendStateの設定を行う(パーティクルはMultiply Blendにする)
 	D3D12_BLEND_DESC blendDesc{};
 	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
 	blendDesc.RenderTarget[0].BlendEnable = TRUE;
-	blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
+	blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_ZERO;
 	blendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
-	blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_ONE;
+	blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_SRC_COLOR;
 	blendDesc.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
 	blendDesc.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
 	blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;
@@ -357,11 +356,11 @@ void ParticleManager::CreatePipelineState(){
 	rasterizerDesc.FillMode = D3D12_FILL_MODE_SOLID;
 
 	// Shaderをcompileする(P.37)
-	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob = WinApp::CompileShader(L"Shaders/Particle.VS.hlsl",
+	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob = WinApp::CompileShader(L"Shaders/Particle/Particle.VS.hlsl",
 		L"vs_6_0", DirectXCommon::GetInstance()->dxcUtils, DirectXCommon::GetInstance()->dxcCompiler, DirectXCommon::GetInstance()->includeHandler);
 	assert(vertexShaderBlob != nullptr);
 
-	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob = WinApp::CompileShader(L"Shaders/Particle.PS.hlsl",
+	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob = WinApp::CompileShader(L"Shaders/Particle/Particle.PS.hlsl",
 		L"ps_6_0", DirectXCommon::GetInstance()->dxcUtils, DirectXCommon::GetInstance()->dxcCompiler, DirectXCommon::GetInstance()->includeHandler);
 	assert(pixelShaderBlob != nullptr);
 
@@ -408,26 +407,45 @@ void ParticleManager::CreatePipelineState(){
 void ParticleManager::CreateVertexResource() {
 
 	// 頂点データを作成
-	mModelData.vertices.push_back(VertexData{ .position = {-1.0f,  1.0f,0.0f,1.0f},.texcoord = {0.0f,0.0f},.normal = {0.0f,0.0f,1.0f} });
-	mModelData.vertices.push_back(VertexData{ .position = { 1.0f,  1.0f,0.0f,1.0f},.texcoord = {1.0f,0.0f},.normal = {0.0f,0.0f,1.0f} });
-	mModelData.vertices.push_back(VertexData{ .position = {-1.0f, -1.0f,0.0f,1.0f},.texcoord = {0.0f,1.0f},.normal = {0.0f,0.0f,1.0f} });
-	mModelData.vertices.push_back(VertexData{ .position = {-1.0f, -1.0f,0.0f,1.0f},.texcoord = {0.0f,1.0f},.normal = {0.0f,0.0f,1.0f} });
-	mModelData.vertices.push_back(VertexData{ .position = { 1.0f,  1.0f,0.0f,1.0f},.texcoord = {1.0f,0.0f},.normal = {0.0f,0.0f,1.0f} });
-	mModelData.vertices.push_back(VertexData{ .position = { 1.0f, -1.0f,0.0f,1.0f},.texcoord = {1.0f,1.0f},.normal = {0.0f,0.0f,1.0f} });
+	mVertices.push_back(VertexData2D{ .position = {-1.0f,  1.0f,0.0f,1.0f},.texcoord = {0.0f,0.0f} });
+	mVertices.push_back(VertexData2D{ .position = { 1.0f,  1.0f,0.0f,1.0f},.texcoord = {1.0f,0.0f} });
+	mVertices.push_back(VertexData2D{ .position = {-1.0f, -1.0f,0.0f,1.0f},.texcoord = {0.0f,1.0f} });
+	mVertices.push_back(VertexData2D{ .position = { 1.0f, -1.0f,0.0f,1.0f},.texcoord = {1.0f,1.0f} });
 
 	// 頂点リソースを作成
-	mVertexResource = DirectXCommon::GetInstance()->CreateBufferResource(DirectXCommon::GetInstance()->mDevice.Get(), sizeof(VertexData) * mModelData.vertices.size());
+	mVertexResource = DirectXCommon::GetInstance()->CreateBufferResource(
+		DirectXCommon::GetInstance()->mDevice.Get(), sizeof(VertexData2D) * mVertices.size());
 	
 	// リソースの先頭のアドレスから使う
 	mVertexBufferView.BufferLocation = mVertexResource->GetGPUVirtualAddress();
 	// 使用するリソースサイズは頂点分のサイズ
-	mVertexBufferView.SizeInBytes = UINT(sizeof(VertexData) * mModelData.vertices.size());
+	mVertexBufferView.SizeInBytes = UINT(sizeof(VertexData2D) * mVertices.size());
 	// 1頂点あたりのサイズ
-	mVertexBufferView.StrideInBytes = sizeof(VertexData);
+	mVertexBufferView.StrideInBytes = sizeof(VertexData2D);
 	
 	// 頂点リソースにデータを書き込む
 	mVertexResource->Map(0, nullptr, reinterpret_cast<void**>(&mVertexData));// 書き込むためのアドレスを取得
-	std::memcpy(mVertexData, mModelData.vertices.data(), sizeof(VertexData) * mModelData.vertices.size());
+	std::memcpy(mVertexData, mVertices.data(), sizeof(VertexData2D) * mVertices.size());
+
+}
+
+void ParticleManager::CreateIndexResource(){
+
+
+	mIndexResource = DirectXCommon::GetInstance()->CreateBufferResource(
+		DirectXCommon::GetInstance()->mDevice.Get(), sizeof(uint32_t) * 6);
+
+	mIndexBufferView.BufferLocation = mIndexResource->GetGPUVirtualAddress();
+	
+	mIndexBufferView.SizeInBytes = sizeof(uint32_t) * 6;
+	
+	mIndexBufferView.Format = DXGI_FORMAT_R32_UINT;
+
+	// インデックスリソースにデータを書き込む
+	uint32_t* indexData = nullptr;
+	mIndexResource->Map(0, nullptr, reinterpret_cast<void**>(&indexData));
+	indexData[0] = 0; indexData[1] = 1; indexData[2] = 2;
+	indexData[3] = 2; indexData[4] = 1; indexData[5] = 3;
 
 }
 

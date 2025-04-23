@@ -48,16 +48,16 @@ void TitleScene::Init() {
 	// モデルを設定
 	mPlayerObj->SetModel("idle.gltf");
 	mPlayerObj->mSkinning = make_unique<Skinning>();
-	mPlayerObj->mSkinning->Init("player", "idleNB.gltf", mPlayerObj->GetModel()->modelData);
+	mPlayerObj->mSkinning->Init("player", "idleNB.gltf", mPlayerObj->GetModel()->mModelData);
 	// モーションブレンド速度
 	mPlayerObj->mSkinning->SetMotionBlendingInterval(2.0f);
 	// アニメーション再生速度
 	mPlayerObj->mSkinning->SetAnimationPlaySpeed(1.0f);
 	// アニメーション登録
-	mPlayerObj->mSkinning->CreateSkinningData("player", "idleNB", ".gltf", mPlayerObj->GetModel()->modelData, true);
-	mPlayerObj->mSkinning->CreateSkinningData("player", "run", ".gltf", mPlayerObj->GetModel()->modelData, true);
-	mPlayerObj->mSkinning->CreateSkinningData("player", "jump", ".gltf", mPlayerObj->GetModel()->modelData);
-	mPlayerObj->mSkinning->CreateSkinningData("player", "falling", ".gltf", mPlayerObj->GetModel()->modelData, true);
+	mPlayerObj->mSkinning->CreateSkinningData("player", "idleNB", ".gltf", mPlayerObj->GetModel()->mModelData, true);
+	mPlayerObj->mSkinning->CreateSkinningData("player", "run", ".gltf", mPlayerObj->GetModel()->mModelData, true);
+	mPlayerObj->mSkinning->CreateSkinningData("player", "jump", ".gltf", mPlayerObj->GetModel()->mModelData);
+	mPlayerObj->mSkinning->CreateSkinningData("player", "falling", ".gltf", mPlayerObj->GetModel()->mModelData, true);
 
 	// 剣
 	mSwordObj = std::make_unique<Object3d>();
@@ -176,9 +176,6 @@ void TitleScene::Init() {
 	mUITransCount = 0.0f;
 
 #pragma endregion
-
-	// パーティクルマネージャの初期化
-	ParticleManager::GetInstance()->Init();
 
 }
 

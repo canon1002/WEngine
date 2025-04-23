@@ -46,7 +46,7 @@ public: // -- 公開 メンバ変数 -- //
 	//	パーティクル 生成処理
 	Particle Create(Emitter emitter);
 
-	// 
+	// インスタンシング用のバッファを確保する
 	uint32_t SetInstancingBuffer(int32_t kNumInstance, Microsoft::WRL::ComPtr<ID3D12Resource> instancingResource);
 
 private: // -- 非公開 メンバ関数 -- //
@@ -67,6 +67,8 @@ private: // -- 非公開 メンバ関数 -- //
 
 	// 頂点リソースの生成
 	void CreateVertexResource();
+	// インデックスリソースの生成
+	void CreateIndexResource();
 	// マテリアルリソースの生成
 	void CreateMaterialResource(ParticleGroup& particleGroup);
 	// インスタンシングリソースの生成
@@ -82,7 +84,6 @@ private: // -- 非公開 メンバ変数 -- //
 
 	// インスタンスの数
 	const int32_t kNumMaxInstance = 400;
-	//int32_t mInstanceCount;
 
 	// 乱数生成機
 	std::random_device mSeedGenerator;
@@ -95,13 +96,18 @@ private: // -- 非公開 メンバ変数 -- //
 
 	// モデルデータ
 	ModelData mModelData;
+	std::vector<VertexData2D> mVertices;
 	
 	// 頂点リソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> mVertexResource = nullptr;
 	// 頂点データ
-	VertexData* mVertexData = nullptr;
+	VertexData2D* mVertexData = nullptr;
 	// 頂点バッファビュー
 	D3D12_VERTEX_BUFFER_VIEW mVertexBufferView{};
+	// インデックスリソース
+	Microsoft::WRL::ComPtr<ID3D12Resource> mIndexResource = nullptr;
+	// インデックスバッファビュー
+	D3D12_INDEX_BUFFER_VIEW mIndexBufferView{};
 
 
 

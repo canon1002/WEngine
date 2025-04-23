@@ -770,6 +770,7 @@
     <ClInclude Include="App\Enemy\Action\EarthSword.h" />
     <ClInclude Include="App\Bullet\EarthSwordBullet.h" />
     <ClInclude Include="App\Bullet\PlayerBullet.h" />
+    <ClInclude Include="App\Actor\ActorStatus.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt">
@@ -792,7 +793,7 @@
     <None Include="Shaders\Object3d.hlsli">
       <Filter>リソース ファイル\Shader</Filter>
     </None>
-    <None Include="Shaders\Particle.hlsli">
+    <None Include="Shaders\Particle\Particle.hlsli">
       <Filter>リソース ファイル\Shader</Filter>
     </None>
     <None Include="Shaders\Skybox.hlsli">
@@ -848,10 +849,10 @@
     <FxCompile Include="Shaders\Object3d.VS.hlsl">
       <Filter>リソース ファイル\Shader</Filter>
     </FxCompile>
-    <FxCompile Include="Shaders\Particle.PS.hlsl">
+    <FxCompile Include="Shaders\Particle\Particle.PS.hlsl">
       <Filter>リソース ファイル\Shader</Filter>
     </FxCompile>
-    <FxCompile Include="Shaders\Particle.VS.hlsl">
+    <FxCompile Include="Shaders\Particle\Particle.VS.hlsl">
       <Filter>リソース ファイル\Shader</Filter>
     </FxCompile>
     <FxCompile Include="Shaders\ShadowObject3d.VS.hlsl">
