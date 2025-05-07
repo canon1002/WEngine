@@ -21,6 +21,39 @@ Player::~Player() {
 
 void Player::Init() {
 
+	// オブジェクト部分 初期化
+	InitObject();
+	
+	// ワーク部分初期化
+	InitWorks();
+
+	// 最初は通常状態から始める
+	mWorks->mBehavior = Behavior::kRoot;
+
+	// 移動量を初期化
+	mVelocity = { 0.0f,0.0f ,0.0f };
+	// 重力の影響を受ける
+	mIsGravity = true;
+	// ジャンプ回数のセット
+	mJumpCount = kJumpCountMax;
+	// レティクルの初期化
+	mReticle = std::make_unique<Reticle3D>();
+	mReticle->Init();
+	// 構え
+	mIsAimMode = false;
+	// ステータス取得
+	mStatus = std::make_shared<Status>();
+	StatusManager::GetInstance()->GetPlayerStatus(*mStatus);
+	// 方向指定(とりあえず奥を向く)
+	mDirection = { 0.0f,0.0f,1.0f };
+	mDirectionForInput = { 0.0f,0.0f,0.0f };
+	// ターゲットロックオンの有無
+	mIsLockOnToTarget = false;
+
+}
+
+void Player::InitObject(){
+
 	// モデル読み込み
 	ModelManager::GetInstance()->LoadModel("player", "idle.gltf");
 	ModelManager::GetInstance()->LoadModel("player", "run.gltf");
@@ -32,12 +65,13 @@ void Player::Init() {
 	ModelManager::GetInstance()->LoadModel("player", "avoid.gltf");
 	ModelManager::GetInstance()->LoadModel("player", "backStep.gltf");
 	ModelManager::GetInstance()->LoadModel("player", "thrust.gltf");
+	ModelManager::GetInstance()->LoadModel("player", "S0.gltf");
 
 	mObject = std::make_unique<Object3d>();
 	mObject->Init("PlayerObj");
 	mObject->SetScale({ 2.5f,2.5f,2.5f });
 	mObject->SetTranslate({ 1.0f,1.0f,7.0f });
-	
+
 	// モデルを設定
 	mObject->SetModel("idle.gltf");
 	// スキニングアニメーションを生成
@@ -51,38 +85,22 @@ void Player::Init() {
 	mObject->mSkinning->CreateSkinningData("player", "idle", ".gltf", mObject->GetModel()->mModelData, true);
 	mObject->mSkinning->CreateSkinningData("player", "prepare", ".gltf", mObject->GetModel()->mModelData);
 	mObject->mSkinning->CreateSkinningData("player", "gatotu0", ".gltf", mObject->GetModel()->mModelData);
-
 	mObject->mSkinning->CreateSkinningData("player", "fastSlash", ".gltf", mObject->GetModel()->mModelData);
 	mObject->mSkinning->CreateSkinningData("player", "slashR", ".gltf", mObject->GetModel()->mModelData);
 	mObject->mSkinning->CreateSkinningData("player", "slashL", ".gltf", mObject->GetModel()->mModelData);
 	mObject->mSkinning->CreateSkinningData("player", "slashEnd", ".gltf", mObject->GetModel()->mModelData);
 	mObject->mSkinning->CreateSkinningData("player", "thrust", ".gltf", mObject->GetModel()->mModelData);
-	
 	mObject->mSkinning->CreateSkinningData("player", "avoid", ".gltf", mObject->GetModel()->mModelData);
 	mObject->mSkinning->CreateSkinningData("player", "backStep", ".gltf", mObject->GetModel()->mModelData);
 	mObject->mSkinning->CreateSkinningData("player", "walk", ".gltf", mObject->GetModel()->mModelData, true);
 	mObject->mSkinning->CreateSkinningData("player", "run", ".gltf", mObject->GetModel()->mModelData, true);
-
-
-
-	// 最初は通常状態から始める
-	mBehavior = Behavior::kRoot;
-
-	// 移動量を初期化
-	mVelocity = { 0.0f,0.0f ,0.0f };
-
-	// 重力の影響を受ける
-	mIsGravity = true;
-
-	// ジャンプ回数のセット
-	mJumpCount = kJumpCountMax;
+	mObject->mSkinning->CreateSkinningData("player", "S0", ".gltf", mObject->GetModel()->mModelData);
 
 	// コライダーの宣言
 	mObject->mCollider = std::make_unique<SphereCollider>(mObject->mWorldTransform.get(), 0.5f);
 	mObject->mCollider->Init();
 	mObject->mCollider->SetAddTranslation(Vector3(0.0f, 0.55f, -0.1f));
 	mObject->mCollider->SetTypeID(static_cast<uint32_t>(CollisionTypeId::kPlayer));
-
 
 	// 身体の部位に合わせたコライダーを生成
 	CreateBodyPartCollider("Head", 0.2f, static_cast<uint32_t>(CollisionTypeId::kPlayer));
@@ -95,118 +113,130 @@ void Player::Init() {
 	CreateBodyPartCollider("LeftHand", 0.1f, static_cast<uint32_t>(CollisionTypeId::kPlayer));
 	CreateBodyPartCollider("RightForeArm", 0.1f, static_cast<uint32_t>(CollisionTypeId::kPlayer));
 	CreateBodyPartCollider("RightHand", 0.1f, static_cast<uint32_t>(CollisionTypeId::kPlayer));
-
 	// 頭部のコライダーの座標を調整
 	mBodyPartColliders["Head"]->collider->SetAddTranslation({ 0.0f,0.05f,0.0f });
 
-	// レティクルの初期化
-	mReticle = std::make_unique<Reticle3D>();
-	mReticle->Init();
+	// -- 攻撃関連パラメータ -- //
 
-	// 構え
-	mIsAimMode = false;
+	sword = std::make_unique<Object3d>();
+	sword->Init("sword");
+	sword->SetModel("sword.gltf");
+	sword->mWorldTransform->scale = { 0.1f,0.1f,0.175f };
+	sword->mWorldTransform->rotation = { 2.0f,-0.6f,1.4f };
+	sword->mWorldTransform->translation = { 0.05f,0.0f,0.05f };
+	sword->mSkinning = make_unique<Skinning>();
+	sword->mSkinning->Init("Weapons", "sword.gltf",
+		sword->GetModel()->mModelData);
+	sword->mSkinning->IsInactive();
 
-	// 回避行動リクエスト
-	mAvoidStatus.mIsAvoidRequest = false;
-	// 回避中か
-	mAvoidStatus.mIsAvoid = false;
-	// 回避時の無敵状態であるか
-	mAvoidStatus.mIsAvoidInvincible = false;
-	// 回避距離
-	mAvoidStatus.mAvoidRange = 5.0f;
-	// 回避速度
-	mAvoidStatus.mAvoidSpeed = 0.0f;
-	// 回避経過時間( 0.0f ~ 1.0f )
-	mAvoidStatus.mAvoidTime = 0.0f;
-	// 回避開始地点
-	mAvoidStatus.mAvoidMoveStartPos = { 0.0f,0.0f,0.0f };
-	// 回避終了地点
-	mAvoidStatus.mAvoidMoveEndPos = { 0.0f,0.0f,0.0f };
-
-	// 攻撃関連パラメータ
-	mAttackStatus.sword = std::make_unique<Object3d>();
-	mAttackStatus.sword->Init("sword");
-	mAttackStatus.sword->SetModel("sword.gltf");
-	mAttackStatus.sword->mWorldTransform->scale = { 0.1f,0.1f,0.175f };
-	mAttackStatus.sword->mWorldTransform->rotation = { 2.0f,-0.6f,1.4f };
-	mAttackStatus.sword->mWorldTransform->translation = { 0.05f,0.0f,0.05f };
-	mAttackStatus.sword->mSkinning = make_unique<Skinning>();
-	mAttackStatus.sword->mSkinning->Init("Weapons", "sword.gltf",
-		mAttackStatus.sword->GetModel()->mModelData);
-	mAttackStatus.sword->mSkinning->IsInactive();
-
-	mAttackStatus.pos = { 1000.0f,900.0f,0.0f };// 初期位置
-	mAttackStatus.normalRot = { 1.7f,-0.3f,-0.2f };// 初期回転量
-	mAttackStatus.endRot = { 3.8f,-0.3f,1.0f };// 最終回転量
 	// ペアレント
-	mAttackStatus.weaponParentMat = MakeIdentity();
-	mAttackStatus.sword->mWorldTransform->SetParent(mAttackStatus.weaponParentMat);
+	weaponParentMat = MakeIdentity();
+	sword->mWorldTransform->SetParent(weaponParentMat);
 
 	// 武器にコライダーをセットする
 	for (int32_t i = 0; i < 5; i++) {
-		mAttackStatus.swordWorldMat[i] = MakeAffineMatrix(Vector3{ 0.0f,0.0f,0.0f }, Vector3{ 0.0f,0.0f,0.0f }, Vector3{ 0.0f,0.0f,0.0f });
+		swordWorldMat[i] = MakeAffineMatrix(Vector3{ 0.0f,0.0f,0.0f }, Vector3{ 0.0f,0.0f,0.0f }, Vector3{ 0.0f,0.0f,0.0f });
 		// コライダー 宣言
 		std::shared_ptr<GameCollider> newCollider = std::make_shared<GameCollider>();
 		newCollider->collider = std::make_unique<SphereCollider>(new WorldTransform(), 0.35f);
 		// 初期化
 		newCollider->collider->Init();
 		newCollider->collider->SetTypeID(static_cast<uint32_t>(CollisionTypeId::kPlayerWeapon));
-			 
+
 		// 武器に設定したボーンのワールド座標をセット
-		newCollider->collider->GetWorld()->SetParent(mAttackStatus.swordWorldMat[i]);
+		newCollider->collider->GetWorld()->SetParent(swordWorldMat[i]);
 		//// 配列にプッシュする
-		mAttackStatus.swordColliders.push_back(std::move(newCollider));
+		swordColliders.push_back(std::move(newCollider));
 	}
 
-	// ステータス取得
-	mStatus = std::make_shared<Status>();
-	StatusManager::GetInstance()->GetPlayerStatus(*mStatus);
 
 	// -- エフェクト関係 -- //
 
-	// 剣先と根本のワールド座標
+// 剣先と根本のワールド座標
 	for (size_t i = 0; i < mWorldTransformSword.size(); i++) {
 		mWorldTransformSword[i] = make_unique<WorldTransform>();
 		mWorldTransformSword[i]->Init();
 	}
 	// ペアレントを設定(後にワールド座標を取得する)
-	mWorldTransformSword[0]->SetParent(mAttackStatus.swordWorldMat[0]);
-	mWorldTransformSword[1]->SetParent(mAttackStatus.swordWorldMat[4]);
+	mWorldTransformSword[0]->SetParent(swordWorldMat[0]);
+	mWorldTransformSword[1]->SetParent(swordWorldMat[4]);
 
-	// 方向指定(とりあえず奥を向く)
-	mDirection = { 0.0f,0.0f,1.0f };
-	mDirectionForInput = { 0.0f,0.0f,0.0f };
+}
 
-	// ターゲットロックオンの有無
-	mIsLockOnToTarget = false;
+void Player::InitWorks(){
+
+	
+	// ワーククラスの初期化
+	mWorks = std::make_unique<ActorWorks>();
+	mWorks->Init("player");
+
+
+	// -- 攻撃 -- //
+
+	// 各攻撃の定数を取得
+	kConstAttacks[0].offence = 1.0f;
+	kConstAttacks[0].operationTime = 0.1f;
+	kConstAttacks[0].afterTime = 0.45f;
+	kConstAttacks[0].motionTimeMax = 0.8f;
+	kConstAttacks[0].actionSpeed = 1.0f;
+	kConstAttacks[0].inputWaitTime = 2.0f;
+	
+	kConstAttacks[1].offence = 1.0f;
+	kConstAttacks[1].motionTimeMax = 1.0f;
+	kConstAttacks[1].actionSpeed = 1.0f;
+	kConstAttacks[1].inputWaitTime = 2.0f;
+
+	kConstAttacks[2].offence = 1.0f;
+	kConstAttacks[2].motionTimeMax = 1.0f;
+	kConstAttacks[2].actionSpeed = 1.0f;
+	kConstAttacks[2].inputWaitTime = 2.0f;
 
 }
 
 void Player::Update() {
 
+	// -- 入力処理 -- //
+
+	// 移動量の初期化
+	mVelocity = { 0.0f,0.0f,0.0f };
+
+	// ワーク切り替え処理(入力関係)
+	Input();
+	// 方向入力
+	InputDirection();
+
+	// 各ワークごとの処理を関数ポインタで実行する
+	if (mWorkFunc) {
+		(this->*mWorkFunc)();
+	}
+
+
+	// -- 物理処理 -- //
+	
+	// 落下処理
+	Fall();
+	// 方向修正
+	AdJustDirection();
+	// 移動処理
+	Move();
+
+	// -- その他処理 -- //
+
+	// レティクル・ロックオン処理
+	LockOn();
+
+	// ステータス更新
+	mStatus->Update();
+
+	// UI更新
+	mStatus->Update();
+
 	if (mStatus->HP > 0.0f) {
 
-		mVelocity = { 0.0f,0.0f,0.0f };
-
-		// 方向入力
-		InputDirection();
-		// 落下処理
-		Fall();
-		// 移動処理
-		Move();
-		// 回避関連処理
-		Avoid();
-		// 攻撃関連処理
-		Attack();
-		// 方向修正
-		AdJustDirection();
 		
-		switch (mBehavior)
+		switch (mWorks->mBehavior)
 		{
 		case Behavior::kRoot:
-
-			// コンボ回数リセット
-			mAttackStatus.comboCount = 0;
 
 			if (mObject->mSkinning->GetNowSkinCluster()->name != "idle" &&
 				!mObject->mSkinning->SearchToWaitingSkinCluster("idle"))
@@ -240,8 +270,6 @@ void Player::Update() {
 			break;
 		case Behavior::kCharge:
 			break;
-		case Behavior::kChargeAttack:
-			break;
 		case Behavior::kAvoid:
 			break;
 		case Behavior::kGuard:
@@ -250,33 +278,10 @@ void Player::Update() {
 			break;
 		}
 
-		// ロックオン時、レティクルをターゲットに向ける
-
-		// ターゲット(ボスキャラ)の座標を取得
-		Vector3 newReticlePos = mBoss->GetBodyPos();
-		mReticle->SetWorldPos(newReticlePos);
-
-		if (mIsLockOnToTarget) {
-			mReticle->SetReticleColor(Color(1.0f, 0.0f, 0.0f, 1.0f));
-		}
-		else {
-			if (mReticle->IsLockOn(newReticlePos)) {
-				mReticle->SetReticleColor(Color(1.0f, 1.0f, 1.0f, 1.0f));
-			}
-			else {
-				mReticle->SetReticleColor(Color(0.2f, 0.2f, 0.2f, 1.0f));
-			}
-		}
-
 		
-
-		// レティクル 更新
-		mReticle->Update();
 
 	}
 
-	// UI更新
-	mStatus->Update();
 }
 
 void Player::UpdateObject(){
@@ -313,30 +318,30 @@ void Player::UpdateObject(){
 	UpdateBodyCollider();
 
 	// 右手のワールド行列を更新
-	mAttackStatus.weaponParentMat = Multiply(
+	weaponParentMat = Multiply(
 		GetObject3D()->mSkinning->GetSkeleton().joints[GetObject3D()->mSkinning->GetSkeleton().jointMap["mixamorig:RightHand"]
 		].skeletonSpaceMatrix, GetObject3D()->GetWorldTransform()->GetWorldMatrix());
 
 	// 剣
-	mAttackStatus.sword->Update();
+	sword->Update();
 
 	// ワールド座標更新
-	mAttackStatus.swordWorldMat[0] = Multiply(
-		mAttackStatus.sword->mSkinning->GetBoneMatrix("Blade0"),
-		mAttackStatus.sword->GetWorldTransform()->GetWorldMatrix());
+	swordWorldMat[0] = Multiply(
+		sword->mSkinning->GetBoneMatrix("Blade0"),
+		sword->GetWorldTransform()->GetWorldMatrix());
 	
-	mAttackStatus.swordWorldMat[1] = Multiply(
-		mAttackStatus.sword->mSkinning->GetSkeleton().joints[mAttackStatus.sword->mSkinning->GetSkeleton().jointMap["Blade1"]
-		].skeletonSpaceMatrix, mAttackStatus.sword->GetWorldTransform()->GetWorldMatrix());
-	mAttackStatus.swordWorldMat[2] = Multiply(
-		mAttackStatus.sword->mSkinning->GetSkeleton().joints[mAttackStatus.sword->mSkinning->GetSkeleton().jointMap["Blade2"]
-		].skeletonSpaceMatrix, mAttackStatus.sword->GetWorldTransform()->GetWorldMatrix());
-	mAttackStatus.swordWorldMat[3] = Multiply(
-		mAttackStatus.sword->mSkinning->GetSkeleton().joints[mAttackStatus.sword->mSkinning->GetSkeleton().jointMap["Blade3"]
-		].skeletonSpaceMatrix, mAttackStatus.sword->GetWorldTransform()->GetWorldMatrix());
-	mAttackStatus.swordWorldMat[4] = Multiply(
-		mAttackStatus.sword->mSkinning->GetSkeleton().joints[mAttackStatus.sword->mSkinning->GetSkeleton().jointMap["Blade4"]
-		].skeletonSpaceMatrix, mAttackStatus.sword->GetWorldTransform()->GetWorldMatrix());
+	swordWorldMat[1] = Multiply(
+		sword->mSkinning->GetSkeleton().joints[sword->mSkinning->GetSkeleton().jointMap["Blade1"]
+		].skeletonSpaceMatrix, sword->GetWorldTransform()->GetWorldMatrix());
+	swordWorldMat[2] = Multiply(
+		sword->mSkinning->GetSkeleton().joints[sword->mSkinning->GetSkeleton().jointMap["Blade2"]
+		].skeletonSpaceMatrix, sword->GetWorldTransform()->GetWorldMatrix());
+	swordWorldMat[3] = Multiply(
+		sword->mSkinning->GetSkeleton().joints[sword->mSkinning->GetSkeleton().jointMap["Blade3"]
+		].skeletonSpaceMatrix, sword->GetWorldTransform()->GetWorldMatrix());
+	swordWorldMat[4] = Multiply(
+		sword->mSkinning->GetSkeleton().joints[sword->mSkinning->GetSkeleton().jointMap["Blade4"]
+		].skeletonSpaceMatrix, sword->GetWorldTransform()->GetWorldMatrix());
 
 	// 弾 更新
 	for (auto& bullet : mBullets) {
@@ -344,7 +349,7 @@ void Player::UpdateObject(){
 	}
 
 	// 武器のコライダー 更新
-	for (auto& collider : mAttackStatus.swordColliders) {
+	for (auto& collider : swordColliders) {
 		collider->collider->Update();
 	}
 
@@ -366,16 +371,18 @@ void Player::DrawGUI() {
 	ImGui::DragFloat3("Direction", &mDirection.x);
 
 	const char* str[] = {
-		"kRoot",   // 通常状態
-		"kMove",   // 移動状態
-		"kAttack", // 攻撃中
-		"kJump",	 // ジャンプ中
-		"kCharge", // 溜め動作中
-		"kChargeAttack", // 溜め攻撃
-		"kAvoid",  // 回避行動
-		"kGuard",  // 防御行動
+		"kRoot",  // 通常状態
+		"kMove",  // 移動状態
+		"kDash",// ダッシュ状態
+		"kAttack",// 攻撃中
+		"kJump",// ジャンプ中
+		"kCharge",// 溜め動作中
+		"kAvoid", // 回避行動
+		"kGuard", // 防御行動
+		"kParry",// パリィ中
+		"kBreak", // ブレイク中
 	};
-	int32_t behaviorNumber = (int32_t)mBehavior;
+	int32_t behaviorNumber = (int32_t)mWorks->mBehavior;
 
 	ImGui::ListBox("Current State", &behaviorNumber, str, IM_ARRAYSIZE(str));
 
@@ -414,23 +421,25 @@ void Player::DrawGUI() {
 
 	// 回避パラメータ
 	if (ImGui::CollapsingHeader("Avoid")) {
-		ImGui::DragFloat("AvoidRange", &mAvoidStatus.mAvoidRange);
-		ImGui::DragFloat("AvoidSpeed", &mAvoidStatus.mAvoidSpeed);
-		ImGui::DragFloat("AvoidTime", &mAvoidStatus.mAvoidTime);
-		ImGui::DragFloat3("Avoid Start", &mAvoidStatus.mAvoidMoveStartPos.x);
-		ImGui::DragFloat3("Avoid End", &mAvoidStatus.mAvoidMoveEndPos.x);
+		ImGui::DragFloat("AvoidRange", &mWorks->mWorkAvoid.avoidRange);
+		ImGui::DragFloat("AvoidSpeed", &mWorks->mWorkAvoid.avoidSpeed);
+		ImGui::DragFloat("AvoidTime", &mWorks->mWorkAvoid.elapsedTime);
 
 	}
 
 	// 攻撃パラメータ
 	if (ImGui::CollapsingHeader("Attack")) {
-		std::string timeStr = "Time : " + std::to_string(mAttackStatus.motionTime);
-		ImGui::ProgressBar(mAttackStatus.motionTime, ImVec2(-1.0f, 0.0f), timeStr.c_str());
-		ImGui::DragInt("ComboCount", &mAttackStatus.comboCount, 0);
-		std::string inputTimeStr = "inputWait : " + std::to_string(mAttackStatus.inputWaitingTime);
-		ImGui::ProgressBar(mAttackStatus.inputWaitingTime, ImVec2(-1.0f, 0.0f), inputTimeStr.c_str());
 
-		if (mAttackStatus.isComboRequest)
+		// 攻撃動作時間の表示
+		std::string timeStr = "Time : " + std::to_string(mWorks->mWorkAttack.elapsedTime);
+		ImGui::ProgressBar(mWorks->mWorkAttack.elapsedTime, ImVec2(-1.0f, 0.0f), timeStr.c_str());
+		ImGui::DragInt("ComboCount", &mWorks->mWorkAttack.comboCount, 0);
+		
+		// 入力待ち時間の表示
+		std::string inputTimeStr = "inputWait : " + std::to_string(mWorks->mWorkAttack.inputWaitingTime);
+		ImGui::ProgressBar(mWorks->mWorkAttack.inputWaitingTime, ImVec2(-1.0f, 0.0f), inputTimeStr.c_str());
+
+		if (mWorks->mWorkAttack.isComboRequest)
 		{
 			ImGui::Text("ComboRequest: [ON]");
 		}
@@ -438,7 +447,7 @@ void Player::DrawGUI() {
 		{
 			ImGui::Text("ComboRequest: [OFF]");
 		}
-		mAttackStatus.sword->DrawGuiTree();
+		sword->DrawGuiTree();
 
 	}
 
@@ -462,11 +471,11 @@ void Player::ColliderDraw() {
 		collider.second->collider->Draw();
 	}
 
-
-	if (mBehavior == Behavior::kAttack || mBehavior == Behavior::kChargeAttack){
-		if (mAttackStatus.isOperating){
+	
+	if (mWorks->mBehavior == Behavior::kAttack){
+		if (mWorks->mWorkAttack.isOperating){
 			// 武器のコライダー 描画
-			for (auto& collider : mAttackStatus.swordColliders) {
+			for (auto& collider : swordColliders) {
 				collider->collider->Draw();
 			}
 		}
@@ -481,7 +490,7 @@ void Player::ColliderDraw() {
 	}
 
 	// 剣
-	mAttackStatus.sword->Draw();
+	sword->Draw();
 
 }
 
@@ -497,8 +506,8 @@ void Player::SetColliderList(){
 	// プレイヤーの武器コライダー
 
 	// 攻撃中かつ命中前であればコライダーをリストに追加する
-	if (mAttackStatus.isOperating && !mAttackStatus.isHit) {
-		for (auto& collider : mAttackStatus.swordColliders) {
+	if (mWorks->mWorkAttack.isOperating && !mWorks->mWorkAttack.isHit) {
+		for (auto& collider : swordColliders) {
 
 			// ゲームマネージャのリストに追加
 			GameManager::GetInstance()->SetCollider(collider);
@@ -515,190 +524,314 @@ void Player::SetColliderList(){
 
 bool Player::GetIsOperating() const {
 	// 攻撃ステータスから攻撃中であるか取得
-	return mAttackStatus.isOperating;
+	return mWorks->mWorkAttack.isOperating;
 }
 
-void Player::Avoid()
-{
 
-	//  非回避状態で Aボタンで回避
-	if (mBehavior != Behavior::kAvoid &&
-		InputManager::GetInstance()->GetPused(Gamepad::Button::A)) {
+void Player::Input() {
 
-		// パラメータの補正
+	// 行動中は入力を受け付けない
+	if (!(mWorks->mBehavior == Behavior::kRoot ||
+		mWorks->mBehavior == Behavior::kMove ||
+		mWorks->mBehavior == Behavior::kDash)
+		) {
+		return;
+	}
 
-		// 回避距離
-		mAvoidStatus.mAvoidRange = 4.0f;
-		// 回避速度
-		mAvoidStatus.mAvoidSpeed = 2.0f;
-		// 回避経過時間( 0.0f ~ 1.0f )
-		mAvoidStatus.mAvoidTime = 0.0f;
-		// 回避開始地点に現在の座標を代入
-		mAvoidStatus.mAvoidMoveStartPos = mObject->GetWorldTransform()->translation;
-
-
-		// スティック入力の量
-		const static int stickValue = 6000;
-		// いずれかの数値が、指定した値以上(以下)であれば移動回避を行う
-		if (InputManager::GetInstance()->GetStick(Gamepad::Stick::LEFT_X) < -stickValue || // 左 
-			InputManager::GetInstance()->GetStick(Gamepad::Stick::LEFT_X) > stickValue || // 右
-			InputManager::GetInstance()->GetStick(Gamepad::Stick::LEFT_Y) < -stickValue || // 上
-			InputManager::GetInstance()->GetStick(Gamepad::Stick::LEFT_Y) > stickValue	  // 下
-			) {
-
-			// スティックの入力方向を計算
-			Vector3 direction = {
-				(float)InputManager::GetInstance()->GetStick(Gamepad::Stick::LEFT_X) ,
-				0.0f,
-				(float)InputManager::GetInstance()->GetStick(Gamepad::Stick::LEFT_Y)
-			};
-			// 正規化
-			direction = Normalize(direction);
-			// カメラの回転量を反映
-			direction = TransformNomal(direction, MainCamera::GetInstance()->mWorldTransform->GetWorldMatrix());
-			// y座標は移動しない
-			direction.y = 0.0f;
-
-			mAvoidStatus.mAvoidMoveEndPos = mObject->mWorldTransform->translation + Scalar(mAvoidStatus.mAvoidRange, direction);
-
-			// 回避状態に変更
-			mBehavior = Behavior::kAvoid;
-
-			// アニメーション変更
-			mObject->mSkinning->SetNextAnimation("avoid");
-			mObject->mSkinning->SetAnimationPlaySpeed(mAvoidStatus.mAvoidSpeed);
-
+	// コントローラー及びキー入力(各行動のリクエスト)を受け取る
+	auto buffered = InputManager::GetInstance()->ConsumeBufferedInput();
+	if (buffered.has_value()) {
+		switch (*buffered) {
+		case BufferedInput::Attack:
+			mWorks->mWorkAttack.isComboRequest = true;
+			mWorks->mWorkAvoid.isAvoidRequest = false;
+			mWorks->mWorkGuard.isGuardRequest = false;
+			break;
+		case BufferedInput::Avoid:
+			mWorks->mWorkAvoid.isAvoidRequest = true;
+			mWorks->mWorkAttack.isComboRequest = false;
+			mWorks->mWorkGuard.isGuardRequest = false;
+			break;
+		case BufferedInput::Guard:
+			mWorks->mWorkGuard.isGuardRequest = true;
+			mWorks->mWorkAttack.isComboRequest = false;
+			mWorks->mWorkAvoid.isAvoidRequest = false;
+			break;
+		default: break;
 		}
-		// スティック入力がなければバックステップを行う
-		else {
-			
-			// 移動方向をプレイヤーの向きの反対方向にを終点に設定
-			mAvoidStatus.mAvoidMoveEndPos = mObject->mWorldTransform->translation + Scalar(-mAvoidStatus.mAvoidRange, mDirection);
-			// 回避状態に変更
-			mBehavior = Behavior::kAvoid;
-			// アニメーション変更
-			mObject->mSkinning->SetNextAnimation("backStep");
-			mObject->mSkinning->SetAnimationPlaySpeed(mAvoidStatus.mAvoidSpeed);
+	}
+
+	// リクエストに応じたワーク関数のセット
+	if (mWorks->mWorkAttack.isComboRequest) {
+		mWorkFunc = &Player::Attack;
+	}
+
+	if (mWorks->mWorkAvoid.isAvoidRequest) {
+		mWorkFunc = &Player::Avoid;
+	}
+	
+	if (mWorks->mWorkGuard.isGuardRequest) {
+		mWorkFunc = &Player::Guard;
+	}
+
+
+}
+
+void Player::Avoid(){
+
+	// ワーク構造体を取得
+	auto& work = mWorks->mWorkAvoid;
+
+	// 初回回避処理
+	if (work.isAvoidRequest && !work.isOperating) {
+		work.isOperating = true;
+		work.elapsedTime = 0.0f;
+		
+		// 入力がないときは後方ステップ
+		Vector3 dir = mDirection;
+		if (Length(dir) == 0.0f) {
+			dir = Vector3{ 0, 0, -1 };
 		}
+		work.avoidDirection = Normalize(dir);
+
+		// アニメ再生（"avoid" 固定 または方向別に変える）
+		mObject->mSkinning->SetNextAnimation("avoid");
+
+		mWorks->mBehavior = Behavior::kAvoid;
 
 	}
 
 	// 回避中の処理
-	if (mBehavior == Behavior::kAvoid) {
+	if (mWorks->mBehavior == Behavior::kAvoid) {
 
-		// 線形補間を利用して座標を移動させる
-		if (mAvoidStatus.mAvoidTime < 1.0f) {
-			// 回避時の移動速度/フレームレートで加算する
-			mAvoidStatus.mAvoidTime += (mAvoidStatus.mAvoidSpeed / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetBattleSpeed();
+		// 回避時間更新
+		work.elapsedTime += BlackBoard::GetBattleFPS();
+
+		// 移動ベクトルに加算（距離制御も可能）
+		Vector3 avoidVelocity = work.avoidDirection * (BlackBoard::CombertBattleFPS(work.avoidSpeed));
+		mObject->mWorldTransform->translation += avoidVelocity;
+
+		// 回避完了判定
+		const float avoidDuration = 1.0f; // 避けモーション再生時間と一致させる
+		if (work.elapsedTime >= avoidDuration) {
+			work.elapsedTime = 0.0f;
+			work.isOperating = false;
+			work.isAvoidRequest = false;
+
+			mWorks->mBehavior = Behavior::kRoot;
+			mWorkFunc = nullptr;
 		}
-		else if (mAvoidStatus.mAvoidTime >= 1.0f) {
-			// タイムを補正
-			mAvoidStatus.mAvoidTime = 1.0f;
-
-			// 移動終了
-			mBehavior = Behavior::kRoot;
-			mObject->mSkinning->SetAnimationPlaySpeed(1.0f);
-		}
-
-		// 移動
-		mObject->mWorldTransform->translation.x = (1.0f - mAvoidStatus.mAvoidTime) * mAvoidStatus.mAvoidMoveStartPos.x + mAvoidStatus.mAvoidTime * mAvoidStatus.mAvoidMoveEndPos.x;
-		mObject->mWorldTransform->translation.z = (1.0f - mAvoidStatus.mAvoidTime) * mAvoidStatus.mAvoidMoveStartPos.z + mAvoidStatus.mAvoidTime * mAvoidStatus.mAvoidMoveEndPos.z;
 
 	}
+
+	////  非回避状態で Aボタンで回避
+	//if (mWorks->mBehavior != Behavior::kAvoid &&
+	//	InputManager::GetInstance()->GetPused(Gamepad::Button::A)) {
+
+	//	// パラメータの補正
+
+	//	// 回避距離
+	//	mWorks->mWorkAvoid.avoidRange = 4.0f;
+	//	// 回避速度
+	//	mWorks->mWorkAvoid.mAvoidSpeed = 2.0f;
+	//	// 回避経過時間( 0.0f ~ 1.0f )
+	//	mWorks->mWorkAvoid.mAvoidTime = 0.0f;
+	//	// 回避開始地点に現在の座標を代入
+	//	mWorks->mWorkAvoid.mAvoidMoveStartPos = mObject->GetWorldTransform()->translation;
+
+
+	//	// スティック入力の量
+	//	const static int stickValue = 6000;
+	//	// いずれかの数値が、指定した値以上(以下)であれば移動回避を行う
+	//	if (InputManager::GetInstance()->GetStick(Gamepad::Stick::LEFT_X) < -stickValue || // 左 
+	//		InputManager::GetInstance()->GetStick(Gamepad::Stick::LEFT_X) > stickValue || // 右
+	//		InputManager::GetInstance()->GetStick(Gamepad::Stick::LEFT_Y) < -stickValue || // 上
+	//		InputManager::GetInstance()->GetStick(Gamepad::Stick::LEFT_Y) > stickValue	  // 下
+	//		) {
+
+	//		// スティックの入力方向を計算
+	//		Vector3 direction = {
+	//			(float)InputManager::GetInstance()->GetStick(Gamepad::Stick::LEFT_X) ,
+	//			0.0f,
+	//			(float)InputManager::GetInstance()->GetStick(Gamepad::Stick::LEFT_Y)
+	//		};
+	//		// 正規化
+	//		direction = Normalize(direction);
+	//		// カメラの回転量を反映
+	//		direction = TransformNomal(direction, MainCamera::GetInstance()->mWorldTransform->GetWorldMatrix());
+	//		// y座標は移動しない
+	//		direction.y = 0.0f;
+
+	//		mWorks->mWorkAvoid.mAvoidMoveEndPos = mObject->mWorldTransform->translation + Scalar(mWorks->mWorkAvoid.avoidRange, direction);
+
+	//		// 回避状態に変更
+	//		mWorks->mBehavior = Behavior::kAvoid;
+
+	//		// アニメーション変更
+	//		mObject->mSkinning->SetNextAnimation("avoid");
+	//		mObject->mSkinning->SetAnimationPlaySpeed(mWorks->mWorkAvoid.mAvoidSpeed);
+
+	//	}
+	//	// スティック入力がなければバックステップを行う
+	//	else {
+	//		
+	//		// 移動方向をプレイヤーの向きの反対方向にを終点に設定
+	//		mWorks->mWorkAvoid.mAvoidMoveEndPos = mObject->mWorldTransform->translation + Scalar(-mWorks->mWorkAvoid.avoidRange, mDirection);
+	//		// 回避状態に変更
+	//		mWorks->mBehavior = Behavior::kAvoid;
+	//		// アニメーション変更
+	//		mObject->mSkinning->SetNextAnimation("backStep");
+	//		mObject->mSkinning->SetAnimationPlaySpeed(mWorks->mWorkAvoid.mAvoidSpeed);
+	//	}
+
+	//}
+
+	//// 回避中の処理
+	//if (mWorks->mBehavior == Behavior::kAvoid) {
+
+	//	// 線形補間を利用して座標を移動させる
+	//	if (mWorks->mWorkAvoid.avoidTime < 1.0f) {
+	//		// 回避時の移動速度/フレームレートで加算する
+	//		mWorks->mWorkAvoid.avoidTime += (mWorks->mWorkAvoid.avoidSpeed / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetBattleSpeed();
+	//	}
+	//	else if (mWorks->mWorkAvoid.avoidTime >= 1.0f) {
+	//		// タイムを補正
+	//		mWorks->mWorkAvoid.avoidTime = 1.0f;
+
+	//		// 移動終了
+	//		mWorks->mBehavior = Behavior::kRoot;
+	//		mObject->mSkinning->SetAnimationPlaySpeed(1.0f);
+	//	}
+
+	//	// 移動
+	//	mObject->mWorldTransform->translation.x += (1.0f - mWorks->mWorkAvoid.avoidTime);
+	//	mObject->mWorldTransform->translation.z += (1.0f - mWorks->mWorkAvoid.avoidTime);
+
+	//}
 
 
 }
 
+void Player::Guard()
+{
+}
+
+void Player::JustAction(){
+}
+
+
 void Player::Attack()
 {
-	// コンボ上限に達していない
-	if (mAttackStatus.comboCount < kComboCountMax) {
-		// Bボタン Triggerで攻撃
-		if (InputManager::GetInstance()->GetPused(Gamepad::Button::B) || InputManager::GetInstance()->GetTriggerKey(DIK_RETURN))
-		{
-			// 初期動作
-			if (mBehavior == Behavior::kRoot || mBehavior == Behavior::kMove)
-			{
-				mBehavior = Behavior::kAttack;
-				mAttackStatus.motionTime = 1.0f;
-			}
+	// ワーク構造体を取得
+	auto& work = mWorks->mWorkAttack;
+	// 各攻撃段階のデータを取得
+	const ConstAttack& attackData = kConstAttacks[work.comboCount];
 
-			// コンボ有効
-			mAttackStatus.isComboRequest = true;
-		}
-	}
-	if (mBehavior != Behavior::kAttack) { return; }
-	if (mAttackStatus.motionTime >= 1.0f)
+	// 各状況に応じて攻撃処理を行う
+	switch (mWorks->mWorkAttack.attackPhase)
 	{
-		// コンボ
-		if (mAttackStatus.isComboRequest)
-		{
-			// コンボ回数 増加	
-			mAttackStatus.comboCount++;
-			// リクエスト解除
-			mAttackStatus.isComboRequest = false;
-			// タイマーをリセット
-			mAttackStatus.motionTime = 0.0f;
+	case Default:
 
-			mAttackStatus.isOperating = false;
-			mAttackStatus.isHit = false;
+		// 初回実行時
+		if (work.isComboRequest) {
+			work.isComboRequest = false;
+			work.isOperating = true;
+			work.isHit = false;
+			work.comboCount = 0;
+			work.elapsedTime = 0.0f;
 
-			// コンボ段階に応じたモーションに切り替える
-			// 攻撃コンボの段階に応じた処理
-			switch (mAttackStatus.comboCount)
-			{
-			case 1:
-				mObject->mSkinning->SetNextAnimation("slashR");
-				break;
+			// 初段のアニメーション再生
+			mObject->mSkinning->SetNextAnimation("S0");
 
-			case 2:
-				mObject->mSkinning->SetNextAnimation("slashL");
-				break;
-
-			case 3:
-				mObject->mSkinning->SetNextAnimation("slashEnd");
-				break;
-
-			default:
-				break;
-			}
-
+			// 振る舞いの変更
+			mWorks->mBehavior = Behavior::kAttack;
+			mWorks->mWorkAttack.attackPhase = OperatingExtra;
 		}
-		// コンボを継続しない場合、通常状態に戻る
-		else{
-			if (mAttackStatus.motionTime >= 1.5f) {
 
-				mAttackStatus.motionTime = 0.0f;
-				mAttackStatus.isOperating = false;
-				mAttackStatus.isHit = false;
-				mAttackStatus.isUp = false;
-				//mObject->mSkinning->SetNextAnimation("idle");
-				// コンボ回数リセット
-				mAttackStatus.comboCount = 0;
-				mBehavior = Behavior::kRoot;
+		break;
+	case OperatingExtra:
+
+		// 予備動作処理
+		// この段階では衝突判定(=コライダーの発生)を行わない
+
+		// 動作時間加算
+		work.elapsedTime += BlackBoard::GetBattleFPS();
+
+		// 一定時間が経過したら、攻撃状態に移行
+		if (work.elapsedTime > attackData.operationTime) {
+			mWorks->mWorkAttack.attackPhase = InAttack;
+		}
+
+		break;
+	case InAttack:
+
+		// 攻撃動作処理
+		// この段階では衝突判定を行う
+
+		// 動作時間加算
+		work.elapsedTime += BlackBoard::GetBattleFPS();
+
+		// 一定時間が経過したら、攻撃後動作状態に移行
+		if (work.elapsedTime > attackData.afterTime) {
+			mWorks->mWorkAttack.attackPhase = After;
+		}
+
+		break;
+	case After:
+		
+		// 攻撃後動作
+		// この段階では衝突判定(=コライダーの発生)を行わない
+		// また、攻撃リクエストとカウント状況に応じて動作を変える
+
+		// 動作時間加算
+		work.elapsedTime += BlackBoard::GetBattleFPS();
+
+		// 入力受付時間 → バッファ確認
+		if (!work.isComboRequest) {
+
+			auto buffered = InputManager::GetInstance()->ConsumeBufferedInput();
+			if (buffered.has_value() && *buffered == BufferedInput::Attack) {
+				work.isComboRequest = true;
+			}
+		}
+
+		// 攻撃モーション終了 + 受付あり → 次段コンボ
+		if (work.isComboRequest && work.elapsedTime >= attackData.motionTimeMax) {
+
+			// 次の段が存在する場合のみ進行
+			if (work.comboCount + 1 < kComboCountMax) {
+				work.comboCount++;
+				work.elapsedTime = 0.0f;
+				work.isComboRequest = false;
+				work.isHit = false;
+
+				mObject->mSkinning->SetNextAnimation("slashL"); // 必要に応じて "S1", "S2" などに変更
 				
+				// 振る舞いの変更
+				mWorks->mWorkAttack.attackPhase = OperatingExtra;
+
+				return;
 			}
 		}
-	}
-	
-	if (mAttackStatus.motionTime <= 1.5f)
-	{
-		mAttackStatus.motionTime += BlackBoard::CombertBattleFPS(1.5f);
 
-		// 攻撃が命中していない場合
-		if (mAttackStatus.motionTime > 0.4f && !mAttackStatus.isHit && !mAttackStatus.isOperating) {
-			
-			// 攻撃フラグをtrueにする
-			mAttackStatus.isOperating = true;
+		// 全体終了処理
+		if (work.elapsedTime >= attackData.motionTimeMax) {
+			work.isOperating = false;
+			work.isComboRequest = false;
+			work.elapsedTime = 0.0f;
+			work.comboCount = 0;
 
-			// 射撃(斬撃を飛ばす)
-			//Shot();
-
+			// 振る舞いの変更
+			mWorks->mBehavior = Behavior::kRoot;
+			mWorks->mWorkAttack.attackPhase = Default;
+			// ワーク関数のリセット
+			mWorkFunc = nullptr;
 		}
-
+		
+		break;
+	default:
+		break;
 	}
-
-
 
 }
 
@@ -706,7 +839,7 @@ void Player::Shot(){
 
 	// 弾のパラメータを設定する
 	BulletStatus bulletStatus;
-	bulletStatus.pos = mAttackStatus.sword->GetWorldTransform()->GetWorldPosition();
+	bulletStatus.pos = sword->GetWorldTransform()->GetWorldPosition();
 	bulletStatus.radius = BlackBoard::GetGlobalVariables()->GetFloatValue("PlayerBullet", "Radius");
 	bulletStatus.moveSpeed = BlackBoard::GetGlobalVariables()->GetFloatValue("PlayerBullet", "MoveSpeed");
 
@@ -742,8 +875,8 @@ void Player::Shot(){
 
 void Player::Move()
 {
-	// 通常/防御時に有効
-	if (mBehavior == Behavior::kRoot || mBehavior == Behavior::kMove || mBehavior == Behavior::kDash) {
+	// 通常/移動時に有効
+	if (mWorks->mBehavior == Behavior::kRoot || mWorks->mBehavior == Behavior::kMove || mWorks->mBehavior == Behavior::kDash) {
 
 		// いずれかの数値が、以上(以下)であれば移動処理を行う
 		if (Length(mDirectionForInput) != 0.0f) {
@@ -757,8 +890,8 @@ void Player::Move()
 				moveSpeed *= 2.0f;
 
 				// ダッシュ状態に変更
-				if (mBehavior == Behavior::kRoot || mBehavior == Behavior::kMove) {
-					mBehavior = Behavior::kDash;
+				if (mWorks->mBehavior == Behavior::kRoot || mWorks->mBehavior == Behavior::kMove) {
+					mWorks->mBehavior = Behavior::kDash;
 				}
 
 			}
@@ -766,8 +899,8 @@ void Player::Move()
 			else {
 
 				// 移動状態に変更
-				if (mBehavior == Behavior::kRoot || mBehavior == Behavior::kDash) {
-					mBehavior = Behavior::kMove;
+				if (mWorks->mBehavior == Behavior::kRoot || mWorks->mBehavior == Behavior::kDash) {
+					mWorks->mBehavior = Behavior::kMove;
 				}
 
 			}
@@ -780,9 +913,9 @@ void Player::Move()
 		// 入力がなければ
 		if (mDirectionInputCount <= 0.0f) {
 
-			if (mBehavior == Behavior::kMove || mBehavior == Behavior::kDash) {
+			if (mWorks->mBehavior == Behavior::kMove || mWorks->mBehavior == Behavior::kDash) {
 				// 通常状態に戻す
-				mBehavior = Behavior::kRoot;
+				mWorks->mBehavior = Behavior::kRoot;
 			}
 		}
 
@@ -893,10 +1026,27 @@ void Player::InputDirection(){
 
 }
 
-void Player::Save()
-{
-}
+void Player::LockOn(){
 
-void Player::Load()
-{
+	// ロックオン時、レティクルをターゲットに向ける
+
+	// ターゲット(ボスキャラ)の座標を取得
+	Vector3 newReticlePos = mBoss->GetBodyPos();
+	mReticle->SetWorldPos(newReticlePos);
+
+	if (mIsLockOnToTarget) {
+		mReticle->SetReticleColor(Color(1.0f, 0.0f, 0.0f, 1.0f));
+	}
+	else {
+		if (mReticle->IsLockOn(newReticlePos)) {
+			mReticle->SetReticleColor(Color(1.0f, 1.0f, 1.0f, 1.0f));
+		}
+		else {
+			mReticle->SetReticleColor(Color(0.2f, 0.2f, 0.2f, 1.0f));
+		}
+	}
+
+	// レティクル 更新
+	mReticle->Update();
+
 }

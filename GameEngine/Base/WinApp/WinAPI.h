@@ -41,12 +41,11 @@ public: // -- 公開 メンバ関数 -- //
 
 	// 初期化
 	void Init();
-
-	// 消去
+	// 終了処理
 	void Final();
 
 	// ウィンドウプロシージャの取得
-	HWND GetHWND() { return hwnd; }
+	HWND GetHWND()const { return hwnd; }
 
 	// システム 及び デバッグメッセージ
 

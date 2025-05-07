@@ -52,12 +52,15 @@ void MainCamera::Init() {
 	// カメラ回転操作の入力経過時間
 	mCameraInputCounts = { 0.0f ,0.0f };
 
-
 }
 void MainCamera::Update()
 {
 	// カメラのオフセットを入力
-	MainCamera::GetInstance()->SetOffset(BlackBoard::GetGlobalVariables()->GetVector3Value("Camera", "Offset"));
+	SetOffset(BlackBoard::GetGlobalVariables()->GetVector3Value("Camera", "Offset"));
+	// カメラ回転の限界値を取得
+	mRotLimitMin = BlackBoard::GetGlobalVariables()->GetVector3Value("Camera", "RotLimitMin");
+	mRotLimitMax = BlackBoard::GetGlobalVariables()->GetVector3Value("Camera", "RotLimitMax");
+	
 
 
 #ifdef _DEBUG
@@ -116,20 +119,20 @@ void MainCamera::Update()
 				mWorldTransform->rotation.y += direction.y * mCameraSensitivity;
 
 				// x軸の回転は制限する
-				if (mWorldTransform->rotation.x < -0.2f) {
-					mWorldTransform->rotation.x = -0.2f;
+				if (mWorldTransform->rotation.x < mRotLimitMin.x) {
+					mWorldTransform->rotation.x = mRotLimitMin.x;
 				}
-				if (mWorldTransform->rotation.x > 0.2f) {
-					mWorldTransform->rotation.x = 0.2f;
+				if (mWorldTransform->rotation.x > mRotLimitMax.x) {
+					mWorldTransform->rotation.x = mRotLimitMax.x;
 				}
 
 				// y軸の数値修正
-				if (mWorldTransform->rotation.y > 3.14f) {
-					mWorldTransform->rotation.y = -3.14f;
+				if (mWorldTransform->rotation.y < mRotLimitMin.y) {
+					mWorldTransform->rotation.y = mRotLimitMax.y;
 				}
 
-				if (mWorldTransform->rotation.y < -3.14f) {
-					mWorldTransform->rotation.y = 3.14f;
+				if (mWorldTransform->rotation.y > mRotLimitMax.y) {
+					mWorldTransform->rotation.y = mRotLimitMin.y;
 				}
 
 			}

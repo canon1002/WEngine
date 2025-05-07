@@ -57,6 +57,8 @@ void Framework::Init(){
 	mDxCommon = DirectXCommon::GetInstance();
 	mDxCommon->Init();
 	
+	// グローバル変数読み込み
+	GlobalVariables::GetInstance()->LoadFiles();
 	// メインカメラ
 	MainCamera::GetInstance()->Init();
 	// テクスチャマネージャ 
@@ -69,8 +71,6 @@ void Framework::Init(){
 	InputManager::GetInstance()->Init();
 	// Audio
 	Audio::GetInstance()->Initialize();
-	// グローバル変数読み込み
-	GlobalVariables::GetInstance()->LoadFiles();
 	// レベルデータ読み込み
 	LevelEditor::GetInstance()->CheckLevelEditorFile();
 	// フレームレート

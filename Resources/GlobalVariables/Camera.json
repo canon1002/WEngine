@@ -1,23 +1,23 @@
 {
     "Camera": {
         "FarClip": 1000.0,
-        "NearClip": 0.1,
+        "NearClip": 0.10000000149011612,
         "Offset": [
             0.0,
-            2.0,
-            -12.0
+            3.0,
+            -15.0
         ],
-        "Sensitivity": 0.05,
-        "VerticalFOV": 0.5,
-        "RotLimitMin":[
-            1.0,
-            1.0,
+        "RotLimitMax": [
+            0.5120000243186951,
+            3.140000104904175,
             0.0
         ],
-        "RotLimitMax":[
-            1.0,
-            1.0,
+        "RotLimitMin": [
+            0.032999999821186066,
+            -3.140000104904175,
             0.0
-        ]
+        ],
+        "Sensitivity": 0.05000000074505806,
+        "VerticalFOV": 0.5
     }
 }

@@ -103,8 +103,8 @@ private: // -- private メンバ変数 -- //
 	const float mCamerainputCountMax = 1.0f;
 
 	// カメラ回転操作の制限
-	Vector3 mCameraRotLimitMin;
-	Vector3 mCameraRotLimitMax;
+	Vector3 mRotLimitMin;
+	Vector3 mRotLimitMax;
 
 };
 

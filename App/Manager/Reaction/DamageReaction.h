@@ -1,6 +1,6 @@
 #pragma once
 #include "GameEngine/Append/Transform/WorldTransform.h"
-#include "GameEngine/Math/Vec2.h"
+#include "GameEngine/Math/Vector2.h"
 #include <d2d1_3.h>
 #include <dwrite.h>
 #include <wrl.h>

@@ -1,0 +1,23 @@
+{
+    "playerWorks": {
+        "ParryTime" : [
+            0.0,
+            1.0
+        ],
+
+        "InvinsivleCount" : [
+            0.0,
+            1.0
+        ],
+        "AvoidSpeed" : 6.0,
+        "AvoidRange" : 3.0,
+        
+        "StartGuardCount" : 0.5,
+        "JustGuardCount" : [
+            0.0,
+            1.0
+        ],
+       "GuardSpeed" : 0.5,
+       "Protection" : 0.5
+    }
+}

@@ -479,9 +479,12 @@ void GameScene::BattlePhase() {
 	// 斬撃エフェクト
 	mPlayerTrailEffect->Update();
 	if (mPlayer->GetBehavior() == Behavior::kAttack) {
+		mPlayerTrailEffect->Create(
+			*mPlayer->GetWorldPositionSword(0), 
+			*mPlayer->GetWorldPositionSword(1));
+
 		if (mPlayerTrailEffect->GetGetPositionFlag()) {
-			mPlayerTrailEffect->Create(*mPlayer->GetWorldPositionSword(0), *mPlayer->GetWorldPositionSword(1));
-		}
+			}
 	}
 
 	mBossTrailEffect->Update();

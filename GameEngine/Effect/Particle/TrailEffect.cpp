@@ -1,13 +1,13 @@
 #include "TrailEffect.h"
 #include "GameEngine/Object/Camera/MainCamera.h"
 #include  "GameEngine/Base/Debug/ImGuiManager.h"
-#include "GameEngine/GameMaster/Framerate.h"
+#include "App/BlackBoard.h"
 
 
 void TrailEffect::Init()
 {
 	// カウント
-	mPositionSetCountMax = 0.02f;
+	mPositionSetCountMax = 0.001f;
 	mPositionSetCount = 0.0f;
 
 	// 色の設定
@@ -16,11 +16,8 @@ void TrailEffect::Init()
 
 void TrailEffect::Update() {
 
-	// Δtを定義 60fps固定してあるが、実時間を計測して可変fpsで動かせるようにしておきたい
-	const float kDeltaTime = (1.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetGameSpeed();
-
 	if (mPositionSetCount > 0.0f) {
-		mPositionSetCount -= kDeltaTime;
+		mPositionSetCount -= BlackBoard::GetBattleFPS();
 	}
 	else if(mPositionSetCount <= 0.0f){
 		mPositionSetCount = mPositionSetCountMax;

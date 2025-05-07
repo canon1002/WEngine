@@ -4,7 +4,7 @@
 #include "GameEngine/Object/Camera/MainCamera.h"
 #include "GameEngine/Base/Debug/ImGuiManager.h"
 #include "GameEngine/Append/Collider/CollisionManager.h"
-#include "GameEngine/Math/Vec2.h"
+#include "GameEngine/Math/Vector2.h"
 
 Reticle3D::Reticle3D()
 {

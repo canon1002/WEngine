@@ -598,14 +598,6 @@ Vector3 BossEnemy::GetBodyPos()
 	return Vector3(bodyWorldMat.m[3][0],bodyWorldMat.m[3][1],bodyWorldMat.m[3][2]);
 }
 
-void BossEnemy::Save()
-{
-}
-
-void BossEnemy::Load()
-{
-}
-
 void BossEnemy::ColliderDraw() {
 
 	// 武器の描画

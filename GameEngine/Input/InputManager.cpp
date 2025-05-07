@@ -1,5 +1,6 @@
 #include "InputManager.h"
 #include <algorithm> 
+#include "App/BlackBoard.h"
 
 // staticメンバ変数で宣言したインスタンスを初期化
 InputManager* InputManager::instance = nullptr;
@@ -33,6 +34,37 @@ void InputManager::Update() {
 	gamepad->Input();
 	keyboard->Input();
 	
+	// 攻撃（Bボタン）
+	if (GetPused(Gamepad::Button::B)) {
+		mInputBuffer = InputCommand{ BufferedInput::Attack, kBufferDuration };
+	}
+	else if (GetPused(Gamepad::Button::A)) {
+		mInputBuffer = InputCommand{ BufferedInput::Avoid, kBufferDuration };
+	}
+	else if (GetPused(Gamepad::Button::LEFT_SHOULDER)) {
+		mInputBuffer = InputCommand{ BufferedInput::Guard, kBufferDuration };
+	}
+
+	// 先行入力更新
+	UpdateInputBuffer();
+
+}
+
+void InputManager::UpdateInputBuffer(){
+
+	// デルタタイムを取得する
+	float deltaTime = BlackBoard::GetBattleFPS();
+
+	// バッファの寿命更新
+	if (mInputBuffer.has_value()) {
+		mInputBuffer->remainingTime -= deltaTime;  // フレーム依存
+
+		if (mInputBuffer->remainingTime <= 0.0f) {
+			mInputBuffer.reset();  // 消失
+		}
+	}
+
+
 }
 
 void InputManager::DrawGui()
@@ -107,4 +139,16 @@ float InputManager::GetStickRatio(const Gamepad::Stick& type, const short min)
 
 	return value;
 
+}
+
+std::optional<BufferedInput> InputManager::ConsumeBufferedInput() {
+	if (!mInputBuffer.has_value()) return std::nullopt;
+
+	BufferedInput result = mInputBuffer->type;
+	mInputBuffer.reset();
+	return result;
+}
+
+bool InputManager::HasBufferedInput(BufferedInput type) const {
+	return mInputBuffer.has_value() && mInputBuffer->type == type;
 }

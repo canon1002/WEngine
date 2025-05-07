@@ -98,15 +98,6 @@ void Actor::ReceiveDamage()
 {
 }
 
-
-void Actor::Save()
-{
-}
-
-void Actor::Load()
-{
-}
-
 void Actor::CreateBodyPartCollider(std::string name, float radius, uint32_t colliderTypeID) {
 
 	// 名称が重複している場合は処理を行わない

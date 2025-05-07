@@ -4,6 +4,7 @@
 //#include "Mouse"
 
 #include <memory>
+#include <optional>
 
 using namespace std;
 
@@ -11,6 +12,20 @@ enum class InputType {
 	KEYBOARD,
 	GAMEPAD,
 	MOUSE,
+};
+
+// 入力内容
+enum class BufferedInput {
+	None,
+	Attack,
+	Avoid,
+	Guard,
+};
+
+// 先行入力の保持構造体
+struct InputCommand {
+	BufferedInput type = BufferedInput::None;
+	float remainingTime = 0.0f;  // 残存フレーム（秒）
 };
 
 class InputManager
@@ -34,6 +49,7 @@ public: // -- 公開 メンバ関数 -- //
 	void Init();
 	// 更新
 	void Update();
+	void UpdateInputBuffer();
 	// デバッグUIの表示
 	void DrawGui();
 
@@ -85,11 +101,13 @@ public: // -- 公開 メンバ関数 -- //
 	// スティックの入力量を引数(0.0f)~最大値(1.0f)の間で返す関数
 	float GetStickRatio(const Gamepad::Stick& type, const short min);
 
+	// バッファの取得
+	std::optional<BufferedInput> ConsumeBufferedInput();
 
-private:
+	// 指定したタイプの先行入力があるか確認する
+	bool HasBufferedInput(BufferedInput type)const;
 
-	// マウス入力クラス
-
+private: // -- 非公開 メンバ変数 -- //
 
 	// キーボード入力クラス
 	Keyboard* keyboard;
@@ -99,5 +117,13 @@ private:
 
 	// インスタンス
 	static InputManager* instance;
+
+	// -- 先行入力 -- //
+
+	// バッファ
+	std::optional<InputCommand> mInputBuffer;
+	// 有効な入力バッファ時間(秒)
+	const float kBufferDuration = 0.25f;
+
 
 };

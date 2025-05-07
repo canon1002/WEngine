@@ -1,4 +1,4 @@
-#include "Vec2.h"
+#include "Vector2.h"
 
 bool InRange(float value, Vector2 range)
 {

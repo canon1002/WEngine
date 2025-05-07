@@ -73,15 +73,6 @@ public: // -- 公開 メンバ関数 -- //
 
 #pragma endregion
 
-
-
-private: // -- 非公開 メンバ関数 -- //
-
-	// 保存処理
-	virtual void Save() override;
-	// 読み込み処理
-	virtual void Load() override;
-
 public: // -- 公開 メンバ変数 -- //
 
 	// 右手のワールド座標

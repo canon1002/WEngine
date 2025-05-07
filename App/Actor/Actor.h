@@ -1,6 +1,7 @@
 #pragma once
 #include "GameEngine/Object/3d/Object3d.h"
 #include "App/Manager/GameManager.h"
+#include "App/Actor/Status/ActorWorks.h"
 #include "App/Enemy/Action/Action.h"
 #include "App/Bullet/Bullet.h"
 #include "App/Actor/Collider/GameCollider.h"
@@ -95,6 +96,7 @@ public: // -- 公開 メンバ関数 -- //
 	// 被弾後の無敵時間中に点滅させる処理
 	void InvincibleObjectUpdate();
 
+	// ダメージ処理
 	void ReceiveDamage();
 
 #pragma endregion
@@ -180,11 +182,6 @@ public: // -- 公開 メンバ関数 -- //
 
 protected: // -- 限定公開 メンバ関数 -- //
 
-	// 保存処理
-	virtual void Save();
-	// 読み込み処理
-	virtual void Load();
-
 	// -- 初期化関連 -- //
 
 	/// <summary>
@@ -214,6 +211,8 @@ protected: // -- 限定公開 メンバ変数 -- //
 
 	// アクターの名称
 	std::string mName;
+	// ワーククラス
+	std::unique_ptr<ActorWorks> mWorks;
 
 	// オブジェクトクラス
 	std::unique_ptr<Object3d> mObject;
