@@ -1,6 +1,6 @@
 #include "InputManager.h"
 #include <algorithm> 
-#include "App/BlackBoard.h"
+#include "GameEngine/Editor/BlackBoard.h"
 
 // staticメンバ変数で宣言したインスタンスを初期化
 InputManager* InputManager::instance = nullptr;

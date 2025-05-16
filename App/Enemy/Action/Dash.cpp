@@ -1,7 +1,7 @@
 #include "Dash.h"
 #include "App/Actor/Actor.h"
-#include "GameEngine/GameMaster/Framerate.h"
-#include "App/BlackBoard.h"
+#include "GameEngine/Editor/Framerate.h"
+#include "GameEngine/Editor/BlackBoard.h"
 
 void ACT::Dash::Init(Actor* actor){
 	// ボスのポインタを取得

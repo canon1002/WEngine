@@ -1,5 +1,5 @@
 #pragma once
-#include "GameEngine/Math/Math.h"
+#include "GameEngine/Utility/Math/Math.h"
 
 /// <summary>
 /// 攻撃段階
@@ -34,5 +34,4 @@ struct ConstAttack {
 	float motionTimeMax;	// 終了時間
 	float afterTime;		// 攻撃後の硬直切り替え時間
 	float actionSpeed;		// 実行速度
-	float inputWaitTime;	// 入力受付時間
 };

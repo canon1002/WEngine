@@ -1,5 +1,5 @@
 #include "WinAPI.h"
-#include "GameEngine/Base/Debug/ImGuiManager.h"
+#include "GameEngine/Editor/ImGui/ImGuiManager.h"
 
 WinApp* WinApp::instance = nullptr;
 

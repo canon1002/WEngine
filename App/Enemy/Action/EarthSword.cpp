@@ -1,11 +1,11 @@
 #include "EarthSword.h"
 #include "App/Actor/Actor.h"
-#include "GameEngine/Append/Collider/SphereCollider.h"
-#include "GameEngine/Object/Model/Skybox/Skybox.h"
-#include "GameEngine/Base/Debug/ImGuiManager.h"
-#include "GameEngine/Append/Collider/CollisionManager.h"
+#include "GameEngine/Component/Collider/SphereCollider.h"
+#include "GameEngine/Object/Skybox/Skybox.h"
+#include "GameEngine/Editor/ImGui/ImGuiManager.h"
+#include "GameEngine/Component/Collider/CollisionManager.h"
 #include "GameEngine/Effect/Particle/ParticleManager.h"
-#include "App/BlackBoard.h"
+#include "GameEngine/Editor/BlackBoard.h"
 
 
 void ACT::EarthSword::Init(Actor* boss)

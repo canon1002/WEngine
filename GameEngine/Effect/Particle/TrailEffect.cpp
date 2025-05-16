@@ -1,7 +1,7 @@
 #include "TrailEffect.h"
 #include "GameEngine/Object/Camera/MainCamera.h"
-#include  "GameEngine/Base/Debug/ImGuiManager.h"
-#include "App/BlackBoard.h"
+#include  "GameEngine/Editor/ImGui/ImGuiManager.h"
+#include "GameEngine/Editor/BlackBoard.h"
 
 
 void TrailEffect::Init()

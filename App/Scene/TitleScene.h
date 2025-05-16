@@ -2,7 +2,7 @@
 #include "GameEngine/Scene/BaseScene.h"
 
 #include "GameEngine/Object/Camera/MainCamera.h"
-#include "GameEngine/Object/Model/Skybox/Skybox.h"
+#include "GameEngine/Object/Skybox/Skybox.h"
 
 // テスト用
 #include "GameEngine/Object/ShadowObject.h"
@@ -14,7 +14,7 @@
 // エフェクト
 #include "GameEngine/Effect/Particle/Emitter/ParticleEmitter.h"
 // マネージャー
-#include "GameEngine/Append/Collider/CollisionManager.h"
+#include "GameEngine/Component/Collider/CollisionManager.h"
 #include "GameEngine/Input/InputManager.h"
 
 // 選択段階の判別用

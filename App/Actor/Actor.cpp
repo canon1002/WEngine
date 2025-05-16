@@ -1,7 +1,7 @@
 #include "Actor.h"
-#include "GameEngine/Append/Collider/SphereCollider.h"
-#include "GameEngine/Append/Collider/CollisionManager.h"
-#include "App/BlackBoard.h"
+#include "GameEngine/Component/Collider/SphereCollider.h"
+#include "GameEngine/Component/Collider/CollisionManager.h"
+#include "GameEngine/Editor/BlackBoard.h"
 
 Actor::Actor(){
 	

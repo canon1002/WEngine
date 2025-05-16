@@ -1,6 +1,6 @@
 #include "GrayScale.h"
 #include "GameEngine/Object/Camera/MainCamera.h"
-#include "GameEngine/Base/Debug/ImGuiManager.h"
+#include "GameEngine/Editor/ImGui/ImGuiManager.h"
 
 Grayscale::~Grayscale() {
 	delete mEnableEffect;
@@ -16,7 +16,7 @@ void Grayscale::Init(){
 	CreateEffectResource();
 
 	// レンダーターゲットの格納番号を受け取る
-	textureHandle_ = DirectXCommon::GetInstance()->mSrv->CreateRenderTextureSRV(DirectXCommon::GetInstance()->mRtv->mRenderTextureResource.Get());
+	mTextureHandle = DirectXCommon::GetInstance()->mSrv->CreateRenderTextureSRV(DirectXCommon::GetInstance()->mRtv->mRenderTextureResource.Get());
 }
 
 void Grayscale::Update(){
@@ -59,7 +59,7 @@ void Grayscale::Draw(){
 	// ポストエフェクトのパラメータのCBufferの場所を指定
 	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootConstantBufferView(0, mEffectResource->GetGPUVirtualAddress());
 	// SRVのDescriptorTableの先頭を設定
-	DirectXCommon::GetInstance()->mSrv->SetGraphicsRootDescriptorTable(1, textureHandle_);
+	DirectXCommon::GetInstance()->mSrv->SetGraphicsRootDescriptorTable(1, mTextureHandle);
 	// インスタンス生成
 	DirectXCommon::GetInstance()->mCommandList->DrawInstanced(3, 1, 0, 0);
 }
@@ -111,11 +111,11 @@ void Grayscale::CreateGraphicsPipeline(){
 
 	// Shaderをcompileする(P.37)
 	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob = WinApp::CompileShader(L"Shaders/PostEffect/CopyImage.VS.hlsl",
-		L"vs_6_0", DirectXCommon::GetInstance()->dxcUtils, DirectXCommon::GetInstance()->dxcCompiler, DirectXCommon::GetInstance()->includeHandler);
+		L"vs_6_0", DirectXCommon::GetInstance()->mDxcUtils, DirectXCommon::GetInstance()->mDxcCompiler, DirectXCommon::GetInstance()->mIncludeHandler);
 	assert(vertexShaderBlob != nullptr);
 
 	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob = WinApp::CompileShader(L"Shaders/PostEffect/Grayscale.PS.hlsl",
-		L"ps_6_0", DirectXCommon::GetInstance()->dxcUtils, DirectXCommon::GetInstance()->dxcCompiler, DirectXCommon::GetInstance()->includeHandler);
+		L"ps_6_0", DirectXCommon::GetInstance()->mDxcUtils, DirectXCommon::GetInstance()->mDxcCompiler, DirectXCommon::GetInstance()->mIncludeHandler);
 	assert(pixelShaderBlob != nullptr);
 
 

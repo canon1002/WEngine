@@ -4,22 +4,22 @@
 
 void CameraCommon::Init(){
 	mWorldTransform = std::make_unique<WorldTransform>();
-	verticalFOV_ = 0.45f;
-	aspectRatio_ = (float(WinApp::GetInstance()->kClientWidth) / float(WinApp::GetInstance()->kClientHeight));
-	nearClip_ = 0.01f;
-	farClip_ = 1000.0f;
-	viewMatrix_ = Inverse(mWorldTransform->GetWorldMatrix());
-	projectionMatrix_ = MakePerspectiveMatrix(verticalFOV_, aspectRatio_, nearClip_, farClip_);
-	viewprojectionMatrix_ = Multiply(viewMatrix_, projectionMatrix_);
+	mVerticalFOV = 0.45f;
+	mAspectRatio = (float(WinApp::GetInstance()->kClientWidth) / float(WinApp::GetInstance()->kClientHeight));
+	mNearClip = 0.01f;
+	mFarClip = 1000.0f;
+	mViewMat = Inverse(mWorldTransform->GetWorldMatrix());
+	mProjectionMat = MakePerspectiveMatrix(mVerticalFOV, mAspectRatio, mNearClip, mFarClip);
+	mViewProjectionMat = Multiply(mViewMat, mProjectionMat);
 }
 
 void CameraCommon::Update()
 {
 	// ビュー行列の更新
-	viewMatrix_ = Inverse(mWorldTransform->GetWorldMatrix());
+	mViewMat = Inverse(mWorldTransform->GetWorldMatrix());
 	// プロジェクション行列の更新
-	projectionMatrix_ = MakePerspectiveMatrix(verticalFOV_, aspectRatio_, nearClip_, farClip_);
+	mProjectionMat = MakePerspectiveMatrix(mVerticalFOV, mAspectRatio, mNearClip, mFarClip);
 	// 上記２つをビュープロジェクション行列に合成
-	viewprojectionMatrix_ = Multiply(viewMatrix_, projectionMatrix_);
+	mViewProjectionMat = Multiply(mViewMat, mProjectionMat);
 	
 }

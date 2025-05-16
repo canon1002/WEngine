@@ -1,6 +1,6 @@
 #pragma once
 #include "GameEngine/Resource/Material/Color.h"
-#include "GameEngine/Math/Math.h"
+#include "GameEngine/Utility/Math/Math.h"
 
 struct Material {
 	Color color;

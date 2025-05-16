@@ -3,8 +3,8 @@
 #include <fstream>
 #include <sstream>
 #include "GameEngine/Object/Camera/MainCamera.h"
-#include "GameEngine/Object/Model/ModelManager.h"
-#include "GameEngine/Base/Debug/ImGuiManager.h"
+#include "GameEngine/Resource/Model/ModelManager.h"
+#include "GameEngine/Editor/ImGui/ImGuiManager.h"
 
 
 using namespace DirectX;

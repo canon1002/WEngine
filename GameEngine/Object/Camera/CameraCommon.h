@@ -1,6 +1,6 @@
 #pragma once
-#include "GameEngine/Math/Math.h"
-#include "GameEngine/Append/Transform/WorldTransform.h"
+#include "GameEngine/Utility/Math/Math.h"
+#include "GameEngine/Utility/Transform/WorldTransform.h"
 #include "GameEngine/Base/WinApp/WinAPI.h"
 
 class CameraCommon
@@ -32,16 +32,16 @@ public: // -- アクセッサ -- //
 	void SetFarClip() {}
 	void SetCamera() {}
 	
-	float GetFarClip()const { return farClip_; }
-	float GetNearClip()const { return nearClip_; }
+	float GetFarClip()const { return mFarClip; }
+	float GetNearClip()const { return mNearClip; }
 
 #pragma endregion
 
 #pragma region Getter
 
-	const Matrix4x4& GetViewMatrix() const { return viewMatrix_; }
-	const Matrix4x4& GetProjectionMatrix() const { return projectionMatrix_; }
-	const Matrix4x4& GetViewProjectionMatrix() const { return viewprojectionMatrix_; }
+	const Matrix4x4& GetViewMatrix() const { return mViewMat; }
+	const Matrix4x4& GetProjectionMatrix() const { return mProjectionMat; }
+	const Matrix4x4& GetViewProjectionMatrix() const { return mViewProjectionMat; }
 	Vector3 GetRotate()const { return mWorldTransform->rotation; }
 	Vector3 GetTranslate()const { return mWorldTransform->GetWorldPosition(); }
 
@@ -57,19 +57,19 @@ public: // -- public メンバ変数 -- //
 protected: // -- protected メンバ変数 -- //
 
 	// ビュー行列
-	Matrix4x4 viewMatrix_;
+	Matrix4x4 mViewMat;
 	// プロジェクション行列
-	Matrix4x4 projectionMatrix_;
+	Matrix4x4 mProjectionMat;
 	// ビュープロジェクション行列
-	Matrix4x4 viewprojectionMatrix_;
+	Matrix4x4 mViewProjectionMat;
 
 	// Near(近平面への距離)
-	float nearClip_;
+	float mNearClip;
 	// Far(遠平面への距離)
-	float farClip_;
+	float mFarClip;
 	// AspectRatio(アスペクト比)
-	float aspectRatio_;
+	float mAspectRatio;
 	// VerticalFOV(縦画角)
-	float verticalFOV_;
+	float mVerticalFOV;
 };
 

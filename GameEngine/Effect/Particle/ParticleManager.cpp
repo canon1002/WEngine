@@ -1,10 +1,10 @@
 #include "ParticleManager.h"
 #include "GameEngine/Base/DirectX/DirectXCommon.h"
 #include "GameEngine/Resource/Texture/TextureManager.h"
-#include "GameEngine/Base/Debug/ImGuiManager.h"
-#include "GameEngine/GameMaster/Framerate.h"
+#include "GameEngine/Editor/ImGui/ImGuiManager.h"
+#include "GameEngine/Editor/Framerate.h"
 #include "GameEngine/Object/Camera/MainCamera.h"
-#include "App/BlackBoard.h"
+#include "GameEngine/Editor/BlackBoard.h"
 
 ParticleManager* ParticleManager::instance = nullptr;
 
@@ -357,11 +357,11 @@ void ParticleManager::CreatePipelineState(){
 
 	// Shaderをcompileする(P.37)
 	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob = WinApp::CompileShader(L"Shaders/Particle/Particle.VS.hlsl",
-		L"vs_6_0", DirectXCommon::GetInstance()->dxcUtils, DirectXCommon::GetInstance()->dxcCompiler, DirectXCommon::GetInstance()->includeHandler);
+		L"vs_6_0", DirectXCommon::GetInstance()->mDxcUtils, DirectXCommon::GetInstance()->mDxcCompiler, DirectXCommon::GetInstance()->mIncludeHandler);
 	assert(vertexShaderBlob != nullptr);
 
 	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob = WinApp::CompileShader(L"Shaders/Particle/Particle.PS.hlsl",
-		L"ps_6_0", DirectXCommon::GetInstance()->dxcUtils, DirectXCommon::GetInstance()->dxcCompiler, DirectXCommon::GetInstance()->includeHandler);
+		L"ps_6_0", DirectXCommon::GetInstance()->mDxcUtils, DirectXCommon::GetInstance()->mDxcCompiler, DirectXCommon::GetInstance()->mIncludeHandler);
 	assert(pixelShaderBlob != nullptr);
 
 	// PSOを生成する(P.38)

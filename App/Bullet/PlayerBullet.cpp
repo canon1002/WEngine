@@ -1,6 +1,6 @@
 #include "PlayerBullet.h"
-#include "App/BlackBoard.h"
-#include "GameEngine/Append/Collider/SphereCollider.h"
+#include "GameEngine/Editor/BlackBoard.h"
+#include "GameEngine/Component/Collider/SphereCollider.h"
 #include <numbers>
 
 PlayerBullet::PlayerBullet(const BulletStatus& bulletStatus) {

@@ -1,5 +1,5 @@
 #include "ActorWorks.h"
-#include "App/BlackBoard.h"
+#include "GameEngine/Editor/BlackBoard.h"
 #include "GameEngine/Editor/GlobalVariables.h"
 
 ActorWorks::ActorWorks(){}

@@ -1,6 +1,6 @@
 #include "PostEffect.h"
 #include "GameEngine/Object/Camera/MainCamera.h"
-#include "GameEngine/Base/Debug/ImGuiManager.h"
+#include "GameEngine/Editor/ImGui/ImGuiManager.h"
 #include "GameEngine/Resource/Texture/TextureManager.h"
 
 PostEffect::PostEffect() {}
@@ -285,11 +285,11 @@ void PostEffect::CreateGraphicsPipeline(){
 
 	// Shaderをcompileする(P.37)
 	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob = WinApp::CompileShader(L"Shaders/PostEffect/CopyImage.VS.hlsl",
-		L"vs_6_0", DirectXCommon::GetInstance()->dxcUtils, DirectXCommon::GetInstance()->dxcCompiler, DirectXCommon::GetInstance()->includeHandler);
+		L"vs_6_0", DirectXCommon::GetInstance()->mDxcUtils, DirectXCommon::GetInstance()->mDxcCompiler, DirectXCommon::GetInstance()->mIncludeHandler);
 	assert(vertexShaderBlob != nullptr);
 
 	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob = WinApp::CompileShader(L"Shaders/PostEffect/CopyImage.PS.hlsl",
-		L"ps_6_0", DirectXCommon::GetInstance()->dxcUtils, DirectXCommon::GetInstance()->dxcCompiler, DirectXCommon::GetInstance()->includeHandler);
+		L"ps_6_0", DirectXCommon::GetInstance()->mDxcUtils, DirectXCommon::GetInstance()->mDxcCompiler, DirectXCommon::GetInstance()->mIncludeHandler);
 	assert(pixelShaderBlob != nullptr);
 
 

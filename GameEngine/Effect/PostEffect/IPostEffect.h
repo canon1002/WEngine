@@ -1,8 +1,8 @@
 #pragma once
-#include "GameEngine/Math/Math.h"
+#include "GameEngine/Utility/Math/Math.h"
 #include "GameEngine/Base/DirectX/DirectXCommon.h"
 #include "GameEngine/Resource/Texture/Resource.h"
-#include "GameEngine/Append/Transform/WorldTransform.h"
+#include "GameEngine/Utility/Transform/WorldTransform.h"
 #include "GameEngine/Object/Camera/CameraCommon.h"
 
 /// <summary>
@@ -44,7 +44,7 @@ protected: // -- 限定公開 メンバ変数 -- //
 	
 
 	// テクスチャハンドル 
-	int32_t textureHandle_;
+	int32_t mTextureHandle;
 
 	// 中間テクスチャ(入力)
 	Microsoft::WRL::ComPtr<ID3D12Resource> mInputTexture = nullptr;

@@ -99,7 +99,7 @@ private: // -- 非公開 メンバ関数 -- //
 public: // -- 公開 メンバ変数 & 定数 -- //
 
 	// 最大コンボ回数
-	static const int32_t kComboCountMax = 3;
+	static const int32_t kComboCountMax = 4;
 	// コンボ定数表
 	std::array<ConstAttack, kComboCountMax> kConstAttacks;
 

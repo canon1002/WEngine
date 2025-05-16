@@ -1,6 +1,6 @@
 #include "ResultScene.h"
 #include "GameEngine/Effect/PostEffect/PostEffect.h"
-#include "GameEngine/GameMaster/Framerate.h"
+#include "GameEngine/Editor/Framerate.h"
 #include "GameEngine/Object/ObjectAdministrator.h"
 #include "GameEngine/Scene/SceneManager.h"
 

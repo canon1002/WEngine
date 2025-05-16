@@ -1,5 +1,5 @@
 #pragma once
-#include "GameEngine/Math/Math.h"
+#include "GameEngine/Utility/Math/Math.h"
 #include "GameEngine/Object/Sprite/Sprite.h"
 #include <memory>
 

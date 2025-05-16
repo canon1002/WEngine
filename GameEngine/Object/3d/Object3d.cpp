@@ -3,8 +3,8 @@
 #include <fstream>
 #include <sstream>
 #include "GameEngine/Object/Camera/MainCamera.h"
-#include "GameEngine/Object/Model/ModelManager.h"
-#include "GameEngine/Base/Debug/ImGuiManager.h"
+#include "GameEngine/Resource/Model/ModelManager.h"
+#include "GameEngine/Editor/ImGui/ImGuiManager.h"
 
 Object3d::Object3d(const std::string objname) {
 	// 名称が引数に入っていれば命名しておく
@@ -61,12 +61,12 @@ void Object3d::Draw() {
 	vbvs[0] = mModel->mVertexBufferView;// VertexDataのVBV
 	if (mSkinning != nullptr && mSkinning->GetIsActive()) {
 
-		vbvs[1] = mSkinning->GetNowSkinCluster()->skinCluster.influenceBufferView_; // influenceのVBV
+		vbvs[1] = mSkinning->GetNowSkinCluster()->skinCluster.mInfluenceBufferView; // influenceのVBV
 
 		// 配列を渡す(開始スロット番号、使用スロット数、VBV配列へのポインタ)
 		DirectXCommon::GetInstance()->mCommandList->IASetVertexBuffers(0, 2, vbvs);
 		DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootDescriptorTable(6,
-			mSkinning->GetNowSkinCluster()->skinCluster.paletteSrvHandle_.second);
+			mSkinning->GetNowSkinCluster()->skinCluster.mPaletteSrvHandle.second);
 	}
 	else {
 		// 配列を渡す(開始スロット番号、使用スロット数、VBV配列へのポインタ)

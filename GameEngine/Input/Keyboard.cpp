@@ -1,7 +1,7 @@
 #include "Keyboard.h"
 
 #include "GameEngine/Base/DirectX/DirectXCommon.h"
-#include "GameEngine/Base/Debug/ImGuiManager.h"
+#include "GameEngine/Editor/ImGui/ImGuiManager.h"
 
 // staticメンバ変数で宣言したインスタンスを初期化
 Keyboard* Keyboard::instance = nullptr;

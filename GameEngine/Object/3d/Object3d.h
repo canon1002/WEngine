@@ -1,14 +1,14 @@
 #pragma once
 #include "GameEngine/Object/Base/ObjectBase.h"
 
-#include "GameEngine/Math/Math.h"
-#include "GameEngine/Append/Transform/WorldTransform.h"
+#include "GameEngine/Utility/Math/Math.h"
+#include "GameEngine/Utility/Transform/WorldTransform.h"
 #include "GameEngine/Resource/Texture/Resource.h"
 #include "GameEngine/Object/Light/DirectionalLight.h"
 #include "GameEngine/Object/Camera/CameraCommon.h"
-#include "GameEngine/Append/Animation/Skinning/Skinnig.h"
+#include "GameEngine/Component/Animation/Skinning/Skinnig.h"
 
-#include "GameEngine/Append/Collider/Collider.h"
+#include "GameEngine/Component/Collider/Collider.h"
 
 // 前方宣言
 class Model; // モデルクラス

@@ -2,9 +2,9 @@
 #include "GameEngine/Input/InputManager.h"
 #include "GameEngine/Object/Sprite/SpriteAdministrator.h"
 #include "GameEngine/Object/Camera/MainCamera.h"
-#include "GameEngine/Base/Debug/ImGuiManager.h"
-#include "GameEngine/Append/Collider/CollisionManager.h"
-#include "GameEngine/Math/Vector2.h"
+#include "GameEngine/Editor/ImGui/ImGuiManager.h"
+#include "GameEngine/Component/Collider/CollisionManager.h"
+#include "GameEngine/Utility/Math/Math.h"
 
 Reticle3D::Reticle3D()
 {

@@ -1,7 +1,7 @@
 #pragma once
 #include "App/Manager/Status/StatusManager.h"
 #include "App/Manager/Reaction/DamageReaction.h"
-#include "GameEngine/Append/Collider/CollisionManager.h"
+#include "GameEngine/Component/Collider/CollisionManager.h"
 #include "App/Actor/Collider/GameCollider.h"
 
 // 前方宣言

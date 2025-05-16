@@ -1,10 +1,10 @@
 #pragma once
-#include "GameEngine/Math/Math.h"
+#include "GameEngine/Utility/Math/Math.h"
 #include "GameEngine/Base/DirectX/DirectXCommon.h"
 #include "GameEngine/Resource/Texture/Resource.h"
-#include "GameEngine/Append/Transform/WorldTransform.h"
+#include "GameEngine/Utility/Transform/WorldTransform.h"
 #include "GameEngine/Object/Camera/MainCamera.h"
-#include "GameEngine/Object/Model/Model.h"
+#include "GameEngine/Resource/Model/Model.h"
 
 class EffectPixels
 {

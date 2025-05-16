@@ -1,5 +1,5 @@
 #pragma once
-#include "GameEngine/Math/Math.h"
+#include "GameEngine/Utility/Math/Math.h"
 
 /// <summary>
 /// 回避関連パラメータ

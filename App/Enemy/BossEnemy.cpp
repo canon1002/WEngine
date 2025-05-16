@@ -1,18 +1,18 @@
 #include "BossEnemy.h"
-#include "GameEngine/Object/Model/ModelManager.h"
+#include "GameEngine/Resource/Model/ModelManager.h"
 #include "GameEngine/Object/ObjectAdministrator.h"
-#include "GameEngine/Base/Debug/ImGuiManager.h"
+#include "GameEngine/Editor/ImGui/ImGuiManager.h"
 #include "GameEngine/Object/Camera/MainCamera.h"
 #include "App/Player/Player.h"
-#include "GameEngine/Append/Collider/AABBCollider.h"
-#include "GameEngine/Append/Collider/SphereCollider.h"
-#include "GameEngine/Object/Model/Skybox/Skybox.h"
+#include "GameEngine/Component/Collider/AABBCollider.h"
+#include "GameEngine/Component/Collider/SphereCollider.h"
+#include "GameEngine/Object/Skybox/Skybox.h"
 
-#include "GameEngine/Append/Collider/CollisionManager.h"
-#include "GameEngine/GameMaster/Framerate.h"
+#include "GameEngine/Component/Collider/CollisionManager.h"
+#include "GameEngine/Editor/Framerate.h"
 #include "App/Enemy/Action/ActionList.h"
 
-#include "App/BlackBoard.h"
+#include "GameEngine/Editor/BlackBoard.h"
 
 BossEnemy::BossEnemy() {}
 

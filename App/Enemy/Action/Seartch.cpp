@@ -1,7 +1,7 @@
 #include "Seartch.h"
 #include "App/Actor/Actor.h"
-#include "GameEngine/GameMaster/Framerate.h"
-#include "App/BlackBoard.h"
+#include "GameEngine/Editor/Framerate.h"
+#include "GameEngine/Editor/BlackBoard.h"
 
 void ACT::Seartch::Init(Actor* actor)
 {

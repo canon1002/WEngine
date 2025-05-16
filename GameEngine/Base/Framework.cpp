@@ -1,7 +1,7 @@
 #include "Framework.h"
 #include "GameEngine/Editor/GlobalVariables.h"
 #include "GameEngine/Editor/LevelEditor.h"
-#include "GameEngine/GameMaster/Framerate.h"
+#include "GameEngine/Editor/Framerate.h"
 
 // リソース関係
 #include "GameEngine/Object/ObjectAdministrator.h"

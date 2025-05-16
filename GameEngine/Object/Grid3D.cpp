@@ -1,6 +1,6 @@
 #include "Grid3D.h"
 #include "GameEngine/Object/Camera/MainCamera.h"
-#include "GameEngine/Base/Debug/ImGuiManager.h"
+#include "GameEngine/Editor/ImGui/ImGuiManager.h"
 #include <memory>
 
 Grid3D::Grid3D(int32_t gridsize, float gridspace){
@@ -263,11 +263,11 @@ void Grid3D::CreateGraphicsPipeline() {
 
 	// Shaderをcompileする(P.37)
 	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob = WinApp::CompileShader(L"Shaders/Grid3D.VS.hlsl",
-		L"vs_6_0", DirectXCommon::GetInstance()->dxcUtils, DirectXCommon::GetInstance()->dxcCompiler, DirectXCommon::GetInstance()->includeHandler);
+		L"vs_6_0", DirectXCommon::GetInstance()->mDxcUtils, DirectXCommon::GetInstance()->mDxcCompiler, DirectXCommon::GetInstance()->mIncludeHandler);
 	assert(vertexShaderBlob != nullptr);
 
 	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob = WinApp::CompileShader(L"Shaders/Grid3D.PS.hlsl",
-		L"ps_6_0", DirectXCommon::GetInstance()->dxcUtils, DirectXCommon::GetInstance()->dxcCompiler, DirectXCommon::GetInstance()->includeHandler);
+		L"ps_6_0", DirectXCommon::GetInstance()->mDxcUtils, DirectXCommon::GetInstance()->mDxcCompiler, DirectXCommon::GetInstance()->mIncludeHandler);
 	assert(pixelShaderBlob != nullptr);
 
 	// PSOを生成する(P.38)

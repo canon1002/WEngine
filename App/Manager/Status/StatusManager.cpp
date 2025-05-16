@@ -1,5 +1,5 @@
 #include "StatusManager.h"
-#include "GameEngine/Base/Debug/ImGuiManager.h"
+#include "GameEngine/Editor/ImGui/ImGuiManager.h"
 
 StatusManager* StatusManager::instance = nullptr;
 

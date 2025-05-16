@@ -1,9 +1,9 @@
 #include "MainCamera.h"
 #include "GameEngine/Base/WinApp/WinAPI.h"
 #include "GameEngine/Base/DirectX/DirectXCommon.h"
-#include "GameEngine/Base/Debug/ImGuiManager.h"
-#include "GameEngine/GameMaster/Framerate.h"
-#include "App/BlackBoard.h"
+#include "GameEngine/Editor/ImGui/ImGuiManager.h"
+#include "GameEngine/Editor/Framerate.h"
+#include "GameEngine/Editor/BlackBoard.h"
 #include "GameEngine/Editor/GlobalVariables.h"
 
 MainCamera* MainCamera::instance = nullptr;
@@ -19,13 +19,13 @@ MainCamera* MainCamera::GetInstance() {
 void MainCamera::Init() {
 
 	mWorldTransform = make_unique<WorldTransform>();
-	verticalFOV_ = 0.45f;
-	aspectRatio_ = (float(WinApp::GetInstance()->kClientWidth) / float(WinApp::GetInstance()->kClientHeight));
-	nearClip_ = 0.1f;
-	farClip_ = 1000.0f;
-	viewMatrix_ = Inverse(mWorldTransform->GetWorldMatrix());
-	projectionMatrix_ = MakePerspectiveMatrix(verticalFOV_, aspectRatio_, nearClip_, farClip_);
-	viewprojectionMatrix_ = Multiply(viewMatrix_, projectionMatrix_);
+	mVerticalFOV = 0.45f;
+	mAspectRatio = (float(WinApp::GetInstance()->kClientWidth) / float(WinApp::GetInstance()->kClientHeight));
+	mNearClip = 0.1f;
+	mFarClip = 1000.0f;
+	mViewMat = Inverse(mWorldTransform->GetWorldMatrix());
+	mProjectionMat = MakePerspectiveMatrix(mVerticalFOV, mAspectRatio, mNearClip, mFarClip);
+	mViewProjectionMat = Multiply(mViewMat, mProjectionMat);
 
 	// ターゲット
 	mFollowTarget = nullptr; // プレイヤーキャラ
@@ -144,11 +144,11 @@ void MainCamera::Update()
 
 
 	// ビュー行列の更新
-	viewMatrix_ = Inverse(mWorldTransform->GetWorldMatrix());
+	mViewMat = Inverse(mWorldTransform->GetWorldMatrix());
 	// プロジェクション行列の更新
-	projectionMatrix_ = MakePerspectiveMatrix(verticalFOV_, aspectRatio_, nearClip_, farClip_);
+	mProjectionMat = MakePerspectiveMatrix(mVerticalFOV, mAspectRatio, mNearClip, mFarClip);
 	// 上記２つをビュープロジェクション行列に合成
-	viewprojectionMatrix_ = Multiply(viewMatrix_, projectionMatrix_);
+	mViewProjectionMat = Multiply(mViewMat, mProjectionMat);
 
 
 }

@@ -3,7 +3,7 @@
 #include "GameEngine/Base/DirectX/DirectXCommon.h"
 #include "GameEngine/Scene/SceneManager.h"
 #include "GameEngine/Scene/AbstractSceneFactory.h"
-#include "GameEngine/Base/Debug/ImGuiManager.h"
+#include "GameEngine/Editor/ImGui/ImGuiManager.h"
 #include <memory>
 
 /// <summary>

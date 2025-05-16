@@ -1,6 +1,6 @@
 #include "SceneManager.h"
 #include "GameEngine/Effect/PostEffect/PostEffect.h"
-#include "GameEngine/Base/Debug/ImGuiManager.h"
+#include "GameEngine/Editor/ImGui/ImGuiManager.h"
 
 // インスタンス
 SceneManager* SceneManager::mInstance = nullptr;

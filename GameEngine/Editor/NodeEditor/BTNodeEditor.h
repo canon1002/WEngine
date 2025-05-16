@@ -1,5 +1,5 @@
 #pragma once
-#include "GameEngine/Base/Debug/ImGuiManager.h"
+#include "GameEngine/Editor/ImGui/ImGuiManager.h"
 #include "GameEngine/Editor/GlobalVariables.h"
 #include "Nodes/AINodeBase.h"
 #include "Nodes/AINodeActions.h"

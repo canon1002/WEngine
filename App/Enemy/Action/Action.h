@@ -1,6 +1,6 @@
 #pragma once
-#include "GameEngine/Append/Transform/WorldTransform.h"
-#include "GameEngine/Math/Math.h"
+#include "GameEngine/Utility/Transform/WorldTransform.h"
+#include "GameEngine/Utility/Math/Math.h"
 #include "GameEngine/Object/3d/Object3d.h"
 
 // 前方宣言

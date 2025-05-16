@@ -1,6 +1,6 @@
 #include "Bullet.h"
-#include "App/BlackBoard.h"
-#include "GameEngine/Append/Collider/SphereCollider.h"
+#include "GameEngine/Editor/BlackBoard.h"
+#include "GameEngine/Component/Collider/SphereCollider.h"
 
 Bullet::Bullet(const BulletStatus& bulletStatus){
 	

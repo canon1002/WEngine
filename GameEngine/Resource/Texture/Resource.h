@@ -1,6 +1,6 @@
 #pragma once
 
-#include "GameEngine/Math/Math.h"
+#include "GameEngine/Utility/Math/Math.h"
 #include "GameEngine/Base/DirectX/DirectXCommon.h"
 #include "GameEngine/Resource/Material/Material.h"
 

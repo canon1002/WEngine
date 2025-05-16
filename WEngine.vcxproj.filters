@@ -166,7 +166,7 @@
     <ClCompile Include="GameEngine\Object\Light\DirectionalLight.cpp">
       <Filter>GameEngine\Object\Light</Filter>
     </ClCompile>
-    <ClCompile Include="GameEngine\Object\Model\Model.cpp">
+    <ClCompile Include="GameEngine\Resource\Model\Model.cpp">
       <Filter>GameEngine\Object\Model</Filter>
     </ClCompile>
     <ClCompile Include="GameEngine\Base\DirectX\DirectXCommon.cpp">
@@ -199,31 +199,31 @@
     <ClCompile Include="App\Scene\TitleScene.cpp">
       <Filter>GameEngine\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="GameEngine\Math\Matrix4x4.cpp">
+    <ClCompile Include="GameEngine\Utility\Math\Matrix4x4.cpp">
       <Filter>GameEngine\math</Filter>
     </ClCompile>
-    <ClCompile Include="GameEngine\Math\Quaternion.cpp">
+    <ClCompile Include="GameEngine\Utility\Math\Quaternion.cpp">
       <Filter>GameEngine\math</Filter>
     </ClCompile>
-    <ClCompile Include="GameEngine\Math\Vector3.cpp">
+    <ClCompile Include="GameEngine\Utility\Math\Vector3.cpp">
       <Filter>GameEngine\math</Filter>
     </ClCompile>
-    <ClCompile Include="GameEngine\Math\Vector2.cpp">
+    <ClCompile Include="GameEngine\Utility\Math\Vector2.cpp">
       <Filter>GameEngine\math</Filter>
     </ClCompile>
-    <ClCompile Include="GameEngine\Math\Vector4.cpp">
+    <ClCompile Include="GameEngine\Utility\Math\Vector4.cpp">
       <Filter>GameEngine\math</Filter>
     </ClCompile>
     <ClCompile Include="GameEngine\Object\Camera\MainCamera.cpp">
       <Filter>GameEngine\Object\Camera</Filter>
     </ClCompile>
-    <ClCompile Include="GameEngine\Append\Collider\CollisionManager.cpp">
+    <ClCompile Include="GameEngine\Component\Collider\CollisionManager.cpp">
       <Filter>GameEngine\Append\Collider</Filter>
     </ClCompile>
     <ClCompile Include="GameEngine\Object\Camera\CameraCommon.cpp">
       <Filter>GameEngine\Object\Camera</Filter>
     </ClCompile>
-    <ClCompile Include="GameEngine\Object\Model\ModelManager.cpp">
+    <ClCompile Include="GameEngine\Resource\Model\ModelManager.cpp">
       <Filter>GameEngine\Object\Model</Filter>
     </ClCompile>
     <ClCompile Include="GameEngine\Object\3d\Object3d.cpp">
@@ -250,7 +250,7 @@
     <ClCompile Include="GameEngine\Base\WinApp\WinAPI.cpp">
       <Filter>GameEngine\Base\WinApp</Filter>
     </ClCompile>
-    <ClCompile Include="GameEngine\Append\Collider\AABBCollider.cpp">
+    <ClCompile Include="GameEngine\Component\Collider\AABBCollider.cpp">
       <Filter>GameEngine\Append\Collider</Filter>
     </ClCompile>
     <ClCompile Include="App\Enemy\BossEnemy.cpp">
@@ -268,28 +268,25 @@
     <ClCompile Include="App\Enemy\Action\AttackAction.cpp">
       <Filter>App\Enemy\Action</Filter>
     </ClCompile>
-    <ClCompile Include="App\Player\Action\Skill.cpp">
-      <Filter>App\Player\Skill</Filter>
-    </ClCompile>
-    <ClCompile Include="GameEngine\Append\Animation\Node\NodeAnimation.cpp">
+    <ClCompile Include="GameEngine\Component\Animation\Node\NodeAnimation.cpp">
       <Filter>GameEngine\Append\Animation\Node</Filter>
     </ClCompile>
-    <ClCompile Include="GameEngine\Append\Animation\Skinning\Joint.cpp">
+    <ClCompile Include="GameEngine\Component\Animation\Skinning\Joint.cpp">
       <Filter>GameEngine\Append\Animation\Skinning</Filter>
     </ClCompile>
-    <ClCompile Include="GameEngine\Append\Animation\Skinning\Skeleton.cpp">
+    <ClCompile Include="GameEngine\Component\Animation\Skinning\Skeleton.cpp">
       <Filter>GameEngine\Append\Animation\Skinning</Filter>
     </ClCompile>
-    <ClCompile Include="GameEngine\Append\Animation\Skinning\SkinCluster.cpp">
+    <ClCompile Include="GameEngine\Component\Animation\Skinning\SkinCluster.cpp">
       <Filter>GameEngine\Append\Animation\Skinning</Filter>
     </ClCompile>
-    <ClCompile Include="GameEngine\Append\Animation\Skinning\Skinnig.cpp">
+    <ClCompile Include="GameEngine\Component\Animation\Skinning\Skinnig.cpp">
       <Filter>GameEngine\Append\Animation\Skinning</Filter>
     </ClCompile>
     <ClCompile Include="GameEngine\Base\Framework.cpp">
       <Filter>GameEngine\Base</Filter>
     </ClCompile>
-    <ClCompile Include="GameEngine\Base\Debug\ImGuiManager.cpp">
+    <ClCompile Include="GameEngine\Editor\ImGui\ImGuiManager.cpp">
       <Filter>GameEngine\Base\Debug</Filter>
     </ClCompile>
     <ClCompile Include="GameEngine\Base\DirectX\DSV.cpp">
@@ -307,11 +304,8 @@
     <ClCompile Include="GameEngine\Editor\LevelEditor.cpp">
       <Filter>GameEngine\Editor</Filter>
     </ClCompile>
-    <ClCompile Include="GameEngine\Resource\ResourceCommon.cpp">
-      <Filter>GameEngine\Resource</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="GameEngine\Append\Transform\WorldTransform.cpp">
+    <ClCompile Include="GameEngine\Utility\Transform\WorldTransform.cpp">
       <Filter>GameEngine\Append\Transform</Filter>
     </ClCompile>
     <ClCompile Include="GameEngine\Resource\Texture\Resource.cpp">
@@ -329,13 +323,10 @@
     <ClCompile Include="GameEngine\Object\Sprite\Triangle.cpp">
       <Filter>GameEngine\Object\Sprite</Filter>
     </ClCompile>
-    <ClCompile Include="GameEngine\Object\Model\Skybox\Skybox.cpp">
+    <ClCompile Include="GameEngine\Object\Skybox\Skybox.cpp">
       <Filter>GameEngine\Object\Model\Skybox</Filter>
     </ClCompile>
     <ClCompile Include="GameEngine\Object\Model\Line.cpp">
-      <Filter>GameEngine\Object\Model</Filter>
-    </ClCompile>
-    <ClCompile Include="GameEngine\Object\Model\MultiModel.cpp">
       <Filter>GameEngine\Object\Model</Filter>
     </ClCompile>
     <ClCompile Include="GameEngine\Effect\PostEffect\PostEffect.cpp">
@@ -353,23 +344,20 @@
     <ClCompile Include="GameEngine\Object\Grid3D.cpp">
       <Filter>GameEngine\Object</Filter>
     </ClCompile>
-    <ClCompile Include="GameEngine\Append\Collider\SphereCollider.cpp">
+    <ClCompile Include="GameEngine\Component\Collider\SphereCollider.cpp">
       <Filter>GameEngine\Append\Collider</Filter>
     </ClCompile>
-    <ClCompile Include="GameEngine\Append\Collider\TriangleCollider.cpp">
+    <ClCompile Include="GameEngine\Component\Collider\TriangleCollider.cpp">
       <Filter>GameEngine\Append\Collider</Filter>
     </ClCompile>
-    <ClCompile Include="GameEngine\Append\Collider\PlaneCollider.cpp">
+    <ClCompile Include="GameEngine\Component\Collider\PlaneCollider.cpp">
       <Filter>GameEngine\Append\Collider</Filter>
     </ClCompile>
-    <ClCompile Include="GameEngine\Append\Collider\RayCollider.cpp">
+    <ClCompile Include="GameEngine\Component\Collider\RayCollider.cpp">
       <Filter>GameEngine\Append\Collider</Filter>
     </ClCompile>
-    <ClCompile Include="GameEngine\Append\Collider\OBBCollider.cpp">
+    <ClCompile Include="GameEngine\Component\Collider\OBBCollider.cpp">
       <Filter>GameEngine\Append\Collider</Filter>
-    </ClCompile>
-    <ClCompile Include="App\Player\Action\Slash.cpp">
-      <Filter>App\Player\Skill</Filter>
     </ClCompile>
     <ClCompile Include="App\Manager\Reaction\DamageReaction.cpp">
       <Filter>App\Reaction</Filter>
@@ -401,7 +389,7 @@
     <ClCompile Include="GameEngine\Effect\Particle\ParticleManager.cpp">
       <Filter>GameEngine\Effect\Particle</Filter>
     </ClCompile>
-    <ClCompile Include="GameEngine\GameMaster\Framerate.cpp">
+    <ClCompile Include="GameEngine\Editor\Framerate.cpp">
       <Filter>GameEngine\GameMaster</Filter>
     </ClCompile>
     <ClCompile Include="App\AI\State\IBossState.cpp">
@@ -437,10 +425,10 @@
     <ClCompile Include="App\Enemy\Action\KnockBack.cpp" />
     <ClCompile Include="App\Enemy\Action\Dash.cpp" />
     <ClCompile Include="GameEngine\Editor\NodeEditor\Nodes\AINodeActions.cpp" />
-    <ClCompile Include="GameEngine\Append\Collider\CapsuelCollider.cpp" />
+    <ClCompile Include="GameEngine\Component\Collider\CapsuelCollider.cpp" />
     <ClCompile Include="App\Gladiator.cpp" />
     <ClCompile Include="App\Scene\SceneFactory.cpp" />
-    <ClCompile Include="App\BlackBoard.cpp" />
+    <ClCompile Include="GameEngine\Editor\BlackBoard.cpp" />
     <ClCompile Include="App\Enemy\Action\Shrinkage.cpp" />
     <ClCompile Include="GameEngine\Resource\Texture\TextureManager.cpp" />
     <ClCompile Include="GameEngine\Effect\Particle\Emitter\ParticleEmitter.cpp" />
@@ -457,7 +445,7 @@
     <ClInclude Include="GameEngine\Object\Light\DirectionalLight.h">
       <Filter>GameEngine\Object\Light</Filter>
     </ClInclude>
-    <ClInclude Include="GameEngine\Object\Model\Model.h">
+    <ClInclude Include="GameEngine\Resource\Model\Model.h">
       <Filter>GameEngine\Object\Model</Filter>
     </ClInclude>
     <ClInclude Include="GameEngine\Base\DirectX\DirectXCommon.h">
@@ -496,40 +484,40 @@
     <ClInclude Include="App\Scene\TitleScene.h">
       <Filter>GameEngine\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="GameEngine\Math\Math.h">
+    <ClInclude Include="GameEngine\Utility\Math\Math.h">
       <Filter>GameEngine\math</Filter>
     </ClInclude>
-    <ClInclude Include="GameEngine\Math\Matrix4x4.h">
+    <ClInclude Include="GameEngine\Utility\Math\Matrix4x4.h">
       <Filter>GameEngine\math</Filter>
     </ClInclude>
-    <ClInclude Include="GameEngine\Math\Quaternion.h">
+    <ClInclude Include="GameEngine\Utility\Math\Quaternion.h">
       <Filter>GameEngine\math</Filter>
     </ClInclude>
-    <ClInclude Include="GameEngine\Math\Vector3.h">
+    <ClInclude Include="GameEngine\Utility\Math\Vector3.h">
       <Filter>GameEngine\math</Filter>
     </ClInclude>
-    <ClInclude Include="GameEngine\Math\Vector2.h">
+    <ClInclude Include="GameEngine\Utility\Math\Vector2.h">
       <Filter>GameEngine\math</Filter>
     </ClInclude>
-    <ClInclude Include="GameEngine\Math\Vector4.h">
+    <ClInclude Include="GameEngine\Utility\Math\Vector4.h">
       <Filter>GameEngine\math</Filter>
     </ClInclude>
     <ClInclude Include="GameEngine\Object\Camera\MainCamera.h">
       <Filter>GameEngine\Object\Camera</Filter>
     </ClInclude>
-    <ClInclude Include="GameEngine\Append\Collider\Collider.h">
+    <ClInclude Include="GameEngine\Component\Collider\Collider.h">
       <Filter>GameEngine\Append\Collider</Filter>
     </ClInclude>
-    <ClInclude Include="GameEngine\Append\Collider\CollisionConfig.h">
+    <ClInclude Include="GameEngine\Component\Collider\CollisionConfig.h">
       <Filter>GameEngine\Append\Collider</Filter>
     </ClInclude>
-    <ClInclude Include="GameEngine\Append\Collider\CollisionManager.h">
+    <ClInclude Include="GameEngine\Component\Collider\CollisionManager.h">
       <Filter>GameEngine\Append\Collider</Filter>
     </ClInclude>
     <ClInclude Include="GameEngine\Object\Camera\CameraCommon.h">
       <Filter>GameEngine\Object\Camera</Filter>
     </ClInclude>
-    <ClInclude Include="GameEngine\Object\Model\ModelManager.h">
+    <ClInclude Include="GameEngine\Resource\Model\ModelManager.h">
       <Filter>GameEngine\Object\Model</Filter>
     </ClInclude>
     <ClInclude Include="GameEngine\Object\3d\Object3d.h">
@@ -556,7 +544,7 @@
     <ClInclude Include="GameEngine\Base\WinApp\WinAPI.h">
       <Filter>GameEngine\Base\WinApp</Filter>
     </ClInclude>
-    <ClInclude Include="GameEngine\Append\Collider\AABBCollider.h">
+    <ClInclude Include="GameEngine\Component\Collider\AABBCollider.h">
       <Filter>GameEngine\Append\Collider</Filter>
     </ClInclude>
     <ClInclude Include="App\Enemy\BossEnemy.h">
@@ -571,28 +559,25 @@
     <ClInclude Include="App\Enemy\Action\Action.h">
       <Filter>App\Enemy\Action</Filter>
     </ClInclude>
-    <ClInclude Include="App\Player\Action\Skill.h">
-      <Filter>App\Player\Skill</Filter>
-    </ClInclude>
-    <ClInclude Include="GameEngine\Append\Animation\Node\NodeAnimation.h">
+    <ClInclude Include="GameEngine\Component\Animation\Node\NodeAnimation.h">
       <Filter>GameEngine\Append\Animation\Node</Filter>
     </ClInclude>
-    <ClInclude Include="GameEngine\Append\Animation\Skinning\Joint.h">
+    <ClInclude Include="GameEngine\Component\Animation\Skinning\Joint.h">
       <Filter>GameEngine\Append\Animation\Skinning</Filter>
     </ClInclude>
-    <ClInclude Include="GameEngine\Append\Animation\Skinning\Skeleton.h">
+    <ClInclude Include="GameEngine\Component\Animation\Skinning\Skeleton.h">
       <Filter>GameEngine\Append\Animation\Skinning</Filter>
     </ClInclude>
-    <ClInclude Include="GameEngine\Append\Animation\Skinning\SkinCluster.h">
+    <ClInclude Include="GameEngine\Component\Animation\Skinning\SkinCluster.h">
       <Filter>GameEngine\Append\Animation\Skinning</Filter>
     </ClInclude>
-    <ClInclude Include="GameEngine\Append\Animation\Skinning\Skinnig.h">
+    <ClInclude Include="GameEngine\Component\Animation\Skinning\Skinnig.h">
       <Filter>GameEngine\Append\Animation\Skinning</Filter>
     </ClInclude>
     <ClInclude Include="GameEngine\Base\Framework.h">
       <Filter>GameEngine\Base</Filter>
     </ClInclude>
-    <ClInclude Include="GameEngine\Base\Debug\ImGuiManager.h">
+    <ClInclude Include="GameEngine\Editor\ImGui\ImGuiManager.h">
       <Filter>GameEngine\Base\Debug</Filter>
     </ClInclude>
     <ClInclude Include="GameEngine\Base\DirectX\DSV.h">
@@ -613,10 +598,7 @@
     <ClInclude Include="GameEngine\Editor\LevelEditor.h">
       <Filter>GameEngine\Editor</Filter>
     </ClInclude>
-    <ClInclude Include="GameEngine\Resource\ResourceCommon.h">
-      <Filter>GameEngine\Resource</Filter>
-    </ClInclude>
-    <ClInclude Include="GameEngine\Append\Transform\WorldTransform.h">
+    <ClInclude Include="GameEngine\Utility\Transform\WorldTransform.h">
       <Filter>GameEngine\Append\Transform</Filter>
     </ClInclude>
     <ClInclude Include="GameEngine\Resource\Texture\Resource.h">
@@ -640,13 +622,10 @@
     <ClInclude Include="GameEngine\Object\Sprite\Triangle.h">
       <Filter>GameEngine\Object\Sprite</Filter>
     </ClInclude>
-    <ClInclude Include="GameEngine\Object\Model\Skybox\Skybox.h">
+    <ClInclude Include="GameEngine\Object\Skybox\Skybox.h">
       <Filter>GameEngine\Object\Model\Skybox</Filter>
     </ClInclude>
     <ClInclude Include="GameEngine\Object\Model\Line.h">
-      <Filter>GameEngine\Object\Model</Filter>
-    </ClInclude>
-    <ClInclude Include="GameEngine\Object\Model\MultiModel.h">
       <Filter>GameEngine\Object\Model</Filter>
     </ClInclude>
     <ClInclude Include="GameEngine\Effect\PostEffect\PostEffect.h">
@@ -664,23 +643,20 @@
     <ClInclude Include="GameEngine\Object\Grid3D.h">
       <Filter>GameEngine\Object</Filter>
     </ClInclude>
-    <ClInclude Include="GameEngine\Append\Collider\SphereCollider.h">
+    <ClInclude Include="GameEngine\Component\Collider\SphereCollider.h">
       <Filter>GameEngine\Append\Collider</Filter>
     </ClInclude>
-    <ClInclude Include="GameEngine\Append\Collider\TriangleCollider.h">
+    <ClInclude Include="GameEngine\Component\Collider\TriangleCollider.h">
       <Filter>GameEngine\Append\Collider</Filter>
     </ClInclude>
-    <ClInclude Include="GameEngine\Append\Collider\PlaneCollider.h">
+    <ClInclude Include="GameEngine\Component\Collider\PlaneCollider.h">
       <Filter>GameEngine\Append\Collider</Filter>
     </ClInclude>
-    <ClInclude Include="GameEngine\Append\Collider\RayCollider.h">
+    <ClInclude Include="GameEngine\Component\Collider\RayCollider.h">
       <Filter>GameEngine\Append\Collider</Filter>
     </ClInclude>
-    <ClInclude Include="GameEngine\Append\Collider\OBBCollider.h">
+    <ClInclude Include="GameEngine\Component\Collider\OBBCollider.h">
       <Filter>GameEngine\Append\Collider</Filter>
-    </ClInclude>
-    <ClInclude Include="App\Player\Action\Slash.h">
-      <Filter>App\Player\Skill</Filter>
     </ClInclude>
     <ClInclude Include="App\Manager\Reaction\DamageReaction.h">
       <Filter>App\Reaction</Filter>
@@ -715,7 +691,7 @@
     <ClInclude Include="GameEngine\Effect\Particle\ParticleCommon.h">
       <Filter>GameEngine\Effect\Particle</Filter>
     </ClInclude>
-    <ClInclude Include="GameEngine\GameMaster\Framerate.h">
+    <ClInclude Include="GameEngine\Editor\Framerate.h">
       <Filter>GameEngine\GameMaster</Filter>
     </ClInclude>
     <ClInclude Include="App\AI\State\IBossState.h">
@@ -755,11 +731,11 @@
     <ClInclude Include="GameEngine\Editor\NodeEditor\Nodes\AINodeBase.h" />
     <ClInclude Include="GameEngine\Editor\NodeEditor\Nodes\AINodeComposites.h" />
     <ClInclude Include="GameEngine\Editor\NodeEditor\Nodes\AINodeActions.h" />
-    <ClInclude Include="GameEngine\Append\Collider\CapsuelCollider.h" />
+    <ClInclude Include="GameEngine\Component\Collider\CapsuelCollider.h" />
     <ClInclude Include="App\Gladiator.h" />
     <ClInclude Include="GameEngine\Scene\AbstractSceneFactory.h" />
     <ClInclude Include="App\Scene\SceneFactory.h" />
-    <ClInclude Include="App\BlackBoard.h" />
+    <ClInclude Include="GameEngine\Editor\BlackBoard.h" />
     <ClInclude Include="App\Enemy\Action\Shrinkage.h" />
     <ClInclude Include="GameEngine\Resource\Texture\TextureManager.h" />
     <ClInclude Include="GameEngine\Effect\Particle\Emitter\ParticleEmitter.h" />

@@ -1,15 +1,15 @@
 #include "Player.h"
 #include "App/Bullet/PlayerBullet.h"
-#include "GameEngine/Object/Model/ModelManager.h"
+#include "GameEngine/Resource/Model/ModelManager.h"
 #include "GameEngine/Object/ObjectAdministrator.h"
-#include "GameEngine/Base/Debug/ImGuiManager.h"
+#include "GameEngine/Editor/ImGui/ImGuiManager.h"
 #include "GameEngine/Object/Camera/MainCamera.h"
-#include "GameEngine/Append/Collider/SphereCollider.h"
-#include "GameEngine/Append/Collider/AABBCollider.h"
-#include "GameEngine/Append/Collider/CollisionManager.h"
+#include "GameEngine/Component/Collider/SphereCollider.h"
+#include "GameEngine/Component/Collider/AABBCollider.h"
+#include "GameEngine/Component/Collider/CollisionManager.h"
 #include "App/Enemy/BossEnemy.h"
-#include "GameEngine/GameMaster/Framerate.h"
-#include "App/BlackBoard.h"
+#include "GameEngine/Editor/Framerate.h"
+#include "GameEngine/Editor/BlackBoard.h"
 
 Player::Player()
 {
@@ -66,6 +66,9 @@ void Player::InitObject(){
 	ModelManager::GetInstance()->LoadModel("player", "backStep.gltf");
 	ModelManager::GetInstance()->LoadModel("player", "thrust.gltf");
 	ModelManager::GetInstance()->LoadModel("player", "S0.gltf");
+	ModelManager::GetInstance()->LoadModel("player", "S1.gltf");
+	ModelManager::GetInstance()->LoadModel("player", "S2.gltf");
+	ModelManager::GetInstance()->LoadModel("player", "S3.gltf");
 
 	mObject = std::make_unique<Object3d>();
 	mObject->Init("PlayerObj");
@@ -78,9 +81,9 @@ void Player::InitObject(){
 	mObject->mSkinning = make_unique<Skinning>();
 	mObject->mSkinning->Init("player", "idle.gltf", mObject->GetModel()->mModelData);
 	// モーションブレンド速度
-	mObject->mSkinning->SetMotionBlendingInterval(2.0f);
+	mObject->mSkinning->SetMotionBlendingInterval(15.0f);
 	// アニメーション再生速度
-	mObject->mSkinning->SetAnimationPlaySpeed(1.0f);
+	mObject->mSkinning->SetAnimationPlaySpeed(1.25f);
 	// 使用するアニメーションを登録しておく
 	mObject->mSkinning->CreateSkinningData("player", "idle", ".gltf", mObject->GetModel()->mModelData, true);
 	mObject->mSkinning->CreateSkinningData("player", "prepare", ".gltf", mObject->GetModel()->mModelData);
@@ -95,6 +98,9 @@ void Player::InitObject(){
 	mObject->mSkinning->CreateSkinningData("player", "walk", ".gltf", mObject->GetModel()->mModelData, true);
 	mObject->mSkinning->CreateSkinningData("player", "run", ".gltf", mObject->GetModel()->mModelData, true);
 	mObject->mSkinning->CreateSkinningData("player", "S0", ".gltf", mObject->GetModel()->mModelData);
+	mObject->mSkinning->CreateSkinningData("player", "S1", ".gltf", mObject->GetModel()->mModelData);
+	mObject->mSkinning->CreateSkinningData("player", "S2", ".gltf", mObject->GetModel()->mModelData);
+	mObject->mSkinning->CreateSkinningData("player", "S3", ".gltf", mObject->GetModel()->mModelData);
 
 	// コライダーの宣言
 	mObject->mCollider = std::make_unique<SphereCollider>(mObject->mWorldTransform.get(), 0.5f);
@@ -177,19 +183,26 @@ void Player::InitWorks(){
 	kConstAttacks[0].offence = 1.0f;
 	kConstAttacks[0].operationTime = 0.1f;
 	kConstAttacks[0].afterTime = 0.45f;
-	kConstAttacks[0].motionTimeMax = 0.8f;
+	kConstAttacks[0].motionTimeMax = 0.6f;
 	kConstAttacks[0].actionSpeed = 1.0f;
-	kConstAttacks[0].inputWaitTime = 2.0f;
 	
 	kConstAttacks[1].offence = 1.0f;
-	kConstAttacks[1].motionTimeMax = 1.0f;
+	kConstAttacks[1].operationTime = 0.1f;
+	kConstAttacks[1].afterTime = 0.45f;
+	kConstAttacks[1].motionTimeMax = 0.6f;
 	kConstAttacks[1].actionSpeed = 1.0f;
-	kConstAttacks[1].inputWaitTime = 2.0f;
 
 	kConstAttacks[2].offence = 1.0f;
-	kConstAttacks[2].motionTimeMax = 1.0f;
+	kConstAttacks[2].operationTime = 0.1f;
+	kConstAttacks[2].afterTime = 0.45f;
+	kConstAttacks[2].motionTimeMax = 0.6f;
 	kConstAttacks[2].actionSpeed = 1.0f;
-	kConstAttacks[2].inputWaitTime = 2.0f;
+
+	kConstAttacks[3].offence = 1.0f;
+	kConstAttacks[3].operationTime = 0.05f;
+	kConstAttacks[3].afterTime = 0.4f;
+	kConstAttacks[3].motionTimeMax = 0.8f;
+	kConstAttacks[3].actionSpeed = 1.0f;
 
 }
 
@@ -524,7 +537,10 @@ void Player::SetColliderList(){
 
 bool Player::GetIsOperating() const {
 	// 攻撃ステータスから攻撃中であるか取得
-	return mWorks->mWorkAttack.isOperating;
+	if (mWorks->mWorkAttack.attackPhase == InAttack) {
+		return true;
+	}
+	return false;
 }
 
 
@@ -805,7 +821,8 @@ void Player::Attack()
 				work.isComboRequest = false;
 				work.isHit = false;
 
-				mObject->mSkinning->SetNextAnimation("slashL"); // 必要に応じて "S1", "S2" などに変更
+				std::string nextAnimName = "S" + std::to_string(work.comboCount);
+				mObject->mSkinning->SetNextAnimation(nextAnimName); // 必要に応じて "S1", "S2" などに変更
 				
 				// 振る舞いの変更
 				mWorks->mWorkAttack.attackPhase = OperatingExtra;

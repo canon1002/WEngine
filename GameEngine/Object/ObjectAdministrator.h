@@ -3,7 +3,7 @@
 #include "Object/Base/ObjectBase.h"
 
 #include "GameEngine/Object/3d/Object3d.h"
-#include "GameEngine/Object/Model/ModelManager.h"
+#include "GameEngine/Resource/Model/ModelManager.h"
 #include "GameEngine/Object/Sprite/SpriteAdministrator.h"
 
 #include <memory>

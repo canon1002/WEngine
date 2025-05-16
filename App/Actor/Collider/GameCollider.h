@@ -1,5 +1,5 @@
 #pragma once
-#include "GameEngine/Append/Collider/Collider.h"
+#include "GameEngine/Component/Collider/Collider.h"
 
 // コライダーに要素を追加する
 struct GameCollider {

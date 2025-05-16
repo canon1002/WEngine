@@ -1,7 +1,7 @@
 #include "DirectXCommon.h"
 #include "GameEngine/Resource/Texture/Resource.h"
-#include "GameEngine/Object/Model/Model.h"
-#include "GameEngine/Math/Math.h"
+#include "GameEngine/Resource/Model/Model.h"
+#include "GameEngine/Utility/Math/Math.h"
 
 // staticメンバ変数で宣言したインスタンスを初期化
 DirectXCommon* DirectXCommon::instance = nullptr;
@@ -35,7 +35,7 @@ void DirectXCommon::Init() {
 	mSrv = std::make_unique<SRV>();
 	mDsv = std::make_unique<DSV>();
 	// デバイスの初期化
-	InitializeDXGIDevice();
+	InitDXGIDevice();
 
 	// 警告やエラーが発生した際に停止させる
 	#ifdef _DEBUG
@@ -70,7 +70,7 @@ void DirectXCommon::Init() {
 	#endif // _DEBUG
 
 	// コマンドの初期化
-	InitializeCommand();
+	InitCommand();
 	// スワップチェーンの生成
 	CreateSwapChain();
 	// レンダーターゲットビュー
@@ -96,7 +96,7 @@ void DirectXCommon::Final() {
 }
 
 /// DXGIデバイス初期化
-void DirectXCommon::InitializeDXGIDevice() {
+void DirectXCommon::InitDXGIDevice() {
 
 	// DXGIファクトリーの生成
 	mDXGIFactory = nullptr;
@@ -182,7 +182,7 @@ void DirectXCommon::CreateSwapChain() {
 }
 
 /// コマンド関連初期化
-void DirectXCommon::InitializeCommand() {
+void DirectXCommon::InitCommand() {
 
 	// コマンドキューを生成する
 	D3D12_COMMAND_QUEUE_DESC commandQueueDesc{};
@@ -210,18 +210,18 @@ void DirectXCommon::InitializeCommand() {
 /// dxCompilerの初期化
 void DirectXCommon::InitializeDXC() {
 
-	dxcUtils = nullptr;
-	dxcCompiler = nullptr;
-	HRESULT hr = DxcCreateInstance(CLSID_DxcUtils, IID_PPV_ARGS(&dxcUtils));
+	mDxcUtils = nullptr;
+	mDxcCompiler = nullptr;
+	HRESULT hr = DxcCreateInstance(CLSID_DxcUtils, IID_PPV_ARGS(&mDxcUtils));
 	assert(SUCCEEDED(hr));
 	WinApp::Log("Complete create dxcUtils!!!\n");// 生成完了のログをだす
-	hr = DxcCreateInstance(CLSID_DxcCompiler, IID_PPV_ARGS(&dxcCompiler));
+	hr = DxcCreateInstance(CLSID_DxcCompiler, IID_PPV_ARGS(&mDxcCompiler));
 	assert(SUCCEEDED(hr));
 	WinApp::Log("Complete create dxcCompiler!!!\n");// 生成完了のログをだす
 
 	// 現時点では#includeしないが、includeに対応するための設定を行っておく
-	includeHandler = nullptr;
-	hr = dxcUtils->CreateDefaultIncludeHandler(&includeHandler);
+	mIncludeHandler = nullptr;
+	hr = mDxcUtils->CreateDefaultIncludeHandler(&mIncludeHandler);
 	assert(SUCCEEDED(hr));
 	WinApp::Log("Complete create includeHandler!!!\n");// 生成完了のログをだす
 
@@ -264,19 +264,19 @@ void DirectXCommon::InitViewPort() {
 
 	// ビューポート
 	// クライアント領域のサイズと一緒にして画面全体に表示
-	viewport.Width = (float)WinApp::GetInstance()->kClientWidth;
-	viewport.Height = (float)WinApp::GetInstance()->kClientHeight;
-	viewport.TopLeftX = 0;
-	viewport.TopLeftY = 0;
-	viewport.MinDepth = 0.0f;
-	viewport.MaxDepth = 1.0f;
+	mViewport.Width = (float)WinApp::GetInstance()->kClientWidth;
+	mViewport.Height = (float)WinApp::GetInstance()->kClientHeight;
+	mViewport.TopLeftX = 0;
+	mViewport.TopLeftY = 0;
+	mViewport.MinDepth = 0.0f;
+	mViewport.MaxDepth = 1.0f;
 
 	// シザー矩形
 	// 基本的にビューポートと同じ矩形が描画されるようにする
-	scissorRect.left = 0;
-	scissorRect.right = WinApp::GetInstance()->kClientWidth;
-	scissorRect.top = 0;
-	scissorRect.bottom = WinApp::GetInstance()->kClientHeight;
+	mScissorRect.left = 0;
+	mScissorRect.right = WinApp::GetInstance()->kClientWidth;
+	mScissorRect.top = 0;
+	mScissorRect.bottom = WinApp::GetInstance()->kClientHeight;
 }
 
 /// フェンス生成
@@ -317,8 +317,8 @@ void DirectXCommon::PreDrawForRenderTarget() {
 	mSrv->PreDraw();
 
 	// コマンドを積み込む
-	mCommandList->RSSetViewports(1, &viewport);
-	mCommandList->RSSetScissorRects(1, &scissorRect);
+	mCommandList->RSSetViewports(1, &mViewport);
+	mCommandList->RSSetScissorRects(1, &mScissorRect);
 }
 
 // レンダーターゲット書き込み後処理
@@ -347,8 +347,8 @@ void DirectXCommon::PreDraw() {
 	mSrv->PreDraw();
 
 	// コマンドを積み込む
-	mCommandList->RSSetViewports(1, &viewport);
-	mCommandList->RSSetScissorRects(1, &scissorRect);
+	mCommandList->RSSetViewports(1, &mViewport);
+	mCommandList->RSSetScissorRects(1, &mScissorRect);
 }
 
 // 描画後処理
@@ -394,7 +394,7 @@ void DirectXCommon::PostDraw() {
 /// バッファリソースの生成
 Microsoft::WRL::ComPtr<ID3D12Resource> DirectXCommon::CreateBufferResource(ID3D12Device* device, size_t sizeInBytes) {
 
-	result_ = nullptr;
+	mResult = nullptr;
 	// VertexResourceを生成する(P.42)
 	// 頂点リソース用のヒープ設定
 	D3D12_HEAP_PROPERTIES uploadHeapProperties{};
@@ -415,10 +415,10 @@ Microsoft::WRL::ComPtr<ID3D12Resource> DirectXCommon::CreateBufferResource(ID3D1
 	HRESULT hr;
 	hr = device->CreateCommittedResource(&uploadHeapProperties, D3D12_HEAP_FLAG_NONE,
 		&vertexResouceDesc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr,
-		IID_PPV_ARGS(&result_));
+		IID_PPV_ARGS(&mResult));
 	assert(SUCCEEDED(hr));
 
-	return result_;
+	return mResult;
 }
 
 /// ディスクリプタヒープの生成

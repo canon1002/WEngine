@@ -27,15 +27,6 @@
 
 - Externalsを除く [App] [GameEngine] フォルダのソースコード 
 
-**以下追記**
-
-    ・GameEngine > Input > [Gamepad.h , Gamepad.cpp] は友人のコードを改良
-    
-    ・GameEngine > Editor > [NodeEditor] フォルダ内のBehaviorTree関連クラスは、現在改良中のため、BehaviorTreeクラスはAppフォルダ内の旧バージョンのものを使用中。
-    
-    [Shaders] フォルダの .Hlsl 及び .Hlsli は基本的に授業内容をそのまま実装
-
-
 *****
 
 ### 参考書籍/Webサイト

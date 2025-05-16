@@ -1,6 +1,6 @@
 #pragma once
 #include "GameEngine/Base/WinApp/WinAPI.h"
-#include "GameEngine/Math/Math.h"
+#include "GameEngine/Utility/Math/Math.h"
 
 class DirectXCommon;
 

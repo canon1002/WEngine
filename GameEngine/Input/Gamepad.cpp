@@ -2,7 +2,7 @@
 #include <limits.h>
 
 #include "GameEngine/Base/DirectX/DirectXCommon.h"
-#include "GameEngine/Base/Debug/ImGuiManager.h"
+#include "GameEngine/Editor/ImGui/ImGuiManager.h"
 
 XINPUT_STATE Gamepad::state = { 0 };
 XINPUT_VIBRATION Gamepad::vibration = { 0 };

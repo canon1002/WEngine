@@ -1,5 +1,5 @@
 #pragma once
-#include "GameEngine/Math/Math.h"
+#include "GameEngine/Utility/Math/Math.h"
 #include <fstream>
 #include <iostream>
 #include <variant>

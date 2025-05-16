@@ -1,5 +1,5 @@
 #include "ParticleEmitter.h"
-#include "GameEngine/GameMaster/Framerate.h"
+#include "GameEngine/Editor/Framerate.h"
 #include "GameEngine/Effect/Particle/ParticleManager.h"
 #include "GameEngine/Editor/GlobalVariables.h"
 

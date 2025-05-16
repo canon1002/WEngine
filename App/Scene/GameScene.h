@@ -2,7 +2,7 @@
 #include "GameEngine/Scene/BaseScene.h"
 
 #include "GameEngine/Object/Camera/MainCamera.h"
-#include "GameEngine/Object/Model/Skybox/Skybox.h"
+#include "GameEngine/Object/Skybox/Skybox.h"
 
 // ゲーム用
 #include "App/Player/Player.h"

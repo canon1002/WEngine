@@ -1,7 +1,7 @@
 #pragma once
 
-#include "GameEngine/Math/Math.h"
-#include "GameEngine/Append/Transform/WorldTransform.h"
+#include "GameEngine/Utility/Math/Math.h"
+#include "GameEngine/Utility/Transform/WorldTransform.h"
 #include "GameEngine/Resource/Texture/Resource.h"
 #include "GameEngine/Object/Light/DirectionalLight.h"
 #include "GameEngine/Object/Camera/CameraCommon.h"

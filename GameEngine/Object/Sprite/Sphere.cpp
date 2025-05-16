@@ -1,6 +1,6 @@
 #include "Sphere.h"
 #include "GameEngine/Object/Camera/MainCamera.h"
-#include "GameEngine/Base/Debug/ImGuiManager.h"
+#include "GameEngine/Editor/ImGui/ImGuiManager.h"
 #include "GameEngine/Resource/Texture/TextureManager.h"
 
 SphereEntity::SphereEntity() {}

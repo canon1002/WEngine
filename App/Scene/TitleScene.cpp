@@ -1,11 +1,11 @@
 #include "TitleScene.h"
-#include "GameEngine/Object/Model/ModelManager.h"
+#include "GameEngine/Resource/Model/ModelManager.h"
 #include "GameEngine/Object/ObjectAdministrator.h"
-#include "GameEngine/Base/Debug/ImGuiManager.h"
+#include "GameEngine/Editor/ImGui/ImGuiManager.h"
 #include "GameEngine/Editor/LevelEditor.h"
 #include "GameEngine/Effect/Particle/ParticleManager.h"
 #include "GameEngine/Effect/PostEffect/PostEffect.h"
-#include "GameEngine/GameMaster/Framerate.h"
+#include "GameEngine/Editor/Framerate.h"
 #include "GameEngine/Scene/SceneManager.h"
 
 void TitleScene::Final() {}

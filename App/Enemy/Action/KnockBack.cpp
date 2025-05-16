@@ -1,6 +1,6 @@
 #include "KnockBack.h"
 #include "App/Actor/Actor.h"
-#include "GameEngine/GameMaster/Framerate.h"
+#include "GameEngine/Editor/Framerate.h"
 
 void ACT::KnockBack::Init(Actor* actor){
 	// ボスのポインタを取得

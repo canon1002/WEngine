@@ -1,8 +1,8 @@
 #include "SRV.h"
 #include "GameEngine/Resource/Texture/Resource.h"
-#include "GameEngine/Object/Model/Model.h"
-#include "GameEngine/Math/Math.h"
-#include "GameEngine/Base/Debug/ImGuiManager.h"
+#include "GameEngine/Resource/Model/Model.h"
+#include "GameEngine/Utility/Math/Math.h"
+#include "GameEngine/Editor/ImGui/ImGuiManager.h"
 
 
 void SRV::Init() {

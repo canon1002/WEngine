@@ -1,6 +1,6 @@
 #include "OverScene.h"
 #include "GameEngine/Effect/PostEffect/PostEffect.h"
-#include "GameEngine/GameMaster/Framerate.h"
+#include "GameEngine/Editor/Framerate.h"
 #include "GameEngine/Scene/SceneManager.h"
 
 void OverScene::Final(){

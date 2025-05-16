@@ -1,6 +1,6 @@
 #pragma once
 #include "ParticleCommon.h"
-#include "GameEngine/Object/Model/Model.h"
+#include "GameEngine/Resource/Model/Model.h"
 #include <unordered_map>
 #include <random>
 #include <list>
