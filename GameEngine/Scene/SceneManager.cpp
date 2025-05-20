@@ -59,6 +59,11 @@ void SceneManager::Update(){
 		mCurrentScene->Init();
 	}
 
+	// ESCキーで終了リクエスト
+	if (InputManager::GetInstance()->GetKey()->GetPushKey(DIK_ESCAPE)) {
+		mEndRequest = true;
+	}
+
 	// TODO:メニューシーンとの切り替え処理
 
 	//// メニューシーンの実行

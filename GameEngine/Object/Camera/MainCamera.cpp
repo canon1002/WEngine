@@ -73,8 +73,8 @@ void MainCamera::Update()
 		ImGui::DragFloat3("Transform", &mWorldTransform->translation.x, 0.1f, -1000.0f, 1000.0f);
 		ImGui::DragFloat3("Offset", &mOffset.x, 0.1f, -100.0f, 100.0f);
 		ImGui::DragFloat3("AddTransform", &mAddTranslation.x, 0.1f, -1000.0f, 1000.0f);
-		ImGui::DragFloat("NearClip", &nearClip_, 0.01f, 0.0f, 100.0f);
-		ImGui::DragFloat("FarClip", &farClip_, 0.1f, 1.0f, 1000.0f);
+		ImGui::DragFloat("NearClip", &mNearClip, 0.01f, 0.0f, 100.0f);
+		ImGui::DragFloat("FarClip", &mFarClip, 0.1f, 1.0f, 1000.0f);
 		ImGui::DragFloat("Sensitivity", &mCameraSensitivity, 0.01f, 0.0f, 10.0f);
 		ImGui::End();
 	}

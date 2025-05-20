@@ -438,6 +438,10 @@ void Player::DrawGUI() {
 		ImGui::DragFloat("AvoidSpeed", &mWorks->mWorkAvoid.avoidSpeed);
 		ImGui::DragFloat("AvoidTime", &mWorks->mWorkAvoid.elapsedTime);
 
+		// 回避動作時間の表示
+		std::string timeStr = "Time : " + std::to_string(mWorks->mWorkAvoid.elapsedTime);
+		ImGui::ProgressBar(mWorks->mWorkAttack.elapsedTime, ImVec2(-1.0f, 0.0f), timeStr.c_str());
+
 	}
 
 	// 攻撃パラメータ
@@ -621,14 +625,16 @@ void Player::Avoid(){
 	if (mWorks->mBehavior == Behavior::kAvoid) {
 
 		// 回避時間更新
-		work.elapsedTime += BlackBoard::GetBattleFPS();
+		work.elapsedTime += BlackBoard::CombertBattleFPS(mObject->mSkinning->GetAnimationPlaySpeed());
 
 		// 移動ベクトルに加算（距離制御も可能）
 		Vector3 avoidVelocity = work.avoidDirection * (BlackBoard::CombertBattleFPS(work.avoidSpeed));
 		mObject->mWorldTransform->translation += avoidVelocity;
 
 		// 回避完了判定
-		const float avoidDuration = 1.0f; // 避けモーション再生時間と一致させる
+		const float avoidDuration = mObject->mSkinning->
+			GetSkinCluster("avoid")->animation.duration; // 避けモーション再生時間と一致させる
+
 		if (work.elapsedTime >= avoidDuration) {
 			work.elapsedTime = 0.0f;
 			work.isOperating = false;

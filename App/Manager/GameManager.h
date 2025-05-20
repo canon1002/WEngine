@@ -78,7 +78,7 @@ private: // -- 非公開 メンバ変数 -- //
 
 	// インスタンス
 	static GameManager* instance;
-	// プレイヤーキャラのポインタ
+	// プレイヤーキャラのポインタewr0iuy21qan 
 	Player* mPlayer;
 	// 敵キャラのポインタ
 	BossEnemy* mBoss;

@@ -122,6 +122,10 @@ public: // -- 公開 メンバ関数 -- //
 	// -- アクセッサ (取得関数) -- //
 	//
 
+	/// <summary>
+	/// アニメーション再生速度の取得
+	/// </summary>
+	float GetAnimationPlaySpeed()const { return mAnimationPlaySpeed; }
 
 	/// <summary>
 	// 現在再生しているアニメーションのスキンクラスターを取得

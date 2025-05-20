@@ -451,9 +451,6 @@ void GameScene::BattlePhase() {
 
 	// ヒットストップ中は演出以外を停止
 	if (mHitStopTimer > 0.0f) {
-		// オブジェクトの更新は行う
-		mPlayer->UpdateObject();
-		mBoss->UpdateObject();
 
 		// 早期リターン
 		return;

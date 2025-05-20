@@ -256,9 +256,6 @@
     <ClCompile Include="App\Enemy\BossEnemy.cpp">
       <Filter>GameEngine\GameBase</Filter>
     </ClCompile>
-    <ClCompile Include="App\IObjectBase.cpp">
-      <Filter>App</Filter>
-    </ClCompile>
     <ClCompile Include="App\Player\Player.cpp">
       <Filter>App\Player</Filter>
     </ClCompile>
@@ -326,9 +323,6 @@
     <ClCompile Include="GameEngine\Object\Skybox\Skybox.cpp">
       <Filter>GameEngine\Object\Model\Skybox</Filter>
     </ClCompile>
-    <ClCompile Include="GameEngine\Object\Model\Line.cpp">
-      <Filter>GameEngine\Object\Model</Filter>
-    </ClCompile>
     <ClCompile Include="GameEngine\Effect\PostEffect\PostEffect.cpp">
       <Filter>GameEngine\Object\Screen</Filter>
     </ClCompile>
@@ -339,9 +333,6 @@
       <Filter>GameEngine\Object</Filter>
     </ClCompile>
     <ClCompile Include="GameEngine\Object\ObjectAdministrator.cpp">
-      <Filter>GameEngine\Object</Filter>
-    </ClCompile>
-    <ClCompile Include="GameEngine\Object\Grid3D.cpp">
       <Filter>GameEngine\Object</Filter>
     </ClCompile>
     <ClCompile Include="GameEngine\Component\Collider\SphereCollider.cpp">
@@ -550,9 +541,6 @@
     <ClInclude Include="App\Enemy\BossEnemy.h">
       <Filter>GameEngine\GameBase</Filter>
     </ClInclude>
-    <ClInclude Include="App\IObjectBase.h">
-      <Filter>App</Filter>
-    </ClInclude>
     <ClInclude Include="App\Player\Player.h">
       <Filter>App\Player</Filter>
     </ClInclude>
@@ -625,9 +613,6 @@
     <ClInclude Include="GameEngine\Object\Skybox\Skybox.h">
       <Filter>GameEngine\Object\Model\Skybox</Filter>
     </ClInclude>
-    <ClInclude Include="GameEngine\Object\Model\Line.h">
-      <Filter>GameEngine\Object\Model</Filter>
-    </ClInclude>
     <ClInclude Include="GameEngine\Effect\PostEffect\PostEffect.h">
       <Filter>GameEngine\Object\Screen</Filter>
     </ClInclude>
@@ -638,9 +623,6 @@
       <Filter>GameEngine\Object</Filter>
     </ClInclude>
     <ClInclude Include="GameEngine\Object\ObjectAdministrator.h">
-      <Filter>GameEngine\Object</Filter>
-    </ClInclude>
-    <ClInclude Include="GameEngine\Object\Grid3D.h">
       <Filter>GameEngine\Object</Filter>
     </ClInclude>
     <ClInclude Include="GameEngine\Component\Collider\SphereCollider.h">

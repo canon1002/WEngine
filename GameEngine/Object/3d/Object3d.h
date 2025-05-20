@@ -1,13 +1,11 @@
 #pragma once
 #include "GameEngine/Object/Base/ObjectBase.h"
-
 #include "GameEngine/Utility/Math/Math.h"
 #include "GameEngine/Utility/Transform/WorldTransform.h"
 #include "GameEngine/Resource/Texture/Resource.h"
 #include "GameEngine/Object/Light/DirectionalLight.h"
 #include "GameEngine/Object/Camera/CameraCommon.h"
 #include "GameEngine/Component/Animation/Skinning/Skinnig.h"
-
 #include "GameEngine/Component/Collider/Collider.h"
 
 // 前方宣言
@@ -17,8 +15,7 @@ class ModelManager; // モデルマネージャークラス
 
 class Object3d : public ObjectBase 
 {
-
-public: // メンバ関数
+public: // -- 公開 メンバ関数 -- //
 
 	Object3d() = default;
 	Object3d(const std::string objname);
@@ -41,28 +38,24 @@ public: // メンバ関数
 	void SetTranslate(Vector3 translate) { mWorldTransform->translation = translate; }
 	const WorldTransform* GetWorldTransform()const  { return mWorldTransform.get(); }
 
+	// モデル取得(生ポインタ)
 	Model* GetModel() { return mModel.get(); }
+	// モデル取得(スマートポインタ)
 	std::shared_ptr<Model>  GetModelPtr()const { return mModel; }
 	
-public: // メンバ変数
+public: // -- 公開 メンバ変数 -- //
 
 	// モデル
 	std::shared_ptr<Model> mModel = nullptr;
-	
-	// Transformation用のResourceを作る
-	Microsoft::WRL::ComPtr<ID3D12Resource> mWvpResource = nullptr;
-	// データを書き込む
-	TransformationMatrix* mWvpData;
-
 	// マテリアル
-	Material material;
-
+	Material mMaterial;
 	// スキニング アニメーション
 	std::unique_ptr<Skinning> mSkinning = nullptr;
-	
 	// コライダー
 	std::unique_ptr<Collider> mCollider = nullptr;
 
-
+	// Transformation用Resource
+	Microsoft::WRL::ComPtr<ID3D12Resource> mWvpResource = nullptr;
+	TransformationMatrix* mWvpData;
 };
 

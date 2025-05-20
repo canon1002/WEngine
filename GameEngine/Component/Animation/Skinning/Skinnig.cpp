@@ -17,11 +17,13 @@ void Skinning::Init(const std::string& directorypath, const std::string& filepat
 	// 新規にスキンクラスターを含めたデータを生成
 	mCurrentSkinCluster = std::make_shared<SkinningStatus>();
 	// スキンクラスターを生成
-	mCurrentSkinCluster->skinCluster = SkinCluster::Create(DirectXCommon::GetInstance()->mDevice, mSkeleton, modelData);
+	mCurrentSkinCluster->skinCluster = SkinCluster::Create(
+		DirectXCommon::GetInstance()->mDevice, mSkeleton, modelData);
 	// アニメーションに必要な情報をセット
 	mCurrentSkinCluster->animation = Resource::LoadAnmation(directorypath, filepath);
 	// スキンクラスターを生成
-	mCurrentSkinCluster->skinCluster = SkinCluster::Create(DirectXCommon::GetInstance()->mDevice, mSkeleton, modelData);
+	mCurrentSkinCluster->skinCluster = SkinCluster::Create(
+		DirectXCommon::GetInstance()->mDevice, mSkeleton, modelData);
 	// アニメーションの一時停止をoffに
 	mCurrentSkinCluster->isPause = false;
 	// ループさせる
@@ -51,9 +53,10 @@ void Skinning::Update()
 			mCurrentSkinCluster->animationTime += BlackBoard::CombertBattleFPS(mAnimationPlaySpeed);
 		}
 	}
-	// 最後まで行ったら最初からリピート再生する(しなくてもいいし、フラグで変更しても良さそう)
+	// ループフラグがTrueの場合、最後まで行ったら最初からリピート再生する
 	if (mCurrentSkinCluster->isLoop == true) {
-		mCurrentSkinCluster->animationTime = std::fmod(mCurrentSkinCluster->animationTime, mCurrentSkinCluster->animation.duration);
+		mCurrentSkinCluster->animationTime = std::fmod(
+			mCurrentSkinCluster->animationTime, mCurrentSkinCluster->animation.duration);
 	}
 
 	// -- 前アニメーション -- //
@@ -68,7 +71,8 @@ void Skinning::Update()
 			}
 		}
 		if (mPreSkincluster->isLoop == true) {
-			mPreSkincluster->animationTime = std::fmod(mPreSkincluster->animationTime, mPreSkincluster->animation.duration);
+			mPreSkincluster->animationTime = std::fmod(
+				mPreSkincluster->animationTime, mPreSkincluster->animation.duration);
 		}
 	}
 

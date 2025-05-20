@@ -123,7 +123,7 @@ void GameManager::UpdateCollisionManager(){
 
 			// ヒットストップ発生判定
 			mIsRequestHitStop = true;
-			mHitStopDuration = 0.1f;
+			mHitStopDuration = 0.05f;
 
 			// ヒットエフェクトの発生処理
 
