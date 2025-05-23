@@ -21,6 +21,10 @@ Player::~Player() {
 
 void Player::Init() {
 
+	// 初期化項目細分化のために オブジェクト・ワーク部分を
+	// 分けて初期化する
+
+
 	// オブジェクト部分 初期化
 	InitObject();
 	
@@ -83,7 +87,7 @@ void Player::InitObject(){
 	// モーションブレンド速度
 	mObject->mSkinning->SetMotionBlendingInterval(15.0f);
 	// アニメーション再生速度
-	mObject->mSkinning->SetAnimationPlaySpeed(1.25f);
+	mObject->mSkinning->SetAnimationPlaySpeed(1.0f);
 	// 使用するアニメーションを登録しておく
 	mObject->mSkinning->CreateSkinningData("player", "idle", ".gltf", mObject->GetModel()->mModelData, true);
 	mObject->mSkinning->CreateSkinningData("player", "prepare", ".gltf", mObject->GetModel()->mModelData);
@@ -777,7 +781,7 @@ void Player::Attack()
 		// この段階では衝突判定(=コライダーの発生)を行わない
 
 		// 動作時間加算
-		work.elapsedTime += BlackBoard::GetBattleFPS();
+		work.elapsedTime += BlackBoard::CombertBattleFPS(mObject->mSkinning->GetAnimationPlaySpeed());
 
 		// 一定時間が経過したら、攻撃状態に移行
 		if (work.elapsedTime > attackData.operationTime) {
@@ -791,7 +795,7 @@ void Player::Attack()
 		// この段階では衝突判定を行う
 
 		// 動作時間加算
-		work.elapsedTime += BlackBoard::GetBattleFPS();
+		work.elapsedTime += BlackBoard::CombertBattleFPS(mObject->mSkinning->GetAnimationPlaySpeed());
 
 		// 一定時間が経過したら、攻撃後動作状態に移行
 		if (work.elapsedTime > attackData.afterTime) {
@@ -806,7 +810,7 @@ void Player::Attack()
 		// また、攻撃リクエストとカウント状況に応じて動作を変える
 
 		// 動作時間加算
-		work.elapsedTime += BlackBoard::GetBattleFPS();
+		work.elapsedTime += BlackBoard::CombertBattleFPS(mObject->mSkinning->GetAnimationPlaySpeed());
 
 		// 入力受付時間 → バッファ確認
 		if (!work.isComboRequest) {

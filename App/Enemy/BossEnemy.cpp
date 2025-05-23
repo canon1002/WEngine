@@ -103,7 +103,7 @@ void BossEnemy::Init() {
 	// 身体の部位に合わせたコライダーを生成
 	CreateBodyPartCollider("Head", 0.15f, static_cast<uint32_t>(CollisionTypeId::kEnemy));
 	CreateBodyPartCollider("Neck", 0.3f, static_cast<uint32_t>(CollisionTypeId::kEnemy));
-	CreateBodyPartCollider("Spine", 0.4f, static_cast<uint32_t>(CollisionTypeId::kEnemy));
+	CreateBodyPartCollider("Spine", 1.25f, static_cast<uint32_t>(CollisionTypeId::kEnemy));
 	CreateBodyPartCollider("Spine1", 0.4f, static_cast<uint32_t>(CollisionTypeId::kEnemy));
 	CreateBodyPartCollider("Spine2", 0.4f, static_cast<uint32_t>(CollisionTypeId::kEnemy));
 	CreateBodyPartCollider("LeftUpLeg", 0.15f, static_cast<uint32_t>(CollisionTypeId::kEnemy));

@@ -53,6 +53,7 @@ public: // -- public メンバ関数 -- //
 		mAddTranslation = translation;
 	}
 
+	// カメラ回転操作の有効/無効化
 	inline void SetCameraRotateControll(bool flag) {
 		mIsControll = flag;
 	}

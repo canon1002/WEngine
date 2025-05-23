@@ -431,6 +431,10 @@
     <ClCompile Include="App\Bullet\EarthSwordBullet.cpp" />
     <ClCompile Include="App\Bullet\PlayerBullet.cpp" />
     <ClCompile Include="App\Actor\Status\ActorWorks.cpp" />
+    <ClCompile Include="GameEngine\UI\UIManager.cpp" />
+    <ClCompile Include="GameEngine\UI\BaseUI.cpp" />
+    <ClCompile Include="App\UI\UIFactory.cpp" />
+    <ClCompile Include="GameEngine\Base\Window\WindowManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameEngine\Object\Light\DirectionalLight.h">
@@ -733,6 +737,11 @@
     <ClInclude Include="App\Actor\Status\WorkAttack.h" />
     <ClInclude Include="App\Actor\Status\WorkGuard.h" />
     <ClInclude Include="App\Actor\Status\WorkAvoid.h" />
+    <ClInclude Include="GameEngine\UI\UIManager.h" />
+    <ClInclude Include="GameEngine\UI\BaseUI.h" />
+    <ClInclude Include="GameEngine\UI\AbstractUIFactry.h" />
+    <ClInclude Include="App\UI\UIFactory.h" />
+    <ClInclude Include="GameEngine\Base\Window\WindowManager.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt">

@@ -366,6 +366,9 @@ void GameScene::Update() {
 
 void GameScene::BeginPhase() {
 
+	// カメラ操作強制OFF
+	MainCamera::GetInstance()->SetCameraRotateControll(false);
+
 	// ビネットを調整してフェードイン
 	if (mViggnetTime < 1.0f) {
 		// ビネットの時間を進める
@@ -406,6 +409,8 @@ void GameScene::BeginPhase() {
 
 				// フェーズ移行
 				mPhase = Phase::BATTLE;
+				// カメラ操作を有効にする
+				MainCamera::GetInstance()->SetCameraRotateControll(true);
 			}
 		}
 
@@ -494,6 +499,9 @@ void GameScene::BattlePhase() {
 }
 
 void GameScene::LosePhase() {
+
+	// カメラ操作強制OFF
+	MainCamera::GetInstance()->SetCameraRotateControll(false);
 
 	mPlayer->GetObject3D()->GetModel()->mMaterialData->color = { 1.0f,1.0f,1.0f,1.0f };
 
@@ -604,6 +612,9 @@ void GameScene::LosePhase() {
 }
 
 void GameScene::WinPhase() {
+
+	// カメラ操作強制OFF
+	MainCamera::GetInstance()->SetCameraRotateControll(false);
 
 	if (mFinishUI.isActive) {
 
