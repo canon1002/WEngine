@@ -1,6 +1,8 @@
 #include "SceneManager.h"
 #include "GameEngine/Effect/PostEffect/PostEffect.h"
 #include "GameEngine/Editor/ImGui/ImGuiManager.h"
+#include "GameEngine/UI/UIManager.h"
+#include "App/UI/UIFactory.h"
 
 // インスタンス
 SceneManager* SceneManager::mInstance = nullptr;
@@ -34,6 +36,11 @@ SceneManager::~SceneManager() {
 
 // 初期化
 void SceneManager::Init(){
+
+	// UI工場を作成し、マネージャにセット
+	mUIFactory = std::make_unique<UIFactory>();
+	UIManager::GetInstance()->SetFactory(mUIFactory.get());
+
 	// 終了リクエスト
 	mEndRequest = false;
 }

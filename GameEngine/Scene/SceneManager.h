@@ -1,6 +1,7 @@
 #pragma once
 #include "GameEngine/Scene/BaseScene.h"
 #include "GameEngine/Scene/AbstractSceneFactory.h"
+#include "GameEngine/UI/AbstractUIFactry.h"
 
 class SceneManager
 {
@@ -56,6 +57,11 @@ private: // -- 非公開 メンバ変数 -- //
 	// シーン工場のポインタ(解放禁止)
 	AbstractSceneFactory* mSceneFactory;
 	
+
+	// UI工場
+	std::unique_ptr<AbstractUIFactory> mUIFactory;
+
+
 
 	// インスタンス
 	static SceneManager* mInstance;
