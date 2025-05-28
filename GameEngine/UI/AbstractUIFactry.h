@@ -14,6 +14,6 @@ public: // -- 公開メンバ 関数 -- //
 	virtual ~AbstractUIFactory() = default;
 
 	// UI生成
-	virtual std::unique_ptr<BaseUI> CreateUI(const std::string& type) = 0;
+	virtual std::shared_ptr<BaseUI> CreateUI(const std::string& type) = 0;
 
 };

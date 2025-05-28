@@ -1,7 +1,10 @@
 #pragma once
 
 #include "GameEngine/UI/AbstractUIFactry.h"
-#include <vector>
+#include <unordered_map>
+
+// シーン名 前方宣言
+enum class SceneName;
 
 /// <summary>
 /// UIの表示・管理を行うマネージャークラス
@@ -28,13 +31,15 @@ public: // -- 公開 メンバ関数 -- //
 	void Draw();
 
 	// UIをJSON情報に基づいて生成する
-	void CreateUI(const std::string& name);
+	void CreateUI(const std::string& name,SceneName sceneName) ;
 	// UIを削除する
 	void DeleteUI(const std::string& name);
+	// 指定シーンのUIを削除する
+	void DeleteSceneUI(SceneName sceneName);
 	// UIを全て削除する
 	void DeleteAllUI();
 	// UIを取得する
-
+	std::shared_ptr<BaseUI> GetUIPtr(const std::string name);
 
 	// UI工場のポインタをセットする
 	void SetFactory(AbstractUIFactory* factory) {
@@ -56,8 +61,7 @@ private: // -- 非公開 メンバ変数 -- //
 	AbstractUIFactory* mUIFactory = nullptr;
 
 	// UIのリスト
-	std::vector<std::unique_ptr<BaseUI>> mUIList;
-
+	std::vector<std::shared_ptr<BaseUI>> mUIList;
 
 };
 

@@ -1,7 +1,7 @@
 #include "UIFactory.h"
 #include "Externals/magic_enum/magic_enum.hpp"
 
-std::unique_ptr<BaseUI> UIFactory::CreateUI(const std::string& type){
+std::shared_ptr<BaseUI> UIFactory::CreateUI(const std::string& type){
 
 	// 生成したいUIのタイプを文字列で取得して
 	// magic_enumで列挙型に変換する
@@ -10,7 +10,13 @@ std::unique_ptr<BaseUI> UIFactory::CreateUI(const std::string& type){
 	case UIType::Base :
 
 		// 通常UIを生成
-		return std::make_unique<BaseUI>();
+		return std::make_shared<BaseUI>();
+		break;
+
+	case UIType::Fade:
+
+		// フェードUIを生成
+		return std::make_shared<FadeUI>();
 		break;
 
 	default:
