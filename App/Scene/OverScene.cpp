@@ -9,6 +9,9 @@ void OverScene::Final(){
 
 void OverScene::Init() {
 
+	// シーン名の設定
+	mSceneName = "Over";
+
 	mIsFading = true;
 	mViggnetTime = 0.0f;
 }

@@ -10,6 +10,9 @@ void ResultScene::Final() {
 
 void ResultScene::Init() {
 
+	// シーン名の設定
+	mSceneName = "Result";
+
 	mTitleOne.sprite = std::make_unique<Sprite>();
 	mTitleOne.sprite->Init();
 	mTitleOne.sprite->SetTexture("UI/System/Push.png");

@@ -401,7 +401,7 @@ void GlobalVariables::SaveFile(const std::string& groupName) {
 		else if (std::holds_alternative<std::string>(item.value)) {
 			// float型のjson配列登録
 			std::string value = std::get<std::string>(item.value);
-			root[groupName][itemName].push_back(value);
+			root[groupName][itemName] = value;
 		}
 
 		// グローバル変数の保存先ファイルパス

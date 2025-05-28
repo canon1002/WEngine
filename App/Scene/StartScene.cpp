@@ -10,6 +10,9 @@ void StartScene::Final() {
 
 void StartScene::Init(){
 
+	// シーン名の設定
+	mSceneName = "Start";
+
 	// ビネット初期設定(透明)
 	PostEffect* render = PostEffect::GetInstance();
 	render->SetViggnetColor(Vector4(0.0f, 0.0f, 0.0f, 0.0f));

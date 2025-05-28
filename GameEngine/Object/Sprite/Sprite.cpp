@@ -90,6 +90,47 @@ void Sprite::Draw() {
 
 }
 
+void Sprite::DrawGui(){
+
+#ifdef _DEBUG
+
+	// ImGuiを描画する
+	if (ImGui::CollapsingHeader("Sprite")) {
+		
+		// テクスチャのハンドルを表示
+		ImGui::Text("Texture Handle: %d", mTextureHandle);
+		// テクスチャのフルサイズを表示
+		ImGui::Text("Texture Size: (%.2f, %.2f)", mTextureSize.x, mTextureSize.y);
+		// スプライトのサイズを表示
+		ImGui::DragFloat2("Sprite Size", &mSpriteSize.x, 0.1f, 0.0f, 10000.0f);
+		// スケールの表示・変更
+		ImGui::DragFloat3("Scale", &mWorldTransform.scale.x, 0.01f, 0.0f, 10000.0f);
+		// 回転
+		ImGui::DragFloat("Rotation", &mWorldTransform.rotation.z, 0.01f, -3.14f, 3.14f);
+		// 座標の表示
+		ImGui::DragFloat3("Position", &mWorldTransform.translation.x, 1.0f, -10000.0f, 10000.0f);
+		// アンカーポイントの表示
+		ImGui::DragFloat2("Anchor Point", &mAnchorPoint.x, 0.01f,-1.0f,1.0f);
+		// UV座標の表示
+		ImGui::DragFloat3("UV Transform", &mUVTransform.scale.x,0.1f,-100.0f,100.0f);
+		// UV座標の回転
+		ImGui::DragFloat("UV Rotation", &mUVTransform.rotation.z, 0.01f, -3.14f, 3.14f);
+		// UV座標の平行移動
+		ImGui::DragFloat2("UV Translation", &mUVTransform.translation.x, 0.01f, -100.0f, 100.0f);
+		// 色の表示
+		Color color = mMaterialData->color;
+		ImGui::ColorEdit4("Color", &color.r);
+		// 色の設定
+		mMaterialData->color = color;
+		// アルファ値の表示
+		ImGui::DragFloat("Alpha", &mMaterialData->color.a, 0.01f, 0.0f, 1.0f);
+
+	}
+
+#endif // _DEBUG
+
+}
+
 // インデックスデータの生成
 void Sprite::CreateIndexResource() {
 

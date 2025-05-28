@@ -6,16 +6,17 @@
 
 // テスト用
 #include "GameEngine/Object/ShadowObject.h"
-
 // ゲーム用
 #include"App/Actor/Actor.h"
 #include "App/Player/Player.h"
 #include "App/Enemy/BossEnemy.h"
+#include "App/UI/FadeUI.h"
 // エフェクト
 #include "GameEngine/Effect/Particle/Emitter/ParticleEmitter.h"
 // マネージャー
 #include "GameEngine/Component/Collider/CollisionManager.h"
 #include "GameEngine/Input/InputManager.h"
+#include "GameEngine/UI/UIManager.h"
 
 // 選択段階の判別用
 enum class SelectStep {
@@ -25,22 +26,36 @@ enum class SelectStep {
 	GAMESTART,	// ゲーム開始までの移行中
 };
 
+// タイトルシーン
 class TitleScene :
     public BaseScene
 {
-public:
+public: // -- 公開 メンバ関数 -- //
+
+	// デストラクタ
 	~TitleScene() {}
-
+	// 終了処理
 	void Final()override;
-
-	//　継承した関数
+	// 初期化
 	void Init() override;
+	// 更新
 	void Update() override;
+	// 描画
 	void Draw() override;
+	// UI描画
 	void DrawUI() override;
 
-private:
+	// フェーズごとに処理を分離
+	void StartPhase();
+	void GameSelectPhase();
+	void GameStartPhase();
+
+
+private: // -- 非公開 メンバ変数 -- //
 	
+	// フェーズごとに処理を分離するための関数ポインタ
+	void (TitleScene::* mPhaseFunc)();
+
 	// カメラ
 	CameraCommon* mCamera;
 	// 地面
@@ -50,6 +65,11 @@ private:
 	// 剣
 	std::unique_ptr<Object3d> mSwordObj;
 	Matrix4x4 mWeaponParentMat;
+
+	// 焚き火
+	std::unique_ptr<Object3d> mWoodObj;
+	// 炎パーティクル
+	std::unique_ptr<ParticleEmitter> mFlameParticle;
 
 	// シーン内選択段階
 	SelectStep mSelectStep;
@@ -63,19 +83,19 @@ private:
 	bool mIsActiveTransition;
 
 	// タイトルロゴ (タイトル名を記載する)
-	UISet mTitleLogo;
+	std::weak_ptr<FadeUI> mTitleLogo;
 	// スタート誘導UI (例:ボタンを押してください)
-	UISet mPushStartUI;
+	std::weak_ptr<FadeUI> mPushStartUI;
 	// UI - スタート誘導UI背景
-	UISet mPushStartBackUI;
+	std::weak_ptr<FadeUI> mPushStartBackUI;
 	// UI - ゲーム開始
-	UISet mGameStartUI;
+	std::weak_ptr<FadeUI> mGameStartUI;
 	// UI - システム(オプション)
-	UISet mSystemUI;
+	std::weak_ptr<FadeUI> mSystemUI;
 	// UI - ゲーム終了
-	UISet mQuitUI;
+	std::weak_ptr<FadeUI> mQuitUI;
 	// UI - 選択中のUI
-	UISet mSelectingBackUI;
+	std::weak_ptr<FadeUI> mSelectingBackUI;
 	
 
 	// UI関連の変数

@@ -1,0 +1,24 @@
+{
+    "SystemUI": {
+        "Alpha": 0.0,
+        "Anchor": [
+            0.5,
+            0.5
+        ],
+        "Color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "Pos": [
+            640.0,
+            490.0
+        ],
+        "Scale": [
+            0.5,
+            0.5
+        ],
+        "Texture": "System/System",
+        "Type": "Fade"
+    }
+}

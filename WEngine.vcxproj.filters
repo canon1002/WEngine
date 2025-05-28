@@ -435,6 +435,7 @@
     <ClCompile Include="GameEngine\UI\BaseUI.cpp" />
     <ClCompile Include="App\UI\UIFactory.cpp" />
     <ClCompile Include="GameEngine\Base\Window\WindowManager.cpp" />
+    <ClCompile Include="App\UI\FadeUI.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameEngine\Object\Light\DirectionalLight.h">
@@ -742,6 +743,7 @@
     <ClInclude Include="GameEngine\UI\AbstractUIFactry.h" />
     <ClInclude Include="App\UI\UIFactory.h" />
     <ClInclude Include="GameEngine\Base\Window\WindowManager.h" />
+    <ClInclude Include="App\UI\FadeUI.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt">

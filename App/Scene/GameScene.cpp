@@ -20,6 +20,9 @@ void GameScene::Final() {
 
 void GameScene::Init() {
 
+	// シーン名の設定
+	mSceneName = "Game";
+
 	// ステータスマネージャ
 	StatusManager::GetInstance()->Init();
 
@@ -89,6 +92,12 @@ void GameScene::Init() {
 	mDashSmoke = std::make_unique<ParticleEmitter>("DashSmoke");
 	mDashSmoke->Init();
 	ParticleManager::GetInstance()->CreateParticleGroupe(mDashSmoke->mName, "circle.png");
+	
+	// 炎パーティクル
+	mFlameParticle = std::make_unique<ParticleEmitter>("Flame");
+	mFlameParticle->Init();
+	ParticleManager::GetInstance()->CreateParticleGroupe(mFlameParticle->mName, "Flame.png");
+
 
 	// 軌道エフェクト
 	mPlayerTrailEffect = std::make_unique<TrailEffect>();
@@ -621,6 +630,12 @@ void GameScene::WinPhase() {
 		// 終了時のUI表示が終了していない場合
 		if (!mIsFinishUIDisplayEnd) {
 
+			// ボスの身体に炎を発生させる
+			// 発生座標の更新
+			mFlameParticle->SetEmitterPos(mBoss->GetObject3D()->GetWorldTransform()->GetWorldPosition());
+			mFlameParticle->Update();
+
+
 			// UI 透明度操作
 			if (mFinishUI.t < 1.0f) {
 				mFinishUI.t += (10.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetGameSpeed();
@@ -650,6 +665,7 @@ void GameScene::WinPhase() {
 		// 終了時のUI表示が終了している場合
 		else {
 
+		
 			// UIを透明にする
 			if (mFinishUI.t > 0.0f) {
 				mFinishUI.t -= (2.0f / (Framerate::GetInstance()->GetFramerate())) * Framerate::GetInstance()->GetGameSpeed();

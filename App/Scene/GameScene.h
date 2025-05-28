@@ -136,5 +136,7 @@ private: // -- 非公開 メンバ変数 -- //
 
 	// ダッシュ煙
 	std::unique_ptr<ParticleEmitter> mDashSmoke;
+	// 炎パーティクル
+	std::unique_ptr<ParticleEmitter> mFlameParticle;
 
 };

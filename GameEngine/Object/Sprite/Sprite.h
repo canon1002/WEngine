@@ -10,12 +10,18 @@ class Sprite
 {
 public: // -- 公開 メンバ関数 -- //
 
+	// コンストラクタ
 	Sprite() = default;
+	// デストラクタ
 	~Sprite() = default;
-
+	// 初期化
 	void Init();
+	// 更新
 	void Update();
+	// 描画
 	void Draw();
+	// ImGuiの描画
+	void DrawGui();
 
 	void CreateVertexResource();
 	void CreateIndexResource();
@@ -35,6 +41,8 @@ public: // -- 公開 メンバ関数 -- //
 	}
 
 	void SetColor(Color color) { mMaterialData->color = color; }
+	Color GetColor() const { return mMaterialData->color; }
+
 	void SetAlpha(float alpha) { mMaterialData->color.a = alpha; }
 	void SetTextureSize(Vector2 size) { mTextureSize = size; }
 	void SetSpriteSize(Vector2 size) { mSpriteSize = size; }
@@ -42,13 +50,22 @@ public: // -- 公開 メンバ関数 -- //
 		mWorldTransform.translation.x = pos.x;
 		mWorldTransform.translation.y = pos.y;
 	}
+
+	// アンカーポイントの設定
 	void SetAnchorPoint(Vector2 point) { mAnchorPoint = point; }
+	// アンカーポイントの取得
+	Vector2 GetAnchorPoint()const { return mAnchorPoint; }
+
+	// スケールの設定
 	void SetScale(Vector2 scale) { 
 		mWorldTransform.scale.x = scale.x;
 		mWorldTransform.scale.y = scale.y;
 	}
 
+	// スケールの取得
 	Vector2 GetScale() { return Vector2(mWorldTransform.scale.x, mWorldTransform.scale.y); }
+	
+	// 座標の取得
 	Vector2 GetPos() { return Vector2(mWorldTransform.translation.x, mWorldTransform.translation.y); }
 
 

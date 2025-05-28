@@ -1,0 +1,42 @@
+{
+    "Flame": {
+        "PosXDister" : [
+            -0.5,
+            0.5
+        ],
+        "PosYDister" : [
+            0.0,
+            0.0
+        ],
+        "PosZDister" : [
+            -0.5,
+            0.5
+        ],
+        "VelXDister" : [
+            0.0,
+            0.0
+        ],
+        "VelYDister" : [
+            -6.0,
+            -4.0
+        ],
+        "VelZDister" : [
+            0.0,
+            0.0
+        ],
+        "ScaleDister" : [
+            0.1,
+            0.2
+        ],
+        "ColorDister" : [
+            1.0,
+            1.0
+        ],
+        "TimeDister" : [
+            0.25,
+            0.5
+        ],
+        "Count" : 5,
+        "Frequency" : 0.001
+    }
+}

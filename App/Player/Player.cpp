@@ -976,78 +976,82 @@ void Player::Fall()
 
 void Player::InputDirection(){
 
-	// 入力方向の初期化
-	mDirectionForInput = { 0.0f ,0.0f ,0.0f };
-	
-	// スティック入力の量
-	const static int stickValue = 8000;
-	// いずれかの数値が、以上(以下)であれば移動処理を行う
-	if (InputManager::GetInstance()->GetStickRatio(Gamepad::Stick::LEFT_X, stickValue) != 0.0f ||
-		InputManager::GetInstance()->GetStickRatio(Gamepad::Stick::LEFT_Y, stickValue) != 0.0f) {
+	// 通常・移動時に有効
+	if (mWorks->mBehavior == Behavior::kRoot || mWorks->mBehavior == Behavior::kMove || mWorks->mBehavior == Behavior::kDash) {
 
-		// カウントの増加
-		if (mDirectionInputCount < 1.0f) {
-			mDirectionInputCount += BlackBoard::GetBattleFPS();
-			if (mDirectionInputCount > 1.0f) {
-				mDirectionInputCount = 1.0f;
+		// 入力方向の初期化
+		mDirectionForInput = { 0.0f ,0.0f ,0.0f };
+
+		// スティック入力の量
+		const static int stickValue = 8000;
+		// いずれかの数値が、以上(以下)であれば移動処理を行う
+		if (InputManager::GetInstance()->GetStickRatio(Gamepad::Stick::LEFT_X, stickValue) != 0.0f ||
+			InputManager::GetInstance()->GetStickRatio(Gamepad::Stick::LEFT_Y, stickValue) != 0.0f) {
+
+			// カウントの増加
+			if (mDirectionInputCount < 1.0f) {
+				mDirectionInputCount += BlackBoard::GetBattleFPS();
+				if (mDirectionInputCount > 1.0f) {
+					mDirectionInputCount = 1.0f;
+				}
 			}
+
+			// Xの移動量とZの移動量を設定する
+			mDirectionForInput = {
+				(float)InputManager::GetInstance()->GetStick(Gamepad::Stick::LEFT_X) ,
+				0.0f,
+				(float)InputManager::GetInstance()->GetStick(Gamepad::Stick::LEFT_Y)
+			};
+
+			// 正規化
+			if (Length(mDirectionForInput) != 0.0f) {
+				mDirectionForInput = Normalize(mDirectionForInput);
+			}
+
+			// カメラの回転量を反映
+			mDirectionForInput = TransformNomal(mDirectionForInput, MainCamera::GetInstance()->mWorldTransform->GetWorldMatrix());
+			// y座標は移動しない
+			mDirectionForInput.y = 0.0f;
+
+		}
+		else {
+			// 入力がなければカウントを0に戻す
+			mDirectionInputCount = 0.0f;
 		}
 
-		// Xの移動量とZの移動量を設定する
-		mDirectionForInput = {
-			(float)InputManager::GetInstance()->GetStick(Gamepad::Stick::LEFT_X) ,
-			0.0f,
-			(float)InputManager::GetInstance()->GetStick(Gamepad::Stick::LEFT_Y)
-		};
+		//	ターゲットロックオンの切り替え
+		if (InputManager::GetInstance()->GetPused(Gamepad::Button::X)) {
 
-		// 正規化
-		if (Length(mDirectionForInput) != 0.0f) {
-			mDirectionForInput = Normalize(mDirectionForInput);
+			// ターゲットロックオン状態を解除する
+			if (mIsLockOnToTarget) {
+				MainCamera::GetInstance()->SetCameraRotateControll(true);
+				MainCamera::GetInstance()->EndSearchTarget();
+				mIsLockOnToTarget = false;
+			}
+
+			// ターゲットロックオン状態にする
+			else if (mReticle->IsLockOn(mBoss->GetBodyPos())) {
+				MainCamera::GetInstance()->SetCameraRotateControll(false);
+				mIsLockOnToTarget = true;
+			}
+
 		}
 
-		// カメラの回転量を反映
-		mDirectionForInput = TransformNomal(mDirectionForInput, MainCamera::GetInstance()->mWorldTransform->GetWorldMatrix());
-		// y座標は移動しない
-		mDirectionForInput.y = 0.0f;
-
-	}
-	else {
-		// 入力がなければカウントを0に戻す
-		mDirectionInputCount = 0.0f;
-	}
-
-	//	ターゲットロックオンの切り替え
-	if (InputManager::GetInstance()->GetPused(Gamepad::Button::X)) {
-
-		// ターゲットロックオン状態を解除する
+		// ロックオン中のカメラ処理
 		if (mIsLockOnToTarget) {
-			MainCamera::GetInstance()->SetCameraRotateControll(true);
-			MainCamera::GetInstance()->EndSearchTarget();
-			mIsLockOnToTarget = false;
+
+			// ターゲット方向にカメラを向ける
+			MainCamera::GetInstance()->SetCameraRotarionToSearchTarget();
+			// ターゲット方向に体を向ける
+			mDirection = TransformNomal(Vector3(0.0f, 0.0f, 1.0f), MainCamera::GetInstance()->mWorldTransform->GetWorldMatrix());
 		}
+		// 非ロックオン時
+		else {
 
-		// ターゲットロックオン状態にする
-		else if (mReticle->IsLockOn(mBoss->GetBodyPos())) {
-			MainCamera::GetInstance()->SetCameraRotateControll(false);
-			mIsLockOnToTarget = true;
-		}
-
-	}
-
-	// ロックオン中のカメラ処理
-	if (mIsLockOnToTarget) {
-
-		// ターゲット方向にカメラを向ける
-		MainCamera::GetInstance()->SetCameraRotarionToSearchTarget();
-		// ターゲット方向に体を向ける
-		mDirection = TransformNomal(Vector3(0.0f,0.0f,1.0f), MainCamera::GetInstance()->mWorldTransform->GetWorldMatrix());
-	}
-	// 非ロックオン時
-	else {
-
-		// 入力方向を向くようにする
-		if (Length(mDirectionForInput) != 0.0f) {
-			mDirection = mDirectionForInput;
+			// 入力方向を向くようにする
+			if (Length(mDirectionForInput) != 0.0f) {
+				mDirection = mDirectionForInput;
+			}
 		}
 	}
 
