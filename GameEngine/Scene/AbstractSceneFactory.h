@@ -3,6 +3,16 @@
 #include "GameEngine/Scene/BaseScene.h"
 #include <string>
 
+// シーン名
+enum class SceneName {
+	Start,
+	Title,
+	Menu,
+	Game,
+	Result,
+	Over
+};
+
 /// <summary>
 /// シーン工場(概念)
 /// </summary>

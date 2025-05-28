@@ -2,6 +2,8 @@
 #include "GameEngine/Effect/PostEffect/PostEffect.h"
 #include "GameEngine/Editor/Framerate.h"
 #include "GameEngine/Scene/SceneManager.h"
+#include "GameEngine/Editor/ImGui/ImGuiManager.h"
+#include "GameEngine/Input/InputManager.h"
 
 void MenuScene::Final(){
 
@@ -9,38 +11,39 @@ void MenuScene::Final(){
 
 void MenuScene::Init() {
 	
-	mIsFading = true;
-	mViggnetTime = 0.0f;
+	// シーン名の設定
+	mSceneName = "Menu";
+
+	// メニュー背景
+	UIManager::GetInstance()->CreateUI("MenuBackground", SceneName::Menu);
+	mMenuBackground = dynamic_pointer_cast<BaseUI>(UIManager::GetInstance()->GetUIPtr("MenuBackground"));
+
 }
 
-void MenuScene::Update() 
-{
-	if (mIsFading)
-	{
-		if (mViggnetTime < 1.0f)
-		{
-			mViggnetTime += (1.0f / Framerate::GetInstance()->GetFramerate()) * Framerate::GetInstance()->GetGameSpeed();
-		}
-		else if (mViggnetTime >= 1.0f)
-		{
-			mViggnetTime = 1.0f;
-		}
+void MenuScene::Update() {
 
-		// ビネットでフェードインする
-		PostEffect::GetInstance()->SetViggnetIndex(ExponentialInterpolation(10.0f, 0.0f, mViggnetTime, 1.0f));
+	// ゲーム終了リクエスト
+	// 現段階では LSHIFT + ESCAPE で終了
+	// 後々ボタン式にする
+	if (InputManager::GetInstance()->GetKey()->GetPushKey(DIK_LSHIFT) &&
+		InputManager::GetInstance()->GetKey()->GetPushKey(DIK_ESCAPE)) {
 
-		if (mViggnetTime == 1.0f) 
-		{
-			mIsFading = false;
-		}
+		// 終了リクエストを送る
+		SceneManager::GetInstance()->EndRequest();
 	}
 
-	// シーン切り替え
-	// Bボタンまたは、Enterキーでシーン遷移
-	if (InputManager::GetInstance()->GetPused(Gamepad::Button::B) || InputManager::GetInstance()->GetTriggerKey(DIK_RETURN)) {
-		// タイトルシーンへ移行する
-		SceneManager::GetInstance()->ChangeScene("Title");
+	// メニューシーン解除リクエスト
+	// スタートボタン/ESCAPEキーでメニューを閉じる
+	if (InputManager::GetInstance()->GetPused(Gamepad::Button::START) ||
+		InputManager::GetInstance()->GetKey()->GetTriggerKey(DIK_ESCAPE)) {
+		
+		// メニューシーンを閉じるリクエストを送る 
+		SceneManager::GetInstance()->MenuCancelRequest();
 	}
+
+
+	// (TODO)シーン切り替えリクエスト
+	// タイトル・ゲームシーン・チュートリアル遷移・リトライ などを後々実装する
 
 }
 
@@ -48,6 +51,6 @@ void MenuScene::Draw() {
 	
 }
 
-void MenuScene::DrawUI()
-{
+void MenuScene::DrawUI(){
+	
 }

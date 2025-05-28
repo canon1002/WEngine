@@ -29,10 +29,16 @@ public: // -- 公開メンバ 関数 -- //
 	// シーンマネージャのポインタをセットする
 	virtual void SetSceneManager(SceneManager* sceneManager) { mSceneManager = sceneManager; }
 
+	// シーン名の取得
+	virtual std::string GetSceneName() { return mSceneName; }
+
 protected: // -- 限定公開 メンバ変数 -- //
 
 	// シーンマネージャのポインタ
 	SceneManager* mSceneManager;
+
+	// シーン名
+	std::string mSceneName;
 
 };
 

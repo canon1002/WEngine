@@ -33,6 +33,16 @@ public: // -- 公開 メンバ関数 -- //
 	/// <param name="sceneName"> シーン名 </param>
 	void ChangeScene(const std::string& sceneName);
 
+	// 外部からメニュー表示リクエストを送る
+	void MenuRequest() { mMenuRequest = true; }
+	// 外部からメニュー非表示リクエストを送る
+	void MenuCancelRequest() { mMenuRequest = false; }
+
+	// 外部から終了リクエストを送る
+	void EndRequest() { mEndRequest = true; }
+
+	SceneName GetCurrentSceneName();
+
 private: // -- 非公開 メンバ関数 -- //
 
 	// コンストラクタ
@@ -45,6 +55,9 @@ public: // -- 公開 メンバ変数 -- //
 
 	// 終了リクエスト
 	bool mEndRequest;
+
+	// メニューリクエスト
+	bool mMenuRequest;
 
 private: // -- 非公開 メンバ変数 -- //
 
