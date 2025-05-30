@@ -113,46 +113,55 @@ void TitleScene::Init() {
 	// タイトルロゴ (タイトル名を記載する)
 	UIManager::GetInstance()->CreateUI("TitleLogo", SceneName::Title);
 	mTitleLogo = dynamic_pointer_cast<FadeUI>(UIManager::GetInstance()->GetUIPtr("TitleLogo"));
-
 	// アルファ値を0(透明)に設定
 	mTitleLogo.lock()->SetAlpha(0.0f);
 	// 徐々に表示する
-	mTitleLogo.lock()->StartFade(FadeOut);
+	mTitleLogo.lock()->StartFade(FadeIn);
+
 
 	// スタート誘導UI (例:ボタンを押してください)
 	UIManager::GetInstance()->CreateUI("PushStartUI", SceneName::Title);
 	mPushStartUI = dynamic_pointer_cast<FadeUI>(UIManager::GetInstance()->GetUIPtr("PushStartUI"));
-
 	// アルファ値を0(透明)に設定
 	mPushStartUI.lock()->SetAlpha(0.0f);
 	// 徐々に表示する
-	mPushStartUI.lock()->StartFade(FadeOut);
+	mPushStartUI.lock()->StartFade(FadeIn);
+
 
 	// UI - スタート誘導UI背景
 	UIManager::GetInstance()->CreateUI("PushStartBackUI", SceneName::Title);
 	mPushStartBackUI = dynamic_pointer_cast<FadeUI>(UIManager::GetInstance()->GetUIPtr("PushStartBackUI"));
-
 	// アルファ値を0(透明)に設定
 	mPushStartBackUI.lock()->SetAlpha(0.0f);
 	// 徐々に表示する
-	mPushStartBackUI.lock()->StartFade(FadeOut);
+	mPushStartBackUI.lock()->StartFade(FadeIn);
+
 
 	// UI - ゲーム開始
 	UIManager::GetInstance()->CreateUI("GameStartUI", SceneName::Title);
 	mGameStartUI = dynamic_pointer_cast<FadeUI>(UIManager::GetInstance()->GetUIPtr("GameStartUI"));
+	// アルファ値を0(透明)に設定
+	mGameStartUI.lock()->SetAlpha(0.0f);
+
 
 	// UI - システム(オプション)
 	UIManager::GetInstance()->CreateUI("SystemUI", SceneName::Title);
 	mSystemUI = dynamic_pointer_cast<FadeUI>(UIManager::GetInstance()->GetUIPtr("SystemUI"));
+	// アルファ値を0(透明)に設定
+	mSystemUI.lock()->SetAlpha(0.0f);
+
 
 	// UI - ゲーム終了
 	UIManager::GetInstance()->CreateUI("QuitUI", SceneName::Title);
 	mQuitUI = dynamic_pointer_cast<FadeUI>(UIManager::GetInstance()->GetUIPtr("QuitUI"));
+	// アルファ値を0(透明)に設定
+	mQuitUI.lock()->SetAlpha(0.0f);
 
 	// UI - 選択中のUI
 	UIManager::GetInstance()->CreateUI("SelectingBackUI", SceneName::Title);
 	mSelectingBackUI = dynamic_pointer_cast<FadeUI>(UIManager::GetInstance()->GetUIPtr("SelectingBackUI"));
-
+	// アルファ値を0(透明)に設定
+	mSelectingBackUI.lock()->SetAlpha(0.0f);
 
 	// 選択中のUI番号
 	mUISelectingNum = 0;
@@ -301,7 +310,7 @@ void TitleScene::StartPhase() {
 			mIsTransUI = true;
 
 			// スタート誘導UIを非表示に
-			mPushStartUI.lock()->StartFade(FadeIn, 0.5f);
+			mPushStartUI.lock()->StartFade(FadeOut, 0.5f);
 
 		}
 
@@ -312,7 +321,7 @@ void TitleScene::StartPhase() {
 
 		// 背景UIを非表示に
 		if (mPushStartBackUI.lock()->GetFadeStyle() == Loop) {
-			mPushStartBackUI.lock()->StartFade(FadeIn, 0.5f);
+			mPushStartBackUI.lock()->StartFade(FadeOut, 0.5f);
 		}
 
 		// 誘導UIと背景UIが透明になったか確認する
@@ -331,16 +340,16 @@ void TitleScene::StartPhase() {
 
 			// ゲーム開始UI
 			if (!mGameStartUI.lock()->GetIsFadeActive()) {
-				mGameStartUI.lock()->StartFade(FadeOut, 0.5f);
+				mGameStartUI.lock()->StartFade(FadeIn, 0.5f);
 			}
 			// システム移行UI
 			if (!mSystemUI.lock()->GetIsFadeActive()) {
-				mSystemUI.lock()->StartFade(FadeOut, 0.5f);
+				mSystemUI.lock()->StartFade(FadeIn, 0.5f);
 			}
 
 			// ゲーム終了UI
 			if (!mQuitUI.lock()->GetIsFadeActive()) {
-				mQuitUI.lock()->StartFade(FadeOut, 0.5f);
+				mQuitUI.lock()->StartFade(FadeIn, 0.5f);
 			}
 
 		}
@@ -401,26 +410,26 @@ void TitleScene::GameSelectPhase() {
 
 				// タイトルロゴもここで透明にする
 				if (!mTitleLogo.lock()->GetIsFadeActive()) {
-					mTitleLogo.lock()->StartFade(FadeIn, 0.5f);
+					mTitleLogo.lock()->StartFade(FadeOut, 0.5f);
 				}
 
 				if (!mSelectingBackUI.lock()->GetIsFadeActive()) {
-					mSelectingBackUI.lock()->StartFade(FadeIn, 0.5f);
+					mSelectingBackUI.lock()->StartFade(FadeOut, 0.5f);
 				}
 				if (!mGameStartUI.lock()->GetIsFadeActive()) {
-					mGameStartUI.lock()->StartFade(FadeIn, 0.5f);
+					mGameStartUI.lock()->StartFade(FadeOut, 0.5f);
 				}
 				if (!mSystemUI.lock()->GetIsFadeActive()) {
-					mSystemUI.lock()->StartFade(FadeIn, 0.5f);
+					mSystemUI.lock()->StartFade(FadeOut, 0.5f);
 				}
 				if (!mQuitUI.lock()->GetIsFadeActive()) {
-					mQuitUI.lock()->StartFade(FadeIn, 0.5f);
+					mQuitUI.lock()->StartFade(FadeOut, 0.5f);
 				}
 
 
 				// UI背景も透明にする
 				if (mSelectingBackUI.lock()->GetFadeStyle() == Loop) {
-					mSelectingBackUI.lock()->StartFade(FadeIn, 0.5f);
+					mSelectingBackUI.lock()->StartFade(FadeOut, 0.5f);
 				}
 
 			}

@@ -67,15 +67,15 @@ public: // -- 公開 メンバ関数 -- //
 private: // -- 非公開 メンバ変数 -- //
 
 	// フェードの時間
-	float mFadeDuration = 0.0f;
+	float mFadeDuration;
 	// フェードの経過時間
-	float mElapsedTime = 0.0f;
+	float mElapsedTime;
 	// フェードの振る舞い
 	FadeStyle mStyle;
 	// フェードループ時の上昇フラグ
-	bool mIsFadeIn = false;
+	bool mIsFadeIn;
 	// フェードの有効フラグ
-	bool mIsFadeActive = false;
+	bool mIsFadeActive;
 
 };
 

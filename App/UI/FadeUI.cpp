@@ -16,6 +16,17 @@ void FadeUI::Init(const std::string& name){
 	//UIを有効化する
 	mIsActive = true;
 
+	// フェードの時間を1秒に設定
+	mFadeDuration = 1.0f;
+	// フェードの経過時間を0に
+	mElapsedTime = 0.0f;
+	// フェードの振る舞いは初期はFadeInにしておく
+	mStyle = FadeIn;
+	// フェードループ時の上昇フラグを解除
+	mIsFadeIn = false;
+	// フェードの有効フラグを解除
+	mIsFadeActive = false;
+
 }
 
 void FadeUI::Update(){
@@ -39,26 +50,26 @@ void FadeUI::Update(){
 			{
 			case FadeIn:
 
-				// フェードインの場合、アルファ値を減少させる
-				mSprite->SetAlpha(1.0f - progress);
+				// フェードインの場合、アルファ値を増加させる
+				mSprite->SetAlpha(progress);
 
 				break;
 			case FadeOut:
 
-				// フェードアウトの場合、アルファ値を増加させる
-				mSprite->SetAlpha(progress);
+				// フェードアウトの場合、アルファ値を減少させる
+				mSprite->SetAlpha(1.0f - progress);
 
 				break;
 			case Loop:
 
 				// ループフェードの場合、フラグに応じて増減する
 				if (mIsFadeIn) {
-					// フェードインの場合、アルファ値を減少させる
-					mSprite->SetAlpha(1.0f - progress);
+					// フェードインの場合、アルファ値を増加させる
+					mSprite->SetAlpha(progress);
 				}
 				else {
-					// フェードアウトの場合、アルファ値を増加させる
-					mSprite->SetAlpha(progress);
+					// フェードアウトの場合、アルファ値を減少させる
+					mSprite->SetAlpha(1.0f - progress);
 				}
 
 				break;
@@ -75,16 +86,16 @@ void FadeUI::Update(){
 			{
 			case FadeIn:
 
-				// フェードインが完了した場合、アルファ値を0に設定
-				mSprite->SetAlpha(0.0f);
+				// フェードインが完了した場合、アルファ値を1に設定
+				mSprite->SetAlpha(1.0f);
 				// フェードのフラグをオフにする
 				mIsFadeActive = false;
 
 				break;
 			case FadeOut:
 
-				// フェードアウトが完了した場合、アルファ値を1に設定
-				mSprite->SetAlpha(1.0f);
+				// フェードアウトが完了した場合、アルファ値を0に設定
+				mSprite->SetAlpha(0.0f);
 				// フェードのフラグをオフにする
 				mIsFadeActive = false;
 
