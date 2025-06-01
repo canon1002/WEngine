@@ -24,6 +24,8 @@ enum class SelectStep {
 	START,		// 開始直後のボタンを押して貰う場面
 	GAMESELECT,	// ゲームセレクト(開始/システム/終了 の選択場面)
 	GAMESTART,	// ゲーム開始までの移行中
+	UIFADE,	// UIフェード処理中
+	END,// シーン終了時
 };
 
 // タイトルシーン
@@ -46,10 +48,14 @@ public: // -- 公開 メンバ関数 -- //
 	void DrawUI() override;
 
 	// フェーズごとに処理を分離
-	void StartPhase();
-	void GameSelectPhase();
-	void GameStartPhase();
+	void StartPhase();	// タイトルシーン開始時の処理
+	void GameSelectPhase();	// ゲームセレクト(開始/システム/終了)の選択処理
+	void GameStartPhase();	// ゲーム開始までの処理
+	void UIFadePhase();	// UIフェード処理
 
+	// セレクト時の上下操作
+	void SelectInputProcess();
+	
 
 private: // -- 非公開 メンバ変数 -- //
 	
@@ -73,6 +79,9 @@ private: // -- 非公開 メンバ変数 -- //
 
 	// シーン内選択段階
 	SelectStep mSelectStep;
+	// セレクト結果
+	int32_t mSelectResult;	// 0:デフォルト(未選択) 1:ゲーム開始, 2:システム, 3:終了
+
 
 	float mGameStartVignnetingTime;
 
@@ -99,12 +108,7 @@ private: // -- 非公開 メンバ変数 -- //
 	
 
 	// UI関連の変数
-	const float kUIPositionSpace = 40.0f;	// 各UI(選択肢)の間隔
-	const float kUIBasePosition = 480.0f;	// UI(選択肢)の基本となる座標
 	int32_t mUISelectingNum;	// 選択中のUI番号
-	bool mIsUpperBackUICount;	// 背景UIのカウントが上昇中であるか
-	bool mIsTransUI;	// UI表示の遷移中であるか
-	float mUITransCount;	// UI表示切替の進行度
 	
 };
 

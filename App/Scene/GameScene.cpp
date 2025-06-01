@@ -632,7 +632,7 @@ void GameScene::WinPhase() {
 
 			// ボスの身体に炎を発生させる
 			// 発生座標の更新
-			mFlameParticle->SetEmitterPos(mBoss->GetObject3D()->GetWorldTransform()->GetWorldPosition());
+			mFlameParticle->SetEmitterPos(mBoss->GetBodyPos());
 			mFlameParticle->Update();
 
 

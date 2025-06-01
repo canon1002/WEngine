@@ -5,6 +5,7 @@
 #include "GameEngine/Editor/LevelEditor.h"
 #include "GameEngine/Effect/Particle/ParticleManager.h"
 #include "GameEngine/Effect/PostEffect/PostEffect.h"
+#include "GameEngine/Editor/BlackBoard.h"
 #include "GameEngine/Editor/Framerate.h"
 #include "GameEngine/Scene/SceneManager.h"
 
@@ -106,7 +107,7 @@ void TitleScene::Init() {
 	mFlameParticle = std::make_unique<ParticleEmitter>("Flame");
 	mFlameParticle->Init();
 	ParticleManager::GetInstance()->CreateParticleGroupe(mFlameParticle->mName, "Flame.png");
-	
+
 
 #pragma region UI関連の初期化
 
@@ -142,6 +143,8 @@ void TitleScene::Init() {
 	mGameStartUI = dynamic_pointer_cast<FadeUI>(UIManager::GetInstance()->GetUIPtr("GameStartUI"));
 	// アルファ値を0(透明)に設定
 	mGameStartUI.lock()->SetAlpha(0.0f);
+	// 非表示にしておく
+	mGameStartUI.lock()->SetActive(false);
 
 
 	// UI - システム(オプション)
@@ -149,6 +152,8 @@ void TitleScene::Init() {
 	mSystemUI = dynamic_pointer_cast<FadeUI>(UIManager::GetInstance()->GetUIPtr("SystemUI"));
 	// アルファ値を0(透明)に設定
 	mSystemUI.lock()->SetAlpha(0.0f);
+	// 非表示にしておく
+	mSystemUI.lock()->SetActive(false);
 
 
 	// UI - ゲーム終了
@@ -156,21 +161,20 @@ void TitleScene::Init() {
 	mQuitUI = dynamic_pointer_cast<FadeUI>(UIManager::GetInstance()->GetUIPtr("QuitUI"));
 	// アルファ値を0(透明)に設定
 	mQuitUI.lock()->SetAlpha(0.0f);
+	// 非表示にしておく
+	mQuitUI.lock()->SetActive(false);
 
 	// UI - 選択中のUI
 	UIManager::GetInstance()->CreateUI("SelectingBackUI", SceneName::Title);
 	mSelectingBackUI = dynamic_pointer_cast<FadeUI>(UIManager::GetInstance()->GetUIPtr("SelectingBackUI"));
 	// アルファ値を0(透明)に設定
 	mSelectingBackUI.lock()->SetAlpha(0.0f);
+	// 非表示にしておく
+	mSelectingBackUI.lock()->SetActive(false);
 
 	// 選択中のUI番号
 	mUISelectingNum = 0;
-	// 背景UIのカウントが上昇中であるか
-	mIsUpperBackUICount = true;
-	// UI表示の遷移中であるか
-	mIsTransUI = false;
-	// UI表示切替の進行度
-	mUITransCount = 0.0f;
+
 
 #pragma endregion
 
@@ -180,8 +184,9 @@ void TitleScene::Update() {
 
 	// 右手のワールド行列を更新
 	mWeaponParentMat = Multiply(
-		mPlayerObj->mSkinning->GetSkeleton().joints[mPlayerObj->mSkinning->GetSkeleton().jointMap["mixamorig:RightHand"]
-		].skeletonSpaceMatrix, mPlayerObj->GetWorldTransform()->GetWorldMatrix());
+		mPlayerObj->mSkinning->GetBoneMatrix("mixamorig:RightHand"),
+		mPlayerObj->GetWorldTransform()->GetWorldMatrix());
+
 
 	// オブジェクト更新
 	mCamera->Update();
@@ -207,34 +212,15 @@ void TitleScene::Update() {
 
 #ifdef _DEBUG
 		ImGui::Begin("Flame");
-		ImGui::DragFloat3("FlamePos" ,&flamePos.x);
+		ImGui::DragFloat3("FlamePos", &flamePos.x);
 		ImGui::End();
 #endif // _DEBUG
-		
+
 		// 発生座標の更新
 		mFlameParticle->SetEmitterPos(mWoodObj->GetWorldTransform()->GetWorldPosition());
 		mFlameParticle->Update();
 	}
 
-	// シーン内の状態に応じて処理を変える
-	switch (mSelectStep)
-	{
-	case SelectStep::SCENESTART:
-
-		break;
-	case SelectStep::START:
-
-		break;
-	case SelectStep::GAMESELECT:
-
-		break;
-	case SelectStep::GAMESTART:
-
-
-		break;
-	default:
-		break;
-	}
 
 	// パーティクル 更新
 	ParticleManager::GetInstance()->Update();
@@ -299,59 +285,20 @@ void TitleScene::StartPhase() {
 			ExponentialInterpolation(10.0f, 0.0f, viggnetOnlyTime, 1.0f));
 	}
 	// UIが非遷移中の場合
-	if (!mIsTransUI) {
+	else {
 
 		// Bボタンを押したらゲーム選択画面に移行する
 		// ボタンかキーボード入力でタイトルの選択受付に移行する
 		if (InputManager::GetInstance()->GetPused(Gamepad::Button::B) ||
 			InputManager::GetInstance()->GetTriggerKey(DIK_RETURN)) {
 
-			// UI表示の遷移を行う
-			mIsTransUI = true;
-
 			// スタート誘導UIを非表示に
 			mPushStartUI.lock()->StartFade(FadeOut, 0.5f);
-
-		}
-
-	}
-
-	// UI表示の遷移中
-	else if (mIsTransUI) {
-
-		// 背景UIを非表示に
-		if (mPushStartBackUI.lock()->GetFadeStyle() == Loop) {
+			// 背景UIを非表示に
 			mPushStartBackUI.lock()->StartFade(FadeOut, 0.5f);
-		}
 
-		// 誘導UIと背景UIが透明になったか確認する
-		if (mPushStartUI.lock()->GetIsFadeActive() == false &&
-			mPushStartBackUI.lock()->GetIsFadeActive() == false
-			) {
-
-			// UI表示の遷移を終了
-			mIsTransUI = false;
-			// UI表示切替の進行度をリセット
-			mUITransCount = 0.0f;
-			// 選択画面に移行
-			mPhaseFunc = &TitleScene::GameSelectPhase;
-
-			// 各選択肢を徐々に表示する
-
-			// ゲーム開始UI
-			if (!mGameStartUI.lock()->GetIsFadeActive()) {
-				mGameStartUI.lock()->StartFade(FadeIn, 0.5f);
-			}
-			// システム移行UI
-			if (!mSystemUI.lock()->GetIsFadeActive()) {
-				mSystemUI.lock()->StartFade(FadeIn, 0.5f);
-			}
-
-			// ゲーム終了UI
-			if (!mQuitUI.lock()->GetIsFadeActive()) {
-				mQuitUI.lock()->StartFade(FadeIn, 0.5f);
-			}
-
+			// UI表示切り替えフェーズに移行する
+			mPhaseFunc = &TitleScene::UIFadePhase;
 		}
 
 	}
@@ -360,156 +307,98 @@ void TitleScene::StartPhase() {
 
 void TitleScene::GameSelectPhase() {
 
+	// 選択画面のフェーズ
 
-	// UI表示の遷移していない場合
-	if (!mIsTransUI) {
+	// ゲーム開始/オプション/ゲーム終了の選択
+	SelectInputProcess();
 
-		// 上ボタン/Wキー を押したら選択UIを上に移動する
-		if (InputManager::GetInstance()->GetPused(Gamepad::Button::UP) ||
-			InputManager::GetInstance()->GetTriggerKey(DIK_W)) {
-			// 選択UIを上に移動
-			if (mUISelectingNum > 0) {
-				mUISelectingNum--;
+
+	// 選択しているUIへの処理を記載する
+	switch (mUISelectingNum)
+	{
+	case 0: // ゲーム開始 
+
+		// 選択中のUIの背景の座標を更新
+		mSelectingBackUI.lock()->SetPos(mGameStartUI.lock()->GetPos());
+
+		// Bボタン/Enterキー を押したらゲーム開始処理を行う
+		if (InputManager::GetInstance()->GetPused(Gamepad::Button::B) ||
+			InputManager::GetInstance()->GetTriggerKey(DIK_RETURN)) {
+
+
+			// UIを透明にしていく
+
+			// タイトルロゴ
+			if (!mTitleLogo.lock()->GetIsFadeActive()) {
+				mTitleLogo.lock()->StartFade(FadeOut, 0.5f);
 			}
-			else {
-				mUISelectingNum = 2; // 最後の選択肢に戻る
+			// 選択中のUI背景
+			if (!mSelectingBackUI.lock()->GetIsFadeActive()) {
+				mSelectingBackUI.lock()->StartFade(FadeOut, 0.5f);
 			}
+			// スタート誘導UI
+			if (!mGameStartUI.lock()->GetIsFadeActive()) {
+				mGameStartUI.lock()->StartFade(FadeOut, 0.5f);
+			}
+			// オプションUI
+			if (!mSystemUI.lock()->GetIsFadeActive()) {
+				mSystemUI.lock()->StartFade(FadeOut, 0.5f);
+			}
+			// ゲーム終了UI
+			if (!mQuitUI.lock()->GetIsFadeActive()) {
+				mQuitUI.lock()->StartFade(FadeOut, 0.5f);
+			}
+			// UI背景も透明にする
+			if (mSelectingBackUI.lock()->GetFadeStyle() == Loop) {
+				mSelectingBackUI.lock()->StartFade(FadeOut, 0.5f);
+			}
+
+			// フェーズをUIフェードに移行
+			mPhaseFunc = &TitleScene::UIFadePhase;
+
 		}
 
-		// 下ボタン/Sキー を押したら選択UIを下に移動する
-		else if (InputManager::GetInstance()->GetPused(Gamepad::Button::DOWN) ||
-			InputManager::GetInstance()->GetTriggerKey(DIK_S)) {
+		break;
 
-			// 選択UIを下に移動
-			if (mUISelectingNum < 2) {
-				mUISelectingNum++;
-			}
-			else {
-				mUISelectingNum = 0; // 最初の選択肢に戻る
-			}
-		}
+	case 1: // システム(オプション) 
 
-		// あまり望ましくはないが、switchをネストし、選択しているUIへの処理を記載する
-		switch (mUISelectingNum)
-		{
-		case 0: // ゲーム開始 
+		// 選択中のUIの背景の座標を更新
+		mSelectingBackUI.lock()->SetPos(mSystemUI.lock()->GetPos());
 
-			// 選択中のUIの背景の座標を更新
-			mSelectingBackUI.lock()->SetPos(mGameStartUI.lock()->GetPos());
+		// Bボタン/Enterキー を押したらゲーム開始処理を行う
+		if (InputManager::GetInstance()->GetPused(Gamepad::Button::B) ||
+			InputManager::GetInstance()->GetTriggerKey(DIK_RETURN)) {
 
-			// Bボタン/Enterキー を押したらゲーム開始処理を行う
-			if (InputManager::GetInstance()->GetPused(Gamepad::Button::B) ||
-				InputManager::GetInstance()->GetTriggerKey(DIK_RETURN)) {
-
-				// UI表示の遷移を行う
-				mIsTransUI = true;
-				// UI表示切替の進行度をリセット
-				mUITransCount = 0.0f;
-
-				// UIを透明にしていく
-
-				// タイトルロゴもここで透明にする
-				if (!mTitleLogo.lock()->GetIsFadeActive()) {
-					mTitleLogo.lock()->StartFade(FadeOut, 0.5f);
-				}
-
-				if (!mSelectingBackUI.lock()->GetIsFadeActive()) {
-					mSelectingBackUI.lock()->StartFade(FadeOut, 0.5f);
-				}
-				if (!mGameStartUI.lock()->GetIsFadeActive()) {
-					mGameStartUI.lock()->StartFade(FadeOut, 0.5f);
-				}
-				if (!mSystemUI.lock()->GetIsFadeActive()) {
-					mSystemUI.lock()->StartFade(FadeOut, 0.5f);
-				}
-				if (!mQuitUI.lock()->GetIsFadeActive()) {
-					mQuitUI.lock()->StartFade(FadeOut, 0.5f);
-				}
-
-
-				// UI背景も透明にする
-				if (mSelectingBackUI.lock()->GetFadeStyle() == Loop) {
-					mSelectingBackUI.lock()->StartFade(FadeOut, 0.5f);
-				}
-
-			}
-
-			break;
-
-		case 1: // システム(オプション) 
-
-			// 選択中のUIの背景の座標を更新
-			mSelectingBackUI.lock()->SetPos(mSystemUI.lock()->GetPos());
-
-			// Bボタン/Enterキー を押したらゲーム開始処理を行う
-			if (InputManager::GetInstance()->GetPused(Gamepad::Button::B) ||
-				InputManager::GetInstance()->GetTriggerKey(DIK_RETURN)) {
-
-				// メニューシーンの表示
-				SceneManager::GetInstance()->MenuRequest();
-
-			}
-
-			break;
-
-		case 2: // ゲーム終了 
-
-			// 選択中のUIの背景の座標を更新
-			mSelectingBackUI.lock()->SetPos(mQuitUI.lock()->GetPos());
-
-			// Bボタン/Enterキー を押したらゲーム終了処理を行う
-			if (InputManager::GetInstance()->GetPused(Gamepad::Button::B) ||
-				InputManager::GetInstance()->GetTriggerKey(DIK_RETURN)) {
-
-
-				//
-				// のちのち、ワンクッションの実装を行う
-				//
-
-
-				// シーンマネージャーに終了リクエストを送り、ゲームを終了する
-				SceneManager::GetInstance()->EndRequest();
-			}
-
-			break;
-
-		default:
-			break;
-		}
-
-		// UI背景を点滅させる
-		if (!mSelectingBackUI.lock()->GetIsFadeActive()) {
-			// ループの実行
-			mSelectingBackUI.lock()->StartFade(Loop, 0.5f);
-		}
-
-	}
-
-	// UI表示の遷移中
-	else if (mIsTransUI) {
-
-		// UI表示の遷移が終了したら
-		if (mTitleLogo.lock()->GetIsFadeActive() == false &&
-			mSelectingBackUI.lock()->GetIsFadeActive() == false &&
-			mGameStartUI.lock()->GetIsFadeActive() == false &&
-			mSystemUI.lock()->GetIsFadeActive() == false &&
-			mQuitUI.lock()->GetIsFadeActive() == false
-			) {
-
-			// UI表示の遷移を終了
-			mIsTransUI = false;
-			// UI表示切替の進行度をリセット
-			mUITransCount = 0.0f;
-			// ビネットをかける準備をする
-			mGameStartVignnetingTime = 0.0f;
-			// ゲーム開始演出に移行
-			mPhaseFunc = &TitleScene::GameStartPhase;
-			mSelectStep = SelectStep::GAMESTART;
-
-			// プレイヤーのアニメーションを変更
-			mPlayerObj->mSkinning->SetNextAnimation("run");
+			// メニューシーンの表示
+			SceneManager::GetInstance()->MenuRequest();
 
 		}
+
+		break;
+
+	case 2: // ゲーム終了 
+
+		// 選択中のUIの背景の座標を更新
+		mSelectingBackUI.lock()->SetPos(mQuitUI.lock()->GetPos());
+
+		// Bボタン/Enterキー を押したらゲーム終了処理を行う
+		if (InputManager::GetInstance()->GetPused(Gamepad::Button::B) ||
+			InputManager::GetInstance()->GetTriggerKey(DIK_RETURN)) {
+
+
+			//
+			// のちのち、ワンクッションの実装を行う
+			//
+
+
+			// シーンマネージャーに終了リクエストを送り、ゲームを終了する
+			SceneManager::GetInstance()->EndRequest();
+		}
+
+		break;
+
+	default:
+		break;
 	}
 
 }
@@ -518,9 +407,10 @@ void TitleScene::GameStartPhase() {
 
 	// ゲーム開始前の演出処理
 	Vector3 pos = mPlayerObj->GetWorldTransform()->GetWorldPosition();
-	pos += {0.0f, 0.0f, 0.1f};
+	pos += {0.0f, 0.0f, BlackBoard::CombertGameFPS(6.0f)};
 
 	if (pos.z >= 1.0f) {
+
 		// プレイヤーをジャンプさせる
 		if (mPlayerObj->mSkinning->GetNowSkinCluster()->name == "run" &&
 			!mPlayerObj->mSkinning->SearchToWaitingSkinCluster("jump")) {
@@ -563,6 +453,168 @@ void TitleScene::GameStartPhase() {
 	}
 
 	mPlayerObj->SetTranslate(pos);
+
+
+}
+
+void TitleScene::UIFadePhase() {
+
+	// 各UIのフェード処理を行う際に通過するフェーズ
+	// UI表示の遷移はマネージャが一括で行うため
+	// 更新処理以外のフェーズ移行やフラグの切り替えなどを行う
+	switch (mSelectStep)
+	{
+	case SelectStep::START:
+
+		// スタート誘導UIと背景UIが透明になったか確認する
+		if (mPushStartUI.lock()->GetActive() != false &&
+			mPushStartBackUI.lock()->GetActive() != false
+			) {
+
+			// 誘導及び背景のフェードアウトが終了したらそれぞれ非表示にしておく
+			if (!mPushStartUI.lock()->GetIsFadeActive() &&
+				!mPushStartBackUI.lock()->GetIsFadeActive()) {
+
+				// 非表示処理
+				mPushStartUI.lock()->SetActive(false);
+				mPushStartBackUI.lock()->SetActive(false);
+
+			}
+
+			// 透明になっていない場合、
+			// 早期リターンによりフェーズを終了する
+			return;
+
+		}
+
+		// 透明になった場合、選択肢関係のUIのフェードを開始する
+		
+		// ゲーム開始UI
+		if (!mGameStartUI.lock()->GetActive() &&
+			!mGameStartUI.lock()->GetIsFadeActive()) {
+			mGameStartUI.lock()->StartFade(FadeIn, 0.5f);
+		}
+		// システム移行UI
+		if (!mSystemUI.lock()->GetActive() &&
+			!mSystemUI.lock()->GetIsFadeActive()) {
+			mSystemUI.lock()->StartFade(FadeIn, 0.5f);
+		}
+
+		// ゲーム終了UI
+		if (!mQuitUI.lock()->GetActive() &&
+			!mQuitUI.lock()->GetIsFadeActive()) {
+			mQuitUI.lock()->StartFade(FadeIn, 0.5f);
+		}
+
+		// UI背景を点滅させる
+		if (!mSelectingBackUI.lock()->GetActive()&&
+			!mSelectingBackUI.lock()->GetIsFadeActive()) {
+			// ループの実行
+			mSelectingBackUI.lock()->StartFade(Loop, 0.5f);
+		}
+
+		// 選択肢関係のUIのフェードが終了したら
+		// ゲーム選択画面に移行
+		if (!mGameStartUI.lock()->GetIsFadeActive() && mGameStartUI.lock()->GetFadeStyle() == FadeIn &&
+			!mSystemUI.lock()->GetIsFadeActive() && mSystemUI.lock()->GetFadeStyle() == FadeIn &&
+			!mQuitUI.lock()->GetIsFadeActive() && mQuitUI.lock()->GetFadeStyle() == FadeIn
+			) {
+
+			// ゲーム選択フェーズに移行
+			// フェーズ関数を変更
+			mPhaseFunc = &TitleScene::GameSelectPhase;
+			// 選択段階をゲーム選択に変更
+			mSelectStep = SelectStep::GAMESELECT;
+		}
+
+		break;
+
+	case SelectStep::GAMESELECT:
+
+		// UI表示の遷移が終了したら
+		if (mTitleLogo.lock()->GetActive() == false &&
+			mSelectingBackUI.lock()->GetActive() == false &&
+			mGameStartUI.lock()->GetActive() == false &&
+			mSystemUI.lock()->GetActive() == false &&
+			mQuitUI.lock()->GetActive() == false
+			) {
+
+			// ビネットをかける準備をする
+			mGameStartVignnetingTime = 0.0f;
+			// ゲーム開始演出に移行
+			mPhaseFunc = &TitleScene::GameStartPhase;
+			mSelectStep = SelectStep::GAMESTART;
+
+			// プレイヤーのアニメーションを変更
+			mPlayerObj->mSkinning->SetNextAnimation("run");
+
+		}
+
+		break;
+	case SelectStep::GAMESTART:
+
+
+
+
+		if (0) {
+			// ゲーム開始演出に移行
+			mPhaseFunc = &TitleScene::GameStartPhase;
+		}
+
+		break;
+	case SelectStep::UIFADE:
+		break;
+	case SelectStep::END:
+		break;
+	default:
+		break;
+	}
+
+}
+
+void TitleScene::SelectInputProcess() {
+
+	// 選択肢を移動する
+	// コントローラは 上下ボタン 及び スティック
+	// 
+	// キーボードは Wキー/Sキー 及び 上下キー
+
+	// 上方向の入力
+	if (InputManager::GetInstance()->GetPused(Gamepad::Button::UP) ||
+		InputManager::GetInstance()->GetTriggerKey(DIK_W) ||
+		InputManager::GetInstance()->GetTriggerKey(DIK_UP)) {
+
+		// 上に移動
+		if (mUISelectingNum > 0) {
+			mUISelectingNum--;
+		}
+		else {
+			mUISelectingNum = 2; // 最後の選択肢に戻る
+		}
+	}
+
+	// 下方向の入力
+	if (InputManager::GetInstance()->GetPused(Gamepad::Button::DOWN) ||
+		InputManager::GetInstance()->GetTriggerKey(DIK_S) ||
+		InputManager::GetInstance()->GetTriggerKey(DIK_DOWN)) {
+
+		// 下に移動
+		if (mUISelectingNum < 2) {
+			mUISelectingNum++;
+		}
+		else {
+			mUISelectingNum = 0; // 最初の選択肢に戻る
+		}
+	}
+
+	// 決定ボタンの入力を確認
+	// コントローラは Bボタン
+	// キーボードは Enterキー
+
+	if (InputManager::GetInstance()->GetPused(Gamepad::Button::B) ||
+		InputManager::GetInstance()->GetTriggerKey(DIK_RETURN)) {
+
+	}
 
 
 }

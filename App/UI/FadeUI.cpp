@@ -98,6 +98,8 @@ void FadeUI::Update(){
 				mSprite->SetAlpha(0.0f);
 				// フェードのフラグをオフにする
 				mIsFadeActive = false;
+				// フェードアウトの場合、UIを無効化(=非表示)にする
+				mIsActive = false;
 
 				break;
 			case Loop:
@@ -221,4 +223,6 @@ void FadeUI::StartFade(FadeStyle style,float duration){
 	mElapsedTime = 0.0f; 
 	// フェードの振る舞いを設定
 	mStyle = style;
+	// フェード開始時、UIを有効化(=表示)する
+	mIsActive = true;
 }

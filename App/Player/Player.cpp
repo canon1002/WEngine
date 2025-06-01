@@ -336,29 +336,23 @@ void Player::UpdateObject(){
 
 	// 右手のワールド行列を更新
 	weaponParentMat = Multiply(
-		GetObject3D()->mSkinning->GetSkeleton().joints[GetObject3D()->mSkinning->GetSkeleton().jointMap["mixamorig:RightHand"]
-		].skeletonSpaceMatrix, GetObject3D()->GetWorldTransform()->GetWorldMatrix());
+		GetObject3D()->mSkinning->GetBoneMatrix("mixamorig:RightHand"),
+		GetObject3D()->GetWorldTransform()->GetWorldMatrix());
 
 	// 剣
 	sword->Update();
 
 	// ワールド座標更新
-	swordWorldMat[0] = Multiply(
-		sword->mSkinning->GetBoneMatrix("Blade0"),
-		sword->GetWorldTransform()->GetWorldMatrix());
-	
-	swordWorldMat[1] = Multiply(
-		sword->mSkinning->GetSkeleton().joints[sword->mSkinning->GetSkeleton().jointMap["Blade1"]
-		].skeletonSpaceMatrix, sword->GetWorldTransform()->GetWorldMatrix());
-	swordWorldMat[2] = Multiply(
-		sword->mSkinning->GetSkeleton().joints[sword->mSkinning->GetSkeleton().jointMap["Blade2"]
-		].skeletonSpaceMatrix, sword->GetWorldTransform()->GetWorldMatrix());
-	swordWorldMat[3] = Multiply(
-		sword->mSkinning->GetSkeleton().joints[sword->mSkinning->GetSkeleton().jointMap["Blade3"]
-		].skeletonSpaceMatrix, sword->GetWorldTransform()->GetWorldMatrix());
-	swordWorldMat[4] = Multiply(
-		sword->mSkinning->GetSkeleton().joints[sword->mSkinning->GetSkeleton().jointMap["Blade4"]
-		].skeletonSpaceMatrix, sword->GetWorldTransform()->GetWorldMatrix());
+	for(int32_t i = 0; i < 5; i++) {
+
+		// ボーン名
+		std::string boneName = "Blade" + std::to_string(i);
+
+		// 剣の各ボーンのワールド座標を更新
+		swordWorldMat [i] = Multiply(
+			sword->mSkinning->GetBoneMatrix(boneName),
+			sword->GetWorldTransform()->GetWorldMatrix());
+	}
 
 	// 弾 更新
 	for (auto& bullet : mBullets) {
