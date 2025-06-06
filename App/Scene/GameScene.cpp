@@ -134,6 +134,12 @@ void GameScene::Init() {
 	mMoveUI.displayCount = 0.0f;
 	mMoveUI.isActive = true;
 
+	// Pause 
+	UIManager::GetInstance()->CreateUI("PauseButtonUI", SceneName::Game);
+	mPauseButtonUI = dynamic_pointer_cast<BaseUI>(UIManager::GetInstance()->GetUIPtr("PauseButtonUI"));
+	// 最初は非表示
+	mPauseButtonUI.lock()->SetActive(false);
+
 	// 演出中、スクリーンの上下に表示する黒画像
 	for (int32_t i = 0; i < mMovieScreen.size(); i++) {
 		mMovieScreen[i].sprite = std::make_unique<Sprite>();
@@ -420,6 +426,8 @@ void GameScene::BeginPhase() {
 				mPhase = Phase::BATTLE;
 				// カメラ操作を有効にする
 				MainCamera::GetInstance()->SetCameraRotateControll(true);
+				// ポーズボタンを表示する
+				mPauseButtonUI.lock()->SetActive(true);
 			}
 		}
 
@@ -441,6 +449,8 @@ void GameScene::BattlePhase() {
 		mPhase = Phase::LOSE;
 		mViggnetTime = 0.0f;
 		PostEffect::GetInstance()->SetRedViggnetEnable(true);
+		// ポーズボタンを非表示にする
+		mPauseButtonUI.lock()->SetActive(false);
 
 	}
 	// ボスのHPが0になったら
@@ -450,6 +460,8 @@ void GameScene::BattlePhase() {
 		mFinishUI.isActive = true;
 		mBoss->GetObject3D()->mSkinning->SetNextAnimation("death");
 		Framerate::GetInstance()->SetBattleSpeed(0.5f);
+		// ポーズボタンを非表示にする
+		mPauseButtonUI.lock()->SetActive(false);
 	}
 
 	// ヒットストップの更新

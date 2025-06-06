@@ -15,6 +15,7 @@
 
 // マネージャー
 #include "GameEngine/Input/InputManager.h"
+#include "GameEngine/UI/UIManager.h"
 
 // 段階
 enum class Phase {
@@ -91,6 +92,9 @@ private: // -- 非公開 メンバ変数 -- //
 	EasingToVector3 mCameraTr;
 
 	// -- UI -- //
+
+	// Pauseボタン
+	std::weak_ptr<BaseUI> mPauseButtonUI;
 
 	// 操作ガイド
 	UISet mMoveUI;

@@ -60,7 +60,7 @@ public: // -- 公開 メンバ関数 -- //
 	void Draw(const Vector2& pos) {
 		for (auto& sprite : mSprites) {
 			sprite->SetPos(pos);
-			//sprite->Draw();
+			sprite->Draw();
 		}
 	}
 

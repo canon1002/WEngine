@@ -70,6 +70,7 @@ void EffectPixels::Draw() {
 
 void EffectPixels::DrawGui(std::string name)
 {
+	name;
 #ifdef _DEBUG
 	ImGui::Begin(name.c_str());
 	ImGui::DragFloat3("TopB", &mVertexData[0].position.x, 0.1f, -100.0f, 100.0f);

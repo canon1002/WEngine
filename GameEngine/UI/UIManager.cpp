@@ -78,6 +78,11 @@ void UIManager::Draw() {
 			continue;
 		}
 
+		// UIが有効化されていない場合は描画しない
+		if(!ui->GetActive()) {
+			continue;
+		}
+
 		// スプライトの描画処理
 		ui->Draw();
 	}
@@ -89,10 +94,12 @@ void UIManager::CreateUI(const std::string& name,SceneName sceneName){
 	// JSON情報に基づいてUIを生成する
 	
 	// UIのタイプを取得
-	auto newUI = mUIFactory->CreateUI(BlackBoard::GetGlobalVariables()->GetStringValue(name, "Type"));
+	auto newUI = mUIFactory->CreateUI(
+		BlackBoard::GetGlobalVariables()->GetStringValue(name, "Type"));
 	
 	// UIを初期化
 	newUI->Init(name);
+
 	// 更新・描画処理のときに実行シーンのもののみを表示するために
 	// magic_enumで文字列に変換したうえで所属シーン名を登録する
 	newUI->SetSceneName(magic_enum::enum_name<SceneName>(sceneName).data());
@@ -114,7 +121,15 @@ void UIManager::DeleteSceneUI(SceneName sceneName){
 	// UIのポインタを取得する
 	for (auto& ui : mUIList) {
 
-		ui;
+		// UIが指定したシーンに属しているか確認する
+		if (magic_enum::enum_cast<SceneName>(ui->GetSceneName()) != sceneName) {
+
+			// 指定したシーン以外のものはスキップ
+			continue;
+		}
+		
+		// UIのポインタを削除する
+		//ui.reset();
 
 	}
 
