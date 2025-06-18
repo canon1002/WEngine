@@ -1,0 +1,52 @@
+{
+    "PlayerHpGage": {
+        "Alpha": 1.0,
+        "Anchor": [
+            0.0,
+            0.5
+        ],
+        "Current_Color": [
+            0.04,
+            0.625,
+            0.15
+        ],
+        "Max_Color": [
+            0.04,
+            0.04,
+            0.04
+        ],
+        "Diff_Color": [
+            0.3,
+            0.06,
+            0.06
+        ],
+        "Current_Pos": [
+            60.0,
+            640.0
+        ],
+        "Current_Scale": [
+            160.0,
+            8.0
+        ],
+        "DiffGageDecreaseTime": 64.0,
+        "GageDecreaseDelay": 0.5,
+        "Diff_Pos": [
+            60.0,
+            640.0
+        ],
+        "Diff_Scale": [
+            160.0,
+            8.0
+        ],
+        "Max_Pos": [
+            60.0,
+            640.0
+        ],
+        "Max_Scale": [
+            160.0,
+            8.0
+        ],
+        "Texture": "white2x2",
+        "Type": "Gage"
+    }
+}

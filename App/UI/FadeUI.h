@@ -1,5 +1,5 @@
 #pragma once
-#include "GameENgine/UI/BaseUI.h"
+#include "GameEngine/UI/BaseUI.h"
 
 // フェードの振る舞い
 enum FadeStyle {
@@ -40,20 +40,7 @@ public: // -- 公開 メンバ関数 -- //
 	/// <param name="duration"></param>
 	void StartFade(FadeStyle style, float duration = 1.0f);
 
-	// 座標の取得
-	Vector2 GetPos() const { return mSprite->GetPos(); }
-	// 座標の設定
-	void SetPos(const Vector2& pos) { mSprite->SetPos(pos); }
-
-	// アルファ値の取得
-	float GetAlpha() const { return mSprite->GetColor().a; }
-	// アルファ値の設定
-	void SetAlpha(float alpha) {
-		Color color = mSprite->GetColor();
-		color.a = alpha;
-		mSprite->SetColor(color);
-	}
-
+	
 	// フェード進行度の取得(割合)
 	float GetFadeProgress() const {return mElapsedTime / mFadeDuration;}
 	// フェード進行度の取得(=経過時間)

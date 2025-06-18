@@ -21,7 +21,7 @@ BossEnemy::~BossEnemy() {}
 void BossEnemy::Init() {
 
 	// クラス名を設定
-	mName = "BossEnemy";
+	mName = "Boss";
 
 	// モデルの読み込み
 	ModelManager::GetInstance()->LoadModel("twoHanded", "twoHanded.gltf");
@@ -92,7 +92,7 @@ void BossEnemy::Init() {
 	
 
 	// ステータス取得
-	mStatus = StatusManager::GetInstance()->GetBossStatus();
+	mStatus = GameManager::GetInstance()->GetStatus("Boss");
 
 	// コライダーの宣言
 	mObject->mCollider = std::make_unique<SphereCollider>(mObject->mWorldTransform.get(), mObject->GetWorldTransform()->scale.x);

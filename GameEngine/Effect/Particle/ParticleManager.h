@@ -83,7 +83,7 @@ private: // -- 非公開 メンバ変数 -- //
 	std::unordered_map<std::string,ParticleGroup> mParticleGroups;
 
 	// インスタンスの数
-	const int32_t kNumMaxInstance = 400;
+	const int32_t kNumMaxInstance = 1600;
 
 	// 乱数生成機
 	std::random_device mSeedGenerator;

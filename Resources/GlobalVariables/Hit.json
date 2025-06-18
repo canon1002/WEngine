@@ -1,0 +1,42 @@
+{
+    "Hit": {
+        "PosXDister" : [
+            0.0,
+            0.0
+        ],
+        "PosYDister" : [
+            0.0,
+            0.0
+        ],
+        "PosZDister" : [
+            0.0,
+            0.0
+        ],
+        "VelXDister" : [
+            -5.0,
+            5.0
+        ],
+        "VelYDister" : [
+            -5.0,
+            5.0
+        ],
+        "VelZDister" : [
+            0.0,
+            0.0
+        ],
+        "ScaleDister" : [
+            0.1,
+            0.2
+        ],
+        "ColorDister" : [
+            1.0,
+            1.0
+        ],
+        "TimeDister" : [
+            0.05,
+            0.15
+        ],
+        "Count" : 16,
+        "Frequency" : 0.05
+    }
+}

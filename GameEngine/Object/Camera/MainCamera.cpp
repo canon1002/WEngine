@@ -45,23 +45,22 @@ void MainCamera::Init() {
 	// カメラ回転操作
 	mIsControll = true;
 	mIsRotationEasing = false;
-	mRotaionEasingTime = 0.0f;
+	mRotaionEasingTime = 0.1f;
 
 	// カメラ回転操作の感度
 	mCameraSensitivity = 0.05f;
 	// カメラ回転操作の入力経過時間
 	mCameraInputCounts = { 0.0f ,0.0f };
 
+	// カメラのオフセットを入力
+	SetOffset(BlackBoard::GetGlobalVariables()->GetVector3Value("Camera", "Offset"));
+
 }
 void MainCamera::Update()
 {
-	// カメラのオフセットを入力
-	SetOffset(BlackBoard::GetGlobalVariables()->GetVector3Value("Camera", "Offset"));
 	// カメラ回転の限界値を取得
 	mRotLimitMin = BlackBoard::GetGlobalVariables()->GetVector3Value("Camera", "RotLimitMin");
 	mRotLimitMax = BlackBoard::GetGlobalVariables()->GetVector3Value("Camera", "RotLimitMax");
-	
-
 
 #ifdef _DEBUG
 	if (mWorldTransform != nullptr) {
@@ -94,49 +93,49 @@ void MainCamera::Update()
 
 		Matrix4x4 matW = mWorldTransform->GetWorldMatrix();
 
-		// 回転操作可能であれば回転できるようにする
-		if (mIsControll) {
+		//// 回転操作可能であれば回転できるようにする
+		//if (mIsControll) {
 
-			// スティック入力の量
-			const static int stickValue = 8000;
+		//	// スティック入力の量
+		//	const static int stickValue = 8000;
 
-			if (InputManager::GetInstance()->GetStickRatio(Gamepad::Stick::RIGHT_Y, stickValue) != 0.0f ||
-				InputManager::GetInstance()->GetStickRatio(Gamepad::Stick::RIGHT_X, stickValue) != 0.0f) {
+		//	if (InputManager::GetInstance()->GetStickRatio(Gamepad::Stick::RIGHT_Y, stickValue) != 0.0f ||
+		//		InputManager::GetInstance()->GetStickRatio(Gamepad::Stick::RIGHT_X, stickValue) != 0.0f) {
 
-				// Xの移動量とYの移動量を設定する
-				Vector3 direction = {
-					InputManager::GetInstance()->GetStickRatio(Gamepad::Stick::RIGHT_Y, stickValue),
-					InputManager::GetInstance()->GetStickRatio(Gamepad::Stick::RIGHT_X, stickValue),
-					0.0f,
-				};
-				// 念のために正規化
-				//direction = Normalize(direction);
-				// スティック上に倒すと下をみるようにする
-				direction.x *= (-1.0f);
+		//		// Xの移動量とYの移動量を設定する
+		//		Vector3 direction = {
+		//			InputManager::GetInstance()->GetStickRatio(Gamepad::Stick::RIGHT_Y, stickValue),
+		//			InputManager::GetInstance()->GetStickRatio(Gamepad::Stick::RIGHT_X, stickValue),
+		//			0.0f,
+		//		};
+		//		// 念のために正規化
+		//		//direction = Normalize(direction);
+		//		// スティック上に倒すと下をみるようにする
+		//		direction.x *= (-1.0f);
 
-				// 回転の速度 (感度値を乗算)
-				mWorldTransform->rotation.x += direction.x * mCameraSensitivity;
-				mWorldTransform->rotation.y += direction.y * mCameraSensitivity;
+		//		// 回転の速度 (感度値を乗算)
+		//		mWorldTransform->rotation.x += direction.x * mCameraSensitivity;
+		//		mWorldTransform->rotation.y += direction.y * mCameraSensitivity;
 
-				// x軸の回転は制限する
-				if (mWorldTransform->rotation.x < mRotLimitMin.x) {
-					mWorldTransform->rotation.x = mRotLimitMin.x;
-				}
-				if (mWorldTransform->rotation.x > mRotLimitMax.x) {
-					mWorldTransform->rotation.x = mRotLimitMax.x;
-				}
+		//		// x軸の回転は制限する
+		//		if (mWorldTransform->rotation.x < mRotLimitMin.x) {
+		//			mWorldTransform->rotation.x = mRotLimitMin.x;
+		//		}
+		//		if (mWorldTransform->rotation.x > mRotLimitMax.x) {
+		//			mWorldTransform->rotation.x = mRotLimitMax.x;
+		//		}
 
-				// y軸の数値修正
-				if (mWorldTransform->rotation.y < mRotLimitMin.y) {
-					mWorldTransform->rotation.y = mRotLimitMax.y;
-				}
+		//		// y軸の数値修正
+		//		if (mWorldTransform->rotation.y < mRotLimitMin.y) {
+		//			mWorldTransform->rotation.y = mRotLimitMax.y;
+		//		}
 
-				if (mWorldTransform->rotation.y > mRotLimitMax.y) {
-					mWorldTransform->rotation.y = mRotLimitMin.y;
-				}
+		//		if (mWorldTransform->rotation.y > mRotLimitMax.y) {
+		//			mWorldTransform->rotation.y = mRotLimitMin.y;
+		//		}
 
-			}
-		}
+		//	}
+		//}
 	}
 
 

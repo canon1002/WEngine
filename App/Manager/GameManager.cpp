@@ -1,6 +1,9 @@
 #include "GameManager.h"
 #include "App/Player/Player.h"
 #include "App/Enemy/BossEnemy.h"
+#include "GameEngine/UI/UIManager.h"
+#include "GameEngine/Scene/SceneManager.h"
+
 
 GameManager* GameManager::instance = nullptr;
 
@@ -24,7 +27,11 @@ void GameManager::Init() {
 	mCollisionManager = std::make_unique<CollisionManager>();
 
 	// ステータス管理クラス
-	//StatusManager::GetInstance()->Init();
+	mStatusManager = std::make_unique<StatusManager>();
+	mStatusManager->Init();
+	
+	// UIの初期化
+	InitUI();
 
 }
 
@@ -34,7 +41,6 @@ void GameManager::Update() {
 
 	// コライダーリストの更新を行う
 	UpdateColliderList();
-	
 
 	// -- 衝突後処理フェーズ -- //
 
@@ -48,7 +54,32 @@ void GameManager::Update() {
 
 }
 
-void GameManager::UpdateColliderList(){
+
+void GameManager::InitUI() {
+
+	// -- UI -- //
+
+	// プレイヤー - HPゲージ
+	UIManager::GetInstance()->CreateUI("PlayerHpGage", SceneName::Game);
+	mPlayerHpGage = static_cast<GageUI*>(UIManager::GetInstance()->GetUIPtr("PlayerHpGage"));
+	
+	// プレイヤー - スタミナゲージ
+	//UIManager::GetInstance()->CreateUI("PlayerStaminaGage", SceneName::Game);
+	//mPlayerStaminaGage = static_cast<GageUI*>(UIManager::GetInstance()->GetUIPtr("PlayerStaminaGage"));
+
+	// 敵 - HPゲージ
+	UIManager::GetInstance()->CreateUI("BossHpGage", SceneName::Game);
+	mBossHpGage = static_cast<GageUI*>(UIManager::GetInstance()->GetUIPtr("BossHpGage"));
+	
+	// 敵 - ブレイクゲージ
+	//UIManager::GetInstance()->CreateUI("BossBreakGage", SceneName::Game);
+	//mBossBreakGage = static_cast<GageUI*>(UIManager::GetInstance()->GetUIPtr("BossBreakGage"));
+
+
+
+}
+
+void GameManager::UpdateColliderList() {
 
 	// コライダーリストのクリア処理
 	mColliderList.clear();
@@ -99,7 +130,7 @@ void GameManager::UpdateColliderList(){
 
 }
 
-void GameManager::UpdateCollisionManager(){
+void GameManager::UpdateCollisionManager() {
 
 	// 衝突判定を行う
 	mCollisionManager->Update();
@@ -132,7 +163,10 @@ void GameManager::UpdateCollisionManager(){
 
 
 			// ダメージ計算処理
-			StatusManager::GetInstance()->ReceiveDamage(mPlayer->GetStatus(), 1.0f, mBoss->GetStatus());
+			mStatusManager->ReceiveDamage(mPlayer->GetName(), mBoss->GetName(), 1.0f);
+
+			// HPの減少をUIに反映
+			mBossHpGage->SetGageValue((float)mStatusManager->GetStatus(mBoss->GetName())->HP / (float)mStatusManager->GetStatus(mBoss->GetName())->MAXHP);
 		}
 
 		// 衝突相手のコライダーを検索(射撃)
@@ -160,7 +194,10 @@ void GameManager::UpdateCollisionManager(){
 
 
 			// ダメージ計算処理
-			StatusManager::GetInstance()->ReceiveDamage(mPlayer->GetStatus(), 1.0f, mBoss->GetStatus());
+			mStatusManager->ReceiveDamage(mPlayer->GetName(), mBoss->GetName(), 1.0f);
+
+			// HPの減少をUIに反映
+			mBossHpGage->SetGageValue((float)mStatusManager->GetStatus(mBoss->GetName())->HP / (float)mStatusManager->GetStatus(mBoss->GetName())->MAXHP);
 		}
 
 	}
@@ -194,7 +231,11 @@ void GameManager::UpdateCollisionManager(){
 
 
 			// ダメージ計算処理
-			StatusManager::GetInstance()->ReceiveDamage(mBoss->GetStatus(), 1.0f, mPlayer->GetStatus());
+			mStatusManager->ReceiveDamage(mBoss->GetName(), mPlayer->GetName(), 1.0f);
+
+			// HPの減少をUIに反映
+			mPlayerHpGage->SetGageValue((float)mStatusManager->GetStatus(mPlayer->GetName())->HP / (float)mStatusManager->GetStatus(mPlayer->GetName())->MAXHP);
+
 		}
 
 		// 衝突相手のコライダーを検索(射撃)
@@ -222,23 +263,29 @@ void GameManager::UpdateCollisionManager(){
 
 
 			// ダメージ計算処理
-			StatusManager::GetInstance()->ReceiveDamage(mBoss->GetStatus(), 1.0f, mPlayer->GetStatus());
+			mStatusManager->ReceiveDamage(mBoss->GetName(), mPlayer->GetName(), 1.0f);
+
+			// HPの減少をUIに反映
+			mPlayerHpGage->SetGageValue((float)mStatusManager->GetStatus(mPlayer->GetName())->HP / (float)mStatusManager->GetStatus(mPlayer->GetName())->MAXHP);
 		}
 
 	}
 
 }
 
-void GameManager::UpdateStatusManager(){
+void GameManager::UpdateStatusManager() {
 
-	// ステータス管理クラス 更新
-	StatusManager::GetInstance()->Update();
+	// -- ステータスUI 更新 -- //
+
+
+
+
+}
+
+void GameManager::Draw() {
 
 }
 
-void GameManager::Draw(){
-
-}
 
 
 void GameManager::SetCollider(std::shared_ptr<GameCollider> collider) {
@@ -251,10 +298,10 @@ void GameManager::SetCollider(std::shared_ptr<GameCollider> collider) {
 	mColliderList[typeID].push_back(newCollider);
 }
 
-bool GameManager::ChackOnCollided(uint32_t typeID){
+bool GameManager::ChackOnCollided(uint32_t typeID) {
 
 	for (std::weak_ptr<GameCollider>collider : mColliderList[typeID]) {
-		
+
 		// 衝突していたらtrueを返す
 		if (collider.lock()->collider->GetOnCollisionFlag()) {
 			return true;
@@ -265,17 +312,17 @@ bool GameManager::ChackOnCollided(uint32_t typeID){
 	return false;
 }
 
-void GameManager::SetPlayer(Player* player){
+void GameManager::SetPlayer(Player* player) {
 	// プレイヤーのポインタを取得する
 	mPlayer = player;
 }
 
-void GameManager::SetBossEnemy(BossEnemy* boss){
+void GameManager::SetBossEnemy(BossEnemy* boss) {
 	// ボス敵のポインタを取得する
 	mBoss = boss;
 }
 
-void GameManager::ResolveCollision(){
+void GameManager::ResolveCollision() {
 
 	// 簡易衝突判定(プレイヤーとボス敵)
 	float dx = mPlayer->GetWorldPos().x - mBoss->GetWorldPos().x;
@@ -300,7 +347,7 @@ void GameManager::ResolveCollision(){
 		distance = std::sqrt(dx * dx + dz * dz);
 	}
 
-	float overlap = distance - (mPlayer->GetObject3D()->GetWorldTransform()->scale.x / 2.0f) - 
+	float overlap = distance - (mPlayer->GetObject3D()->GetWorldTransform()->scale.x / 2.0f) -
 		(mBoss->GetObject3D()->GetWorldTransform()->scale.x / 2.0f);
 
 	// プレイヤーを押し出す

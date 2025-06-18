@@ -31,6 +31,20 @@ public: // -- 公開 メンバ関数 -- //
 	// UIの有効/無効を取得する
 	bool GetActive() const { return mIsActive; }
 
+	// 座標の取得
+	Vector2 GetPos() const { return mSprite->GetPos(); }
+	// 座標の設定
+	void SetPos(const Vector2& pos) { mSprite->SetPos(pos); }
+
+	// アルファ値の取得
+	float GetAlpha() const { return mSprite->GetColor().a; }
+	// アルファ値の設定
+	void SetAlpha(float alpha) {
+		Color color = mSprite->GetColor();
+		color.a = alpha;
+		mSprite->SetColor(color);
+	}
+
 	// UI名の取得
 	std::string GetName() const { return mName; }
 

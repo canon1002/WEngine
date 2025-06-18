@@ -29,7 +29,7 @@ private: // -- 非公開 メンバ変数 -- //
 	bool mIsActive = false;	
 	
 	// メニュー背景スプライト
-	std::weak_ptr<BaseUI> mMenuBackground;	
+	BaseUI* mMenuBackground;
 
 };
 

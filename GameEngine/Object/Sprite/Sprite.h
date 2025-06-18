@@ -22,6 +22,7 @@ public: // -- 公開 メンバ関数 -- //
 	void Draw();
 	// ImGuiの描画
 	void DrawGui();
+	void DrawGui(const std::string& name);
 
 	void CreateVertexResource();
 	void CreateIndexResource();

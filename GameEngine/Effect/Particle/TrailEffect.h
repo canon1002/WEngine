@@ -23,7 +23,7 @@ public: // -- 公開 メンバ変数 -- //
 
 	void Create(const WorldTransform& top,const WorldTransform& bottom);
 
-	bool GetGetPositionFlag() { return mIsPositionSet; }
+	bool GetPositionFlag() { return mIsPositionSet; }
 
 	// 色を設定
 	void SetColor(Color color) { mEffectColor = color; }

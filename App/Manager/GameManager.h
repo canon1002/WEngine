@@ -3,6 +3,7 @@
 #include "App/Manager/Reaction/DamageReaction.h"
 #include "GameEngine/Component/Collider/CollisionManager.h"
 #include "App/Actor/Collider/GameCollider.h"
+#include "App/UI/GageUI.h"
 
 // 前方宣言
 class Player;
@@ -34,6 +35,13 @@ public: // -- 公開 メンバ関数 -- //
 	// 描画処理
 	void Draw();
 
+	// -- 初期化処理 関数群 -- //
+
+	// UIの初期化を行う
+	void InitUI();
+
+	// -- 更新処理 関数群 -- //
+
 	// コライダーリストの更新を行う
 	void UpdateColliderList();
 	// 衝突判定 ＆ 衝突後処理
@@ -41,11 +49,19 @@ public: // -- 公開 メンバ関数 -- //
 	// ステータス並びにUIの更新処理
 	void UpdateStatusManager();
 
+
+
+	// --  衝突判定 関数群 -- //
+
 	// コライダーをリストに追加する
 	void SetCollider(std::shared_ptr<GameCollider> collider);
-
 	// 指定した種別IDのコライダーが衝突したか調べる
 	bool ChackOnCollided(uint32_t typeID);
+
+
+
+	// -- アクセッサ 関数群 -- //
+
 
 	// プレイヤークラスのポインタをセットする
 	void SetPlayer(Player* player);
@@ -71,6 +87,13 @@ public: // -- 公開 メンバ関数 -- //
 		return duration;
 	}
 
+	// ステータス取得用アクセッサ
+	Status* GetStatus(const std::string& name){
+		return mStatusManager->GetStatus(name);
+	}
+
+	// -- その他 -- //
+
 	// 押し出し処理
 	void ResolveCollision();
 
@@ -78,7 +101,8 @@ private: // -- 非公開 メンバ変数 -- //
 
 	// インスタンス
 	static GameManager* instance;
-	// プレイヤーキャラのポインタewr0iuy21qan 
+
+	// プレイヤーキャラのポインタ
 	Player* mPlayer;
 	// 敵キャラのポインタ
 	BossEnemy* mBoss;
@@ -99,6 +123,22 @@ private: // -- 非公開 メンバ変数 -- //
 
 	// -- ステータス関係 -- //
 
+	// ステータスマネージャ
+	std::unique_ptr<StatusManager> mStatusManager;
+
+
+
+	// -- UI -- //
+
+	// プレイヤー - HPゲージ
+	GageUI* mPlayerHpGage;
+	// プレイヤー - スタミナゲージ
+	GageUI* mPlayerStaminaGage;
+
+	// 敵 - HPゲージ
+	GageUI* mBossHpGage;
+	// 敵 - ブレイクゲージ
+	GageUI* mBossBreakGage;
 
 
 };

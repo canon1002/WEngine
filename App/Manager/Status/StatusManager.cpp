@@ -1,53 +1,43 @@
 #include "StatusManager.h"
 #include "GameEngine/Editor/ImGui/ImGuiManager.h"
 
-StatusManager* StatusManager::instance = nullptr;
-
-StatusManager* StatusManager::GetInstance()
-{
-	if (instance == nullptr) {
-		instance = new StatusManager();
-	}
-	return instance;
-}
-
 void StatusManager::Init()
 {
 	// インスタンス取得
 	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
 
-	mPlayerStatus = std::make_shared<Status>();
-	mPlayerStatus->Init();
+	mStatusList["Player"] = std::make_unique<Status>();
+	mStatusList["Player"]->Init();
 	
-	mBossStatus = std::make_shared<Status>();
-	mBossStatus->Init();
+	mStatusList["Boss"] = std::make_unique<Status>();
+	mStatusList["Boss"]->Init();
 
 	globalVariables->CreateGroup("PlayerData");
-	globalVariables->AddItem("PlayerData", "HP", mPlayerStatus->HP);
-	globalVariables->AddItem("PlayerData", "STR", mPlayerStatus->STR);
-	globalVariables->AddItem("PlayerData", "VIT", mPlayerStatus->VIT);
-	globalVariables->AddItem("PlayerData", "AGI", mPlayerStatus->AGI);
+	globalVariables->AddItem("PlayerData", "HP", mStatusList["Player"]->HP);
+	globalVariables->AddItem("PlayerData", "STR", mStatusList["Player"]->STR);
+	globalVariables->AddItem("PlayerData", "VIT", mStatusList["Player"]->VIT);
+	globalVariables->AddItem("PlayerData", "AGI", mStatusList["Player"]->AGI);
 
 	// 登録済みのデータから数値を取得
-	mPlayerStatus->HP = int32_t(globalVariables->GetIntValue("PlayerData", "HP"));
-	mPlayerStatus->MAXHP = int32_t(globalVariables->GetIntValue("PlayerData", "HP"));
-	mPlayerStatus->STR = int32_t(globalVariables->GetIntValue("PlayerData", "STR"));
-	mPlayerStatus->VIT = int32_t(globalVariables->GetIntValue("PlayerData", "VIT"));
-	mPlayerStatus->AGI = int32_t(globalVariables->GetIntValue("PlayerData", "AGI"));
+	mStatusList["Player"]->HP = int32_t(globalVariables->GetIntValue("PlayerData", "HP"));
+	mStatusList["Player"]->MAXHP = int32_t(globalVariables->GetIntValue("PlayerData", "HP"));
+	mStatusList["Player"]->STR = int32_t(globalVariables->GetIntValue("PlayerData", "STR"));
+	mStatusList["Player"]->VIT = int32_t(globalVariables->GetIntValue("PlayerData", "VIT"));
+	mStatusList["Player"]->AGI = int32_t(globalVariables->GetIntValue("PlayerData", "AGI"));
 
 	globalVariables->CreateGroup("BossData");
-	globalVariables->AddItem("BossData", "HP", mBossStatus->HP);
-	globalVariables->AddItem("BossData", "STR", mBossStatus->STR);
-	globalVariables->AddItem("BossData", "VIT", mBossStatus->VIT);
-	globalVariables->AddItem("BossData", "AGI", mBossStatus->AGI);
+	globalVariables->AddItem("BossData", "HP", mStatusList["Boss"]->HP);
+	globalVariables->AddItem("BossData", "STR", mStatusList["Boss"]->STR);
+	globalVariables->AddItem("BossData", "VIT", mStatusList["Boss"]->VIT);
+	globalVariables->AddItem("BossData", "AGI", mStatusList["Boss"]->AGI);
 
 	// 登録済みのデータから数値を取得
-	mBossStatus->HP = int32_t(globalVariables->GetIntValue("BossData", "HP"));
-	mBossStatus->MAXHP = int32_t(globalVariables->GetIntValue("BossData", "HP"));
-	mBossStatus->STR = int32_t(globalVariables->GetIntValue("BossData", "STR"));
-	mBossStatus->VIT = int32_t(globalVariables->GetIntValue("BossData", "VIT"));
-	mBossStatus->AGI = int32_t(globalVariables->GetIntValue("BossData", "AGI"));
-	
+	mStatusList["Boss"]->HP = int32_t(globalVariables->GetIntValue("BossData", "HP"));
+	mStatusList["Boss"]->MAXHP = int32_t(globalVariables->GetIntValue("BossData", "HP"));
+	mStatusList["Boss"]->STR = int32_t(globalVariables->GetIntValue("BossData", "STR"));
+	mStatusList["Boss"]->VIT = int32_t(globalVariables->GetIntValue("BossData", "VIT"));
+	mStatusList["Boss"]->AGI = int32_t(globalVariables->GetIntValue("BossData", "AGI"));
+
 }
 
 void StatusManager::Update(){
@@ -58,27 +48,30 @@ void StatusManager::Update(){
 }
 
 void StatusManager::ReceiveDamage(const std::string& offence, const std::string& deffence){
-	offence;
-	deffence;
-}
 
-void StatusManager::ReceiveDamage(const std::string& offence, const std::string& deffence, float power){
-	offence;
-	deffence;
-	power;
-}
-
-void StatusManager::ReceiveDamage(std::shared_ptr<Status> attacker,float power, std::shared_ptr<Status> deffence)
-{
-	//  [(攻撃力/2) * 攻撃倍率] - [防御力/4] でダメージを計算する
-	int32_t damage = int32_t((attacker->STR / 2.0f) * power) - int32_t(deffence->VIT / 4.0f);
+	//  [(攻撃力/2)] - [防御力/4] でダメージを計算する
+	int32_t damage = int32_t((mStatusList[offence]->STR / 2.0f)) - int32_t(mStatusList[deffence]->VIT / 4.0f);
 
 	// ダメージが負の値である場合、0に修正すること
 	// そのうちダメージ最低保証などがあればここらへんも修正する
 	if (damage < 0.0f) { damage = 0; }
 
 	// ヒットポイントを減少させる
-	deffence->HP -= damage;
+	mStatusList[deffence]->HP -= damage;
+
+}
+
+void StatusManager::ReceiveDamage(const std::string& offence, const std::string& deffence, float power){
+	
+	//  [(攻撃力/2) * 攻撃倍率] - [防御力/4] でダメージを計算する
+	int32_t damage = int32_t((mStatusList[offence]->STR / 2.0f) * power) - int32_t(mStatusList[deffence]->VIT / 4.0f);
+
+	// ダメージが負の値である場合、0に修正すること
+	// そのうちダメージ最低保証などがあればここらへんも修正する
+	if (damage < 0.0f) { damage = 0; }
+
+	// ヒットポイントを減少させる
+	mStatusList[deffence]->HP -= damage;
 
 }
 

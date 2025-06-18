@@ -23,57 +23,22 @@ void GameScene::Init() {
 	// シーン名の設定
 	mSceneName = "Game";
 
-	// ステータスマネージャ
-	StatusManager::GetInstance()->Init();
-
-	// モデル 読み込み
-	ModelManager::GetInstance()->LoadModel("plane", "plane.gltf");
-	ModelManager::GetInstance()->LoadModel("field", "field.gltf");
-	ModelManager::GetInstance()->LoadModel("box", "box.gltf");
-	ModelManager::GetInstance()->LoadModel("ball", "ball.obj");
-	ModelManager::GetInstance()->LoadModel("AnimatedCube", "AnimatedCube.gltf");
-	ModelManager::GetInstance()->LoadModel("simpleSkin", "simpleSkin.gltf");
-
-	ModelManager::GetInstance()->LoadModel("boss", "boss.gltf");
-	ModelManager::GetInstance()->LoadModel("Weapons", "sword.gltf");
-	ModelManager::GetInstance()->LoadModel("Shield", "Shield.gltf");
-	ModelManager::GetInstance()->LoadModel("groundShadow", "groundShadow.gltf");
-	ModelManager::GetInstance()->LoadModel("EarthSwordBullet", "EarthSwordBullet.gltf");
-
-	// SkyBox 読み込み
-	TextureManager::GetInstance()->LoadTexture("skybox/rostock_laage_airport_4k.dds");
-	// skybox
-	Skybox::GetInstance()->Init("skybox", "skybox.dds");
-	// LevelEditorでSkyBoxのテクスチャを参照
-	LevelEditor::GetInstance()->SetTextureCubeMap(Skybox::GetInstance()->mTextureHandle);
-
-#pragma region Actor
-
-	// プレイヤー
-	mPlayer = std::make_unique<Player>();
-	mPlayer->Init();
-	mPlayer->GetObject3D()->SetTranslate(Vector3(0.0f, 100.0f, -8.0f));
-
-	// ボス
-	mBoss = std::make_unique<BossEnemy>();
-	mBoss->Init();
-
-	// 互いのポインタを渡す
-	mPlayer->SetBoss(mBoss.get());
-	mBoss->SetTarget(mPlayer.get());
-
-	// オブジェクトにCubeMapのテクスチャ番号を渡す
-	mPlayer->GetModel()->SetCubeTexture(Skybox::GetInstance()->mTextureHandle);
-	mPlayer->GetCollider()->GetModel()->SetCubeTexture(Skybox::GetInstance()->mTextureHandle);
-	mBoss->GetModel()->SetCubeTexture(Skybox::GetInstance()->mTextureHandle);
-	mBoss->GetCollider()->GetModel()->SetCubeTexture(Skybox::GetInstance()->mTextureHandle);
-	mPlayer->GetReticle3D()->SetCubeMap(Skybox::GetInstance()->mTextureHandle);
-
-#pragma endregion
-
 	// ゲームマネージャ宣言/初期化
 	GameManager* gameManager = GameManager::GetInstance();
 	gameManager->Init();
+
+	// オブジェクト/リソースの初期化
+	this->InitObject();
+	// Actor及び関係箇所の初期化
+	this->InitActor();
+	// UIの初期化
+	this->InitUI();
+	// カメラの初期化
+	this->InitCamera();
+	// エフェクト/パーティクルの初期化
+	this->InitEffects();
+
+	// アクターの初期化終了後、マネージャに参照を渡す
 	gameManager->SetPlayer(mPlayer.get()); // プレイヤーを参照
 	gameManager->SetBossEnemy(mBoss.get()); // ボス敵を参照
 
@@ -81,235 +46,9 @@ void GameScene::Init() {
 	mPhase = Phase::BEGIN;
 	mPhaseFunc = &GameScene::BeginPhase;
 
-	// メインカメラをフォローカメラ仕様にする
-	MainCamera* mainCamera = MainCamera::GetInstance();
-	mainCamera->SetFollowTarget(mPlayer->GetObject3D()->GetWorldTransform());
-	mainCamera->SetSearchTarget(mBoss->GetObject3D()->GetWorldTransform());
-	mainCamera->SetTranslate(Vector3(0.0f, 60.0f, -5.0f));
-	mainCamera->SetRotate(Vector3(1.57f, 0.0f, 0.0f));
-
-	// ダッシュ煙 初期化
-	mDashSmoke = std::make_unique<ParticleEmitter>("DashSmoke");
-	mDashSmoke->Init();
-	ParticleManager::GetInstance()->CreateParticleGroupe(mDashSmoke->mName, "circle.png");
-	
-	// 炎パーティクル
-	mFlameParticle = std::make_unique<ParticleEmitter>("Flame");
-	mFlameParticle->Init();
-	ParticleManager::GetInstance()->CreateParticleGroupe(mFlameParticle->mName, "Flame.png");
-
-
-	// 軌道エフェクト
-	mPlayerTrailEffect = std::make_unique<TrailEffect>();
-	mPlayerTrailEffect->Init();
-	mPlayerTrailEffect->SetColor(Color(0.1f, 0.1f, 1.0f, 0.8f));
-
-	mBossTrailEffect = std::make_unique<TrailEffect>();
-	mBossTrailEffect->Init();
-	mBossTrailEffect->SetColor(Color(1.0f, 0.1f, 0.1f, 0.8f));
-
-#pragma region UI/演出
-
-	// 開始前のビネット
-	mViggnetTime = 0.0f;
-
-	// 操作ガイド
-	mActionUI.sprite = std::make_unique<Sprite>();
-	mActionUI.sprite->Init();
-	mActionUI.sprite->SetTexture("UI/UI0.png");
-	mActionUI.sprite->SetScale({ 0.5f,0.5f });
-	mActionUI.sprite->SetPos({ 640.0f,600.0f });
-	mActionUI.sprite->SetAnchorPoint({ 0.5f,0.5f });
-	mActionUI.t = 0.0f;
-	mActionUI.displayCount = 0.0f;
-	mActionUI.isActive = true;
-
-	mMoveUI.sprite = std::make_unique<Sprite>();
-	mMoveUI.sprite->Init();
-	mMoveUI.sprite->SetTexture("UI/UI1.png");
-	mMoveUI.sprite->SetScale({ 0.5f,0.5f });
-	mMoveUI.sprite->SetPos({ 640.0f,500.0f });
-	mMoveUI.sprite->SetAnchorPoint({ 0.5f,0.5f });
-	mMoveUI.t = 0.0f;
-	mMoveUI.displayCount = 0.0f;
-	mMoveUI.isActive = true;
-
-	// Pause 
-	UIManager::GetInstance()->CreateUI("PauseButtonUI", SceneName::Game);
-	mPauseButtonUI = dynamic_pointer_cast<BaseUI>(UIManager::GetInstance()->GetUIPtr("PauseButtonUI"));
-	// 最初は非表示
-	mPauseButtonUI.lock()->SetActive(false);
-
-	// 演出中、スクリーンの上下に表示する黒画像
-	for (int32_t i = 0; i < mMovieScreen.size(); i++) {
-		mMovieScreen[i].sprite = std::make_unique<Sprite>();
-		mMovieScreen[i].sprite->Init();
-		mMovieScreen[i].sprite->SetTexture("white2x2.dds");
-		mMovieScreen[i].sprite->SetScale({ 1.0f,1.0f });
-		mMovieScreen[i].sprite->SetSpriteSize({ mainCamera->GetWindowSize().x,mainCamera->GetWindowSize().y * 0.1f });
-		mMovieScreen[i].sprite->SetPos(Vector2(mainCamera->GetWindowSize().x * 0.5f, mainCamera->GetWindowSize().y * float(i)));
-		mMovieScreen[i].sprite->SetAnchorPoint({ 0.5f,float(i) });
-		mMovieScreen[i].sprite->SetColor({ 0.0f,0.0f,0.0f,1.0f, });
-		mMovieScreen[i].t = 0.0f;
-		mMovieScreen[i].displayCount = 0.0f;
-		mMovieScreen[i].isActive = true;
-	}
-
-
-	// ボタン入力
-	for (int32_t i = 0; i < mButtonUI.size(); i++) {
-		mButtonUI[i] = std::make_shared<Sprite>();
-		mButtonUI[i]->Init();
-		std::string directryPath = "UI/Button/";
-		std::string filepath;
-
-		// 基準になる座標(右下に配置)
-		Vector2 basePos{};
-		basePos.x = mainCamera->GetWindowSize().x * 0.9f;
-		basePos.y = mainCamera->GetWindowSize().y * 0.9f;
-
-		switch (i) {
-		case 0:
-			filepath = "A";
-			
-			// 下位置に配置 yのみ下にずらす
-			mButtonUI[i]->SetPos({ basePos.x, basePos.y + kButtonSpacing.y });
-			
-			break;
-		case 1:
-			filepath = "B";
-			// 右位置に配置 xのみ右にずらす
-			mButtonUI[i]->SetPos({ basePos.x + kButtonSpacing.x, basePos.y });
-			break;
-		case 2:
-			filepath = "Y";
-			// 上位置に配置 yのみ上にずらす
-			mButtonUI[i]->SetPos({ basePos.x, basePos.y - kButtonSpacing.y });
-			break;
-		case 3:
-			filepath = "X";
-			// 左位置に配置 xのみ左にずらす
-			mButtonUI[i]->SetPos({ basePos.x - kButtonSpacing.x, basePos.y });
-			break;
-		case 4:
-			filepath = "RB";
-			// 左位置に配置 xを左、yを上ににずらす
-			mButtonUI[i]->SetPos({ basePos.x - kButtonSpacing.x, basePos.y - (kButtonSpacing.y * 2.5f) });
-			break;
-		default:
-			break;
-		}
-		filepath += ".png";
-		mButtonUI[i]->SetTexture(directryPath + filepath);
-		mButtonUI[i]->SetScale({ 0.15f,0.15f });
-		mButtonUI[i]->SetAnchorPoint(Vector2(0.5f, 0.5f));
-	}
-
-	// 行動内容表示UI
-	for (int32_t i = 0; i < mActionsUI.size(); i++) {
-		// スプライト生成
-		mActionsUI[i] = std::make_shared<Sprite>();
-		mActionsUI[i]->Init();
-
-		if (i < 2 || i==4) {
-			// ボタンの右側に配置
-			mActionsUI[i]->SetPos(Vector2(mButtonUI[i]->GetPos().x + kActionSpacing, mButtonUI[i]->GetPos().y));
-			mActionsUI[i]->SetAnchorPoint(Vector2(0.0f, 0.5f));
-		}
-		else {
-			// ボタンの左側に配置
-			mActionsUI[i]->SetPos(Vector2(mButtonUI[i]->GetPos().x - kActionSpacing, mButtonUI[i]->GetPos().y));
-			mActionsUI[i]->SetAnchorPoint(Vector2(1.0f, 0.5f));
-		}
-
-		mActionsUI[i]->SetScale({ 0.2f,0.2f });
-	}
-	// テクスチャをセット
-	mActionsUI[0]->SetTexture("UI/Fonts/Avoid.png");
-	mActionsUI[1]->SetTexture("UI/Fonts/ATK.png");
-	mActionsUI[2]->SetTexture("UI/Fonts/SATK.png");
-	mActionsUI[3]->SetTexture("UI/Fonts/RockOn.png");
-	mActionsUI[4]->SetTexture("UI/Fonts/Dash.png");
-
-	// 動くオブジェクトの地面影
-	for (int32_t i = 0; i < mGroundShadow.size(); i++) {
-		mGroundShadow[i] = std::make_unique<Object3d>();
-		mGroundShadow[i]->Init("groundshadow" + std::to_string(i));
-		mGroundShadow[i]->SetModel("groundShadow.gltf");
-	}
-
-	// スタート演出
-	mPlayerStartAndEnd.start = { 0.0f,0.0f,-36.0f };
-	mPlayerStartAndEnd.end = { 0.0f,0.0f,-8.0f };
-	mPlayerStartAndEnd.t = 0.0f;
-	mPlayerStartAndEnd.k = 1.0f;
-
-	mCameraRot.start = { 1.57f,6.28f,0.0f };
-	mCameraRot.end = { 0.0f,0.0f,0.0f };
-	mCameraRot.t = 0.0f;
-	mCameraRot.k = 0.0f;
-
-	mCameraTr.start = { 0.0f,60.0f,0.0f };
-	mCameraTr.end = { 0.0f,1.7f,-15.5f };
-	mCameraTr.t = 0.0f;
-	mCameraTr.k = 0.0f;
-
-	mGameOverFadeSprite = std::make_unique<Sprite>();
-	mGameOverFadeSprite->Init();
-	mGameOverFadeSprite->SetTexture("white2x2.png");
-	mGameOverFadeSprite->SetSpriteSize(Vector2(1280.0f, 720.0f));
-	mGameOverFadeSprite->SetColor(Color(0.8f, 0.0f, 0.0f, 0.0f));
-
-	mGameOverMessageSprite = std::make_unique<Sprite>();
-	mGameOverMessageSprite->Init();
-	mGameOverMessageSprite->SetTexture("UI/System/Lose.png");
-	mGameOverMessageSprite->SetAnchorPoint(Vector2(0.5f, 0.5f));
-	mGameOverMessageSprite->SetPos(Vector2(640.0f, 100.0f));
-	mGameOverMessageSprite->SetSpriteSize(Vector2(768.0f, 256.0f));
-	mGameOverMessageSprite->SetColor(Color(1.0f, 1.0f, 1.0f, 0.0f));
-	mMessageFadeTime = 0.0f;
-
-	for (int32_t i = 0; i < mGameOverSelectUI.size(); i++) {
-		mGameOverSelectUI[i] = std::make_unique<Sprite>();
-		mGameOverSelectUI[i]->Init();
-		if (i == 0) {
-			mGameOverSelectUI[0]->SetTexture("UI/System/Retry.png");
-		}
-		else {
-			mGameOverSelectUI[1]->SetTexture("UI/System/BackW.png");
-		}
-		mGameOverSelectUI[i]->SetAnchorPoint(Vector2(0.5f, 0.5f));
-		mGameOverSelectUI[i]->SetPos(Vector2(640.0f, ((i + 2) * 100.0f + 300.0f)));
-		mGameOverSelectUI[i]->SetSpriteSize(Vector2(256.0f, 64.0f));
-		mGameOverSelectUI[i]->SetColor(Color(1.0f, 1.0f, 1.0f, 0.0f));
-	}
-	mGameOverSelectUICount = 0;
-	mIsGameOverSelect = false;
-
-
-	// ゲームクリア演出
-	mFinishUI.sprite = std::make_unique<Sprite>();
-	mFinishUI.sprite->Init();
-	mFinishUI.sprite->SetTexture("Finish.png");
-	mFinishUI.sprite->SetAnchorPoint(Vector2(0.5f, 0.5f));
-	mFinishUI.sprite->SetPos(Vector2(640.0f, 200.0f));
-	mFinishUI.sprite->SetSpriteSize(Vector2(768.0f, 256.0f));
-	mFinishUI.sprite->SetColor(Color(1.0f, 1.0f, 1.0f, 0.0f));
-	mFinithUIDisplsyTime = 0.0f;
-	mIsFinishUIDisplayEnd = false;
-
-#pragma endregion
-
 }
 
 void GameScene::Update() {
-
-	// UIの更新
-	mMoveUI.sprite->Update();
-	mActionUI.sprite->Update();
-	for (int32_t i = 0; i < mMovieScreen.size(); i++) {
-		mMovieScreen[i].sprite->Update();
-	}
 
 	// ボタン入力 & 行動表示
 	for (int32_t i = 0; i < mButtonUI.size(); i++) {
@@ -407,19 +146,19 @@ void GameScene::BeginPhase() {
 		else {
 
 			// 黒帯を縮小
-			if (mMovieScreen[0].sprite->GetScale().y > 0.0f) {
+			if (mMovieScreen[0]->GetSprite()->GetScale().y > 0.0f) {
 
 				// スケールを小さくする
 				for (int32_t i = 0; i < mMovieScreen.size(); i++) {
-					Vector2 scale = mMovieScreen[i].sprite->GetScale();
-					mMovieScreen[i].sprite->SetScale({ scale.x, scale.y - 0.05f });
+					Vector2 scale = mMovieScreen[i]->GetSprite()->GetScale();
+					mMovieScreen[i]->GetSprite()->SetScale({ scale.x, scale.y - 0.05f });
 				}
 			}
-			else if (mMovieScreen[0].sprite->GetScale().y <= 0.0f) {
+			else if (mMovieScreen[0]->GetSprite()->GetScale().y <= 0.0f) {
 
 				// スケール修正
 				for (int32_t i = 0; i < mMovieScreen.size(); i++) {
-					mMovieScreen[i].sprite->SetScale({ 1.0f,0.0f });
+					mMovieScreen[i]->GetSprite()->SetScale({ 1.0f,0.0f });
 				}
 
 				// フェーズ移行
@@ -427,7 +166,7 @@ void GameScene::BeginPhase() {
 				// カメラ操作を有効にする
 				MainCamera::GetInstance()->SetCameraRotateControll(true);
 				// ポーズボタンを表示する
-				mPauseButtonUI.lock()->SetActive(true);
+				mPauseButtonUI->SetActive(true);
 			}
 		}
 
@@ -450,7 +189,7 @@ void GameScene::BattlePhase() {
 		mViggnetTime = 0.0f;
 		PostEffect::GetInstance()->SetRedViggnetEnable(true);
 		// ポーズボタンを非表示にする
-		mPauseButtonUI.lock()->SetActive(false);
+		mPauseButtonUI->SetActive(false);
 
 	}
 	// ボスのHPが0になったら
@@ -461,7 +200,7 @@ void GameScene::BattlePhase() {
 		mBoss->GetObject3D()->mSkinning->SetNextAnimation("death");
 		Framerate::GetInstance()->SetBattleSpeed(0.5f);
 		// ポーズボタンを非表示にする
-		mPauseButtonUI.lock()->SetActive(false);
+		mPauseButtonUI->SetActive(false);
 	}
 
 	// ヒットストップの更新
@@ -506,13 +245,13 @@ void GameScene::BattlePhase() {
 			*mPlayer->GetWorldPositionSword(0), 
 			*mPlayer->GetWorldPositionSword(1));
 
-		if (mPlayerTrailEffect->GetGetPositionFlag()) {
-			}
+		if (mPlayerTrailEffect->GetPositionFlag()) {
+		}
 	}
 
 	mBossTrailEffect->Update();
 	if (mBoss->GetIsOperating() == true) {
-		if (mBossTrailEffect->GetGetPositionFlag()) {
+		if (mBossTrailEffect->GetPositionFlag()) {
 			mBossTrailEffect->Create(*mBoss->GetWorldPositionSword(0), *mBoss->GetWorldPositionSword(1));
 		}
 	}
@@ -770,10 +509,7 @@ void GameScene::DrawUI()
 		mPlayer->GetStatus()->Draw(Vector2(hpPos.x * 0.5f, hpPos.y * 0.8f));
 		mBoss->GetStatus()->Draw(Vector2(hpPos.x * 0.5f, hpPos.y * 0.2f));
 
-		// UI表示
-		//mMoveUI.sprite->Draw();
-		//mActionUI.sprite->Draw();
-
+		
 		// ボタン入力 & 行動表示
 		for (int32_t i = 0; i < mButtonUI.size(); i++) {
 			mButtonUI[i]->Draw();
@@ -851,9 +587,6 @@ void GameScene::DrawUI()
 		break;
 	}
 
-	for (int32_t i = 0; i < mMovieScreen.size(); i++) {
-		mMovieScreen[i].sprite->Draw();
-	}
 
 }
 
@@ -890,4 +623,266 @@ void GameScene::UpdateHitStop() {
 			mHitStopDuration = 0.0f;
 		}
 	}
+}
+
+void GameScene::InitActor(){
+
+	// プレイヤー
+	mPlayer = std::make_unique<Player>();
+	mPlayer->Init();
+	mPlayer->GetObject3D()->SetTranslate(Vector3(0.0f, 100.0f, -8.0f));
+
+	// ボス
+	mBoss = std::make_unique<BossEnemy>();
+	mBoss->Init();
+
+	// 互いのポインタを渡す
+	mPlayer->SetBoss(mBoss.get());
+	mBoss->SetTarget(mPlayer.get());
+
+	// オブジェクトにCubeMapのテクスチャ番号を渡す
+	mPlayer->GetModel()->SetCubeTexture(Skybox::GetInstance()->mTextureHandle);
+	mPlayer->GetCollider()->GetModel()->SetCubeTexture(Skybox::GetInstance()->mTextureHandle);
+	mBoss->GetModel()->SetCubeTexture(Skybox::GetInstance()->mTextureHandle);
+	mBoss->GetCollider()->GetModel()->SetCubeTexture(Skybox::GetInstance()->mTextureHandle);
+	mPlayer->GetReticle3D()->SetCubeMap(Skybox::GetInstance()->mTextureHandle);
+
+}
+
+void GameScene::InitUI(){
+
+	MainCamera* mainCamera = MainCamera::GetInstance();
+
+	// Pause 
+	UIManager::GetInstance()->CreateUI("PauseButtonUI", SceneName::Game);
+	mPauseButtonUI = static_cast<BaseUI*>(UIManager::GetInstance()->GetUIPtr("PauseButtonUI"));
+	// 最初は非表示
+	mPauseButtonUI->SetActive(false);
+
+	// 演出中、スクリーンの上下に表示する黒画像
+
+	// 上部の黒画像
+	UIManager::GetInstance()->CreateUI("MovieScreenTop", SceneName::Game);
+	mMovieScreen[0] = static_cast<BaseUI*>(UIManager::GetInstance()->GetUIPtr("MovieScreenTop"));
+	mMovieScreen[0]->GetSprite()->SetSpriteSize({mainCamera->GetWindowSize().x,mainCamera->GetWindowSize().y * 0.1f});
+	mMovieScreen[0]->SetPos(Vector2(mainCamera->GetWindowSize().x * 0.5f, 0.0f));
+
+
+	// 下部の黒画像
+	UIManager::GetInstance()->CreateUI("MovieScreenBottom", SceneName::Game);
+	mMovieScreen[1] = static_cast<BaseUI*>(UIManager::GetInstance()->GetUIPtr("MovieScreenBottom"));
+	mMovieScreen[1]->GetSprite()->SetSpriteSize({ mainCamera->GetWindowSize().x,mainCamera->GetWindowSize().y * 0.1f });
+	mMovieScreen[1]->SetPos(Vector2(mainCamera->GetWindowSize().x * 0.5f, mainCamera->GetWindowSize().y));
+
+	// ボタン入力
+	for (int32_t i = 0; i < mButtonUI.size(); i++) {
+		mButtonUI[i] = std::make_shared<Sprite>();
+		mButtonUI[i]->Init();
+		std::string directryPath = "UI/Button/";
+		std::string filepath;
+
+		// 基準になる座標(右下に配置)
+		Vector2 basePos{};
+		basePos.x = mainCamera->GetWindowSize().x * 0.9f;
+		basePos.y = mainCamera->GetWindowSize().y * 0.9f;
+
+		switch (i) {
+		case 0:
+			filepath = "A";
+
+			// 下位置に配置 yのみ下にずらす
+			mButtonUI[i]->SetPos({ basePos.x, basePos.y + kButtonSpacing.y });
+
+			break;
+		case 1:
+			filepath = "B";
+			// 右位置に配置 xのみ右にずらす
+			mButtonUI[i]->SetPos({ basePos.x + kButtonSpacing.x, basePos.y });
+			break;
+		case 2:
+			filepath = "Y";
+			// 上位置に配置 yのみ上にずらす
+			mButtonUI[i]->SetPos({ basePos.x, basePos.y - kButtonSpacing.y });
+			break;
+		case 3:
+			filepath = "X";
+			// 左位置に配置 xのみ左にずらす
+			mButtonUI[i]->SetPos({ basePos.x - kButtonSpacing.x, basePos.y });
+			break;
+		case 4:
+			filepath = "RB";
+			// 左位置に配置 xを左、yを上ににずらす
+			mButtonUI[i]->SetPos({ basePos.x - kButtonSpacing.x, basePos.y - (kButtonSpacing.y * 2.5f) });
+			break;
+		default:
+			break;
+		}
+		filepath += ".png";
+		mButtonUI[i]->SetTexture(directryPath + filepath);
+		mButtonUI[i]->SetScale({ 0.15f,0.15f });
+		mButtonUI[i]->SetAnchorPoint(Vector2(0.5f, 0.5f));
+	}
+
+	// 行動内容表示UI
+	for (int32_t i = 0; i < mActionsUI.size(); i++) {
+		// スプライト生成
+		mActionsUI[i] = std::make_shared<Sprite>();
+		mActionsUI[i]->Init();
+
+		if (i < 2 || i == 4) {
+			// ボタンの右側に配置
+			mActionsUI[i]->SetPos(Vector2(mButtonUI[i]->GetPos().x + kActionSpacing, mButtonUI[i]->GetPos().y));
+			mActionsUI[i]->SetAnchorPoint(Vector2(0.0f, 0.5f));
+		}
+		else {
+			// ボタンの左側に配置
+			mActionsUI[i]->SetPos(Vector2(mButtonUI[i]->GetPos().x - kActionSpacing, mButtonUI[i]->GetPos().y));
+			mActionsUI[i]->SetAnchorPoint(Vector2(1.0f, 0.5f));
+		}
+
+		mActionsUI[i]->SetScale({ 0.2f,0.2f });
+	}
+	// テクスチャをセット
+	mActionsUI[0]->SetTexture("UI/Fonts/Avoid.png");
+	mActionsUI[1]->SetTexture("UI/Fonts/ATK.png");
+	mActionsUI[2]->SetTexture("UI/Fonts/SATK.png");
+	mActionsUI[3]->SetTexture("UI/Fonts/RockOn.png");
+	mActionsUI[4]->SetTexture("UI/Fonts/Dash.png");
+
+	// 動くオブジェクトの地面影
+	for (int32_t i = 0; i < mGroundShadow.size(); i++) {
+		mGroundShadow[i] = std::make_unique<Object3d>();
+		mGroundShadow[i]->Init("groundshadow" + std::to_string(i));
+		mGroundShadow[i]->SetModel("groundShadow.gltf");
+	}
+
+	mGameOverFadeSprite = std::make_unique<Sprite>();
+	mGameOverFadeSprite->Init();
+	mGameOverFadeSprite->SetTexture("white2x2.png");
+	mGameOverFadeSprite->SetSpriteSize(Vector2(1280.0f, 720.0f));
+	mGameOverFadeSprite->SetColor(Color(0.8f, 0.0f, 0.0f, 0.0f));
+
+	mGameOverMessageSprite = std::make_unique<Sprite>();
+	mGameOverMessageSprite->Init();
+	mGameOverMessageSprite->SetTexture("UI/System/Lose.png");
+	mGameOverMessageSprite->SetAnchorPoint(Vector2(0.5f, 0.5f));
+	mGameOverMessageSprite->SetPos(Vector2(640.0f, 100.0f));
+	mGameOverMessageSprite->SetSpriteSize(Vector2(768.0f, 256.0f));
+	mGameOverMessageSprite->SetColor(Color(1.0f, 1.0f, 1.0f, 0.0f));
+	mMessageFadeTime = 0.0f;
+
+	for (int32_t i = 0; i < mGameOverSelectUI.size(); i++) {
+		mGameOverSelectUI[i] = std::make_unique<Sprite>();
+		mGameOverSelectUI[i]->Init();
+		if (i == 0) {
+			mGameOverSelectUI[0]->SetTexture("UI/System/Retry.png");
+		}
+		else {
+			mGameOverSelectUI[1]->SetTexture("UI/System/BackW.png");
+		}
+		mGameOverSelectUI[i]->SetAnchorPoint(Vector2(0.5f, 0.5f));
+		mGameOverSelectUI[i]->SetPos(Vector2(640.0f, ((i + 2) * 100.0f + 300.0f)));
+		mGameOverSelectUI[i]->SetSpriteSize(Vector2(256.0f, 64.0f));
+		mGameOverSelectUI[i]->SetColor(Color(1.0f, 1.0f, 1.0f, 0.0f));
+	}
+	mGameOverSelectUICount = 0;
+	mIsGameOverSelect = false;
+
+
+	// ゲームクリア演出
+	mFinishUI.sprite = std::make_unique<Sprite>();
+	mFinishUI.sprite->Init();
+	mFinishUI.sprite->SetTexture("Finish.png");
+	mFinishUI.sprite->SetAnchorPoint(Vector2(0.5f, 0.5f));
+	mFinishUI.sprite->SetPos(Vector2(640.0f, 200.0f));
+	mFinishUI.sprite->SetSpriteSize(Vector2(768.0f, 256.0f));
+	mFinishUI.sprite->SetColor(Color(1.0f, 1.0f, 1.0f, 0.0f));
+	mFinithUIDisplsyTime = 0.0f;
+	mIsFinishUIDisplayEnd = false;
+
+}
+
+void GameScene::InitCamera(){
+
+	// メインカメラをフォローカメラ仕様にする
+	MainCamera* mainCamera = MainCamera::GetInstance();
+	mainCamera->SetFollowTarget(mPlayer->GetObject3D()->GetWorldTransform());
+	mainCamera->SetSearchTarget(mBoss->GetObject3D()->GetWorldTransform());
+	mainCamera->SetTranslate(Vector3(0.0f, 60.0f, -5.0f));
+	mainCamera->SetRotate(Vector3(1.57f, 0.0f, 0.0f));
+
+	// スタート演出
+	mPlayerStartAndEnd.start = { 0.0f,0.0f,-36.0f };
+	mPlayerStartAndEnd.end = { 0.0f,0.0f,-8.0f };
+	mPlayerStartAndEnd.t = 0.0f;
+	mPlayerStartAndEnd.k = 1.0f;
+
+	mCameraRot.start = { 1.57f,6.28f,0.0f };
+	mCameraRot.end = { 0.0f,0.0f,0.0f };
+	mCameraRot.t = 0.0f;
+	mCameraRot.k = 0.0f;
+
+	mCameraTr.start = { 0.0f,60.0f,0.0f };
+	mCameraTr.end = { 0.0f,1.7f,-15.5f };
+	mCameraTr.t = 0.0f;
+	mCameraTr.k = 0.0f;
+
+}
+
+void GameScene::InitEffects(){
+
+	// ダッシュ煙 初期化
+	mDashSmoke = std::make_unique<ParticleEmitter>("DashSmoke");
+	mDashSmoke->Init();
+	ParticleManager::GetInstance()->CreateParticleGroupe(mDashSmoke->mName, "circle.png");
+
+	// 炎パーティクル
+	mFlameParticle = std::make_unique<ParticleEmitter>("Flame");
+	mFlameParticle->Init();
+	ParticleManager::GetInstance()->CreateParticleGroupe(mFlameParticle->mName, "Flame.png");
+
+	// ヒットパーティクル
+	mHitParticle = std::make_unique<ParticleEmitter>("Hit");
+	mHitParticle->Init();
+	ParticleManager::GetInstance()->CreateParticleGroupe(mHitParticle->mName, "Flame.png");
+
+	// 軌道エフェクト
+	mPlayerTrailEffect = std::make_unique<TrailEffect>();
+	mPlayerTrailEffect->Init();
+	mPlayerTrailEffect->SetColor(Color(0.1f, 0.1f, 1.0f, 0.8f));
+
+	mBossTrailEffect = std::make_unique<TrailEffect>();
+	mBossTrailEffect->Init();
+	mBossTrailEffect->SetColor(Color(1.0f, 0.1f, 0.1f, 0.8f));
+
+	// 開始前のビネット
+	mViggnetTime = 0.0f;
+
+
+}
+
+void GameScene::InitObject(){
+
+	// モデル 読み込み
+	ModelManager::GetInstance()->LoadModel("plane", "plane.gltf");
+	ModelManager::GetInstance()->LoadModel("field", "field.gltf");
+	ModelManager::GetInstance()->LoadModel("box", "box.gltf");
+	ModelManager::GetInstance()->LoadModel("ball", "ball.obj");
+	ModelManager::GetInstance()->LoadModel("AnimatedCube", "AnimatedCube.gltf");
+	ModelManager::GetInstance()->LoadModel("simpleSkin", "simpleSkin.gltf");
+
+	ModelManager::GetInstance()->LoadModel("boss", "boss.gltf");
+	ModelManager::GetInstance()->LoadModel("Weapons", "sword.gltf");
+	ModelManager::GetInstance()->LoadModel("Shield", "Shield.gltf");
+	ModelManager::GetInstance()->LoadModel("groundShadow", "groundShadow.gltf");
+	ModelManager::GetInstance()->LoadModel("EarthSwordBullet", "EarthSwordBullet.gltf");
+
+	// SkyBox 読み込み
+	TextureManager::GetInstance()->LoadTexture("skybox/rostock_laage_airport_4k.dds");
+	// skybox
+	Skybox::GetInstance()->Init("skybox", "skybox.dds");
+	// LevelEditorでSkyBoxのテクスチャを参照
+	LevelEditor::GetInstance()->SetTextureCubeMap(Skybox::GetInstance()->mTextureHandle);
+
+
 }

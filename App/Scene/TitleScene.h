@@ -92,19 +92,19 @@ private: // -- 非公開 メンバ変数 -- //
 	bool mIsActiveTransition;
 
 	// タイトルロゴ (タイトル名を記載する)
-	std::weak_ptr<FadeUI> mTitleLogo;
+	FadeUI* mTitleLogo;
 	// スタート誘導UI (例:ボタンを押してください)
-	std::weak_ptr<FadeUI> mPushStartUI;
+	FadeUI* mPushStartUI;
 	// UI - スタート誘導UI背景
-	std::weak_ptr<FadeUI> mPushStartBackUI;
+	FadeUI* mPushStartBackUI;
 	// UI - ゲーム開始
-	std::weak_ptr<FadeUI> mGameStartUI;
+	FadeUI* mGameStartUI;
 	// UI - システム(オプション)
-	std::weak_ptr<FadeUI> mSystemUI;
+	FadeUI* mSystemUI;
 	// UI - ゲーム終了
-	std::weak_ptr<FadeUI> mQuitUI;
+	FadeUI* mQuitUI;
 	// UI - 選択中のUI
-	std::weak_ptr<FadeUI> mSelectingBackUI;
+	FadeUI* mSelectingBackUI;
 	
 
 	// UI関連の変数

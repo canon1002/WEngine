@@ -24,6 +24,8 @@ void Player::Init() {
 	// 初期化項目細分化のために オブジェクト・ワーク部分を
 	// 分けて初期化する
 
+	// 名前の設定
+	mName = "Player";
 
 	// オブジェクト部分 初期化
 	InitObject();
@@ -46,8 +48,7 @@ void Player::Init() {
 	// 構え
 	mIsAimMode = false;
 	// ステータス取得
-	mStatus = std::make_shared<Status>();
-	StatusManager::GetInstance()->GetPlayerStatus(*mStatus);
+	mStatus = GameManager::GetInstance()->GetStatus("Player");
 	// 方向指定(とりあえず奥を向く)
 	mDirection = { 0.0f,0.0f,1.0f };
 	mDirectionForInput = { 0.0f,0.0f,0.0f };
@@ -203,10 +204,22 @@ void Player::InitWorks(){
 	kConstAttacks[2].actionSpeed = 1.0f;
 
 	kConstAttacks[3].offence = 1.0f;
-	kConstAttacks[3].operationTime = 0.05f;
-	kConstAttacks[3].afterTime = 0.4f;
-	kConstAttacks[3].motionTimeMax = 0.8f;
+	kConstAttacks[3].operationTime = 0.1f;
+	kConstAttacks[3].afterTime = 0.45f;
+	kConstAttacks[3].motionTimeMax = 0.6f;
 	kConstAttacks[3].actionSpeed = 1.0f;
+
+	//kConstAttacks[2].offence = 1.0f;
+	//kConstAttacks[2].operationTime = 0.1f;
+	//kConstAttacks[2].afterTime = 0.45f;
+	//kConstAttacks[2].motionTimeMax = 0.6f;
+	//kConstAttacks[2].actionSpeed = 1.0f;
+
+	//kConstAttacks[3].offence = 1.0f;
+	//kConstAttacks[3].operationTime = 0.05f;
+	//kConstAttacks[3].afterTime = 0.4f;
+	//kConstAttacks[3].motionTimeMax = 0.8f;
+	//kConstAttacks[3].actionSpeed = 1.0f;
 
 }
 
@@ -902,9 +915,9 @@ void Player::Move()
 		// いずれかの数値が、以上(以下)であれば移動処理を行う
 		if (Length(mDirectionForInput) != 0.0f) {
 
-			// 移動速度を設定
-			float moveSpeed = 0.10f;
-
+			// 移動速度を設定(AGI/100)
+			float moveSpeed = mStatus->AGI * 0.01f;
+			
 			// RBボタン長押しでダッシュ状態にする
 			if (InputManager::GetInstance()->GetLongPush(Gamepad::Button::RIGHT_SHOULDER)) {
 
@@ -1031,22 +1044,14 @@ void Player::InputDirection(){
 
 		}
 
-		// ロックオン中のカメラ処理
-		if (mIsLockOnToTarget) {
+		// ターゲット方向にカメラを向ける
+		MainCamera::GetInstance()->SetCameraRotarionToSearchTarget();
 
-			// ターゲット方向にカメラを向ける
-			MainCamera::GetInstance()->SetCameraRotarionToSearchTarget();
-			// ターゲット方向に体を向ける
-			mDirection = TransformNomal(Vector3(0.0f, 0.0f, 1.0f), MainCamera::GetInstance()->mWorldTransform->GetWorldMatrix());
+		// プレイヤーは入力方向を向くようにする
+		if (Length(mDirectionForInput) != 0.0f) {
+			mDirection = mDirectionForInput;
 		}
-		// 非ロックオン時
-		else {
 
-			// 入力方向を向くようにする
-			if (Length(mDirectionForInput) != 0.0f) {
-				mDirection = mDirectionForInput;
-			}
-		}
 	}
 
 }

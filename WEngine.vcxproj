@@ -119,6 +119,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   <ItemGroup>
     <ClCompile Include="App\Actor\Status\ActorWorks.cpp" />
     <ClCompile Include="App\UI\FadeUI.cpp" />
+    <ClCompile Include="App\UI\GageUI.cpp" />
     <ClCompile Include="GameEngine\UI\BaseUI.cpp" />
     <ClCompile Include="GameEngine\Editor\BlackBoard.cpp" />
     <ClCompile Include="App\Bullet\EarthSwordBullet.cpp" />
@@ -238,6 +239,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="App\Actor\Status\WorkAvoid.h" />
     <ClInclude Include="App\Actor\Status\WorkGuard.h" />
     <ClInclude Include="App\UI\FadeUI.h" />
+    <ClInclude Include="App\UI\GageUI.h" />
     <ClInclude Include="GameEngine\UI\AbstractUIFactry.h" />
     <ClInclude Include="GameEngine\UI\BaseUI.h" />
     <ClInclude Include="GameEngine\Editor\BlackBoard.h" />

@@ -38,29 +38,41 @@ class GameScene :
 {
 public: // -- 公開 メンバ関数 -- //
 
+	// デストラクタ
 	~GameScene() {};
-
-	//　継承した関数
+	// 終了処理
 	void Final()override;
+	// 初期化
 	void Init() override;
+	// 更新処理
 	void Update() override;
+	// 描画処理
 	void Draw() override;
+	// UIの描画処理
 	void DrawUI() override;
 
 	// ヒットストップの開始
 	void StartHitStop(float duration);
-	// ヒットストップの更新
-	void UpdateHitStop();
 
 private: // -- 非公開 メンバ関数 -- //
 
+	// 初期化処理の分割
+	void InitActor(); // アクターの初期化
+	void InitUI(); // UIの初期化
+	void InitCamera(); // カメラの初期化
+	void InitEffects(); // エフェクトの初期化
+	void InitObject(); // その他オブジェクトの初期化
+
 	// 各フェーズをメンバ関数ポインタで管理する
 	void (GameScene::* mPhaseFunc)();
-	void BeginPhase();
-	void BattlePhase();
-	void LosePhase();
-	void WinPhase();
+	void BeginPhase(); // 開始前フェーズ
+	void BattlePhase(); // 戦闘中フェーズ
+	void LosePhase(); // プレイヤー敗北フェーズ
+	void WinPhase(); // プレイヤー勝利フェーズ
+	void TutorialPhase(); // チュートリアルフェーズ
 
+	// ヒットストップの更新
+	void UpdateHitStop();
 
 private: // -- 非公開 メンバ変数 -- //
 
@@ -93,15 +105,13 @@ private: // -- 非公開 メンバ変数 -- //
 
 	// -- UI -- //
 
-	// Pauseボタン
-	std::weak_ptr<BaseUI> mPauseButtonUI;
+	
 
-	// 操作ガイド
-	UISet mMoveUI;
-	UISet mActionUI;
+	// Pauseボタン
+	BaseUI* mPauseButtonUI;
 
 	// 演出中、スクリーンの上下に表示する黒画像
-	std::array<UISet, 2> mMovieScreen;
+	std::array<BaseUI*, 2> mMovieScreen;
 
 
 	// ボタンの間隔
@@ -113,6 +123,7 @@ private: // -- 非公開 メンバ変数 -- //
 	std::array<std::shared_ptr<Sprite>, 5> mButtonUI;
 	// 行動内容表示UI
 	std::array<std::shared_ptr<Sprite>, 5> mActionsUI;
+
 
 	// 動くオブジェクトの地面影
 	std::array<std::unique_ptr<Object3d>, 2> mGroundShadow;
@@ -142,5 +153,9 @@ private: // -- 非公開 メンバ変数 -- //
 	std::unique_ptr<ParticleEmitter> mDashSmoke;
 	// 炎パーティクル
 	std::unique_ptr<ParticleEmitter> mFlameParticle;
+	// ヒット時のパーティクル
+	std::unique_ptr<ParticleEmitter> mHitParticle;
+	// ヒット時のパーティクル(敵からの攻撃用)
+	std::unique_ptr<ParticleEmitter> mEnemyHitParticle;
 
 };

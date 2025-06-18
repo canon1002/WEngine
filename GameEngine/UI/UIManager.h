@@ -39,7 +39,7 @@ public: // -- 公開 メンバ関数 -- //
 	// UIを全て削除する
 	void DeleteAllUI();
 	// UIを取得する
-	std::shared_ptr<BaseUI> GetUIPtr(const std::string name);
+	BaseUI* GetUIPtr(const std::string name);
 
 	// UI工場のポインタをセットする
 	void SetFactory(AbstractUIFactory* factory) {
@@ -62,6 +62,8 @@ private: // -- 非公開 メンバ変数 -- //
 
 	// UIのリスト
 	std::vector<std::shared_ptr<BaseUI>> mUIList;
+
+	// UIのマップ
 
 };
 

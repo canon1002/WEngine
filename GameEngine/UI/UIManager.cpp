@@ -121,6 +121,11 @@ void UIManager::DeleteSceneUI(SceneName sceneName){
 	// UIのポインタを取得する
 	for (auto& ui : mUIList) {
 
+		// UIが削除されていないか確認する
+		if (ui == nullptr) {
+			continue;
+		}
+
 		// UIが指定したシーンに属しているか確認する
 		if (magic_enum::enum_cast<SceneName>(ui->GetSceneName()) != sceneName) {
 
@@ -128,14 +133,17 @@ void UIManager::DeleteSceneUI(SceneName sceneName){
 			continue;
 		}
 		
-		// UIのポインタを削除する
-		//ui.reset();
+		// 該当したシーンのUIのポインタを削除する
+		ui.reset();
+		// mUIListから削除する
+		mUIList.erase(
+			std::remove(mUIList.begin(), mUIList.end(), ui), mUIList.end());
 
 	}
 
 }
 
-std::shared_ptr<BaseUI> UIManager::GetUIPtr(const std::string name){
+BaseUI* UIManager::GetUIPtr(const std::string name){
 
 	// UIのポインタを取得する
 	for (auto& ui : mUIList) {
@@ -143,11 +151,11 @@ std::shared_ptr<BaseUI> UIManager::GetUIPtr(const std::string name){
 		if (ui->GetName() == name) {
 
 			// 見つかった場合はポインタを返す
-			return ui;
+			return ui.get();
 		}
 	}
 
 	// 見つからなかった場合はエラー
 	assert(0 && "指定したUIのポインタを取得できませんでした ");
-	return std::shared_ptr<BaseUI>();
+	return new BaseUI();
 }

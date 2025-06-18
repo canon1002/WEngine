@@ -150,7 +150,7 @@ public: // -- 公開 メンバ関数 -- //
 	// -- アクセッサ -- //
 
 	// 能力値取得関数
-	std::shared_ptr<Status> GetStatus() { return mStatus; }
+	Status* GetStatus() { return mStatus; }
 
 	/// <summary>
 	/// アクターの名称を取得する
@@ -224,8 +224,8 @@ protected: // -- 限定公開 メンバ変数 -- //
 	// ヒットストップ時間
 	float mHitStopDuration = 0.0f;
 
-	// 能力値
-	std::shared_ptr<Status> mStatus;
+	// 能力値(マネージャーより参照)
+	Status* mStatus;
 	// 無敵時間
 	float mInvincibleTime;
 	// 無敵発生時からいくら経ったか

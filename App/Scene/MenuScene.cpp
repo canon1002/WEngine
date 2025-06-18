@@ -6,7 +6,7 @@
 #include "GameEngine/Input/InputManager.h"
 
 void MenuScene::Final(){
-
+	UIManager::GetInstance()->DeleteSceneUI(SceneName::Menu);
 }
 
 void MenuScene::Init() {
@@ -16,7 +16,7 @@ void MenuScene::Init() {
 
 	// メニュー背景
 	UIManager::GetInstance()->CreateUI("MenuBackground", SceneName::Menu);
-	mMenuBackground = dynamic_pointer_cast<BaseUI>(UIManager::GetInstance()->GetUIPtr("MenuBackground"));
+	mMenuBackground = static_cast<BaseUI*>(UIManager::GetInstance()->GetUIPtr("MenuBackground"));
 
 }
 

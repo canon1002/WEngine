@@ -2,10 +2,6 @@
 #include "App/Manager/GameManager.h"
 #include "GameEngine/Editor/Framerate.h"
 
-StatusManager* BlackBoard::GetStatusManager(){
-	return StatusManager::GetInstance();
-}
-
 Framerate* BlackBoard::GetFramerate(){
 	return Framerate::GetInstance();
 }
