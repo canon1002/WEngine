@@ -20,7 +20,7 @@ void SphereCollider::Init() {
 	// 矩形のモデルを読み込み // いずれは他の場所に移す
 	ModelManager::GetInstance()->LoadModel("wireSphere", "wireSphere.gltf");
 	// モデルを検索してセット
-	mModel = ModelManager::GetInstance()->FindModelPtr("wireSphere.gltf");
+	mModel = ModelManager::GetInstance()->FindModel("wireSphere.gltf");
 	CreateTransformation();
 	mModel->mMaterialData->environmentCoefficient = 0.0f;
 	// 衝突フラグ保持時間

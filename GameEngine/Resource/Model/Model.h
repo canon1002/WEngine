@@ -4,68 +4,99 @@
 #include "GameEngine/Resource/Texture/Resource.h"
 #include "GameEngine/Object/Light/DirectionalLight.h"
 #include "GameEngine/Object/Camera/CameraCommon.h"
-
-// アニメーション
 #include "GameEngine/Component/Animation/Skinning/Skinnig.h"
 
+// メッシュデータ
+struct MeshData {
+	// 頂点
+	std::vector<VertexData> vertices;
+	// インデックス
+	std::vector<uint32_t> indices;
+	// マテリアル
+	MaterialData material;
+	// スキンクラスター
+	std::map<std::string, JointWeightData> skinClusterData;
+};
 
 // モデルデータ
 struct ModelData {
-	std::map<std::string, JointWeightData>skinClusterData;
-	std::vector<VertexData> vertices;
-	std::vector<uint32_t> indices;
-	MaterialData material;
+	MeshData mesh;
+	Node rootNode;
+};
+
+// マルチメッシュモデルデータ
+struct MultiModelData {
+	std::vector<MeshData> meshes;
 	Node rootNode;
 };
 
 class Model
 {
-public:
+public: // -- 公開 メンバ関数 -- //
 
+	// コンストラクタ
+	Model() = default;
+	// デストラクタ
 	~Model();
+	// 初期化
 	void Init(const std::string& directrypath, const std::string& filename);
+	// 更新
 	void Update();
+	// 描画
 	void Draw();
-
-	/// デバック情報描画(主にImGui関連)
+	// ImGui描画
 	void DrawGUI(const std::string& label);
 
-	void CreateVertexResource();
-	void CreateIndexResource();
-	void CreateMaterialResource();
 
 	// カメラ座標を設定
-	inline void SetCameraPosition(CameraCommon camera) { mCameraData->worldPosition = camera.GetTranslate(); }
-	inline void SetCubeTexture(const int32_t& textureHandle) { mTextureHandleCubeMap = textureHandle; }
+	void SetCameraPosition(CameraCommon camera) {
+		mCameraData->worldPosition = camera.GetTranslate();
+	}
 
+	// キューブマップのテクスチャハンドルを設定
+	void SetCubeTexture(const int32_t& textureHandle) {
+		mTextureHandleCubeMap = textureHandle;
+	}
+		
+
+private: // -- 非公開 メンバ関数 -- //
+
+	// 頂点リソース生成
+	void CreateVertexResource();
+	// インデックスリソース生成
+	void CreateIndexResource();
+	// マテリアルリソース生成
+	void CreateMaterialResource();
 
 public: // -- 公開 メンバ変数 -- //
 
 	// モデルデータ
-	ModelData mModelData;
+	MultiModelData mModelData;
+
 	// テクスチャハンドル
-	int32_t mTextureHandle;
+	std::vector<int32_t> mTextureHandles;
 	int32_t mTextureHandleCubeMap;
 
 	// -- Vertex -- //
-	Microsoft::WRL::ComPtr<ID3D12Resource> mVertexResource = nullptr;
-	VertexData* mVertexData = nullptr;
-	D3D12_VERTEX_BUFFER_VIEW mVertexBufferView{};
 
-
-	// -- Material -- //
-	Microsoft::WRL::ComPtr<ID3D12Resource> mMaterialResource = nullptr;
-	Material* mMaterialData = nullptr;
-
-
-	// -- Transfomation -- //
-	Microsoft::WRL::ComPtr<ID3D12Resource> mWvpResource = nullptr;
-	TransformationMatrix* mWvpData = nullptr;
-
+	// 頂点リソース
+	std::vector<Microsoft::WRL::ComPtr<ID3D12Resource>> mVertexResources;
+	// 頂点バッファビュー
+	std::vector<D3D12_VERTEX_BUFFER_VIEW> mVertexBufferViews;
 
 	// -- Index -- //
-	Microsoft::WRL::ComPtr<ID3D12Resource> mIndexResource = nullptr;
-	D3D12_INDEX_BUFFER_VIEW mIndexBufferView{};
+
+	// インデックスリソース
+	std::vector<Microsoft::WRL::ComPtr<ID3D12Resource>> mIndexResources;
+	// インデックスバッファビュー
+	std::vector<D3D12_INDEX_BUFFER_VIEW> mIndexBufferViews;
+
+	// -- Material -- //
+
+	// マテリアルリソース
+	std::vector<Microsoft::WRL::ComPtr<ID3D12Resource>> mMaterialResources;
+	// マテリアルデータ
+	std::vector<Material*> mMaterialDatas;
 
 
 	// -- Light -- //

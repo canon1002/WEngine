@@ -5,6 +5,7 @@
 #include "GameEngine/Object/Camera/MainCamera.h"
 #include "GameEngine/Resource/Model/ModelManager.h"
 #include "GameEngine/Editor/ImGui/ImGuiManager.h"
+#include "GameEngine/Resource/Model/MultiModel.h"
 
 Object3d::Object3d(const std::string objname) {
 	// 名称が引数に入っていれば命名しておく
@@ -58,7 +59,7 @@ void Object3d::Draw() {
 	// 頂点をセット
 
 	D3D12_VERTEX_BUFFER_VIEW vbvs[2]{};
-	vbvs[0] = mModel->mVertexBufferView;// VertexDataのVBV
+	vbvs[0] = mModel->mVertexBufferViews[0];// VertexDataのVBV
 	if (mSkinning != nullptr && mSkinning->GetIsActive()) {
 
 		vbvs[1] = mSkinning->GetNowSkinCluster()->skinCluster.mInfluenceBufferView; // influenceのVBV
@@ -190,19 +191,18 @@ void Object3d::CreateTransformation() {
 void Object3d::SetModel(const std::string& filepath)
 {
 	// モデルを検索してセット
-	//mModelManager->LoadModel(filepath);
-	mModel = ModelManager::GetInstance()->FindModelPtr(filepath);
+	mModel = ModelManager::GetInstance()->CreateModel("", filepath);
 
 }
 
 void Object3d::SetModelFullPath(const string& directryPath, const string& filePath){
 
 	// モデルを検索してセット
-	mModel = ModelManager::GetInstance()->FindModelPtr(directryPath+filePath);
+	mModel = ModelManager::GetInstance()->CreateModel(directryPath, filePath);
 	// モデル内にアニメーションがある場合はアニメーション及びスキンクラスターなどを生成
-	if (!mModel->mModelData.skinClusterData.empty()) {
+	if (!mModel->mModelData.meshes[0].skinClusterData.empty()) {
 		mSkinning = std::make_unique<Skinning>();
-		mSkinning->Init(directryPath, filePath, mModel->mModelData);
+		mSkinning->Init(directryPath, filePath, mModel->mModelData.meshes[0]);
 	}
 
 }

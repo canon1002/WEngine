@@ -32,7 +32,7 @@ public: // -- 公開 メンバ関数 -- //
 
 
 	Object3d* GetObject3D() { return mObject.get(); }
-	Model* GetModel() { return mObject->mModel.get(); }
+	Model* GetModel() { return mObject->mModel; }
 	Collider* GetCollider() { return mObject->mCollider.get(); }
 	const Matrix4x4& GetSwordBoneMatrix(int32_t count) { return swordWorldMat.at(count); }
 	const WorldTransform* GetWorldPositionSword(int32_t count) { return mWorldTransformSword.at(count).get(); }

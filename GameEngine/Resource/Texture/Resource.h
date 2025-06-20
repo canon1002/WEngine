@@ -61,6 +61,7 @@ struct MaterialData {
 };
 
 
+// 前方宣言
 struct Animation;
 struct ModelData;
 struct MultiModelData;

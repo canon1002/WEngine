@@ -35,7 +35,7 @@ public: // -- 公開 メンバ関数 -- //
 	/// モデル情報の取得
 	/// </summary>
 	/// <returns></returns>
-	Model* GetModel() { return mObject->mModel.get(); }
+	Model* GetModel() { return mObject->mModel; }
 	
 	/// <summary>
 	/// ワールド座標の取得

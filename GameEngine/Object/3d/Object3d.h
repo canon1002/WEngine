@@ -38,15 +38,13 @@ public: // -- 公開 メンバ関数 -- //
 	void SetTranslate(Vector3 translate) { mWorldTransform->translation = translate; }
 	const WorldTransform* GetWorldTransform()const  { return mWorldTransform.get(); }
 
-	// モデル取得(生ポインタ)
-	Model* GetModel() { return mModel.get(); }
-	// モデル取得(スマートポインタ)
-	std::shared_ptr<Model>  GetModelPtr()const { return mModel; }
+	// モデル取得
+	Model* GetModel()const { return mModel; }
 	
 public: // -- 公開 メンバ変数 -- //
 
 	// モデル
-	std::shared_ptr<Model> mModel = nullptr;
+	Model* mModel = nullptr;
 	// マテリアル
 	Material mMaterial;
 	// スキニング アニメーション

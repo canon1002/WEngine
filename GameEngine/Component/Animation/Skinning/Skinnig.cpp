@@ -10,7 +10,40 @@
 
 void Skinning::Init(const std::string& directorypath, const std::string& filepath, ModelData modelData)
 {
-	
+	// スケルトン生成
+	mSkeleton = Skeleton::Create(modelData.rootNode);
+
+	// 新規にスキンクラスターを含めたデータを生成
+	mCurrentSkinCluster = std::make_shared<SkinningStatus>();
+	// スキンクラスターを生成
+	mCurrentSkinCluster->skinCluster = SkinCluster::Create(
+		DirectXCommon::GetInstance()->mDevice, mSkeleton, modelData);
+	// アニメーションに必要な情報をセット
+	mCurrentSkinCluster->animation = Resource::LoadAnmation(directorypath, filepath);
+	// スキンクラスターを生成
+	mCurrentSkinCluster->skinCluster = SkinCluster::Create(
+		DirectXCommon::GetInstance()->mDevice, mSkeleton, modelData);
+	// アニメーションの一時停止をoffに
+	mCurrentSkinCluster->isPause = false;
+	// ループさせる
+	mCurrentSkinCluster->isLoop = true;
+	// アニメーションの開始時間を0.0fに設定
+	mCurrentSkinCluster->animationTime = 0.0f;
+	// アニメーションを有効にする
+	mCurrentSkinCluster->isActive = true;
+
+	// モーションブレンドをしていない
+	mIsMotionBrending = false;
+	// モーションブレンドの切替速度(遅い n ~ 1.0f ~ m 早い)
+	mMotionBrendingInterval = 1.0f;
+
+	// アニメーションの再生速度
+	mAnimationPlaySpeed = 1.0f;
+
+}
+
+void Skinning::Init(const std::string& directorypath, const std::string& filepath, MultiModelData multiModelData){
+
 	// スケルトン生成
 	mSkeleton = Skeleton::Create(modelData.rootNode);
 

@@ -137,7 +137,7 @@ void OBBCollider::Init() {
 	// 矩形のモデルを読み込み // いずれは他の場所に移す
 	ModelManager::GetInstance()->LoadModel("wireCube", "wireCube.gltf");
 	// モデルを検索してセット
-	mModel = ModelManager::GetInstance()->FindModelPtr("wireCube.gltf");
+	mModel = ModelManager::GetInstance()->FindModel("wireCube.gltf");
 	CreateTransformation();
 	// 衝突フラグ保持時間
 	mOnCollisionCount = 0;

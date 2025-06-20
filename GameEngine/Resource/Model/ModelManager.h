@@ -4,80 +4,85 @@
 #include <sstream>
 #include "Model.h"
 
+/// <summary>
+/// 3Dモデル管理クラス
+/// </summary>
 class ModelManager{
-public: // -- public メンバ関数 -- //
 
+public: // -- 公開 メンバ関数 -- //
+
+	// コンストラクタ
 	ModelManager() = default;
+	// デストラクタ
 	~ModelManager() = default;
 
+	// インスタンス取得関数
 	static ModelManager* GetInstance();
-
+	// 終了処理
 	void Finalize();
+	// 初期化
 	void Init();
-	void LoadModel(const std::string& directoryPath,const std::string& filepath);
-	void LoadMultiModel(const std::string& directoryPath,const std::string& filepath);
-	Model* FindModel(const std::string filepath);
-	std::shared_ptr<Model> FindModelPtr(const std::string filepath);
-
-	static std::shared_ptr<Model> Create(const std::string& filepath, const std::string filename);
-
-	/// <summary>
-	///  描画前処理
-	/// </summary>
-	void PreDraw();
-
-	/// <summary>
-	/// Skinning用描画前処理
-	/// </summary>
-	void PreDrawForSkinning();
-
-
-	void PreDrawForShadow();
-	
-	/// <summary>
-	///  描画処理
-	/// </summary>
+	//描画前処理
+	void PreDraw(); // 通常3Dモデル用
+	void PreDrawForSkinning(); // スキニング3Dモデル用
+	void PreDrawForShadow(); // シャドウマップ用の描画前処理
+	// 描画
 	void Draw();
 
+	// -- 生成処理 -- //
 
-private: // -- private メンバ関数 -- //
+	// モデルの生成 & ポインタ取得
+	Model* CreateModel(const std::string& filepath, const std::string& directoryPath);
 
-	/// <summary>
-	/// 3Dモデル用のルートシグネチャを生成
-	/// </summary>
-	void CreateRootSignature();
+
+
+	// -- 読み込み処理 -- //
+
+	// モデルの読み込み
+	void LoadModel(const std::string& directoryPath, const std::string& filepath);
+	// マルチモデルの読み込み
+	void LoadMultiModel(const std::string& directoryPath, const std::string& filepath);
 	
-	/// <summary>
-	/// 3Dモデル用のグラフィックスパイプラインを生成
-	/// </summary>
-	void CreateGraphicsPipeline();
+	// -- 検索・取得処理 -- //
 
-	/// <summary>
-	/// Skinning用のルートシグネチャを生成
-	/// </summary>
-	void CreateRootSignatureForSkinning();
+	// モデルの取得
+	Model* FindModel(const std::string filepath);
 
-	/// <summary>
-	/// Skinning用のグラフィックスパイプラインを生成
-	/// </summary>
-	void CreateGraphicsPipelineForSkinning();
 
-	void CreateRootSignatureForShadow();
-	void CreateGraphicsPipelineForShadow();
-
+private: // -- 非公開 メンバ関数 -- //
 
 	// コピーコンストラクタと演算子オーバーロードの禁止
 	ModelManager(const ModelManager& obj) = delete;
 	ModelManager& operator=(const ModelManager& obj) = delete;
+
+
+	// 3Dモデル用のルートシグネチャを生成
+	void CreateRootSignature();
+	// 3Dモデル用のグラフィックスパイプラインを生成
+	void CreateGraphicsPipeline();
+
+	// Skinning用のルートシグネチャを生成
+	void CreateRootSignatureForSkinning();
+	// Skinning用のグラフィックスパイプラインを生成
+	void CreateGraphicsPipelineForSkinning();
+
+	// シャドウマップ用のルートシグネチャを生成
+	void CreateRootSignatureForShadow();
+	// シャドウマップ用のグラフィックスパイプラインを生成
+	void CreateGraphicsPipelineForShadow();
+
 
 private: // -- private メンバ変数 -- //
 
 	// モデルデータのマップ
 	static std::map<std::string, std::shared_ptr<Model>> sModels_;
 
-	
 	// モデルデータ
 	std::unordered_map<std::string, std::shared_ptr<Model>> models;
+	std::unordered_map<std::string, std::shared_ptr<Model>> mMultiModels;
+
+	// モデルデータを一括管理するためのマップ
+	std::unordered_map<std::string, std::unique_ptr<Model>> mModelsMap;
 
 	// グラフィックパイプライン
 	Microsoft::WRL::ComPtr <ID3D12PipelineState> graphicsPipelineState = nullptr;
@@ -89,7 +94,7 @@ private: // -- private メンバ変数 -- //
 	Microsoft::WRL::ComPtr <ID3D12RootSignature> rootSignatureForForShadow = nullptr;
 
 	// インスタンス
-	static ModelManager* instance;
+	static std::unique_ptr<ModelManager> instance;
 
 };
 
