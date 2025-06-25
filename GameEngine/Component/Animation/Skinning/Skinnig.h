@@ -52,7 +52,11 @@ public: // -- 公開 メンバ関数 -- //
 	void CreateSkinningData(const std::string& directorypath, const std::string& filename, const std::string& filrExt,
 		ModelData modelData, bool isLoop = false);
 
-	void CreateAnimationData(const std::string& directorypath, const std::string& filename,ModelData modelData);
+	void CreateSkinningData(const std::string& directorypath, const std::string& filename, const std::string& filrExt,
+		MultiModelData multiModelData, bool isLoop = false);
+
+	void CreateAnimationData(const std::string& directorypath, const std::string& filename, ModelData modelData);
+	void CreateAnimationData(const std::string& directorypath, const std::string& filename, MultiModelData multiModelData);
 
 	/// <summary>
 	/// 更新処理

@@ -49,31 +49,39 @@ void BossEnemy::Init() {
 	mObject->mWorldTransform->translation = { 0.0f,0.0f,20.0f };
 
 	// モデルを設定
-	mObject->SetModel("boss.gltf");
-	mObject->GetModel()->mMaterialData->color = { 1.0f,0.7f,0.7f,1.0f };
+	mObject->SetModelFullPath("Actor", "Actor.gltf");
+	mObject->GetModel()->GetMaterialData()->color = { 1.0f,0.7f,0.7f,1.0f };
 	// スキニングアニメーションの生成
 	mObject->mSkinning = make_unique<Skinning>();
-	mObject->mSkinning->Init("Boss", "Idle.gltf", mObject->GetModel()->mModelData);
+	mObject->mSkinning->Init("Actor", "Actor_Idle.gltf", mObject->GetModel()->mModelData);
 	mObject->mSkinning->SetMotionBlendingInterval(2.0f);
 	// 使用するアニメーションを登録しておく
-	mObject->mSkinning->CreateSkinningData("Boss", "Idle", ".gltf", mObject->GetModel()->mModelData, true);
-	mObject->mSkinning->CreateSkinningData("Boss", "Walk", ".gltf", mObject->GetModel()->mModelData, true);
-	mObject->mSkinning->CreateSkinningData("Boss", "Dash", ".gltf", mObject->GetModel()->mModelData, true);
-	mObject->mSkinning->CreateSkinningData("Boss", "backStep", ".gltf", mObject->GetModel()->mModelData);
-	mObject->mSkinning->CreateSkinningData("Boss", "Knockback", ".gltf", mObject->GetModel()->mModelData);
-	mObject->mSkinning->CreateSkinningData("Boss", "death", ".gltf", mObject->GetModel()->mModelData);
+	mObject->mSkinning->CreateSkinningData("Actor", "Actor_Idle", ".gltf", mObject->GetModel()->mModelData, true);
+	
+	mObject->mSkinning->CreateSkinningData("Actor", "Actor_Avoid", ".gltf", mObject->GetModel()->mModelData);
+	mObject->mSkinning->CreateSkinningData("Actor", "Actor_BackStep", ".gltf", mObject->GetModel()->mModelData);
 
-	mObject->mSkinning->CreateSkinningData("Boss", "Slash", ".gltf", mObject->GetModel()->mModelData);
+	mObject->mSkinning->CreateSkinningData("Actor", "Actor_Walk", ".gltf", mObject->GetModel()->mModelData, true);
+	mObject->mSkinning->CreateSkinningData("Actor", "Actor_Run", ".gltf", mObject->GetModel()->mModelData, true);
+	mObject->mSkinning->CreateSkinningData("Actor", "Actor_BackRun", ".gltf", mObject->GetModel()->mModelData, true);
+	
+	mObject->mSkinning->CreateSkinningData("Actor", "Actor_S0", ".gltf", mObject->GetModel()->mModelData);
+	mObject->mSkinning->CreateSkinningData("Actor", "Actor_S1", ".gltf", mObject->GetModel()->mModelData);
+	mObject->mSkinning->CreateSkinningData("Actor", "Actor_S2", ".gltf", mObject->GetModel()->mModelData);
+
+	mObject->mSkinning->CreateSkinningData("Actor", "Actor_Knockback", ".gltf", mObject->GetModel()->mModelData);
+	mObject->mSkinning->CreateSkinningData("Actor", "Actor_Death", ".gltf", mObject->GetModel()->mModelData);
+
+	mObject->mSkinning->CreateSkinningData("Actor", "Actor_MagicCastLong", ".gltf", mObject->GetModel()->mModelData);
+	mObject->mSkinning->CreateSkinningData("Actor", "Actor_MagicCast", ".gltf", mObject->GetModel()->mModelData);
+
+	/*mObject->mSkinning->CreateSkinningData("Boss", "Slash", ".gltf", mObject->GetModel()->mModelData);
 	mObject->mSkinning->CreateSkinningData("Boss", "Slash1", ".gltf", mObject->GetModel()->mModelData);
 	mObject->mSkinning->CreateSkinningData("Boss", "Slash2", ".gltf", mObject->GetModel()->mModelData);
 	mObject->mSkinning->CreateSkinningData("Boss", "SlashR", ".gltf", mObject->GetModel()->mModelData);
 	mObject->mSkinning->CreateSkinningData("Boss", "SlashDash", ".gltf", mObject->GetModel()->mModelData);
 	mObject->mSkinning->CreateSkinningData("Boss", "SlashJamp", ".gltf", mObject->GetModel()->mModelData);
-	mObject->mSkinning->CreateSkinningData("Boss", "Thrust", ".gltf", mObject->GetModel()->mModelData);
-	mObject->mSkinning->CreateSkinningData("Boss", "ShotBullet", ".gltf", mObject->GetModel()->mModelData);
-
-	mObject->mSkinning->CreateSkinningData("Boss", "magic", ".gltf", mObject->GetModel()->mModelData);
-	mObject->mSkinning->CreateSkinningData("Boss", "kick", ".gltf", mObject->GetModel()->mModelData);
+	mObject->mSkinning->CreateSkinningData("Boss", "Thrust", ".gltf", mObject->GetModel()->mModelData);*/
 
 	// アニメーションの再生速度を1.5倍速に変更
 	mObject->mSkinning->SetAnimationPlaySpeed(1.5f);
@@ -365,7 +373,7 @@ void BossEnemy::UpdateObject() {
 
 	// 右手のワールド行列を更新
 	mRightHandWorldMat = Multiply(
-		GetObject3D()->mSkinning->GetSkeleton().joints[GetObject3D()->mSkinning->GetSkeleton().jointMap["mixamorig:RightHandThumb1"]
+		GetObject3D()->mSkinning->GetSkeleton().joints[GetObject3D()->mSkinning->GetSkeleton().jointMap["mixamorig:Sword_joint"]
 		].skeletonSpaceMatrix, GetObject3D()->GetWorldTransform()->GetWorldMatrix());
 
 	// 武器の更新処理

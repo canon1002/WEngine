@@ -50,7 +50,7 @@ void ACT::Dash::Start(){
 	// 向きの指定
 	mActor->InputDirection(mDirection);
 	// アニメーションの変更
-	mActor->GetObject3D()->mSkinning->SetNextAnimation("Dash");
+	mActor->GetObject3D()->mSkinning->SetNextAnimation("Actor_Run");
 	// 実行する
 	mCondition = Condition::RUNNING;
 

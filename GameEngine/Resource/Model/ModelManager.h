@@ -32,16 +32,12 @@ public: // -- 公開 メンバ関数 -- //
 	// -- 生成処理 -- //
 
 	// モデルの生成 & ポインタ取得
-	Model* CreateModel(const std::string& filepath, const std::string& directoryPath);
-
-
+	Model* CreateModel(const std::string& directoryPath, const std::string& filepath);
 
 	// -- 読み込み処理 -- //
 
 	// モデルの読み込み
 	void LoadModel(const std::string& directoryPath, const std::string& filepath);
-	// マルチモデルの読み込み
-	void LoadMultiModel(const std::string& directoryPath, const std::string& filepath);
 	
 	// -- 検索・取得処理 -- //
 
@@ -74,15 +70,8 @@ private: // -- 非公開 メンバ関数 -- //
 
 private: // -- private メンバ変数 -- //
 
-	// モデルデータのマップ
-	static std::map<std::string, std::shared_ptr<Model>> sModels_;
-
-	// モデルデータ
-	std::unordered_map<std::string, std::shared_ptr<Model>> models;
-	std::unordered_map<std::string, std::shared_ptr<Model>> mMultiModels;
-
-	// モデルデータを一括管理するためのマップ
-	std::unordered_map<std::string, std::unique_ptr<Model>> mModelsMap;
+	// モデルデータマップ
+	std::unordered_map<std::string, std::shared_ptr<Model>> mModels;
 
 	// グラフィックパイプライン
 	Microsoft::WRL::ComPtr <ID3D12PipelineState> graphicsPipelineState = nullptr;

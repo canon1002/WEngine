@@ -41,7 +41,7 @@ void ACT::EarthSword::Update()
 		}
 
 		// 攻撃処理
-		if (!mIsShot && mActor->GetObject3D()->mSkinning->GetAnimationTimeRate("magic") >= 0.6f) {
+		if (!mIsShot && mActor->GetObject3D()->mSkinning->GetAnimationTimeRate("Actor_MagicCastLong") >= 0.6f) {
 			
 			// 攻撃済みに設定
 			mIsShot = true;
@@ -56,7 +56,7 @@ void ACT::EarthSword::Update()
 		}
 
 		// 終了処理
-		if (mActor->GetObject3D()->mSkinning->GetIsAnimationFinished("magic")) {
+		if (mActor->GetObject3D()->mSkinning->GetIsAnimationFinished("Actor_MagicCastLong")) {
 			mCondition = Condition::FINISHED;
 			// 再生速度をもとに戻す
 			mActor->GetObject3D()->mSkinning->SetAnimationPlaySpeed(1.5f);
@@ -88,7 +88,7 @@ void ACT::EarthSword::Start()
 		mBulletsStatus[i].pos = mAttackAreaPos[i];
 	}
 	// アニメーションの変更
-	mActor->GetObject3D()->mSkinning->SetNextAnimation("magic");
+	mActor->GetObject3D()->mSkinning->SetNextAnimation("Actor_MagicCastLong");
 	// 再生速度を遅くする
 	mActor->GetObject3D()->mSkinning->SetAnimationPlaySpeed(0.75f);
 

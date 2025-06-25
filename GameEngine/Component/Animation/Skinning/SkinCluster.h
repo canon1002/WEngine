@@ -21,12 +21,16 @@ struct WellForGPU {
 	Matrix4x4 SkeletonSpaceInverseTransposeMatrix; // 法線用
 };
 
+// 前方宣言
+struct MeshData;
+
 class SkinCluster
 {
 public: // -- 公開 メンバ関数 -- //
 
 	// Skinclusterを生成する
-	static SkinCluster Create(const Microsoft::WRL::ComPtr<ID3D12Device>& device, const Skeleton& skeleton, const ModelData& modelData);
+	static SkinCluster Create(const Microsoft::WRL::ComPtr<ID3D12Device>& device, 
+		const Skeleton& skeleton, const MeshData& mesh);
 
 	// Skinclusterの更新処理を行う
 	void Update(const Skeleton& skeleton);

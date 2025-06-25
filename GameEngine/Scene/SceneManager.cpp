@@ -71,7 +71,6 @@ void SceneManager::Update(){
 		// 切り替えたシーンの初期化
 		mCurrentScene->Init();
 	}
-
 	
 	// メニューシーンの実行
 	if (mMenuRequest) {

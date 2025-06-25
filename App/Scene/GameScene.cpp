@@ -197,7 +197,7 @@ void GameScene::BattlePhase() {
 		mPhase = Phase::WIN;
 		mViggnetTime = 0.0f;
 		mFinishUI.isActive = true;
-		mBoss->GetObject3D()->mSkinning->SetNextAnimation("death");
+		mBoss->GetObject3D()->mSkinning->SetNextAnimation("Actor_Death");
 		Framerate::GetInstance()->SetBattleSpeed(0.5f);
 		// ポーズボタンを非表示にする
 		mPauseButtonUI->SetActive(false);
@@ -207,7 +207,7 @@ void GameScene::BattlePhase() {
 	UpdateHitStop();
 
 	// プレイヤーが走っている場合
-	if (mPlayer->GetObject3D()->mSkinning->GetNowSkinCluster()->name == "run") {
+	if (mPlayer->GetObject3D()->mSkinning->GetNowSkinCluster()->name == "Actor_Run") {
 		// 発生座標の更新
 		mDashSmoke->SetEmitterPos(mPlayer->GetObject3D()->GetWorldTransform()->GetWorldPosition());
 		// ダッシュ煙を発生させる
@@ -263,7 +263,7 @@ void GameScene::LosePhase() {
 	// カメラ操作強制OFF
 	MainCamera::GetInstance()->SetCameraRotateControll(false);
 
-	mPlayer->GetObject3D()->GetModel()->mMaterialData->color = { 1.0f,1.0f,1.0f,1.0f };
+	mPlayer->GetObject3D()->GetModel()->GetMaterialData()->color = { 1.0f,1.0f,1.0f,1.0f };
 
 	if (mIsGameOverSelect == false) {
 		if (mViggnetTime < 1.0f) {

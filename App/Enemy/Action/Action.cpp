@@ -61,7 +61,7 @@ void ACT::ChaseTarget::Start()
 	// 向きの指定
 	mActor->InputDirection(mDirection);
 	// アニメーションの変更
-	mActor->GetObject3D()->mSkinning->SetNextAnimation("Walk");
+	mActor->GetObject3D()->mSkinning->SetNextAnimation("Actor_Walk");
 	// 実行する
 	mCondition = Condition::RUNNING;
 }
@@ -144,7 +144,7 @@ void ACT::BackStep::Update()
 		mActor->SetRotation(Vector3(0.0f, rotateY, 0.0f));
 
 		// 終了処理
-		if (mActor->GetObject3D()->mSkinning->GetIsAnimationFinished("backStep")) {
+		if (mActor->GetObject3D()->mSkinning->GetIsAnimationFinished("Actor_BackStep")) {
 			mCondition = Condition::FINISHED;
 		}
 	}
@@ -179,7 +179,7 @@ void ACT::BackStep::Start()
 	//mActor->Jump(1.0f);
 
 	// アニメーションの変更
-	mActor->GetObject3D()->mSkinning->SetNextAnimation("backStep");
+	mActor->GetObject3D()->mSkinning->SetNextAnimation("Actor_BackStep");
 	//mActor->GetObject3D()->mSkinning->SetMotionBlendingInterval(30.0f);
 
 	// 実行する

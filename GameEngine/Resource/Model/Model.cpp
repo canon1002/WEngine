@@ -60,32 +60,93 @@ void Model::Draw()
 
 }
 
+void Model::DrawSkinning(Skinning* skinning, const bool& isActive){
+
+	// スキニングが無効の場合、普通の3Dモデルを描画
+	if (isActive == false) {
+		Draw();
+		return;
+	}
+
+	// 各メッシュごとに描画
+	for (size_t i = 0; i < mModelData.meshes.size(); ++i) {
+		const auto& mesh = mModelData.meshes[i];
+
+		// 頂点バッファをセットする際に、スキニングの影響を受ける頂点データとインフルエンスデータをセットする
+		D3D12_VERTEX_BUFFER_VIEW vbvs[2]{};
+		vbvs[0] = mVertexBufferViews[i];// VertexDataのVBV
+		vbvs[1] = skinning->GetNowSkinCluster()->skinClusters[i].mInfluenceBufferView; // influenceのVBV
+
+		// 頂点バッファビュー・インデックスバッファビューをセット
+		DirectXCommon::GetInstance()->mCommandList->IASetVertexBuffers(0, 2, vbvs);
+		DirectXCommon::GetInstance()->mCommandList->IASetIndexBuffer(&mIndexBufferViews[i]);
+		DirectXCommon::GetInstance()->mCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+		// マテリアルのCBufferの場所を指定
+		DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootConstantBufferView(0, mMaterialResources[i]->GetGPUVirtualAddress());
+		DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootConstantBufferView(3, mDirectionalLightResource->GetGPUVirtualAddress());
+		DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootConstantBufferView(4, mCameraResource->GetGPUVirtualAddress());
+
+		// スキニングのパレットをセット
+		DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootDescriptorTable(6,
+			skinning->GetNowSkinCluster()->skinClusters[0].mPaletteSrvHandle.second);
+
+		// テクスチャをセット
+		DirectXCommon::GetInstance()->mSrv->SetGraphicsRootDescriptorTable(2, mTextureHandles[i]);
+		// キューブマップのテクスチャをセット
+		if (mTextureHandleCubeMap != 0) {
+			DirectXCommon::GetInstance()->mSrv->SetGraphicsRootDescriptorTable(5, mTextureHandleCubeMap);
+		}
+
+		// インデックスを使用してドローコール
+		DirectXCommon::GetInstance()->mCommandList->DrawIndexedInstanced(UINT(mesh.indices.size()), 1, 0, 0, 0);
+	}
+
+}
+
 void Model::DrawGUI(const std::string& label){
 	label;
 #ifdef _DEBUG
-	//if (ImGui::TreeNode(label.c_str())) {
-	//	// マテリアル
-	//	if (ImGui::TreeNode("マテリアル")) {
-	//		ImGui::DragFloat4("Color", &mMaterialData->color.r, 0.01f, 0.0f, 1.0f);
-	//		ImGui::TreePop();// ノードを閉じる(この場合は "マテリアル" を閉じる)
-	//	}
-	//	if (ImGui::TreeNode("平行光源")) {
-	//		ImGui::Checkbox("Lighting Flag", &mIsLighting);
-	//		// Lightingの設定を変更できるように
-	//		mMaterialData->enableLighting = mIsLighting;
-	//		ImGui::DragFloat("Shininess", &mMaterialData->shininess, 0.05f, 0.0f, 1.0f);
-	//		ImGui::DragFloat4("Color", &mDirectionalLightData->color.r);
-	//		ImGui::DragFloat3("Directon", &mDirectionalLightData->direction.x, 0.1f, 0.0f, 1.0f);
-	//		ImGui::DragFloat("Intensity", &mDirectionalLightData->intensity, 0.1f, 0.0f, 1.0f);
-	//		ImGui::TreePop();
-	//	}
-	//	if (ImGui::TreeNode("環境マップ")) {
-	//		ImGui::DragFloat("EnvironmentCoefficient", &mMaterialData->environmentCoefficient, 0.01f, 0.0f, 1.0f);
-	//		ImGui::TreePop();// ノードを閉じる(この場合は "マテリアル" を閉じる)
-	//	}
 
-	//	ImGui::TreePop();
-	//}
+	// モデル情報のGUI表示
+	if (ImGui::CollapsingHeader(label.c_str())) {
+
+		// 各メッシュの情報を表示
+
+		// -- マテリアル -- //
+		if (ImGui::CollapsingHeader(std::string(label + "_Material").c_str())) {
+			for (int32_t i = 0; i < mMaterialDatas.size(); i++) {
+
+				// -- マテリアル 情報 -- //
+
+				ImGui::PushID(i); // IDを設定して区別する
+				ImGui::Text("Material %zu", i);
+				ImGui::DragFloat4("Color", &mMaterialDatas[i]->color.r, 0.01f, 0.0f, 1.0f);
+				ImGui::DragFloat("Shininess", &mMaterialDatas[i]->shininess, 0.05f, 0.0f, 1.0f);
+				ImGui::DragFloat("Environment Coefficient", &mMaterialDatas[i]->environmentCoefficient, 0.01f, 0.0f, 1.0f);
+				
+				// -- カメラ・光源 -- //
+
+				if (ImGui::CollapsingHeader("平行光源")) {
+					ImGui::Checkbox("Lighting Flag", &mIsLighting);
+					// Lightingの設定を変更できるように
+					mMaterialDatas[i]->enableLighting = mIsLighting;
+					ImGui::DragFloat4("Color", &mDirectionalLightData->color.r);
+					ImGui::DragFloat3("Directon", &mDirectionalLightData->direction.x, 0.1f, 0.0f, 1.0f);
+					ImGui::DragFloat("Intensity", &mDirectionalLightData->intensity, 0.1f, 0.0f, 1.0f);
+				}
+				if (ImGui::CollapsingHeader("環境マップ")) {
+					ImGui::DragFloat("EnvironmentCoefficient", &mMaterialDatas[i]->environmentCoefficient, 0.01f, 0.0f, 1.0f);
+				}
+				
+				ImGui::PopID(); // IDを戻す
+			}
+		}
+
+
+		
+
+	}
 
 #endif // _DEBUG
 }

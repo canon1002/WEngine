@@ -5,7 +5,6 @@
 #include "GameEngine/Object/Camera/MainCamera.h"
 #include "GameEngine/Resource/Model/ModelManager.h"
 #include "GameEngine/Editor/ImGui/ImGuiManager.h"
-#include "GameEngine/Resource/Model/MultiModel.h"
 
 Object3d::Object3d(const std::string objname) {
 	// 名称が引数に入っていれば命名しておく
@@ -56,25 +55,17 @@ void Object3d::Draw() {
 
 	//wvp用のCBufferの場所を指定
 	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootConstantBufferView(1, mWvpResource->GetGPUVirtualAddress());
-	// 頂点をセット
-
-	D3D12_VERTEX_BUFFER_VIEW vbvs[2]{};
-	vbvs[0] = mModel->mVertexBufferViews[0];// VertexDataのVBV
-	if (mSkinning != nullptr && mSkinning->GetIsActive()) {
-
-		vbvs[1] = mSkinning->GetNowSkinCluster()->skinCluster.mInfluenceBufferView; // influenceのVBV
-
-		// 配列を渡す(開始スロット番号、使用スロット数、VBV配列へのポインタ)
-		DirectXCommon::GetInstance()->mCommandList->IASetVertexBuffers(0, 2, vbvs);
-		DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootDescriptorTable(6,
-			mSkinning->GetNowSkinCluster()->skinCluster.mPaletteSrvHandle.second);
+	
+	// モデルの描画
+	if(mSkinning!=nullptr) {
+		// スキニングがある場合はスキニングを描画
+		// ただし、アニメーション無効化設定がある場合はDraw関数内で通常モデルの描画を行う
+		mModel->DrawSkinning(mSkinning.get(), mSkinning->GetIsActive());
 	}
 	else {
-		// 配列を渡す(開始スロット番号、使用スロット数、VBV配列へのポインタ)
-		DirectXCommon::GetInstance()->mCommandList->IASetVertexBuffers(0, 1, &vbvs[0]);
+		// スキニングがない場合は通常の描画
+		mModel->Draw();
 	}
-
-	mModel->Draw();
 
 }
 
@@ -188,21 +179,33 @@ void Object3d::CreateTransformation() {
 
 }
 
-void Object3d::SetModel(const std::string& filepath)
+void Object3d::SetModel(const std::string& filePath)
 {
 	// モデルを検索してセット
-	mModel = ModelManager::GetInstance()->CreateModel("", filepath);
+	mModel = ModelManager::GetInstance()->CreateModel("", filePath);
 
+	// モデル内にアニメーションがある場合はアニメーション及びスキンクラスターなどを生成
+	for (const auto& mesh : mModel->mModelData.meshes) {
+		if (!mesh.skinClusterData.empty()) {
+			mSkinning = std::make_unique<Skinning>();
+			mSkinning->Init("", filePath, mModel->mModelData);
+		}
+	}
 }
 
 void Object3d::SetModelFullPath(const string& directryPath, const string& filePath){
 
 	// モデルを検索してセット
 	mModel = ModelManager::GetInstance()->CreateModel(directryPath, filePath);
+	
 	// モデル内にアニメーションがある場合はアニメーション及びスキンクラスターなどを生成
-	if (!mModel->mModelData.meshes[0].skinClusterData.empty()) {
-		mSkinning = std::make_unique<Skinning>();
-		mSkinning->Init(directryPath, filePath, mModel->mModelData.meshes[0]);
+	for(const auto& mesh : mModel->mModelData.meshes) {
+		if (!mesh.skinClusterData.empty()) {
+			mSkinning = std::make_unique<Skinning>();
+			mSkinning->Init(directryPath, filePath, mModel->mModelData);
+		}
 	}
+
+	
 
 }

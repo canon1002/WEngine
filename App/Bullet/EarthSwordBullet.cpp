@@ -24,7 +24,7 @@ void EarthSwordBullet::Init(){
 
 	// モデルを設定
 	mObject->SetModel("EarthSwordBullet.gltf");
-	mObject->GetModel()->mMaterialData->color = { 1.0f,1.0f,1.0f,1.0f };
+	mObject->GetModel()->GetMaterialData()->color = { 1.0f,1.0f,1.0f,1.0f };
 
 	// コライダーの初期化
 	mCollider = std::make_shared<GameCollider>();

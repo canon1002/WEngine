@@ -99,7 +99,7 @@ void ACT::Seartch::Start()
 	mSearchTime = 0.0f;
 
 	// アニメーションの変更
-	mActor->GetObject3D()->mSkinning->SetNextAnimation("Run");
+	mActor->GetObject3D()->mSkinning->SetNextAnimation("Actor_Run");
 
 	// 実行する
 	mCondition = Condition::RUNNING;

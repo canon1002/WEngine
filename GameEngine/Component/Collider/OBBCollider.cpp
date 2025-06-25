@@ -177,10 +177,6 @@ void OBBCollider::Draw() {
 
 	//wvp用のCBufferの場所を指定
 	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootConstantBufferView(1, mWvpResource->GetGPUVirtualAddress());
-	// 頂点をセット
-	// 配列を渡す(開始スロット番号、使用スロット数、VBV配列へのポインタ)
-	DirectXCommon::GetInstance()->mCommandList->IASetVertexBuffers(0, 1, &mModel->mVertexBufferView);
-
 	mModel->Draw();
 
 }

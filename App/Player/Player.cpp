@@ -59,53 +59,40 @@ void Player::Init() {
 
 void Player::InitObject(){
 
-	// モデル読み込み
-	ModelManager::GetInstance()->LoadModel("player", "idle.gltf");
-	ModelManager::GetInstance()->LoadModel("player", "run.gltf");
-	ModelManager::GetInstance()->LoadModel("player", "gatotu0.gltf");
-	ModelManager::GetInstance()->LoadModel("player", "fastSlash.gltf");
-	ModelManager::GetInstance()->LoadModel("player", "slashR.gltf");
-	ModelManager::GetInstance()->LoadModel("player", "slashL.gltf");
-	ModelManager::GetInstance()->LoadModel("player", "slashEnd.gltf");
-	ModelManager::GetInstance()->LoadModel("player", "avoid.gltf");
-	ModelManager::GetInstance()->LoadModel("player", "backStep.gltf");
-	ModelManager::GetInstance()->LoadModel("player", "thrust.gltf");
-	ModelManager::GetInstance()->LoadModel("player", "S0.gltf");
-	ModelManager::GetInstance()->LoadModel("player", "S1.gltf");
-	ModelManager::GetInstance()->LoadModel("player", "S2.gltf");
-	ModelManager::GetInstance()->LoadModel("player", "S3.gltf");
-
 	mObject = std::make_unique<Object3d>();
 	mObject->Init("PlayerObj");
 	mObject->SetScale({ 2.5f,2.5f,2.5f });
 	mObject->SetTranslate({ 1.0f,1.0f,7.0f });
 
 	// モデルを設定
-	mObject->SetModel("idle.gltf");
+	mObject->SetModelFullPath("Actor", "Actor.gltf");
 	// スキニングアニメーションを生成
 	mObject->mSkinning = make_unique<Skinning>();
-	mObject->mSkinning->Init("player", "idle.gltf", mObject->GetModel()->mModelData);
+	mObject->mSkinning->Init("Actor", "Actor_Idle.gltf", mObject->GetModel()->mModelData);
 	// モーションブレンド速度
 	mObject->mSkinning->SetMotionBlendingInterval(15.0f);
 	// アニメーション再生速度
 	mObject->mSkinning->SetAnimationPlaySpeed(1.0f);
 	// 使用するアニメーションを登録しておく
-	mObject->mSkinning->CreateSkinningData("player", "idle", ".gltf", mObject->GetModel()->mModelData, true);
-	mObject->mSkinning->CreateSkinningData("player", "prepare", ".gltf", mObject->GetModel()->mModelData);
-	mObject->mSkinning->CreateSkinningData("player", "gatotu0", ".gltf", mObject->GetModel()->mModelData);
-	mObject->mSkinning->CreateSkinningData("player", "fastSlash", ".gltf", mObject->GetModel()->mModelData);
-	mObject->mSkinning->CreateSkinningData("player", "slashR", ".gltf", mObject->GetModel()->mModelData);
-	mObject->mSkinning->CreateSkinningData("player", "slashL", ".gltf", mObject->GetModel()->mModelData);
-	mObject->mSkinning->CreateSkinningData("player", "slashEnd", ".gltf", mObject->GetModel()->mModelData);
-	mObject->mSkinning->CreateSkinningData("player", "thrust", ".gltf", mObject->GetModel()->mModelData);
-	mObject->mSkinning->CreateSkinningData("player", "avoid", ".gltf", mObject->GetModel()->mModelData);
-	mObject->mSkinning->CreateSkinningData("player", "backStep", ".gltf", mObject->GetModel()->mModelData);
-	mObject->mSkinning->CreateSkinningData("player", "walk", ".gltf", mObject->GetModel()->mModelData, true);
-	mObject->mSkinning->CreateSkinningData("player", "run", ".gltf", mObject->GetModel()->mModelData, true);
-	mObject->mSkinning->CreateSkinningData("player", "S0", ".gltf", mObject->GetModel()->mModelData);
-	mObject->mSkinning->CreateSkinningData("player", "S1", ".gltf", mObject->GetModel()->mModelData);
-	mObject->mSkinning->CreateSkinningData("player", "S2", ".gltf", mObject->GetModel()->mModelData);
-	mObject->mSkinning->CreateSkinningData("player", "S3", ".gltf", mObject->GetModel()->mModelData);
+	mObject->mSkinning->CreateSkinningData("Actor", "Actor_Idle", ".gltf", mObject->GetModel()->mModelData, true);
+
+	mObject->mSkinning->CreateSkinningData("Actor", "Actor_Avoid", ".gltf", mObject->GetModel()->mModelData);
+	mObject->mSkinning->CreateSkinningData("Actor", "Actor_BackStep", ".gltf", mObject->GetModel()->mModelData);
+
+	mObject->mSkinning->CreateSkinningData("Actor", "Actor_Walk", ".gltf", mObject->GetModel()->mModelData, true);
+	mObject->mSkinning->CreateSkinningData("Actor", "Actor_Run", ".gltf", mObject->GetModel()->mModelData, true);
+	mObject->mSkinning->CreateSkinningData("Actor", "Actor_BackRun", ".gltf", mObject->GetModel()->mModelData, true);
+
+	mObject->mSkinning->CreateSkinningData("Actor", "Actor_S0", ".gltf", mObject->GetModel()->mModelData);
+	mObject->mSkinning->CreateSkinningData("Actor", "Actor_S1", ".gltf", mObject->GetModel()->mModelData);
+	mObject->mSkinning->CreateSkinningData("Actor", "Actor_S2", ".gltf", mObject->GetModel()->mModelData);
+
+	mObject->mSkinning->CreateSkinningData("Actor", "Actor_Knockback", ".gltf", mObject->GetModel()->mModelData);
+	mObject->mSkinning->CreateSkinningData("Actor", "Actor_Death", ".gltf", mObject->GetModel()->mModelData);
+
+	mObject->mSkinning->CreateSkinningData("Actor", "Actor_MagicCastLong", ".gltf", mObject->GetModel()->mModelData);
+	mObject->mSkinning->CreateSkinningData("Actor", "Actor_MagicCast", ".gltf", mObject->GetModel()->mModelData);
+
 
 	// コライダーの宣言
 	mObject->mCollider = std::make_unique<SphereCollider>(mObject->mWorldTransform.get(), 0.5f);
@@ -132,8 +119,8 @@ void Player::InitObject(){
 	sword = std::make_unique<Object3d>();
 	sword->Init("sword");
 	sword->SetModel("sword.gltf");
-	sword->mWorldTransform->scale = { 0.1f,0.1f,0.175f };
-	sword->mWorldTransform->rotation = { 2.0f,-0.6f,1.4f };
+	sword->mWorldTransform->scale = { 1.0f,1.0f,1.0f };
+	sword->mWorldTransform->rotation = { 0.0f,0.0f,0.0f };
 	sword->mWorldTransform->translation = { 0.05f,0.0f,0.05f };
 	sword->mSkinning = make_unique<Skinning>();
 	sword->mSkinning->Init("Weapons", "sword.gltf",
@@ -203,11 +190,11 @@ void Player::InitWorks(){
 	kConstAttacks[2].motionTimeMax = 0.6f;
 	kConstAttacks[2].actionSpeed = 1.0f;
 
-	kConstAttacks[3].offence = 1.0f;
-	kConstAttacks[3].operationTime = 0.1f;
-	kConstAttacks[3].afterTime = 0.45f;
-	kConstAttacks[3].motionTimeMax = 0.6f;
-	kConstAttacks[3].actionSpeed = 1.0f;
+	//kConstAttacks[3].offence = 1.0f;
+	//kConstAttacks[3].operationTime = 0.1f;
+	//kConstAttacks[3].afterTime = 0.45f;
+	//kConstAttacks[3].motionTimeMax = 0.6f;
+	//kConstAttacks[3].actionSpeed = 1.0f;
 
 	//kConstAttacks[2].offence = 1.0f;
 	//kConstAttacks[2].operationTime = 0.1f;
@@ -268,28 +255,28 @@ void Player::Update() {
 		{
 		case Behavior::kRoot:
 
-			if (mObject->mSkinning->GetNowSkinCluster()->name != "idle" &&
-				!mObject->mSkinning->SearchToWaitingSkinCluster("idle"))
+			if (mObject->mSkinning->GetNowSkinCluster()->name != "Actor_Idle" &&
+				!mObject->mSkinning->SearchToWaitingSkinCluster("Actor_Idle"))
 			{
-				mObject->mSkinning->SetNextAnimation("idle");
+				mObject->mSkinning->SetNextAnimation("Actor_Idle");
 			}
 
 			break;
 		case Behavior::kMove:
 
-			if (mObject->mSkinning->GetNowSkinCluster()->name != "walk" &&
-				!mObject->mSkinning->SearchToWaitingSkinCluster("walk"))
+			if (mObject->mSkinning->GetNowSkinCluster()->name != "Actor_Walk" &&
+				!mObject->mSkinning->SearchToWaitingSkinCluster("Actor_Walk"))
 			{
-				mObject->mSkinning->SetNextAnimation("walk");
+				mObject->mSkinning->SetNextAnimation("Actor_Walk");
 			}
 
 			break;
 		case Behavior::kDash:
 
-			if (mObject->mSkinning->GetNowSkinCluster()->name != "run" &&
-				!mObject->mSkinning->SearchToWaitingSkinCluster("run"))
+			if (mObject->mSkinning->GetNowSkinCluster()->name != "Actor_Run" &&
+				!mObject->mSkinning->SearchToWaitingSkinCluster("Actor_Run"))
 			{
-				mObject->mSkinning->SetNextAnimation("run");
+				mObject->mSkinning->SetNextAnimation("Actor_Run");
 			}
 
 			break;
@@ -349,7 +336,7 @@ void Player::UpdateObject(){
 
 	// 右手のワールド行列を更新
 	weaponParentMat = Multiply(
-		GetObject3D()->mSkinning->GetBoneMatrix("mixamorig:RightHand"),
+		GetObject3D()->mSkinning->GetBoneMatrix("mixamorig:Sword_joint"),
 		GetObject3D()->GetWorldTransform()->GetWorldMatrix());
 
 	// 剣
@@ -626,7 +613,7 @@ void Player::Avoid(){
 		work.avoidDirection = Normalize(dir);
 
 		// アニメ再生（"avoid" 固定 または方向別に変える）
-		mObject->mSkinning->SetNextAnimation("avoid");
+		mObject->mSkinning->SetNextAnimation("Actor_Avoid");
 
 		mWorks->mBehavior = Behavior::kAvoid;
 
@@ -644,7 +631,7 @@ void Player::Avoid(){
 
 		// 回避完了判定
 		const float avoidDuration = mObject->mSkinning->
-			GetSkinCluster("avoid")->animation.duration; // 避けモーション再生時間と一致させる
+			GetSkinCluster("Actor_Avoid")->animation.duration; // 避けモーション再生時間と一致させる
 
 		if (work.elapsedTime >= avoidDuration) {
 			work.elapsedTime = 0.0f;
@@ -774,7 +761,7 @@ void Player::Attack()
 			work.elapsedTime = 0.0f;
 
 			// 初段のアニメーション再生
-			mObject->mSkinning->SetNextAnimation("S0");
+			mObject->mSkinning->SetNextAnimation("Actor_S0");
 
 			// 振る舞いの変更
 			mWorks->mBehavior = Behavior::kAttack;
@@ -838,7 +825,7 @@ void Player::Attack()
 				work.isComboRequest = false;
 				work.isHit = false;
 
-				std::string nextAnimName = "S" + std::to_string(work.comboCount);
+				std::string nextAnimName = "Actor_S" + std::to_string(work.comboCount);
 				mObject->mSkinning->SetNextAnimation(nextAnimName); // 必要に応じて "S1", "S2" などに変更
 				
 				// 振る舞いの変更

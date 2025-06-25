@@ -6,7 +6,6 @@
 #include "GameEngine/Component/Animation/Skinning/Skinnig.h"
 
 #include "GameEngine/Resource/Model/Model.h"
-#include "GameEngine/Resource/Model/MultiModel.h"
 
 namespace Resource
 {

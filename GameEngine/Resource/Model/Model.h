@@ -44,6 +44,7 @@ public: // -- 公開 メンバ関数 -- //
 	void Update();
 	// 描画
 	void Draw();
+	void DrawSkinning(Skinning* skinning, const bool& isActive = false);
 	// ImGui描画
 	void DrawGUI(const std::string& label);
 
@@ -58,6 +59,38 @@ public: // -- 公開 メンバ関数 -- //
 		mTextureHandleCubeMap = textureHandle;
 	}
 		
+
+	// -- アクセッサ -- //
+
+	/// <summary>
+	/// 頂点バッファビューを取得
+	/// <para> index未入力の場合、最初のVBVを返す </para>
+	/// </summary>
+	/// <param name="index"> バッファ番号 </param>
+	/// <returns></returns>
+	D3D12_VERTEX_BUFFER_VIEW GetVBV(const int32_t& index = 0) {
+		return mVertexBufferViews[index];
+	}
+
+	/// <summary>
+	/// インデックスバッファビューを取得
+	/// <para> index未入力の場合、最初のIBVを返す </para>
+	/// </summary>
+	/// <param name="index"> バッファ番号 </param>
+	/// <returns></returns>
+	D3D12_INDEX_BUFFER_VIEW GetIBV(const int32_t& index = 0) {
+		return mIndexBufferViews[index];
+	}
+
+	/// <summary>
+	/// マテリアルデータを取得
+	/// <para> index未入力の場合、最初のマテリアルデータを返す </para>
+	/// </summary>
+	/// <param name="index"> マテリアル番号 </param>
+	/// <returns></returns>
+	Material* GetMaterialData(const int32_t& index = 0) {
+		return mMaterialDatas[index];
+	}
 
 private: // -- 非公開 メンバ関数 -- //
 

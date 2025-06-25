@@ -103,8 +103,7 @@ void LevelEditor::CheckLevelEditorFile(){
 		// ファイル拡張子を指定 とりあえずgltfのみ読み込む
 		std::string extension = ".gltf";
 		const std::string& modelFilepath = objectData.fileName + extension;
-		ModelManager::GetInstance()->LoadModel("MapObjects", modelFilepath);
-		newObject->SetModel(modelFilepath);
+		newObject->SetModelFullPath("MapObjects", modelFilepath);
 		
 		// ワールド座標を設定
 		newObject->mWorldTransform->translation = objectData.worldTransform.translation;

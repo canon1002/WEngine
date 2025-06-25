@@ -1,7 +1,5 @@
 #include "ModelManager.h"
 
-std::map<std::string, std::shared_ptr<Model>> ModelManager::sModels_;
-
 // インスタンス
 std::unique_ptr<ModelManager> ModelManager::instance = nullptr;
 
@@ -17,7 +15,7 @@ ModelManager* ModelManager::GetInstance(){
 void ModelManager::Finalize() {
 
 	// リストをクリア
-	models.clear();
+	mModels.clear();
 
 	// インスタンスの破棄
 	instance.reset();
@@ -32,7 +30,7 @@ void ModelManager::Init(){
 
 void ModelManager::LoadModel(const std::string& directoryPath, const std::string& filepath){
 	// 読み込み済みのモデルを検索
-	if (models.contains(filepath)) {
+	if (mModels.contains(filepath)) {
 		// 読み込み済みの場合は早期リターンする
 		return;
 	}
@@ -43,33 +41,15 @@ void ModelManager::LoadModel(const std::string& directoryPath, const std::string
 	model->Init(directoryPath, filepath);
 
 	// モデルをmapコンテナに格納
-	models.insert(std::make_pair(filepath, std::move(model)));
-}
-
-void ModelManager::LoadMultiModel(const std::string& directoryPath, const std::string& filepath){
-
-	// 読み込み済みのモデルを検索
-	if (mMultiModels.contains(filepath)) {
-		// 読み込み済みの場合は早期リターンする
-		return;
-	}
-
-	// モデルの生成とファイル読み込み
-	std::unique_ptr<Model> model = std::make_unique<Model>();
-	//初期化
-	model->Init(directoryPath, filepath);
-
-	// モデルをmapコンテナに格納
-	mMultiModels.insert(std::make_pair(filepath, std::move(model)));
-
+	mModels.insert(std::make_pair(filepath, std::move(model)));
 }
 
 Model* ModelManager::FindModel(const std::string filepath)
 {
 	// 読み込み済みモデルを検索
-	if (models.contains(filepath)) {
+	if (mModels.contains(filepath)) {
 		// 読み込み済みモデルを戻り値としてreturn
-		return models.at(filepath).get();
+		return mModels.at(filepath).get();
 	}
 	// ファイル名不一致の場合はnullptrを返す
 	return nullptr;
@@ -97,12 +77,12 @@ void ModelManager::PreDrawForShadow()
 	DirectXCommon::GetInstance()->mCommandList->SetPipelineState(graphicsPipelineStateForShadow.Get());
 }
 
-Model* ModelManager::CreateModel(const std::string& filepath, const std::string& directoryPath){
+Model* ModelManager::CreateModel(const std::string& directoryPath,const std::string& filepath){
 
 	// 読み込み済みのモデルを検索
-	if (mModelsMap.contains(filepath)) {
+	if (mModels.contains(filepath)) {
 		// 読み込み済みモデルを戻り値としてreturn
-		return mModelsMap.at(filepath).get();
+		return mModels.at(filepath).get();
 	}
 
 	// 読み込み済みモデルがない場合は新規に生成する
@@ -113,10 +93,10 @@ Model* ModelManager::CreateModel(const std::string& filepath, const std::string&
 	model->Init(directoryPath, filepath);
 
 	// モデルをmapコンテナに格納
-	mModelsMap.insert(std::make_pair(filepath, std::move(model)));
+	mModels.insert(std::make_pair(filepath, std::move(model)));
 
 	// 生成したモデルを戻り値として返す
-	return mModelsMap.at(filepath).get();
+	return mModels.at(filepath).get();
 }
 
 void ModelManager::CreateRootSignature(){

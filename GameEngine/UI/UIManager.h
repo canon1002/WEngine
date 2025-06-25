@@ -59,11 +59,11 @@ private: // -- 非公開 メンバ変数 -- //
 	
 	// UI工場のポインタ(解放禁止)
 	AbstractUIFactory* mUIFactory = nullptr;
-
-	// UIのリスト
-	std::vector<std::shared_ptr<BaseUI>> mUIList;
-
-	// UIのマップ
+	
+	// UIリスト
+	// キー : 所属シーン名
+	// 値 : UIポインタ配列
+	std::unordered_map<SceneName, std::vector<std::unique_ptr<BaseUI>>> mUIMap;
 
 };
 

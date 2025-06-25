@@ -17,7 +17,7 @@ void ACT::KnockBack::Init(Actor* actor){
 	// 移動量
 	mVelocity = { 0.0f,0.0f,1.0f };
 	// 移動速度
-	mMoveSpeed = (2.0f/mActor->GetObject3D()->mSkinning->GetSkinCluster("Knockback")->animation.duration);
+	mMoveSpeed = (2.0f/mActor->GetObject3D()->mSkinning->GetSkinCluster("Actor_Knockback")->animation.duration);
 	// 攻撃対象の座標
 	mTargetPos = { 0.0f,0.0f,0.0f };
 
@@ -31,7 +31,7 @@ void ACT::KnockBack::Update(){
 		mActor->AddTransform(mVelocity);
 
 		// 終了処理 // アニメーションが終了したら終了
-		if (mActor->GetObject3D()->mSkinning->GetIsAnimationFinished("Knockback")) {
+		if (mActor->GetObject3D()->mSkinning->GetIsAnimationFinished("Actor_Knockback")) {
 			mCondition = Condition::FINISHED;
 		}
 	}
@@ -55,7 +55,7 @@ void ACT::KnockBack::Start(){
 	mEndPos = mStartPos + mDirection;
 
 	// アニメーションの変更
-	mActor->GetObject3D()->mSkinning->SetNextAnimation("Knockback");
+	mActor->GetObject3D()->mSkinning->SetNextAnimation("Actor_Knockback");
 
 }
 
