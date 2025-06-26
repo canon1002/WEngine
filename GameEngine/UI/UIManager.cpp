@@ -39,15 +39,8 @@ void UIManager::Update() {
 #endif // _DEBUG
 
 	// UIの更新処理
-	for (auto& ui : mUIList) {
-		
-		// UIが現在のシーンに属しているか確認する
-		if (magic_enum::enum_cast<SceneName>(ui->GetSceneName()) !=
-			SceneManager::GetInstance()->GetCurrentSceneName()) {
-
-			// 現在のシーン以外のものはスキップ
-			continue;
-		}
+	// 現在のシーンに応じてUIを更新する
+	for (auto& ui : mUIMap[SceneManager::GetInstance()->GetCurrentSceneName()]) {
 		
 		// スプライトの更新処理
 		ui->Update();
@@ -68,15 +61,8 @@ void UIManager::Draw() {
 	SpriteAdministrator::GetInstance()->PreDraw();
 
 	// UIの描画処理
-	for (auto& ui : mUIList) {
-
-		// UIが現在のシーンに属しているか確認する
-		if (magic_enum::enum_cast<SceneName>(ui->GetSceneName()) !=
-			SceneManager::GetInstance()->GetCurrentSceneName()) {
-			
-			// 現在のシーン以外のものはスキップ
-			continue;
-		}
+	// 現在のシーンに応じてUIを描画する
+	for (auto& ui : mUIMap[SceneManager::GetInstance()->GetCurrentSceneName()]) {
 
 		// UIが有効化されていない場合は描画しない
 		if(!ui->GetActive()) {
@@ -99,16 +85,12 @@ void UIManager::CreateUI(const std::string& name,SceneName sceneName){
 	
 	// UIを初期化
 	newUI->Init(name);
-
-	// 更新・描画処理のときに実行シーンのもののみを表示するために
-	// magic_enumで文字列に変換したうえで所属シーン名を登録する
-	newUI->SetSceneName(magic_enum::enum_name<SceneName>(sceneName).data());
 	
 	// Jsonから取得した情報をUIに設定する
 	newUI->Load();
 
 	// 新規UIを配列に追加
-	mUIList.push_back(std::move(newUI));
+	mUIMap[sceneName].push_back(std::move(newUI));
 	
 }
 
@@ -117,41 +99,25 @@ void UIManager::DeleteUI(const std::string& name){
 }
 
 void UIManager::DeleteSceneUI(SceneName sceneName){
-	sceneName;
-	// UIのポインタを取得する
-	for (auto& ui : mUIList) {
-
-		// UIが削除されていないか確認する
-		if (ui == nullptr) {
-			continue;
-		}
-
-		// UIが指定したシーンに属しているか確認する
-		if (magic_enum::enum_cast<SceneName>(ui->GetSceneName()) != sceneName) {
-
-			// 指定したシーン以外のものはスキップ
-			continue;
-		}
-		
-		// 該当したシーンのUIのポインタを削除する
-		ui.reset();
-		// mUIListから削除する
-		mUIList.erase(
-			std::remove(mUIList.begin(), mUIList.end(), ui), mUIList.end());
-
-	}
+	
+	// 指定されたシーンのUIを全て削除する
+	// 該当シーンごと削除
+	mUIMap.erase(sceneName);
 
 }
 
 BaseUI* UIManager::GetUIPtr(const std::string name){
 
 	// UIのポインタを取得する
-	for (auto& ui : mUIList) {
-		// 名前が一致するUIを探す
-		if (ui->GetName() == name) {
+	// シーンは関係なく、全てのUIを検索する
+	for (auto& scene : mUIMap) {
+		for (auto& ui : scene.second) {
 
-			// 見つかった場合はポインタを返す
-			return ui.get();
+			// UIの名前が一致するか確認する
+			if (ui->GetName() == name) {
+				return ui.get();
+			}
+
 		}
 	}
 
