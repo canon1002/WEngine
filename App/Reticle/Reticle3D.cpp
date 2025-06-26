@@ -80,22 +80,22 @@ void Reticle3D::Update()
 
 #ifdef _DEBUG
 
-	ImGui::Begin("Reticle");
-	ImGui::DragFloat("Distance", &mReticleDistance, 1.0f, -100.0f, 100.0f);
-	ImGui::DragFloat2("Reticle2D", &mPostionReticle2D.x, 1.0f, -1280.0f, 1280.0f);
-	ImGui::DragFloat3("posNear", &mPosNear.x, 1.0f, -1280.0f, 1280.0f);
-	ImGui::DragFloat3("posFar", &mPosFar.x, 1.0f, -1280.0f, 1280.0f);
-	ImGui::DragFloat3("Reticle3D S", &mObject->mWorldTransform->scale.x);
-	ImGui::DragFloat3("Reticle3D R", &mObject->mWorldTransform->rotation.x);
-	ImGui::DragFloat3("Reticle3D T", &mObject->mWorldTransform->translation.x);
-	ImGui::End();
+	//ImGui::Begin("Reticle");
+	//ImGui::DragFloat("Distance", &mReticleDistance, 1.0f, -100.0f, 100.0f);
+	//ImGui::DragFloat2("Reticle2D", &mPostionReticle2D.x, 1.0f, -1280.0f, 1280.0f);
+	//ImGui::DragFloat3("posNear", &mPosNear.x, 1.0f, -1280.0f, 1280.0f);
+	//ImGui::DragFloat3("posFar", &mPosFar.x, 1.0f, -1280.0f, 1280.0f);
+	//ImGui::DragFloat3("Reticle3D S", &mObject->mWorldTransform->scale.x);
+	//ImGui::DragFloat3("Reticle3D R", &mObject->mWorldTransform->rotation.x);
+	//ImGui::DragFloat3("Reticle3D T", &mObject->mWorldTransform->translation.x);
+	//ImGui::End();
 
 
 #endif // _DEBUG
 
 	mObject->Update();
 	mObject->mCollider->Update();
-	mObject->DrawGUI();
+	//mObject->DrawGUI();
 
 	mSprite->SetPos(mPostionReticle2D);
 	mSprite->Update();

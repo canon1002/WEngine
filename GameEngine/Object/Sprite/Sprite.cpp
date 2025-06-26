@@ -132,7 +132,7 @@ void Sprite::DrawGui(){
 }
 
 void Sprite::DrawGui(const std::string& name){
-
+	name;
 #ifdef _DEBUG
 
 	// ImGuiを描画する

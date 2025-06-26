@@ -94,7 +94,7 @@ void ParticleManager::Update(){
 
 				#ifdef _DEBUG
 
-				if (ImGui::TreeNode(std::to_string(itGroup->second.instanceCount).c_str())) {
+		/*		if (ImGui::TreeNode(std::to_string(itGroup->second.instanceCount).c_str())) {
 					float treeScale = (*it).worldTransform.scale.x;
 					ImGui::DragFloat("Scale", &treeScale, 0.05f);
 					(*it).worldTransform.scale = { treeScale ,treeScale ,treeScale };
@@ -109,7 +109,7 @@ void ParticleManager::Update(){
 					ImGui::SliderAngle("UVRotate", &itGroup->second.uvTransform.rotation.z);
 					ImGui::ColorEdit4("Color", &(*it).color.r);
 					ImGui::TreePop();
-				}
+				}*/
 
 				#endif // _DEBUG
 

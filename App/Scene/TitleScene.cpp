@@ -194,17 +194,17 @@ void TitleScene::Update() {
 	// オブジェクト更新
 	mCamera->Update();
 	mGroundObj->Update();
-	mGroundObj->DrawGUI();
+	//mGroundObj->DrawGUI();
 	mWoodObj->Update();
-	mWoodObj->DrawGUI();
+	//mWoodObj->DrawGUI();
 	mSwordObj->Update();
-	mSwordObj->DrawGUI();
+	//mSwordObj->DrawGUI();
 	mPlayerObj->Update();
-	mPlayerObj->DrawGUI();
+	//mPlayerObj->DrawGUI();
 
 	// スカイボックス
 	Skybox::GetInstance()->Update();
-	Skybox::GetInstance()->DrawGUI("Skybox");
+	//Skybox::GetInstance()->DrawGUI("Skybox");
 
 	// 関数ポインタを使用してフェーズごとに処理する
 	(this->*mPhaseFunc)();
@@ -214,9 +214,9 @@ void TitleScene::Update() {
 		static Vector3 flamePos = Vector3(0.0f, 0.0f, -5.0f);
 
 #ifdef _DEBUG
-		ImGui::Begin("Flame");
+	/*	ImGui::Begin("Flame");
 		ImGui::DragFloat3("FlamePos", &flamePos.x);
-		ImGui::End();
+		ImGui::End();*/
 #endif // _DEBUG
 
 		// 発生座標の更新
