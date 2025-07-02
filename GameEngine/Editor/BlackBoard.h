@@ -7,7 +7,7 @@ class Framerate;
 class GlobalVariables;
 
 // フィールドの限界地点(半径)
-const Vector3 kFieldRadius = { 20.0f,40.0f,20.0f };
+const Vector3 kFieldRadius = { 600.0f,40.0f,600.0f };
 
 /// <summary>
 /// ブラックボード

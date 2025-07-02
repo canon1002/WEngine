@@ -45,7 +45,7 @@ void BossEnemy::Init() {
 	// オブジェクト生成
 	mObject = std::make_unique<Object3d>();
 	mObject->Init("BossEnemyObj");
-	mObject->mWorldTransform->scale = { 1.5f,1.5f,1.5f };
+	mObject->mWorldTransform->scale = { 3.0f,3.0f,3.0f };
 	mObject->mWorldTransform->translation = { 0.0f,0.0f,20.0f };
 
 	// モデルを設定
@@ -129,25 +129,20 @@ void BossEnemy::Init() {
 
 	mWeapon = std::make_unique<Object3d>();
 	mWeapon->Init("Weapon");
-	mWeapon->SetModel("twoHanded.gltf");
+	mWeapon->SetModelFullPath("Weapons","ASword.gltf");
 	mWeapon->mSkinning = make_unique<Skinning>();
 	mWeapon->GetModel()->SetCubeTexture(Skybox::GetInstance()->mTextureHandle);
-	mWeapon->mSkinning->Init("twoHanded", "twoHanded.gltf",
+	mWeapon->mSkinning->Init("Weapons", "ASword.gltf",
 		mWeapon->GetModel()->mModelData);
 	mWeapon->mSkinning->IsInactive();
 
 	// 拡大率を変更
-	mWeapon->mWorldTransform->scale = { 4.0f,4.0f,4.0f };
-	// 回転量を変更
-	mWeapon->mWorldTransform->rotation = { 1.065f,0.0f,0.0f };
-	// 平行移動を行う
-	mWeapon->mWorldTransform->translation = { 4.6f,-5.9f,5.8f };
-
+	mWeapon->mWorldTransform->scale = { 1.5f,1.5f,1.5f };
 	// ペアレント
 	mWeapon->mWorldTransform->SetParent(mRightHandWorldMat);
 
 	// 武器にコライダーをセットする
-	for (int32_t i = 0; i < 8; i++) {
+	for (int32_t i = 0; i < 5; i++) {
 		mWeaponWorldMat[i] = MakeAffineMatrix(Vector3{ 0.0f,0.0f,0.0f }, Vector3{ 0.0f,0.0f,0.0f }, Vector3{ 0.0f,0.0f,0.0f });
 		// コライダー 宣言
 		std::shared_ptr<GameCollider> newCollider = std::make_shared<GameCollider>();
@@ -396,16 +391,7 @@ void BossEnemy::UpdateObject() {
 	mWeaponWorldMat[4] = Multiply(
 		mWeapon->mSkinning->GetSkeleton().joints[mWeapon->mSkinning->GetSkeleton().jointMap["Blade4"]
 		].skeletonSpaceMatrix, mWeapon->GetWorldTransform()->GetWorldMatrix());
-	mWeaponWorldMat[5] = Multiply(
-		mWeapon->mSkinning->GetSkeleton().joints[mWeapon->mSkinning->GetSkeleton().jointMap["Blade5"]
-		].skeletonSpaceMatrix, mWeapon->GetWorldTransform()->GetWorldMatrix());
-	mWeaponWorldMat[6] = Multiply(
-		mWeapon->mSkinning->GetSkeleton().joints[mWeapon->mSkinning->GetSkeleton().jointMap["Blade6"]
-		].skeletonSpaceMatrix, mWeapon->GetWorldTransform()->GetWorldMatrix());
-	mWeaponWorldMat[7] = Multiply(
-		mWeapon->mSkinning->GetSkeleton().joints[mWeapon->mSkinning->GetSkeleton().jointMap["Blade7"]
-		].skeletonSpaceMatrix, mWeapon->GetWorldTransform()->GetWorldMatrix());
-
+	
 	// 身体の部位のワールド行列を更新
 	UpdateBodyCollider();
 

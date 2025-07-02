@@ -255,7 +255,7 @@ void Model::CreateMaterialResource(){
 		materialData->enableLighting = true;
 		materialData->shininess = 100.0f;
 		materialData->uvTransform = MakeIdentity();
-		materialData->environmentCoefficient = 1.0f;
+		materialData->environmentCoefficient = 0.0f;
 
 		resource->Unmap(0, nullptr);
 

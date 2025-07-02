@@ -117,13 +117,11 @@ void Player::InitObject(){
 	// -- 攻撃関連パラメータ -- //
 
 	sword = std::make_unique<Object3d>();
-	sword->Init("sword");
-	sword->SetModel("sword.gltf");
+	sword->Init("ASword");
+	sword->SetModelFullPath("Weapons", "ASword.gltf");
 	sword->mWorldTransform->scale = { 1.0f,1.0f,1.0f };
-	sword->mWorldTransform->rotation = { 0.0f,0.0f,0.0f };
-	sword->mWorldTransform->translation = { 0.05f,0.0f,0.05f };
 	sword->mSkinning = make_unique<Skinning>();
-	sword->mSkinning->Init("Weapons", "sword.gltf",
+	sword->mSkinning->Init("Weapons", "ASword.gltf",
 		sword->GetModel()->mModelData);
 	sword->mSkinning->IsInactive();
 
@@ -173,22 +171,22 @@ void Player::InitWorks(){
 
 	// 各攻撃の定数を取得
 	kConstAttacks[0].offence = 1.0f;
-	kConstAttacks[0].operationTime = 0.1f;
-	kConstAttacks[0].afterTime = 0.45f;
-	kConstAttacks[0].motionTimeMax = 0.6f;
-	kConstAttacks[0].actionSpeed = 1.0f;
+	kConstAttacks[0].operationTime = 0.5f;
+	kConstAttacks[0].afterTime = 0.8f;
+	kConstAttacks[0].motionTimeMax = 1.0f;
+	kConstAttacks[0].actionSpeed = 1.5f;
 	
 	kConstAttacks[1].offence = 1.0f;
-	kConstAttacks[1].operationTime = 0.1f;
-	kConstAttacks[1].afterTime = 0.45f;
-	kConstAttacks[1].motionTimeMax = 0.6f;
-	kConstAttacks[1].actionSpeed = 1.0f;
+	kConstAttacks[1].operationTime = 0.5f;
+	kConstAttacks[1].afterTime = 0.8f;
+	kConstAttacks[1].motionTimeMax = 1.0f;
+	kConstAttacks[1].actionSpeed = 1.5f;
 
 	kConstAttacks[2].offence = 1.0f;
 	kConstAttacks[2].operationTime = 0.1f;
 	kConstAttacks[2].afterTime = 0.45f;
-	kConstAttacks[2].motionTimeMax = 0.6f;
-	kConstAttacks[2].actionSpeed = 1.0f;
+	kConstAttacks[2].motionTimeMax = 1.5f;
+	kConstAttacks[2].actionSpeed = 1.5f;
 
 	//kConstAttacks[3].offence = 1.0f;
 	//kConstAttacks[3].operationTime = 0.1f;
@@ -243,9 +241,6 @@ void Player::Update() {
 	LockOn();
 
 	// ステータス更新
-	mStatus->Update();
-
-	// UI更新
 	mStatus->Update();
 
 	if (mStatus->HP > 0.0f) {
@@ -323,8 +318,10 @@ void Player::UpdateObject(){
 	MainCamera::GetInstance()->SetAddTranslation(TransformNomal(cVel, MainCamera::GetInstance()->mWorldTransform->GetWorldMatrix()));
 
 	// ステージ限界値に合わせた座標の補正
-	mObject->mWorldTransform->translation.x = std::clamp(mObject->mWorldTransform->translation.x, -20.0f, 20.0f);
-	mObject->mWorldTransform->translation.z = std::clamp(mObject->mWorldTransform->translation.z, -20.0f, 20.0f);
+	mObject->mWorldTransform->translation.x = std::clamp(mObject->mWorldTransform->translation.x,
+		-BlackBoard::GetFieldRadius().x, BlackBoard::GetFieldRadius().x);
+	mObject->mWorldTransform->translation.z = std::clamp(mObject->mWorldTransform->translation.z,
+		-BlackBoard::GetFieldRadius().z, BlackBoard::GetFieldRadius().z);
 
 	// オブジェクト更新
 	mObject->Update();
@@ -444,6 +441,24 @@ void Player::DrawGUI() {
 
 	// 攻撃パラメータ
 	if (ImGui::CollapsingHeader("Attack")) {
+
+		
+		int32_t constAttackIndex = 0;
+		for (auto& constAttack : kConstAttacks) {
+			
+			std::string attackName = "constAttack"+ std::to_string(constAttackIndex);
+
+			if(ImGui::TreeNode(attackName.c_str())) {
+				ImGui::DragFloat("Offence", &constAttack.offence, 0.01f, 0.0f, 10.0f);
+				ImGui::DragFloat("OperationTime", &constAttack.operationTime, 0.01f, 0.0f, 10.0f);
+				ImGui::DragFloat("AfterTime", &constAttack.afterTime, 0.01f, 0.0f, 10.0f);
+				ImGui::DragFloat("MotionTimeMax", &constAttack.motionTimeMax, 0.01f, 0.0f, 10.0f);
+				ImGui::DragFloat("ActionSpeed", &constAttack.actionSpeed, 0.01f, 0.0f, 10.0f);
+				ImGui::TreePop();
+			}
+			
+			constAttackIndex++;
+		}
 
 		// 攻撃動作時間の表示
 		std::string timeStr = "Time : " + std::to_string(mWorks->mWorkAttack.elapsedTime);
@@ -600,21 +615,35 @@ void Player::Avoid(){
 	// ワーク構造体を取得
 	auto& work = mWorks->mWorkAvoid;
 
+	
 	// 初回回避処理
 	if (work.isAvoidRequest && !work.isOperating) {
 		work.isOperating = true;
 		work.elapsedTime = 0.0f;
 		
+		
+		// 回避方向の設定
+		Vector3 dir = mDirectionForInput;
+		// アニメ再生
+		mObject->mSkinning->SetNextAnimation("Actor_Avoid");
+		
 		// 入力がないときは後方ステップ
-		Vector3 dir = mDirection;
 		if (Length(dir) == 0.0f) {
+
+			// 移動方向を画面手前に設定
 			dir = Vector3{ 0, 0, -1 };
+
+			// アニメーションを後方ステップに変更
+			mObject->mSkinning->SetNextAnimation("Actor_BackStep");
+
 		}
+		// 回避方向の正規化
 		work.avoidDirection = Normalize(dir);
 
-		// アニメ再生（"avoid" 固定 または方向別に変える）
-		mObject->mSkinning->SetNextAnimation("Actor_Avoid");
+		// アニメーション再生速度の設定(回避速度依存)
+		mObject->mSkinning->SetAnimationPlaySpeed(work.avoidSpeed);
 
+		// 状態変化
 		mWorks->mBehavior = Behavior::kAvoid;
 
 	}
@@ -623,10 +652,10 @@ void Player::Avoid(){
 	if (mWorks->mBehavior == Behavior::kAvoid) {
 
 		// 回避時間更新
-		work.elapsedTime += BlackBoard::CombertBattleFPS(mObject->mSkinning->GetAnimationPlaySpeed());
+		work.elapsedTime += BlackBoard::CombertBattleFPS(mWorks->mWorkAvoid.avoidSpeed);
 
 		// 移動ベクトルに加算（距離制御も可能）
-		Vector3 avoidVelocity = work.avoidDirection * (BlackBoard::CombertBattleFPS(work.avoidSpeed));
+		Vector3 avoidVelocity = work.avoidDirection * (BlackBoard::CombertBattleFPS(work.avoidRange));
 		mObject->mWorldTransform->translation += avoidVelocity;
 
 		// 回避完了判定
@@ -640,6 +669,9 @@ void Player::Avoid(){
 
 			mWorks->mBehavior = Behavior::kRoot;
 			mWorkFunc = nullptr;
+
+			// アニメーション再生速度の設定(回避速度依存)
+			mObject->mSkinning->SetAnimationPlaySpeed(1.0f);
 		}
 
 	}
@@ -762,6 +794,8 @@ void Player::Attack()
 
 			// 初段のアニメーション再生
 			mObject->mSkinning->SetNextAnimation("Actor_S0");
+			// アニメーションの再生速度を設定
+			mObject->mSkinning->SetAnimationPlaySpeed(attackData.actionSpeed);
 
 			// 振る舞いの変更
 			mWorks->mBehavior = Behavior::kAttack;
@@ -827,7 +861,9 @@ void Player::Attack()
 
 				std::string nextAnimName = "Actor_S" + std::to_string(work.comboCount);
 				mObject->mSkinning->SetNextAnimation(nextAnimName); // 必要に応じて "S1", "S2" などに変更
-				
+				// アニメーションの再生速度を設定
+				mObject->mSkinning->SetAnimationPlaySpeed(kConstAttacks[work.comboCount].actionSpeed);
+
 				// 振る舞いの変更
 				mWorks->mWorkAttack.attackPhase = OperatingExtra;
 
@@ -847,6 +883,8 @@ void Player::Attack()
 			mWorks->mWorkAttack.attackPhase = Default;
 			// ワーク関数のリセット
 			mWorkFunc = nullptr;
+			// アニメーションの再生速度を設定
+			mObject->mSkinning->SetAnimationPlaySpeed(1.0f);
 		}
 		
 		break;

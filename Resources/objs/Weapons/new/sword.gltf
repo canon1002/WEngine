@@ -18,7 +18,12 @@
 	"nodes":[
 		{
 			"mesh":0,
-			"name":"Paladin_J_Nordstrom_Helmet"
+			"name":"Paladin_J_Nordstrom",
+			"scale":[
+				0.009532786905765533,
+				0.009532786905765533,
+				0.009532786905765533
+			]
 		}
 	],
 	"materials":[
@@ -46,7 +51,7 @@
 	],
 	"meshes":[
 		{
-			"name":"Paladin_J_Nordstrom_Helmet",
+			"name":"Paladin_J_Nordstrom",
 			"primitives":[
 				{
 					"attributes":{
@@ -95,61 +100,61 @@
 		{
 			"bufferView":0,
 			"componentType":5126,
-			"count":85,
+			"count":225,
 			"max":[
-				22.09676742553711,
-				27.862070083618164,
-				0.6715517044067383
+				11.84677791595459,
+				2.8548195362091064,
+				18.286434173583984
 			],
 			"min":[
-				-22.29597282409668,
-				-38.645389556884766,
-				-11.679472923278809
+				-12.175543785095215,
+				-3.306796073913574,
+				-86.58251190185547
 			],
 			"type":"VEC3"
 		},
 		{
 			"bufferView":1,
 			"componentType":5126,
-			"count":85,
+			"count":225,
 			"type":"VEC3"
 		},
 		{
 			"bufferView":2,
 			"componentType":5126,
-			"count":85,
+			"count":225,
 			"type":"VEC2"
 		},
 		{
 			"bufferView":3,
 			"componentType":5123,
-			"count":306,
+			"count":684,
 			"type":"SCALAR"
 		}
 	],
 	"bufferViews":[
 		{
 			"buffer":0,
-			"byteLength":1020,
+			"byteLength":2700,
 			"byteOffset":0,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":1020,
-			"byteOffset":1020,
+			"byteLength":2700,
+			"byteOffset":2700,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":680,
-			"byteOffset":2040,
+			"byteLength":1800,
+			"byteOffset":5400,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":612,
-			"byteOffset":2720,
+			"byteLength":1368,
+			"byteOffset":7200,
 			"target":34963
 		}
 	],
@@ -161,8 +166,8 @@
 	],
 	"buffers":[
 		{
-			"byteLength":3332,
-			"uri":"Shield.bin"
+			"byteLength":8568,
+			"uri":"sword.bin"
 		}
 	]
 }
