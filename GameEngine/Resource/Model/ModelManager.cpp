@@ -19,7 +19,7 @@ void ModelManager::Finalize() {
 
 	// インスタンスの破棄
 	instance.reset();
-
+	instance = nullptr;
 }
 
 void ModelManager::Init(){

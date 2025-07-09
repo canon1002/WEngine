@@ -3,6 +3,7 @@
 #include <map>
 #include <sstream>
 #include "Model.h"
+#include "GameEngine/Resource/Material/Material.h"
 
 /// <summary>
 /// 3Dモデル管理クラス

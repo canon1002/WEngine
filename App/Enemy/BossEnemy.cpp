@@ -13,6 +13,7 @@
 #include "App/Enemy/Action/ActionList.h"
 
 #include "GameEngine/Editor/BlackBoard.h"
+#include "GameEngine/Resource/Material/MaterialManager.h"
 
 BossEnemy::BossEnemy() {}
 
@@ -50,7 +51,7 @@ void BossEnemy::Init() {
 
 	// モデルを設定
 	mObject->SetModelFullPath("Actor", "Actor.gltf");
-	mObject->GetModel()->GetMaterialData()->color = { 1.0f,0.7f,0.7f,1.0f };
+	mObject->mMaterial->SetColorAll({ 1.0f,1.0f,1.0f,1.0f });
 	// スキニングアニメーションの生成
 	mObject->mSkinning = make_unique<Skinning>();
 	mObject->mSkinning->Init("Actor", "Actor_Idle.gltf", mObject->GetModel()->mModelData);

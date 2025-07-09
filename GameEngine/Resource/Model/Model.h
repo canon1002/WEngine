@@ -12,8 +12,8 @@ struct MeshData {
 	std::vector<VertexData> vertices;
 	// インデックス
 	std::vector<uint32_t> indices;
-	// マテリアル
-	MaterialData material;
+	// テクスチャ
+	std::string textureFilePath;
 	// スキンクラスター
 	std::map<std::string, JointWeightData> skinClusterData;
 };
@@ -30,6 +30,9 @@ struct MultiModelData {
 	Node rootNode;
 };
 
+/// <summary>
+/// モデルクラス
+/// </summary>
 class Model
 {
 public: // -- 公開 メンバ関数 -- //
@@ -43,10 +46,13 @@ public: // -- 公開 メンバ関数 -- //
 	// 更新
 	void Update();
 	// 描画
-	void Draw();
-	void DrawSkinning(Skinning* skinning, const bool& isActive = false);
+	//void Draw();
+	//void DrawSkinning(Skinning* skinning, const bool& isActive = false);
 	// ImGui描画
 	void DrawGUI(const std::string& label);
+
+	void Draw(const MaterialExt& materialExt);
+	void DrawSkinning(const MaterialExt& materialExt, Skinning* skinning, const bool& isActive = false);
 
 
 	// カメラ座標を設定
@@ -58,7 +64,7 @@ public: // -- 公開 メンバ関数 -- //
 	void SetCubeTexture(const int32_t& textureHandle) {
 		mTextureHandleCubeMap = textureHandle;
 	}
-		
+
 
 	// -- アクセッサ -- //
 
@@ -82,15 +88,9 @@ public: // -- 公開 メンバ関数 -- //
 		return mIndexBufferViews[index];
 	}
 
-	/// <summary>
-	/// マテリアルデータを取得
-	/// <para> index未入力の場合、最初のマテリアルデータを返す </para>
-	/// </summary>
-	/// <param name="index"> マテリアル番号 </param>
-	/// <returns></returns>
-	Material* GetMaterialData(const int32_t& index = 0) {
-		return mMaterialDatas[index];
-	}
+	// マテリアル生成処理
+	std::unique_ptr<MaterialExt> CreateMaterial()const;
+
 
 private: // -- 非公開 メンバ関数 -- //
 
@@ -98,16 +98,12 @@ private: // -- 非公開 メンバ関数 -- //
 	void CreateVertexResource();
 	// インデックスリソース生成
 	void CreateIndexResource();
-	// マテリアルリソース生成
-	void CreateMaterialResource();
 
 public: // -- 公開 メンバ変数 -- //
 
 	// モデルデータ
 	MultiModelData mModelData;
-
-	// テクスチャハンドル
-	std::vector<int32_t> mTextureHandles;
+	// キューブマップテクスチャハンドル
 	int32_t mTextureHandleCubeMap;
 
 	// -- Vertex -- //
@@ -117,19 +113,13 @@ public: // -- 公開 メンバ変数 -- //
 	// 頂点バッファビュー
 	std::vector<D3D12_VERTEX_BUFFER_VIEW> mVertexBufferViews;
 
+
 	// -- Index -- //
 
 	// インデックスリソース
 	std::vector<Microsoft::WRL::ComPtr<ID3D12Resource>> mIndexResources;
 	// インデックスバッファビュー
 	std::vector<D3D12_INDEX_BUFFER_VIEW> mIndexBufferViews;
-
-	// -- Material -- //
-
-	// マテリアルリソース
-	std::vector<Microsoft::WRL::ComPtr<ID3D12Resource>> mMaterialResources;
-	// マテリアルデータ
-	std::vector<Material*> mMaterialDatas;
 
 
 	// -- Light -- //

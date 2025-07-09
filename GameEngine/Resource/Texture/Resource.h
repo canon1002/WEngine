@@ -104,9 +104,9 @@ namespace Resource // ここから関数の宣言と定義を行う
 	//void ExportModelFile(const std::string& directoryPath, const std::string& filename,Animation* animation);
 
 	// .objの読み込み
-	ModelData LoadObjFile(const std::string& directoryPath, const std::string& filename);
+	//ModelData LoadObjFile(const std::string& directoryPath, const std::string& filename);
 	// .mtlの読み込み
-	MaterialData LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename);
+	//MaterialData LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename);
 
 	// アニメーション読み込み
 	// 現時点では最初のアニメーションのみ対応できる 必要になったら処理を追加すること

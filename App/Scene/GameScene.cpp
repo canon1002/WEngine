@@ -11,6 +11,7 @@
 #include "GameEngine/Editor/Framerate.h"
 #include "GameEngine/Scene/SceneManager.h"
 #include "App/Manager/GameManager.h"
+#include "GameEngine/Resource/Material/MaterialManager.h"
 
 void GameScene::Final() {
 
@@ -264,7 +265,7 @@ void GameScene::LosePhase() {
 	// カメラ操作強制OFF
 	MainCamera::GetInstance()->SetCameraRotateControll(false);
 
-	mPlayer->GetObject3D()->GetModel()->GetMaterialData()->color = { 1.0f,1.0f,1.0f,1.0f };
+	mPlayer->GetObject3D()->mMaterial->SetColorAll({ 1.0f,1.0f,1.0f,1.0f });
 
 	if (mIsGameOverSelect == false) {
 		if (mViggnetTime < 1.0f) {

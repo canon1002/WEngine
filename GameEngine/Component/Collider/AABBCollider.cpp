@@ -154,8 +154,8 @@ void AABBCollider::Update(){
 void AABBCollider::Draw(){
 
 	//wvp用のCBufferの場所を指定
-	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootConstantBufferView(1, mWvpResource->GetGPUVirtualAddress());
-	mModel->Draw();
+	//DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootConstantBufferView(1, mWvpResource->GetGPUVirtualAddress());
+	//mModel->Draw();
 
 }
 

@@ -24,7 +24,7 @@ public: // -- public メンバ関数 -- //
 	void Init();
 	void Update();
 	void Draw();
-	void Finalize();
+	void Final();
 
 private: // -- private メンバ関数 -- //
 

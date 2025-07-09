@@ -71,7 +71,7 @@ void ShadowObject::Draw(){
 	// シャドウ用のCBVを渡す
 	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootConstantBufferView(6,mSceneResource->GetGPUVirtualAddress());
 	// 描画
-	mModel->Draw();
+	//mModel->Draw();
 
 }
 

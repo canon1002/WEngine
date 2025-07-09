@@ -1,6 +1,7 @@
 #include "EarthSwordBullet.h"
 #include "GameEngine/Editor/BlackBoard.h"
 #include "GameEngine/Component/Collider/SphereCollider.h"
+#include "GameEngine/Resource/Material/MaterialManager.h"
 
 EarthSwordBullet::EarthSwordBullet(const BulletStatus& bulletStatus){
 	
@@ -24,7 +25,7 @@ void EarthSwordBullet::Init(){
 
 	// モデルを設定
 	mObject->SetModel("EarthSwordBullet.gltf");
-	mObject->GetModel()->GetMaterialData()->color = { 1.0f,1.0f,1.0f,1.0f };
+	mObject->mMaterial->SetColorAll({ 1.0f,1.0f,1.0f,1.0f });
 
 	// コライダーの初期化
 	mCollider = std::make_shared<GameCollider>();

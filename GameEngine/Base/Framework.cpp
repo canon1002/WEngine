@@ -9,6 +9,7 @@
 #include "GameEngine/Effect/PostEffect/PostEffect.h"
 #include "GameEngine/Resource/Texture/TextureManager.h"
 #include "GameEngine/Effect/Particle/ParticleManager.h"
+#include "GameEngine/Resource/Material/MaterialManager.h"
 
 // アプリケーション部分(のうちエンジン側に移動する可能性のある要素)
 //#include "App/Reaction/DamageReaction.h"
@@ -67,6 +68,8 @@ void Framework::Init(){
 	ObjectManager::GetInstance()->Init();
 	// モデル管理クラス
 	ModelManager::GetInstance()->Init();
+	// マテリアル管理クラス(初期化処理なし、インスタンス生成のみ)
+	MaterialManager::GetInstance();
 	// 入力マネージャ
 	InputManager::GetInstance()->Init();
 	// Audio
@@ -134,12 +137,17 @@ void Framework::Final(){
 	// Comの終了処理
 	CoUninitialize();
 
+	// オブジェクト管理者の終了処理
+	ObjectManager::GetInstance()->Final();
+	// マテリアル管理クラスの終了処理
+	MaterialManager::GetInstance()->Final();
+
 	// 入力処理マネージャ
 	InputManager::GetInstance()->Final();
 	// オーディオ
 	Audio::GetInstance()->Finalize();
 	// ポストエフェクト
-	PostEffect::GetInstance()->Finalize();
+	PostEffect::GetInstance()->Final();
 	// Scene
 	SceneManager::GetInstance()->Final();
 	// DirectXCommon

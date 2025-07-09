@@ -13,7 +13,6 @@ void TitleScene::Final() {
 
 	// 登録したタイトルシーンのUIをリストから削除する
 	UIManager::GetInstance()->DeleteSceneUI(SceneName::Title);
-
 }
 
 //　継承した関数
@@ -46,7 +45,6 @@ void TitleScene::Init() {
 	// 焚き火
 	mWoodObj = std::make_unique<Object3d>();
 	mWoodObj->Init("Wood");
-	ModelManager::GetInstance()->LoadModel("Wood", "Wood.gltf");
 	mWoodObj->SetModelFullPath("Wood","Wood.gltf");
 	mWoodObj->SetScale(Vector3(0.5f, 0.5f, 0.5f));
 	mWoodObj->SetTranslate(Vector3(6.5f, 0.0f, 3.5f));

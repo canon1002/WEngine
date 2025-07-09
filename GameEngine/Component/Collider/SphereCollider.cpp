@@ -22,7 +22,7 @@ void SphereCollider::Init() {
 	// モデルを検索してセット
 	mModel = ModelManager::GetInstance()->FindModel("wireSphere.gltf");
 	CreateTransformation();
-	mModel->GetMaterialData()->environmentCoefficient = 0.0f;
+	
 	// 衝突フラグ保持時間
 	mOnCollisionCount = 0;
 	// フラグをfalseに
@@ -65,9 +65,9 @@ void SphereCollider::Update() {
 
 void SphereCollider::Draw() {
 	//wvp用のCBufferの場所を指定
-	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootConstantBufferView(1, mWvpResource->GetGPUVirtualAddress());
+	//DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootConstantBufferView(1, mWvpResource->GetGPUVirtualAddress());
 	// 描画
-	mModel->Draw();
+	//mModel->Draw();
 }
 
 void SphereCollider::CreateTransformation() {

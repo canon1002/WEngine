@@ -197,7 +197,7 @@ namespace Resource
 			if (material->GetTextureCount(aiTextureType_DIFFUSE) != 0) {
 				aiString textureFilePath;
 				material->GetTexture(aiTextureType_DIFFUSE, 0, &textureFilePath);
-				modelData.mesh.material.textureFilePath = directoryPath + "/" + textureFilePath.C_Str();
+				modelData.mesh.textureFilePath = directoryPath + "/" + textureFilePath.C_Str();
 			}
 		}
 
@@ -205,13 +205,13 @@ namespace Resource
 		return modelData;
 	}
 
-	MultiModelData LoadMultiModelFile(const std::string& directoryPath, const std::string& filename){
+	MultiModelData LoadMultiModelFile(const std::string& directoryPath, const std::string& filename) {
 
 		// モデルデータ 宣言
 		MultiModelData multiModelData;
 		// ファイルパスの指定
 		std::string fullPath = "Resources/objs/" + directoryPath + "/" + filename;
-		
+
 		// ファイルを開く
 		Assimp::Importer importer;
 		const aiScene* scene = importer.ReadFile(fullPath.c_str(), aiProcess_FlipWindingOrder | aiProcess_FlipUVs);
@@ -252,7 +252,7 @@ namespace Resource
 			if (material->GetTextureCount(aiTextureType_DIFFUSE) != 0) {
 				aiString textureFilePath;
 				material->GetTexture(aiTextureType_DIFFUSE, 0, &textureFilePath);
-				meshData.material.textureFilePath = directoryPath + "/" + textureFilePath.C_Str();
+				meshData.textureFilePath = directoryPath + "/" + textureFilePath.C_Str();
 			}
 
 			// -- SkinClusterを構築するデータを取得 -- //
@@ -294,6 +294,7 @@ namespace Resource
 	}
 
 
+	/*
 	ModelData LoadObjFile(const std::string& directoryPath, const std::string& filename) {
 
 		/// 変数の宣言
@@ -375,7 +376,9 @@ namespace Resource
 		}
 		return modelData;
 	}
+	*/
 
+	/*
 	MaterialData LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename) {
 		// 中で必要となる変数の宣言
 		MaterialData materialData;
@@ -405,6 +408,7 @@ namespace Resource
 		// MaterialDataを返す
 		return materialData;
 	}
+	*/
 
 	Animation LoadAnmation(const std::string& directoryPath, const std::string& filePath) {
 		Animation animation;

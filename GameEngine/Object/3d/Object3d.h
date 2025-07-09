@@ -10,10 +10,11 @@
 
 // 前方宣言
 class Model; // モデルクラス
+class NewMaterial; // マテリアルクラス
 class CameraCommon; // カメラ基底クラス
 class ModelManager; // モデルマネージャークラス
 
-class Object3d : public ObjectBase 
+class Object3d : public ObjectBase
 {
 public: // -- 公開 メンバ関数 -- //
 
@@ -30,23 +31,35 @@ public: // -- 公開 メンバ関数 -- //
 	void DrawGUI();
 	void DrawGuiTree();
 
+	/// <summary>
+	/// 座標リソース生成
+	/// </summary>
 	void CreateTransformation();
-	void SetModel(const std::string& filePath);
-	void SetModelFullPath(const std::string& directryPath, const std::string& filePath);
+
+
+
 	void SetScale(Vector3 scale) { mWorldTransform->scale = scale; }
 	void SetRotate(Vector3 rotate) { mWorldTransform->rotation = rotate; }
 	void SetTranslate(Vector3 translate) { mWorldTransform->translation = translate; }
-	const WorldTransform* GetWorldTransform()const  { return mWorldTransform.get(); }
+	const WorldTransform* GetWorldTransform()const { return mWorldTransform.get(); }
 
+	// モデル設定
+	void SetModel(const std::string& filePath);
+	// モデル設定(フルパス)
+	void SetModelFullPath(const std::string& directryPath, const std::string& filePath);
 	// モデル取得
 	Model* GetModel()const { return mModel; }
-	
+
+	// マテリアル生成処理
+	MaterialExt* CreateMaterial()const;
+
 public: // -- 公開 メンバ変数 -- //
 
 	// モデル
 	Model* mModel = nullptr;
 	// マテリアル
-	Material mMaterial;
+	MaterialExt* mMaterial;
+
 	// スキニング アニメーション
 	std::unique_ptr<Skinning> mSkinning = nullptr;
 	// コライダー

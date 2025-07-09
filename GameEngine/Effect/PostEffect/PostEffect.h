@@ -101,7 +101,7 @@ private:
 public:
 	
 	static PostEffect* GetInstance();
-	void Finalize();
+	void Final();
 
 	void Init();
 	void Update();
