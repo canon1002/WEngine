@@ -34,7 +34,7 @@ void ACT::AttackJump::Update()
 		}
 
 		// 終了処理
-		if (mActor->GetObject3D()->mSkinning->GetIsAnimationFinished("SlashJamp")) {
+		if (mActor->GetObject3D()->mSkinning->GetIsAnimationFinished("Actor_S1")) {
 			mCondition = Condition::FINISHED;
 		}
 
@@ -52,7 +52,7 @@ void ACT::AttackJump::Start()
 	// パラメータの初期化
 
 	// アニメーションの変更
-	mActor->GetObject3D()->mSkinning->SetNextAnimation("SlashJamp");
+	mActor->GetObject3D()->mSkinning->SetNextAnimation("Actor_S1");
 	// ターゲット方向を向く
 	mActor->InputDirection(mActor->GetWorldPosForTarget() - mActor->GetWorldPos());
 

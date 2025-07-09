@@ -23,7 +23,7 @@ PostEffect* PostEffect::GetInstance()
 	return instance;
 }
 
-void PostEffect::Finalize(){}
+void PostEffect::Final(){}
 
 void PostEffect::Init() {
 

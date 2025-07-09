@@ -131,16 +131,16 @@ namespace Resource
 			aiMesh* mesh = scene->mMeshes[meshIndex];
 			assert(mesh->HasNormals()); // 法線がないMeshは今回非対応
 			assert(mesh->HasTextureCoords(0)); // TexcoordがないMeshは今回非対応
-			modelData.vertices.resize(mesh->mNumVertices);// 最初に頂点数分のメモリを確保しておく
+			modelData.mesh.vertices.resize(mesh->mNumVertices);// 最初に頂点数分のメモリを確保しておく
 			// Meshの中身の解析
 			for (uint32_t vertexIndex = 0; vertexIndex < mesh->mNumVertices; ++vertexIndex) {
 				aiVector3D& position = mesh->mVertices[vertexIndex];
 				aiVector3D& normal = mesh->mNormals[vertexIndex];
 				aiVector3D& texcoord = mesh->mTextureCoords[0][vertexIndex];
 				// 右手系から左手系に変換を行う
-				modelData.vertices[vertexIndex].position = { -position.x,position.y,position.z,1.0f };
-				modelData.vertices[vertexIndex].normal = { -normal.x,normal.y,normal.z };
-				modelData.vertices[vertexIndex].texcoord = { texcoord.x,texcoord.y };
+				modelData.mesh.vertices[vertexIndex].position = { -position.x,position.y,position.z,1.0f };
+				modelData.mesh.vertices[vertexIndex].normal = { -normal.x,normal.y,normal.z };
+				modelData.mesh.vertices[vertexIndex].texcoord = { texcoord.x,texcoord.y };
 			}
 
 			// Indexの解析
@@ -151,7 +151,7 @@ namespace Resource
 				// Faseの中身を解析
 				for (uint32_t element = 0; element < face.mNumIndices; ++element) {
 					uint32_t vertexIndex = face.mIndices[element];
-					modelData.indices.push_back(vertexIndex);
+					modelData.mesh.indices.push_back(vertexIndex);
 				}
 
 			}
@@ -164,7 +164,7 @@ namespace Resource
 				// BoneからJointの名前を取得
 				std::string jointName = bone->mName.C_Str();
 				// モデルのSkinClusterDataからJointWeightDataを取得
-				JointWeightData& jointWeightData = modelData.skinClusterData[jointName];
+				JointWeightData& jointWeightData = modelData.mesh.skinClusterData[jointName];
 
 				// BindPose(バインドポーズ)行列を取得する
 				aiMatrix4x4 bindPoseMatrixAssimp = bone->mOffsetMatrix.Inverse();
@@ -197,7 +197,7 @@ namespace Resource
 			if (material->GetTextureCount(aiTextureType_DIFFUSE) != 0) {
 				aiString textureFilePath;
 				material->GetTexture(aiTextureType_DIFFUSE, 0, &textureFilePath);
-				modelData.material.textureFilePath = directoryPath + "/" + textureFilePath.C_Str();
+				modelData.mesh.textureFilePath = directoryPath + "/" + textureFilePath.C_Str();
 			}
 		}
 
@@ -205,7 +205,96 @@ namespace Resource
 		return modelData;
 	}
 
+	MultiModelData LoadMultiModelFile(const std::string& directoryPath, const std::string& filename) {
 
+		// モデルデータ 宣言
+		MultiModelData multiModelData;
+		// ファイルパスの指定
+		std::string fullPath = "Resources/objs/" + directoryPath + "/" + filename;
+
+		// ファイルを開く
+		Assimp::Importer importer;
+		const aiScene* scene = importer.ReadFile(fullPath.c_str(), aiProcess_FlipWindingOrder | aiProcess_FlipUVs);
+		assert(scene->HasMeshes());
+
+		// ノードの読み込み
+		multiModelData.rootNode = ReadNode(scene->mRootNode);
+
+		// シーン情報のメッシュを読み込んで一個ずつ処理する
+		for (uint32_t meshIndex = 0; meshIndex < scene->mNumMeshes; ++meshIndex) {
+
+			// メッシュの読み込み
+			aiMesh* mesh = scene->mMeshes[meshIndex];
+			MeshData meshData;
+			meshData.vertices.resize(mesh->mNumVertices);
+
+			// 頂点情報
+			for (uint32_t vertexIndex = 0; vertexIndex < mesh->mNumVertices; ++vertexIndex) {
+				aiVector3D& position = mesh->mVertices[vertexIndex];
+				aiVector3D& normal = mesh->mNormals[vertexIndex];
+				aiVector3D& texcoord = mesh->mTextureCoords[0][vertexIndex];
+				meshData.vertices[vertexIndex].position = { -position.x, position.y, position.z, 1.0f };
+				meshData.vertices[vertexIndex].normal = { -normal.x, normal.y, normal.z };
+				meshData.vertices[vertexIndex].texcoord = { texcoord.x, texcoord.y };
+			}
+
+			// インデックス情報
+			for (uint32_t faceIndex = 0; faceIndex < mesh->mNumFaces; ++faceIndex) {
+				aiFace& face = mesh->mFaces[faceIndex];
+				assert(face.mNumIndices == 3);
+				for (uint32_t element = 0; element < face.mNumIndices; ++element) {
+					meshData.indices.push_back(face.mIndices[element]);
+				}
+			}
+
+			// マテリアル情報
+			aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+			if (material->GetTextureCount(aiTextureType_DIFFUSE) != 0) {
+				aiString textureFilePath;
+				material->GetTexture(aiTextureType_DIFFUSE, 0, &textureFilePath);
+				meshData.textureFilePath = directoryPath + "/" + textureFilePath.C_Str();
+			}
+
+			// -- SkinClusterを構築するデータを取得 -- //
+
+			for (uint32_t boneIndex = 0; boneIndex < mesh->mNumBones; ++boneIndex) {
+				// MeshからBoneを取得
+				aiBone* bone = mesh->mBones[boneIndex];
+				// BoneからJointの名前を取得
+				std::string jointName = bone->mName.C_Str();
+				// モデルのSkinClusterDataからJointWeightDataを取得
+				JointWeightData& jointWeightData = meshData.skinClusterData[jointName];
+
+				// BindPose(バインドポーズ)行列を取得する
+				aiMatrix4x4 bindPoseMatrixAssimp = bone->mOffsetMatrix.Inverse();
+				aiVector3D scale, translation;
+				aiQuaternion rotation;
+				bindPoseMatrixAssimp.Decompose(scale, rotation, translation);
+				// asiimpの行列を基本の float4x4行列 に変換する
+				// この際座標系を修正しておく
+				Matrix4x4 bindPoseMatrix = MakeAffineMatrix(
+					{ scale.x,scale.y,scale.z },
+					{ rotation.x,-rotation.y,-rotation.z,rotation.w },
+					{ -translation.x,translation.y,translation.z }
+				);
+				// 逆行列を格納
+				jointWeightData.inverseBindPoseMatrix = Inverse(bindPoseMatrix);
+
+				// Weight情報を取り出す
+				for (uint32_t weightIndex = 0; weightIndex < bone->mNumWeights; ++weightIndex) {
+					jointWeightData.vertexWeights.push_back({ bone->mWeights[weightIndex].mWeight,bone->mWeights[weightIndex].mVertexId });
+				}
+
+			}
+
+			multiModelData.meshes.push_back(meshData);
+		}
+
+		return multiModelData;
+	}
+
+
+	/*
 	ModelData LoadObjFile(const std::string& directoryPath, const std::string& filename) {
 
 		/// 変数の宣言
@@ -272,22 +361,24 @@ namespace Resource
 					triangle[faceVertex] = { position,texcoord,normal };
 				}
 				// 頂点を逆順にすることで、周り順を逆にする
-				modelData.vertices.push_back(triangle[2]);
-				modelData.vertices.push_back(triangle[1]);
-				modelData.vertices.push_back(triangle[0]);
+				modelData.mesh.vertices.push_back(triangle[2]);
+				modelData.mesh.vertices.push_back(triangle[1]);
+				modelData.mesh.vertices.push_back(triangle[0]);
 			}
 			else if (identifier == "mtllib") {
 				// materialTemplateLibraryファイルの名前を取得する
 				std::string materialFilename;
 				s >> materialFilename;
 				// 基本的にobjファイルと同一階層にmtlは存在させるので、ディレクトリ名とファイル名を渡す
-				modelData.material = LoadMaterialTemplateFile(directoryPath, materialFilename);
+				modelData.mesh.material = LoadMaterialTemplateFile(directoryPath, materialFilename);
 			}
 
 		}
 		return modelData;
 	}
+	*/
 
+	/*
 	MaterialData LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename) {
 		// 中で必要となる変数の宣言
 		MaterialData materialData;
@@ -317,6 +408,7 @@ namespace Resource
 		// MaterialDataを返す
 		return materialData;
 	}
+	*/
 
 	Animation LoadAnmation(const std::string& directoryPath, const std::string& filePath) {
 		Animation animation;

@@ -3,12 +3,14 @@
 #include "GameEngine/Component/Animation/Node/NodeAnimation.h"
 #include "GameEngine/Component/Animation/Skinning/SkinCluster.h"
 
+// 前方宣言
 struct ModelData;
+struct MultiModelData;
 
 // アニメーションに際しての設定パラメータ
 struct SkinningStatus {
 	std::string name; // Mapに登録された名称(確認用)
-	SkinCluster skinCluster;	// スキンクラスター
+	std::vector<SkinCluster> skinClusters;	// スキンクラスター
 	float animationTime;	// アニメーション実行時間
 	Animation animation;	// アニメーションデータ
 	bool isPause;	// 一時停止の設定
@@ -32,6 +34,14 @@ public: // -- 公開 メンバ関数 -- //
 	void Init(const std::string& directorypath, const std::string& filepath, ModelData modelData);
 
 	/// <summary>
+	/// 初期化処理
+	/// </summary>
+	/// <param name="directorypath">ディレクトリパス</param>
+	/// <param name="filepath">ファイルパス</param>
+	/// <param name="multiModelData">マルチメッシュモデルデータ</param>
+	void Init(const std::string& directorypath, const std::string& filepath, MultiModelData multiModelData);
+
+	/// <summary>
 	/// スキニングで必要なデータを生成し、マップに登録する
 	/// </summary>
 	/// <param name="directorypath">ディレクトリパス</param>
@@ -42,7 +52,11 @@ public: // -- 公開 メンバ関数 -- //
 	void CreateSkinningData(const std::string& directorypath, const std::string& filename, const std::string& filrExt,
 		ModelData modelData, bool isLoop = false);
 
-	void CreateAnimationData(const std::string& directorypath, const std::string& filename,ModelData modelData);
+	void CreateSkinningData(const std::string& directorypath, const std::string& filename, const std::string& filrExt,
+		MultiModelData multiModelData, bool isLoop = false);
+
+	void CreateAnimationData(const std::string& directorypath, const std::string& filename, ModelData modelData);
+	void CreateAnimationData(const std::string& directorypath, const std::string& filename, MultiModelData multiModelData);
 
 	/// <summary>
 	/// 更新処理

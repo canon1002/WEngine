@@ -2,6 +2,7 @@
 #include "GameEngine/Component/Collider/SphereCollider.h"
 #include "GameEngine/Component/Collider/CollisionManager.h"
 #include "GameEngine/Editor/BlackBoard.h"
+#include "GameEngine/Resource/Material/MaterialManager.h"
 
 Actor::Actor(){
 	
@@ -78,11 +79,11 @@ void Actor::InvincibleObjectUpdate(){
 
 	// 無敵時間前半は赤くする
 	if (mInvincibleCurrent < (mInvincibleTime * 0.5f)) {
-		mObject->mModel->mMaterialData->color = { 1.0f,0.0f,0.0f,1.0f };
+		mObject->mMaterial->SetColorAll({ 0.8f,0.0f,0.0f,1.0f });
 	}
 	// 無敵時間後半に色を戻す
 	else{
-		mObject->mModel->mMaterialData->color = { 1.0f,1.0f,1.0f,1.0f };
+		mObject->mMaterial->SetColorAll({ 1.0f,1.0f,1.0f,1.0f });
 	}
 
 	// 無敵時間が終了したら

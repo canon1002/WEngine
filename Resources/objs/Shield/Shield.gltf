@@ -1,8 +1,11 @@
 {
 	"asset":{
-		"generator":"Khronos glTF Blender I/O v4.0.44",
+		"generator":"Khronos glTF Blender I/O v4.4.56",
 		"version":"2.0"
 	},
+	"extensionsUsed":[
+		"KHR_materials_specular"
+	],
 	"scene":0,
 	"scenes":[
 		{
@@ -15,30 +18,35 @@
 	"nodes":[
 		{
 			"mesh":0,
-			"name":"Shield",
-			"scale":[
-				0.5,
-				0.49999988079071045,
-				0.5
-			]
+			"name":"Paladin_J_Nordstrom_Helmet"
 		}
 	],
 	"materials":[
 		{
 			"doubleSided":true,
-			"name":"Material",
+			"extensions":{
+				"KHR_materials_specular":{
+					"specularTexture":{
+						"index":0
+					}
+				}
+			},
+			"name":"Paladin_MAT",
+			"normalTexture":{
+				"index":1
+			},
 			"pbrMetallicRoughness":{
 				"baseColorTexture":{
-					"index":0
+					"index":2
 				},
-				"metallicFactor":0,
-				"roughnessFactor":0.5
+				"metallicFactor":0.5,
+				"roughnessFactor":0.5527864098548889
 			}
 		}
 	],
 	"meshes":[
 		{
-			"name":"\u5186\u67f1",
+			"name":"Paladin_J_Nordstrom_Helmet",
 			"primitives":[
 				{
 					"attributes":{
@@ -56,74 +64,92 @@
 		{
 			"sampler":0,
 			"source":0
+		},
+		{
+			"sampler":0,
+			"source":1
+		},
+		{
+			"sampler":0,
+			"source":2
 		}
 	],
 	"images":[
 		{
 			"mimeType":"image/png",
-			"name":"Shield",
-			"uri":"Shield.png"
+			"name":"Paladin_specular",
+			"uri":"Paladin_specular.png"
+		},
+		{
+			"mimeType":"image/png",
+			"name":"Paladin_normal",
+			"uri":"Paladin_normal.png"
+		},
+		{
+			"mimeType":"image/png",
+			"name":"Paladin_diffuse",
+			"uri":"Paladin_diffuse.png"
 		}
 	],
 	"accessors":[
 		{
 			"bufferView":0,
 			"componentType":5126,
-			"count":96,
+			"count":85,
 			"max":[
-				1,
-				0.10000002384185791,
-				1
+				22.09676742553711,
+				27.862070083618164,
+				0.6715517044067383
 			],
 			"min":[
-				-1,
-				-0.10000002384185791,
-				-1
+				-22.29597282409668,
+				-38.645389556884766,
+				-11.679472923278809
 			],
 			"type":"VEC3"
 		},
 		{
 			"bufferView":1,
 			"componentType":5126,
-			"count":96,
+			"count":85,
 			"type":"VEC3"
 		},
 		{
 			"bufferView":2,
 			"componentType":5126,
-			"count":96,
+			"count":85,
 			"type":"VEC2"
 		},
 		{
 			"bufferView":3,
 			"componentType":5123,
-			"count":180,
+			"count":306,
 			"type":"SCALAR"
 		}
 	],
 	"bufferViews":[
 		{
 			"buffer":0,
-			"byteLength":1152,
+			"byteLength":1020,
 			"byteOffset":0,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":1152,
-			"byteOffset":1152,
+			"byteLength":1020,
+			"byteOffset":1020,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":768,
-			"byteOffset":2304,
+			"byteLength":680,
+			"byteOffset":2040,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":360,
-			"byteOffset":3072,
+			"byteLength":612,
+			"byteOffset":2720,
 			"target":34963
 		}
 	],
@@ -135,7 +161,7 @@
 	],
 	"buffers":[
 		{
-			"byteLength":3432,
+			"byteLength":3332,
 			"uri":"Shield.bin"
 		}
 	]

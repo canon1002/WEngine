@@ -2,7 +2,7 @@
 #include "GameEngine/Resource/Model/Model.h"
 
 SkinCluster SkinCluster::Create(const Microsoft::WRL::ComPtr<ID3D12Device>& device,
-	const Skeleton& skeleton, const ModelData& modelData) {
+	const Skeleton& skeleton, const MeshData& mesh) {
 	SkinCluster skinCluster;
 
 	// -- Palette用のResourceを確保 -- //
@@ -33,18 +33,18 @@ SkinCluster SkinCluster::Create(const Microsoft::WRL::ComPtr<ID3D12Device>& devi
 
 	// 頂点ごとにinfluence情報を追加できるようにする
 	skinCluster.mInfluenceResource = DirectXCommon::GetInstance()->CreateBufferResource(device.Get(),
-		sizeof(VertexInfluence) * modelData.vertices.size());
+		sizeof(VertexInfluence) * mesh.vertices.size());
 	VertexInfluence* mappedInfluence = nullptr;
 	skinCluster.mInfluenceResource->Map(0, nullptr,
 		reinterpret_cast<void**>(&mappedInfluence));
 	// 0埋め。weightを0にしておく
-	std::memset(mappedInfluence, 0, sizeof(VertexInfluence) * modelData.vertices.size());
-	skinCluster.mMappedInfluence = { mappedInfluence,modelData.vertices.size() };
+	std::memset(mappedInfluence, 0, sizeof(VertexInfluence) * mesh.vertices.size());
+	skinCluster.mMappedInfluence = { mappedInfluence,mesh.vertices.size() };
 
 	// -- influence用のVBV(頂点バッファビュー)を作成 -- //
 
 	skinCluster.mInfluenceBufferView.BufferLocation = skinCluster.mInfluenceResource->GetGPUVirtualAddress();
-	skinCluster.mInfluenceBufferView.SizeInBytes = UINT(sizeof(VertexInfluence) * modelData.vertices.size());
+	skinCluster.mInfluenceBufferView.SizeInBytes = UINT(sizeof(VertexInfluence) * mesh.vertices.size());
 	skinCluster.mInfluenceBufferView.StrideInBytes = sizeof(VertexInfluence);
 
 	// -- InverseBindPoseMatricxの保存領域を作成 -- //
@@ -60,7 +60,7 @@ SkinCluster SkinCluster::Create(const Microsoft::WRL::ComPtr<ID3D12Device>& devi
 	// -- ModelDataのSkinCluster情報を解析してinfluenceの中身を埋める -- //
 
 	// ModelのSkinClusterの情報を解析
-	for (const auto& jointWeight : modelData.skinClusterData) {
+	for (const auto& jointWeight : mesh.skinClusterData) {
 		//	jointWeight.firstはjoint名なので、skeletonに対象となるjointが含まれているか判断
 		auto it = skeleton.jointMap.find(jointWeight.first);
 		// そんな名前のjointは存在しないので次に回す

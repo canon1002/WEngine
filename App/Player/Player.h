@@ -32,7 +32,7 @@ public: // -- 公開 メンバ関数 -- //
 
 
 	Object3d* GetObject3D() { return mObject.get(); }
-	Model* GetModel() { return mObject->mModel.get(); }
+	Model* GetModel() { return mObject->mModel; }
 	Collider* GetCollider() { return mObject->mCollider.get(); }
 	const Matrix4x4& GetSwordBoneMatrix(int32_t count) { return swordWorldMat.at(count); }
 	const WorldTransform* GetWorldPositionSword(int32_t count) { return mWorldTransformSword.at(count).get(); }
@@ -99,7 +99,7 @@ private: // -- 非公開 メンバ関数 -- //
 public: // -- 公開 メンバ変数 & 定数 -- //
 
 	// 最大コンボ回数
-	static const int32_t kComboCountMax = 4;
+	static const int32_t kComboCountMax = 3;
 	// コンボ定数表
 	std::array<ConstAttack, kComboCountMax> kConstAttacks;
 

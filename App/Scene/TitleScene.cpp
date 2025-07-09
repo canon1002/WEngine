@@ -13,7 +13,6 @@ void TitleScene::Final() {
 
 	// 登録したタイトルシーンのUIをリストから削除する
 	UIManager::GetInstance()->DeleteSceneUI(SceneName::Title);
-
 }
 
 //　継承した関数
@@ -40,15 +39,13 @@ void TitleScene::Init() {
 	// 地面
 	mGroundObj = std::make_unique<Object3d>();
 	mGroundObj->Init("Title Ground");
-	ModelManager::GetInstance()->LoadModel("MapObjects", "ground.gltf");
-	mGroundObj->SetModel("ground.gltf");
+	mGroundObj->SetModelFullPath("MapObjects","ground.gltf");
 	mGroundObj->SetScale(Vector3(1.0f, 1.0f, 1.0f));
 
 	// 焚き火
 	mWoodObj = std::make_unique<Object3d>();
 	mWoodObj->Init("Wood");
-	ModelManager::GetInstance()->LoadModel("Wood", "Wood.gltf");
-	mWoodObj->SetModel("Wood.gltf");
+	mWoodObj->SetModelFullPath("Wood","Wood.gltf");
 	mWoodObj->SetScale(Vector3(0.5f, 0.5f, 0.5f));
 	mWoodObj->SetTranslate(Vector3(6.5f, 0.0f, 3.5f));
 
@@ -62,27 +59,27 @@ void TitleScene::Init() {
 	// プレイヤーオブジェクト
 	mPlayerObj = std::make_unique<Object3d>();
 	mPlayerObj->Init("Title PlayerObj");
-	mPlayerObj->SetScale({ 5.0f,5.0f,5.0f });
+	mPlayerObj->SetScale({ 2.0f,2.0f,2.0f });
 	mPlayerObj->SetTranslate({ -1.0f,1.0f,-4.4f });
 	// モデルを設定
-	mPlayerObj->SetModel("idle.gltf");
+	mPlayerObj->SetModelFullPath("Actor", "Actor.gltf");
 	mPlayerObj->mSkinning = make_unique<Skinning>();
-	mPlayerObj->mSkinning->Init("player", "idleNB.gltf", mPlayerObj->GetModel()->mModelData);
+	mPlayerObj->mSkinning->Init("Actor", "Actor_Idle.gltf", mPlayerObj->GetModel()->mModelData);
 	// モーションブレンド速度
 	mPlayerObj->mSkinning->SetMotionBlendingInterval(2.0f);
 	// アニメーション再生速度
 	mPlayerObj->mSkinning->SetAnimationPlaySpeed(1.0f);
 	// アニメーション登録
-	mPlayerObj->mSkinning->CreateSkinningData("player", "idleNB", ".gltf", mPlayerObj->GetModel()->mModelData, true);
-	mPlayerObj->mSkinning->CreateSkinningData("player", "run", ".gltf", mPlayerObj->GetModel()->mModelData, true);
-	mPlayerObj->mSkinning->CreateSkinningData("player", "jump", ".gltf", mPlayerObj->GetModel()->mModelData);
-	mPlayerObj->mSkinning->CreateSkinningData("player", "falling", ".gltf", mPlayerObj->GetModel()->mModelData, true);
+	mPlayerObj->mSkinning->CreateSkinningData("Actor", "Actor_Idle", ".gltf", mPlayerObj->GetModel()->mModelData, true);
+	mPlayerObj->mSkinning->CreateSkinningData("Actor", "Actor_Run", ".gltf", mPlayerObj->GetModel()->mModelData, true);
+	mPlayerObj->mSkinning->CreateSkinningData("Actor", "Actor_Jump", ".gltf", mPlayerObj->GetModel()->mModelData);
+	
 
 	// 剣
 	mSwordObj = std::make_unique<Object3d>();
 	mSwordObj->Init("Title Sword");
 	ModelManager::GetInstance()->LoadModel("Weapons", "sword.gltf");
-	mSwordObj->SetModel("sword.gltf");
+	mSwordObj->SetModelFullPath("weapons","sword.gltf");
 	mSwordObj->mWorldTransform->scale = { 0.1f,0.1f,0.175f };
 	mSwordObj->mWorldTransform->rotation = { 2.0f,-0.6f,1.4f };
 	mSwordObj->mWorldTransform->translation = { 0.05f,0.0f,0.05f };
@@ -415,26 +412,25 @@ void TitleScene::GameStartPhase() {
 	if (pos.z >= 1.0f) {
 
 		// プレイヤーをジャンプさせる
-		if (mPlayerObj->mSkinning->GetNowSkinCluster()->name == "run" &&
-			!mPlayerObj->mSkinning->SearchToWaitingSkinCluster("jump")) {
-			mPlayerObj->mSkinning->SetNextAnimation("jump");
+		if (mPlayerObj->mSkinning->GetNowSkinCluster()->name == "Actor_Run" &&
+			!mPlayerObj->mSkinning->SearchToWaitingSkinCluster("Actor_Jump")) {
+			mPlayerObj->mSkinning->SetNextAnimation("Actor_Jump");
 		}
 
-		if (mPlayerObj->mSkinning->GetNowSkinCluster()->name == "jump") {
+		if (mPlayerObj->mSkinning->GetNowSkinCluster()->name == "Actor_Jump") {
 
-			pos.y += 0.25f;
+			pos.y += 0.1f;
 
-			if (mPlayerObj->mSkinning->GetIsAnimationFinished("jump")) {
+			if (mPlayerObj->mSkinning->GetIsAnimationFinished("Actor_Jump")) {
 
-				mPlayerObj->mSkinning->SetNextAnimation("falling");
+				pos.y -= 0.2f;
+
+				//mPlayerObj->mSkinning->SetNextAnimation("falling");
 				mPlayerObj->mSkinning->SetAnimationPlaySpeed(2.5f);
 				mPlayerObj->mSkinning->SetMotionBlendingInterval(4.0f);
 			}
 		}
-		else {
-			pos.y -= 0.2f;
-		}
-
+		
 	}
 	if (pos.z >= 8.5f) {
 		pos.y -= 0.2f;
@@ -549,7 +545,7 @@ void TitleScene::UIFadePhase() {
 			mSelectStep = SelectStep::GAMESTART;
 
 			// プレイヤーのアニメーションを変更
-			mPlayerObj->mSkinning->SetNextAnimation("run");
+			mPlayerObj->mSkinning->SetNextAnimation("Actor_Run");
 
 		}
 

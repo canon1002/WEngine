@@ -436,7 +436,9 @@
     <ClCompile Include="App\UI\UIFactory.cpp" />
     <ClCompile Include="GameEngine\Base\Window\WindowManager.cpp" />
     <ClCompile Include="App\UI\FadeUI.cpp" />
-    <ClCompile Include="GageUI.cpp" />
+    <ClCompile Include="App\UI\GageUI.cpp" />
+    <ClCompile Include="GameEngine\Resource\Material\Material.cpp" />
+    <ClCompile Include="GameEngine\Resource\Material\MaterialManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameEngine\Object\Light\DirectionalLight.h">
@@ -745,7 +747,8 @@
     <ClInclude Include="App\UI\UIFactory.h" />
     <ClInclude Include="GameEngine\Base\Window\WindowManager.h" />
     <ClInclude Include="App\UI\FadeUI.h" />
-    <ClInclude Include="GageUI.h" />
+    <ClInclude Include="App\UI\GageUI.h" />
+    <ClInclude Include="GameEngine\Resource\Material\MaterialManager.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt">

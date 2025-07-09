@@ -24,7 +24,7 @@ void ACT::ShotBullet::Update()
 	if (mCondition == Condition::RUNNING) {
 
 		// 攻撃処理
-		if (!mIsShot && mActor->GetObject3D()->mSkinning->GetAnimationTimeRate("ShotBullet") >= 0.5f) {
+		if (!mIsShot && mActor->GetObject3D()->mSkinning->GetAnimationTimeRate("Actor_MagicCast") >= 0.5f) {
 			
 			// 攻撃済みに設定
 			mIsShot = true;
@@ -62,7 +62,7 @@ void ACT::ShotBullet::Update()
 		}
 
 		// 終了処理
-		if (mActor->GetObject3D()->mSkinning->GetIsAnimationFinished("ShotBullet")) {
+		if (mActor->GetObject3D()->mSkinning->GetIsAnimationFinished("Actor_MagicCast")) {
 			mCondition = Condition::FINISHED;
 		}
 
@@ -78,7 +78,7 @@ void ACT::ShotBullet::Start()
 	// パラメータ初期化
 	Reset();
 	// アニメーションの変更
-	mActor->GetObject3D()->mSkinning->SetNextAnimation("ShotBullet");
+	mActor->GetObject3D()->mSkinning->SetNextAnimation("Actor_MagicCast");
 
 	// 実行する
 	mCondition = Condition::RUNNING;

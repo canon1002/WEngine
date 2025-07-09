@@ -103,7 +103,7 @@ void ObjectManager::Draw(){
 
 }
 
-void ObjectManager::Finalize(){
+void ObjectManager::Final(){
 	ModelManager::GetInstance()->Finalize();
 	SpriteAdministrator::GetInstance()->Finalize();
 }

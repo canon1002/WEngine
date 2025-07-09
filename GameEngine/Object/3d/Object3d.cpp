@@ -5,6 +5,7 @@
 #include "GameEngine/Object/Camera/MainCamera.h"
 #include "GameEngine/Resource/Model/ModelManager.h"
 #include "GameEngine/Editor/ImGui/ImGuiManager.h"
+#include "GameEngine/Resource/Material/MaterialManager.h"
 
 Object3d::Object3d(const std::string objname) {
 	// 名称が引数に入っていれば命名しておく
@@ -23,6 +24,8 @@ void Object3d::Init(std::string name) {
 	mWorldTransform = std::make_unique<WorldTransform>();
 	mWorldTransform->Init();
 	CreateTransformation();
+
+
 }
 
 void Object3d::Update() {
@@ -55,25 +58,17 @@ void Object3d::Draw() {
 
 	//wvp用のCBufferの場所を指定
 	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootConstantBufferView(1, mWvpResource->GetGPUVirtualAddress());
-	// 頂点をセット
 
-	D3D12_VERTEX_BUFFER_VIEW vbvs[2]{};
-	vbvs[0] = mModel->mVertexBufferView;// VertexDataのVBV
-	if (mSkinning != nullptr && mSkinning->GetIsActive()) {
-
-		vbvs[1] = mSkinning->GetNowSkinCluster()->skinCluster.mInfluenceBufferView; // influenceのVBV
-
-		// 配列を渡す(開始スロット番号、使用スロット数、VBV配列へのポインタ)
-		DirectXCommon::GetInstance()->mCommandList->IASetVertexBuffers(0, 2, vbvs);
-		DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootDescriptorTable(6,
-			mSkinning->GetNowSkinCluster()->skinCluster.mPaletteSrvHandle.second);
+	// モデルの描画
+	if (mSkinning != nullptr) {
+		// スキニングがある場合はスキニングを描画
+		// ただし、アニメーション無効化設定がある場合はDraw関数内で通常モデルの描画を行う
+		mModel->DrawSkinning(*mMaterial, mSkinning.get(), mSkinning->GetIsActive());
 	}
 	else {
-		// 配列を渡す(開始スロット番号、使用スロット数、VBV配列へのポインタ)
-		DirectXCommon::GetInstance()->mCommandList->IASetVertexBuffers(0, 1, &vbvs[0]);
+		// スキニングがない場合は通常の描画
+		mModel->Draw(*mMaterial);
 	}
-
-	mModel->Draw();
 
 }
 
@@ -133,7 +128,7 @@ void Object3d::DrawGuiTree()
 	ImGui::DragFloat3("Scale", &mWorldTransform->scale.x, 0.05f, -10.0f, 10.0f);
 	ImGui::DragFloat3("Rotate", &mWorldTransform->rotation.x, 0.01f, -6.28f, 6.28f);
 	ImGui::DragFloat3("translate", &mWorldTransform->translation.x, 0.1f, -100.0f, 100.0f);
-	
+
 	if (mCollider != nullptr) {
 		if (ImGui::TreeNode("Collider")) {
 			ImGui::SliderAngle("RotateX", &mCollider->GetWorld()->rotation.x);
@@ -151,7 +146,7 @@ void Object3d::DrawGuiTree()
 		mModel->DrawGUI(mObjname + "Model");
 
 		if (mSkinning != nullptr) {
-		
+
 			if (ImGui::CollapsingHeader("Animation")) {
 
 				std::string strNormalT = "MotionBlendingTime : " + std::to_string(mSkinning->GetMotionBlendingTime());
@@ -187,22 +182,58 @@ void Object3d::CreateTransformation() {
 
 }
 
-void Object3d::SetModel(const std::string& filepath)
+void Object3d::SetModel(const std::string& filePath)
 {
 	// モデルを検索してセット
-	//mModelManager->LoadModel(filepath);
-	mModel = ModelManager::GetInstance()->FindModelPtr(filepath);
+	mModel = ModelManager::GetInstance()->CreateModel("", filePath);
+	// マテリアルを生成
+	mMaterial = CreateMaterial();
+
+	// モデル内にアニメーションがある場合はアニメーション及びスキンクラスターなどを生成
+	for (const auto& mesh : mModel->mModelData.meshes) {
+		if (!mesh.skinClusterData.empty()) {
+			mSkinning = std::make_unique<Skinning>();
+			mSkinning->Init("", filePath, mModel->mModelData);
+		}
+	}
+}
+
+void Object3d::SetModelFullPath(const string& directryPath, const string& filePath) {
+
+	// モデルを検索してセット
+	mModel = ModelManager::GetInstance()->CreateModel(directryPath, filePath);
+	// マテリアルを生成
+	mMaterial = CreateMaterial();
+
+	// モデル内にアニメーションがある場合はアニメーション及びスキンクラスターなどを生成
+	for (const auto& mesh : mModel->mModelData.meshes) {
+
+		// スキンクラスターが存在する場合はスキニングを初期化
+		if (!mesh.skinClusterData.empty()) {
+			mSkinning = std::make_unique<Skinning>();
+			mSkinning->Init(directryPath, filePath, mModel->mModelData);
+		}
+	}
+
+
 
 }
 
-void Object3d::SetModelFullPath(const string& directryPath, const string& filePath){
+MaterialExt* Object3d::CreateMaterial() const
+{
+	// テクスチャファイルパスを格納する配列
+	std::vector<std::string> textureFilePaths;
 
-	// モデルを検索してセット
-	mModel = ModelManager::GetInstance()->FindModelPtr(directryPath+filePath);
-	// モデル内にアニメーションがある場合はアニメーション及びスキンクラスターなどを生成
-	if (!mModel->mModelData.skinClusterData.empty()) {
-		mSkinning = std::make_unique<Skinning>();
-		mSkinning->Init(directryPath, filePath, mModel->mModelData);
+	// テクスチャファイルパスの取得
+	for (const auto& mesh : mModel->mModelData.meshes) {
+		// テクスチャファイルパスを取得
+		textureFilePaths.push_back(mesh.textureFilePath);
 	}
 
+	// 各メッシュのテクスチャ情報を取得する
+	MaterialExt* material = nullptr;
+	// メッシュのテクスチャ情報を渡して初期化
+	material = MaterialManager::GetInstance()->CreateMaterial(mObjname,textureFilePaths);
+
+	return material;
 }

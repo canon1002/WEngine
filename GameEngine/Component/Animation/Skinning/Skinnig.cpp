@@ -10,20 +10,54 @@
 
 void Skinning::Init(const std::string& directorypath, const std::string& filepath, ModelData modelData)
 {
-	
 	// スケルトン生成
 	mSkeleton = Skeleton::Create(modelData.rootNode);
 
 	// 新規にスキンクラスターを含めたデータを生成
 	mCurrentSkinCluster = std::make_shared<SkinningStatus>();
 	// スキンクラスターを生成
-	mCurrentSkinCluster->skinCluster = SkinCluster::Create(
-		DirectXCommon::GetInstance()->mDevice, mSkeleton, modelData);
+	mCurrentSkinCluster->skinClusters[0] = SkinCluster::Create(
+		DirectXCommon::GetInstance()->mDevice, mSkeleton, modelData.mesh);
 	// アニメーションに必要な情報をセット
 	mCurrentSkinCluster->animation = Resource::LoadAnmation(directorypath, filepath);
 	// スキンクラスターを生成
-	mCurrentSkinCluster->skinCluster = SkinCluster::Create(
-		DirectXCommon::GetInstance()->mDevice, mSkeleton, modelData);
+	mCurrentSkinCluster->skinClusters[0] = SkinCluster::Create(
+		DirectXCommon::GetInstance()->mDevice, mSkeleton, modelData.mesh);
+	// アニメーションの一時停止をoffに
+	mCurrentSkinCluster->isPause = false;
+	// ループさせる
+	mCurrentSkinCluster->isLoop = true;
+	// アニメーションの開始時間を0.0fに設定
+	mCurrentSkinCluster->animationTime = 0.0f;
+	// アニメーションを有効にする
+	mCurrentSkinCluster->isActive = true;
+
+	// モーションブレンドをしていない
+	mIsMotionBrending = false;
+	// モーションブレンドの切替速度(遅い n ~ 1.0f ~ m 早い)
+	mMotionBrendingInterval = 1.0f;
+
+	// アニメーションの再生速度
+	mAnimationPlaySpeed = 1.0f;
+
+}
+
+void Skinning::Init(const std::string& directorypath, const std::string& filepath, MultiModelData multiModelData){
+
+	// スケルトン生成
+	mSkeleton = Skeleton::Create(multiModelData.rootNode);
+
+	// 新規にスキンクラスターを含めたデータを生成
+	mCurrentSkinCluster = std::make_shared<SkinningStatus>();
+	// 各メッシュのスキンクラスターを生成
+	for (const auto& mesh : multiModelData.meshes) {
+		// スキンクラスターを生成
+		mCurrentSkinCluster->skinClusters.push_back(SkinCluster::Create(
+			DirectXCommon::GetInstance()->mDevice, mSkeleton, mesh));
+	}
+
+	// アニメーションに必要な情報をセット
+	mCurrentSkinCluster->animation = Resource::LoadAnmation(directorypath, filepath);
 	// アニメーションの一時停止をoffに
 	mCurrentSkinCluster->isPause = false;
 	// ループさせる
@@ -98,11 +132,20 @@ void Skinning::Update()
 	ApplyAniation();
 	// スケルトン更新
 	mSkeleton.Update();
+
 	// スキンクラスター 更新
+	
+	// 前回のスキンクラスターが存在する場合は、更新を行う
 	if (mPreSkincluster) {
-		mPreSkincluster->skinCluster.Update(mSkeleton);
+		for(auto& skinCluster : mPreSkincluster->skinClusters) {
+			skinCluster.Update(mSkeleton);
+		}
 	}
-	mCurrentSkinCluster->skinCluster.Update(mSkeleton);
+
+	// スキンクラスターの更新を行う
+	for (auto& skinCluster : mCurrentSkinCluster->skinClusters) {
+		skinCluster.Update(mSkeleton);
+	}
 	
 
 }
@@ -242,16 +285,15 @@ void Skinning::DrawGui()
 #endif // _DEBUG
 }
 
-void Skinning::CreateSkinningData(const std::string& directorypath, const std::string& filename, const std::string& filrExt, ModelData modelData, bool isLoop)
-{
+void Skinning::CreateSkinningData(const std::string& directorypath, const std::string& filename,
+	const std::string& filrExt, ModelData modelData, bool isLoop){
+
 	// 新規にスキンクラスターを含めたデータを生成
 	std::shared_ptr<SkinningStatus> newSkinning = std::make_shared<SkinningStatus>();
 	// スキンクラスターを生成
-	newSkinning->skinCluster = SkinCluster::Create(DirectXCommon::GetInstance()->mDevice, mSkeleton, modelData);
+	newSkinning->skinClusters[0] = SkinCluster::Create(DirectXCommon::GetInstance()->mDevice, mSkeleton, modelData.mesh);
 	// アニメーションに必要な情報をセット
 	newSkinning->animation = Resource::LoadAnmation(directorypath, filename + filrExt);
-	// スキンクラスターを生成
-	newSkinning->skinCluster = SkinCluster::Create(DirectXCommon::GetInstance()->mDevice, mSkeleton, modelData);
 	// アニメーションの一時停止をoffに
 	newSkinning->isPause = false;
 	// ループさせる
@@ -269,7 +311,41 @@ void Skinning::CreateSkinningData(const std::string& directorypath, const std::s
 	// 上記のshared_ptrはローカルなのでこの時点で参照が外れるのでそのままにしておく
 }
 
-void Skinning::CreateAnimationData(const std::string& directorypath, const std::string& filename, ModelData modelData) {
+void Skinning::CreateSkinningData(const std::string& directorypath, const std::string& filename, 
+	const std::string& filrExt, MultiModelData multiModelData, bool isLoop){
+
+	// 新規にスキンクラスターを含めたデータを生成
+	std::shared_ptr<SkinningStatus> newSkinning = std::make_shared<SkinningStatus>();
+	
+	// 各メッシュのスキンクラスターを生成
+	for (const auto& mesh : multiModelData.meshes) {
+		// スキンクラスターを生成
+		newSkinning->skinClusters.push_back(SkinCluster::Create(
+			DirectXCommon::GetInstance()->mDevice, mSkeleton, mesh));
+	}
+	
+	// アニメーションに必要な情報をセット
+	newSkinning->animation = Resource::LoadAnmation(directorypath, filename + filrExt);
+	// アニメーションの一時停止をoffに
+	newSkinning->isPause = false;
+	// ループさせる
+	newSkinning->isLoop = isLoop;
+	// アニメーションの開始時間を0.0fに設定
+	newSkinning->animationTime = 0.0f;
+	// アニメーションを有効にする
+	newSkinning->isActive = true;
+	// 名称を設定
+	newSkinning->name = filename;
+
+	// 設定したデータをマップに登録する
+	mSkinClusterMap[filename] = newSkinning;
+
+	// 上記のshared_ptrはローカルなのでこの時点で参照が外れるのでそのままにしておく
+
+}
+
+void Skinning::CreateAnimationData(const std::string& directorypath, const std::string& filename, 
+	ModelData modelData) {
 	
 	// アニメーションの配列を確認
 	std::vector<Animation> animations;
@@ -278,11 +354,44 @@ void Skinning::CreateAnimationData(const std::string& directorypath, const std::
 	// 新規にスキンクラスターを含めたデータを生成
 	std::shared_ptr<SkinningStatus> newSkinning = std::make_shared<SkinningStatus>();
 	// スキンクラスターを生成
-	newSkinning->skinCluster = SkinCluster::Create(DirectXCommon::GetInstance()->mDevice, mSkeleton, modelData);
+	newSkinning->skinClusters[0] = SkinCluster::Create(DirectXCommon::GetInstance()->mDevice, mSkeleton, modelData.mesh);
 	// アニメーションに必要な情報をセット
 	newSkinning->animation = Resource::LoadAnmation(directorypath, filename);
-	// スキンクラスターを生成
-	newSkinning->skinCluster = SkinCluster::Create(DirectXCommon::GetInstance()->mDevice, mSkeleton, modelData);
+	// アニメーションの一時停止をoffに
+	newSkinning->isPause = false;
+	// ループさせる
+	newSkinning->isLoop = true;
+	// アニメーションの開始時間を0.0fに設定
+	newSkinning->animationTime = 0.0f;
+	// アニメーションを有効にする
+	newSkinning->isActive = true;
+	// 名称を設定
+	newSkinning->name = filename;
+	// 設定したデータをマップに登録する
+	mSkinClusterMap[filename] = newSkinning;
+
+	// 上記のshared_ptrはローカルなのでこの時点で参照が外れるのでそのままにしておく
+
+
+}
+
+void Skinning::CreateAnimationData(const std::string& directorypath, const std::string& filename,
+	MultiModelData multiModelData){
+
+	// アニメーションの配列を確認
+	std::vector<Animation> animations;
+	Resource::LoadAnimations(directorypath, filename, animations);
+
+	// 新規にスキンクラスターを含めたデータを生成
+	std::shared_ptr<SkinningStatus> newSkinning = std::make_shared<SkinningStatus>();
+	// 各メッシュのスキンクラスターを生成
+	for (const auto& mesh : multiModelData.meshes) {
+		// スキンクラスターを生成
+		mCurrentSkinCluster->skinClusters.push_back(SkinCluster::Create(
+			DirectXCommon::GetInstance()->mDevice, mSkeleton, mesh));
+	}
+	// アニメーションに必要な情報をセット
+	newSkinning->animation = Resource::LoadAnmation(directorypath, filename);
 	// アニメーションの一時停止をoffに
 	newSkinning->isPause = false;
 	// ループさせる

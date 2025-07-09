@@ -34,7 +34,7 @@ void ACT::AttackClose::Update()
 
 
 		// 終了処理
-		if (mActor->GetObject3D()->mSkinning->GetIsAnimationFinished("Slash")) {
+		if (mActor->GetObject3D()->mSkinning->GetIsAnimationFinished("Actor_S0")) {
 			mCondition = Condition::FINISHED;
 		}
 
@@ -53,7 +53,7 @@ void ACT::AttackClose::Start()
 	// パラメータの初期化
 	Reset();
 	// アニメーションの変更
-	mActor->GetObject3D()->mSkinning->SetNextAnimation("Slash");
+	mActor->GetObject3D()->mSkinning->SetNextAnimation("Actor_S0");
 	// 実行する
 	mCondition = Condition::RUNNING;
 }

@@ -123,7 +123,7 @@ private: // -- 非公開 メンバ変数 -- //
 	// バッファ
 	std::optional<InputCommand> mInputBuffer;
 	// 有効な入力バッファ時間(秒)
-	const float kBufferDuration = 0.25f;
+	const float kBufferDuration = 1.00f;
 
 
 };

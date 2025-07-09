@@ -34,7 +34,7 @@ void ACT::MoveFieldCenter::Start(){
 	// 向きの指定
 	mActor->InputDirection(mDirection);
 	// アニメーションの変更
-	mActor->GetObject3D()->mSkinning->SetNextAnimation("Walk");
+	mActor->GetObject3D()->mSkinning->SetNextAnimation("Actor_Walk");
 	// 実行する
 	mCondition = Condition::RUNNING;
 

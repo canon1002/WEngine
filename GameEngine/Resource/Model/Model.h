@@ -4,68 +4,122 @@
 #include "GameEngine/Resource/Texture/Resource.h"
 #include "GameEngine/Object/Light/DirectionalLight.h"
 #include "GameEngine/Object/Camera/CameraCommon.h"
-
-// アニメーション
 #include "GameEngine/Component/Animation/Skinning/Skinnig.h"
 
+// メッシュデータ
+struct MeshData {
+	// 頂点
+	std::vector<VertexData> vertices;
+	// インデックス
+	std::vector<uint32_t> indices;
+	// テクスチャ
+	std::string textureFilePath;
+	// スキンクラスター
+	std::map<std::string, JointWeightData> skinClusterData;
+};
 
 // モデルデータ
 struct ModelData {
-	std::map<std::string, JointWeightData>skinClusterData;
-	std::vector<VertexData> vertices;
-	std::vector<uint32_t> indices;
-	MaterialData material;
+	MeshData mesh;
 	Node rootNode;
 };
 
+// マルチメッシュモデルデータ
+struct MultiModelData {
+	std::vector<MeshData> meshes;
+	Node rootNode;
+};
+
+/// <summary>
+/// モデルクラス
+/// </summary>
 class Model
 {
-public:
+public: // -- 公開 メンバ関数 -- //
 
+	// コンストラクタ
+	Model() = default;
+	// デストラクタ
 	~Model();
+	// 初期化
 	void Init(const std::string& directrypath, const std::string& filename);
+	// 更新
 	void Update();
-	void Draw();
-
-	/// デバック情報描画(主にImGui関連)
+	// 描画
+	//void Draw();
+	//void DrawSkinning(Skinning* skinning, const bool& isActive = false);
+	// ImGui描画
 	void DrawGUI(const std::string& label);
 
-	void CreateVertexResource();
-	void CreateIndexResource();
-	void CreateMaterialResource();
+	void Draw(const MaterialExt& materialExt);
+	void DrawSkinning(const MaterialExt& materialExt, Skinning* skinning, const bool& isActive = false);
+
 
 	// カメラ座標を設定
-	inline void SetCameraPosition(CameraCommon camera) { mCameraData->worldPosition = camera.GetTranslate(); }
-	inline void SetCubeTexture(const int32_t& textureHandle) { mTextureHandleCubeMap = textureHandle; }
+	void SetCameraPosition(CameraCommon camera) {
+		mCameraData->worldPosition = camera.GetTranslate();
+	}
 
+	// キューブマップのテクスチャハンドルを設定
+	void SetCubeTexture(const int32_t& textureHandle) {
+		mTextureHandleCubeMap = textureHandle;
+	}
+
+
+	// -- アクセッサ -- //
+
+	/// <summary>
+	/// 頂点バッファビューを取得
+	/// <para> index未入力の場合、最初のVBVを返す </para>
+	/// </summary>
+	/// <param name="index"> バッファ番号 </param>
+	/// <returns></returns>
+	D3D12_VERTEX_BUFFER_VIEW GetVBV(const int32_t& index = 0) {
+		return mVertexBufferViews[index];
+	}
+
+	/// <summary>
+	/// インデックスバッファビューを取得
+	/// <para> index未入力の場合、最初のIBVを返す </para>
+	/// </summary>
+	/// <param name="index"> バッファ番号 </param>
+	/// <returns></returns>
+	D3D12_INDEX_BUFFER_VIEW GetIBV(const int32_t& index = 0) {
+		return mIndexBufferViews[index];
+	}
+
+	// マテリアル生成処理
+	std::unique_ptr<MaterialExt> CreateMaterial()const;
+
+
+private: // -- 非公開 メンバ関数 -- //
+
+	// 頂点リソース生成
+	void CreateVertexResource();
+	// インデックスリソース生成
+	void CreateIndexResource();
 
 public: // -- 公開 メンバ変数 -- //
 
 	// モデルデータ
-	ModelData mModelData;
-	// テクスチャハンドル
-	int32_t mTextureHandle;
+	MultiModelData mModelData;
+	// キューブマップテクスチャハンドル
 	int32_t mTextureHandleCubeMap;
 
 	// -- Vertex -- //
-	Microsoft::WRL::ComPtr<ID3D12Resource> mVertexResource = nullptr;
-	VertexData* mVertexData = nullptr;
-	D3D12_VERTEX_BUFFER_VIEW mVertexBufferView{};
 
-
-	// -- Material -- //
-	Microsoft::WRL::ComPtr<ID3D12Resource> mMaterialResource = nullptr;
-	Material* mMaterialData = nullptr;
-
-
-	// -- Transfomation -- //
-	Microsoft::WRL::ComPtr<ID3D12Resource> mWvpResource = nullptr;
-	TransformationMatrix* mWvpData = nullptr;
+	// 頂点リソース
+	std::vector<Microsoft::WRL::ComPtr<ID3D12Resource>> mVertexResources;
+	// 頂点バッファビュー
+	std::vector<D3D12_VERTEX_BUFFER_VIEW> mVertexBufferViews;
 
 
 	// -- Index -- //
-	Microsoft::WRL::ComPtr<ID3D12Resource> mIndexResource = nullptr;
-	D3D12_INDEX_BUFFER_VIEW mIndexBufferView{};
+
+	// インデックスリソース
+	std::vector<Microsoft::WRL::ComPtr<ID3D12Resource>> mIndexResources;
+	// インデックスバッファビュー
+	std::vector<D3D12_INDEX_BUFFER_VIEW> mIndexBufferViews;
 
 
 	// -- Light -- //

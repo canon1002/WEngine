@@ -97,7 +97,7 @@ public: // -- 公開 メンバ関数 -- //
 	virtual bool IsCollision(OBBCollider* c) = 0;
 
 	
-	Model* GetModel() const{ return mModel.get(); }
+	Model* GetModel() { return mModel; }
 	void DebugDraw(std::string label) { mModel->DrawGUI(label); }
 
 	// 衝突フラグ取得
@@ -138,7 +138,8 @@ protected: // -- 限定公開 メンバ変数 -- //
 	// データを書き込む
 	std::shared_ptr<TransformationMatrixForGrid3D> mWvpData = nullptr;
 	WorldTransform* mWorldTransform;
-	// モデル
-	std::shared_ptr<Model> mModel;
+	
+	// 可視化モデル
+	Model* mModel;
 
 };

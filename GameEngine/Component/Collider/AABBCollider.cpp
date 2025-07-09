@@ -110,7 +110,7 @@ void AABBCollider::Init() {
 	// 矩形のモデルを読み込み // いずれは他の場所に移す
 	ModelManager::GetInstance()->LoadModel("wireCube", "wireCube.gltf");
 	// モデルを検索してセット
-	mModel = ModelManager::GetInstance()->FindModelPtr("wireCube.gltf");
+	mModel = ModelManager::GetInstance()->FindModel("wireCube.gltf");
 	CreateTransformation();
 }
 
@@ -154,12 +154,8 @@ void AABBCollider::Update(){
 void AABBCollider::Draw(){
 
 	//wvp用のCBufferの場所を指定
-	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootConstantBufferView(1, mWvpResource->GetGPUVirtualAddress());
-	// 頂点をセット
-	// 配列を渡す(開始スロット番号、使用スロット数、VBV配列へのポインタ)
-	DirectXCommon::GetInstance()->mCommandList->IASetVertexBuffers(0, 1, &mModel->mVertexBufferView);
-
-	mModel->Draw();
+	//DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootConstantBufferView(1, mWvpResource->GetGPUVirtualAddress());
+	//mModel->Draw();
 
 }
 

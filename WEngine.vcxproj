@@ -231,6 +231,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="GameEngine\UI\UIManager.cpp" />
     <ClCompile Include="App\UI\UIFactory.cpp" />
     <ClCompile Include="GameEngine\Base\Window\WindowManager.cpp" />
+    <ClCompile Include="GameEngine\Resource\Material\Material.cpp" />
+    <ClCompile Include="GameEngine\Resource\Material\MaterialManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App\Actor\Status\ActorWorks.h" />
@@ -364,6 +366,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="GameEngine\UI\UIManager.h" />
     <ClInclude Include="App\UI\UIFactory.h" />
     <ClInclude Include="GameEngine\Base\Window\WindowManager.h" />
+    <ClInclude Include="GameEngine\Resource\Material\MaterialManager.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt" />

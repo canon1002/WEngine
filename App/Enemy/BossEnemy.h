@@ -32,7 +32,7 @@ public: // -- 公開 メンバ関数 -- //
 
 	Object3d* GetObject3D() { return mObject.get(); }
 	// モデルの取得
-	Model* GetModel() { return mObject->mModel.get(); }
+	Model* GetModel() { return mObject->mModel; }
 	Collider* GetCollider() { return mObject->mCollider.get(); }
 	// ゲームマネージャにコライダーを渡す
 	void SetColliderList();

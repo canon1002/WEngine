@@ -35,7 +35,7 @@ void ACT::AttackDash::Update()
 		}
 
 		// 終了処理
-		if (mActor->GetObject3D()->mSkinning->GetIsAnimationFinished("SlashDash")) {
+		if (mActor->GetObject3D()->mSkinning->GetIsAnimationFinished("Actor_S2")) {
 			mCondition = Condition::FINISHED;
 		}
 
@@ -51,7 +51,7 @@ void ACT::AttackDash::Start()
 	// パラメータ初期化
 	Reset();
 	// アニメーションの変更
-	mActor->GetObject3D()->mSkinning->SetNextAnimation("SlashDash");
+	mActor->GetObject3D()->mSkinning->SetNextAnimation("Actor_S2");
 	// ターゲット方向を向く
 	mActor->InputDirection(mActor->GetWorldPosForTarget() - mActor->GetWorldPos());
 

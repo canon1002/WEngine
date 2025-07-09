@@ -1,24 +1,25 @@
 #include "ModelManager.h"
 
-std::map<std::string, std::shared_ptr<Model>> ModelManager::sModels_;
-
 // インスタンス
-ModelManager* ModelManager::instance = nullptr;
+std::unique_ptr<ModelManager> ModelManager::instance = nullptr;
 
 ModelManager* ModelManager::GetInstance(){
 	// インスタンスがnullptrであれば新しく生成する
 	if (instance == nullptr) {
-		instance = new ModelManager();
+		instance.reset(new ModelManager());
 	}
 	// インスタンスを返す
-	return instance;
+	return instance.get();
 }
 
 void ModelManager::Finalize() {
 
 	// リストをクリア
-	models.clear();
+	mModels.clear();
 
+	// インスタンスの破棄
+	instance.reset();
+	instance = nullptr;
 }
 
 void ModelManager::Init(){
@@ -29,7 +30,7 @@ void ModelManager::Init(){
 
 void ModelManager::LoadModel(const std::string& directoryPath, const std::string& filepath){
 	// 読み込み済みのモデルを検索
-	if (models.contains(filepath)) {
+	if (mModels.contains(filepath)) {
 		// 読み込み済みの場合は早期リターンする
 		return;
 	}
@@ -40,39 +41,18 @@ void ModelManager::LoadModel(const std::string& directoryPath, const std::string
 	model->Init(directoryPath, filepath);
 
 	// モデルをmapコンテナに格納
-	models.insert(std::make_pair(filepath, std::move(model)));
+	mModels.insert(std::make_pair(filepath, std::move(model)));
 }
 
 Model* ModelManager::FindModel(const std::string filepath)
 {
 	// 読み込み済みモデルを検索
-	if (models.contains(filepath)) {
+	if (mModels.contains(filepath)) {
 		// 読み込み済みモデルを戻り値としてreturn
-		return models.at(filepath).get();
+		return mModels.at(filepath).get();
 	}
 	// ファイル名不一致の場合はnullptrを返す
 	return nullptr;
-}
-
-std::shared_ptr<Model> ModelManager::FindModelPtr(const std::string filepath)
-{
-	// 読み込み済みモデルを検索
-	if (models.contains(filepath)) {
-		// 読み込み済みモデルを戻り値としてreturn
-		return models[filepath];
-	}
-	// ファイル名不一致の場合はnullptrを返す
-	return nullptr;
-}
-
-std::shared_ptr<Model> ModelManager::Create(const std::string& filepath, const std::string filename){
-	// 登録されていなければ新たにモデルを登録・生成
-	if (sModels_.find(filepath) == sModels_.end()) {
-		sModels_[filepath] = std::make_shared<Model>();
-		sModels_[filepath]->Init(filepath, filename);
-	}
-	// モデルのポインタを返す
-	return sModels_[filepath];
 }
 
 void ModelManager::PreDraw(){
@@ -95,6 +75,28 @@ void ModelManager::PreDrawForShadow()
 	// RootSignatureを設定。PSOに設定しているが、別途設定が必要
 	DirectXCommon::GetInstance()->mCommandList->SetGraphicsRootSignature(rootSignatureForForShadow.Get());
 	DirectXCommon::GetInstance()->mCommandList->SetPipelineState(graphicsPipelineStateForShadow.Get());
+}
+
+Model* ModelManager::CreateModel(const std::string& directoryPath,const std::string& filepath){
+
+	// 読み込み済みのモデルを検索
+	if (mModels.contains(filepath)) {
+		// 読み込み済みモデルを戻り値としてreturn
+		return mModels.at(filepath).get();
+	}
+
+	// 読み込み済みモデルがない場合は新規に生成する
+
+	// モデルの生成とファイル読み込み
+	std::unique_ptr<Model> model = std::make_unique<Model>();
+	//初期化
+	model->Init(directoryPath, filepath);
+
+	// モデルをmapコンテナに格納
+	mModels.insert(std::make_pair(filepath, std::move(model)));
+
+	// 生成したモデルを戻り値として返す
+	return mModels.at(filepath).get();
 }
 
 void ModelManager::CreateRootSignature(){
