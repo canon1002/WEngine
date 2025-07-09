@@ -2,7 +2,9 @@
 #include "GameEngine/Resource/Texture/TextureManager.h"
 
 
-MaterialExt::~MaterialExt() {}
+MaterialExt::~MaterialExt() {
+	mMaterialDatas.clear();
+}
 
 std::unique_ptr<MaterialExt> MaterialExt::CreateMaterialResource(const std::vector<std::string>& textureFilePaths) {
 

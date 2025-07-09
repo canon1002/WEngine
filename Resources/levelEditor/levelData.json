@@ -3,7 +3,7 @@
     "objects": [
         {
             "type": "MESH",
-            "name": "Plane",
+            "name": "グリッド.002",
             "transform": {
                 "translation": [
                     0.0,
@@ -16,8 +16,8 @@
                     0.0
                 ],
                 "scaling": [
-                    60.0,
-                    60.0,
+                    4.0,
+                    4.0,
                     1.0
                 ]
             },
