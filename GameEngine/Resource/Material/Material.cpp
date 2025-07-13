@@ -3,6 +3,7 @@
 
 
 MaterialExt::~MaterialExt() {
+	
 	mMaterialDatas.clear();
 }
 
@@ -20,7 +21,7 @@ std::unique_ptr<MaterialExt> MaterialExt::CreateMaterialResource(const std::vect
 				mDevice.Get(), sizeof(Material));
 
 		// マテリアルにデータを書き込む
-		std::unique_ptr<Material> materialData = nullptr;
+		Material* materialData = nullptr;
 		// 書き込むためのアドレスを取得
 		resource->Map(0, nullptr, reinterpret_cast<void**>(&materialData));
 

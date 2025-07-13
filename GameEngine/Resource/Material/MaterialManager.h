@@ -13,7 +13,7 @@ public: // -- 公開 メンバ関数 -- //
 	// コンストラクタ
 	MaterialManager() = default;
 	// デストラクタ
-	~MaterialManager() = default;
+	~MaterialManager();
 
 	// インスタンス取得関数
 	static MaterialManager* GetInstance();

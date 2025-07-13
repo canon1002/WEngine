@@ -140,7 +140,7 @@ void Framework::Final(){
 	// オブジェクト管理者の終了処理
 	ObjectManager::GetInstance()->Final();
 	// マテリアル管理クラスの終了処理
-	MaterialManager::GetInstance()->Final();
+	//MaterialManager::GetInstance()->Final();
 
 	// 入力処理マネージャ
 	InputManager::GetInstance()->Final();

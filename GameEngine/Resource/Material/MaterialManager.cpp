@@ -4,6 +4,9 @@
 
 std::unique_ptr<MaterialManager> MaterialManager::instance = nullptr;
 
+MaterialManager::~MaterialManager(){
+}
+
 MaterialManager* MaterialManager::GetInstance() {
 
 	// インスタンスが生成されていない場合は、新しいインスタンスを作成
@@ -14,11 +17,11 @@ MaterialManager* MaterialManager::GetInstance() {
 }
 
 void MaterialManager::Final() {
-	// マテリアルの解放
-	mMaterials.clear();
+	
 	// インスタンスの解放
 	instance.reset();
 	instance = nullptr;
+
 }
 
 

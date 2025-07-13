@@ -43,7 +43,7 @@ public: // -- 公開 メンバ変数 -- //
 
 	// マテリアルデータ取得
 	Material* GetMaterialData(const int32_t& index = 0) const {
-		return mMaterialDatas[index].get();
+		return mMaterialDatas[index];
 	}
 
 	// カラー一括設定
@@ -58,7 +58,7 @@ public: // -- 公開 メンバ変数 -- //
 	// マテリアルリソース
 	std::vector<Microsoft::WRL::ComPtr<ID3D12Resource>> mMaterialResources;
 	// マテリアルデータ
-	std::vector<std::unique_ptr<Material>> mMaterialDatas;
+	std::vector<Material*> mMaterialDatas;
 	// テクスチャハンドル
 	std::vector<int32_t> mTextureHandles;
 

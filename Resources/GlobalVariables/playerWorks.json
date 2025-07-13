@@ -9,8 +9,8 @@
             0.0,
             1.0
         ],
-        "AvoidSpeed" : 3.0,
-        "AvoidRange" : 9.0,
+        "AvoidSpeed" : 2.5,
+        "AvoidRange" : 10.0,
         
         "StartGuardCount" : 0.5,
         "JustGuardCount" : [
