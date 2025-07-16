@@ -25,22 +25,6 @@ void BossEnemy::Init() {
 	mName = "Boss";
 
 	// モデルの読み込み
-	ModelManager::GetInstance()->LoadModel("twoHanded", "twoHanded.gltf");
-	ModelManager::GetInstance()->LoadModel("Boss", "Idle.gltf");
-	ModelManager::GetInstance()->LoadModel("Boss", "Run.gltf");
-	ModelManager::GetInstance()->LoadModel("Boss", "backStep.gltf");
-	ModelManager::GetInstance()->LoadModel("Boss", "death.gltf");
-
-	ModelManager::GetInstance()->LoadModel("Boss", "Slash.gltf");
-	ModelManager::GetInstance()->LoadModel("Boss", "SlashR.gltf");
-	ModelManager::GetInstance()->LoadModel("Boss", "SlashJamp.gltf");
-	ModelManager::GetInstance()->LoadModel("Boss", "SlashDash.gltf");
-
-	ModelManager::GetInstance()->LoadModel("Boss", "ShotBullet.gltf");
-	ModelManager::GetInstance()->LoadModel("Boss", "Thrust.gltf");
-	ModelManager::GetInstance()->LoadModel("Boss", "magic.gltf");
-	ModelManager::GetInstance()->LoadModel("Boss", "kick.gltf");
-
 	ModelManager::GetInstance()->LoadModel("Sphere", "Sphere.gltf");
 
 	// オブジェクト生成
@@ -347,8 +331,10 @@ void BossEnemy::UpdateObject() {
 	}
 
 	// ステージ限界値に合わせた座標の補正
-	mObject->mWorldTransform->translation.x = std::clamp(mObject->mWorldTransform->translation.x, -20.0f, 20.0f);
-	mObject->mWorldTransform->translation.z = std::clamp(mObject->mWorldTransform->translation.z, -20.0f, 20.0f);
+	mObject->mWorldTransform->translation.x = std::clamp(mObject->mWorldTransform->translation.x,
+		-BlackBoard::GetFieldRadius().x, BlackBoard::GetFieldRadius().x);
+	mObject->mWorldTransform->translation.z = std::clamp(mObject->mWorldTransform->translation.z,
+		-BlackBoard::GetFieldRadius().z, BlackBoard::GetFieldRadius().z);
 
 	// オブジェクト 更新処理
 	mObject->Update();
@@ -570,17 +556,22 @@ void BossEnemy::ShakeUpdate() {
 	}
 }
 
-void BossEnemy::SetKnockBackCount(int32_t count) {
-	count;
-	if (mKnockBackCount < kNumMaxInfluence) {
-		//mKnockBackCount += count;
+void BossEnemy::KnockBackRequest() {
+
+	// 現在の行動の体勢値が0でない場合はノックバックを行わない
+	//if(mActiveAction.lock()->GetBodyState() != 0) {
+	//	return;
+	//}
+
+	// 死亡時もノックバックを行わない
+	if (mStatus->HP <= 0.0f) {
+		return;
 	}
-	else {
-		// 行動を終了
-		//mActiveAction.lock()->End();
-		// 行動を設定(ノックバック)
-		SetAction("knockBack");
-	}
+
+	// 行動を終了
+	mActiveAction.lock()->End();
+	// 行動を設定(ノックバック)
+	SetAction("knockBack");
 }
 
 Vector3 BossEnemy::GetBodyPos()

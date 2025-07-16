@@ -65,8 +65,8 @@ public: // -- 公開 メンバ関数 -- //
 	// シェイク実行処理
 	void ShakeUpdate();
 
-	// リアクション処理(のけぞり)
-	void SetKnockBackCount(int32_t count);
+	// リアクションのリクエスト処理(のけぞり)
+	void KnockBackRequest ();
 
 	// 体の座標を取得する
 	Vector3 GetBodyPos();

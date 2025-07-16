@@ -266,6 +266,9 @@ void GameScene::LosePhase() {
 	MainCamera::GetInstance()->SetCameraRotateControll(false);
 
 	mPlayer->GetObject3D()->mMaterial->SetColorAll({ 1.0f,1.0f,1.0f,1.0f });
+	mPlayerTrailEffect->Update();
+	mBossTrailEffect->Update();
+
 
 	if (mIsGameOverSelect == false) {
 		if (mViggnetTime < 1.0f) {
@@ -377,6 +380,9 @@ void GameScene::WinPhase() {
 
 	// カメラ操作強制OFF
 	MainCamera::GetInstance()->SetCameraRotateControll(false);
+
+	mPlayerTrailEffect->Update();
+	mBossTrailEffect->Update();
 
 	if (mFinishUI.isActive) {
 
@@ -515,9 +521,10 @@ void GameScene::DrawUI()
 		// ボタン入力 & 行動表示
 		for (int32_t i = 0; i < mButtonUI.size(); i++) {
 			mButtonUI[i]->Draw();
-			if (i != 2) {
-				mActionsUI[i]->Draw();
+			if (2 <= i && i <= 3) {
+				continue;
 			}
+			mActionsUI[i]->Draw();
 		}
 
 		// ボタン入力時

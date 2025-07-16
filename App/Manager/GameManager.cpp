@@ -160,7 +160,7 @@ void GameManager::UpdateCollisionManager() {
 
 
 			// ノックバック発生判定
-
+			mBoss->KnockBackRequest();
 
 			// ダメージ計算処理
 			mStatusManager->ReceiveDamage(mPlayer->GetName(), mBoss->GetName(), 1.0f);
@@ -191,6 +191,7 @@ void GameManager::UpdateCollisionManager() {
 
 
 			// ノックバック発生判定
+			mBoss->KnockBackRequest();
 
 
 			// ダメージ計算処理

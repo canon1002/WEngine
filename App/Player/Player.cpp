@@ -70,7 +70,7 @@ void Player::InitObject(){
 	mObject->mSkinning = make_unique<Skinning>();
 	mObject->mSkinning->Init("Actor", "Actor_Idle.gltf", mObject->GetModel()->mModelData);
 	// モーションブレンド速度
-	mObject->mSkinning->SetMotionBlendingInterval(15.0f);
+	mObject->mSkinning->SetMotionBlendingInterval(8.0f);
 	// アニメーション再生速度
 	mObject->mSkinning->SetAnimationPlaySpeed(1.0f);
 	// 使用するアニメーションを登録しておく
@@ -183,8 +183,8 @@ void Player::InitWorks(){
 	kConstAttacks[1].actionSpeed = 1.5f;
 
 	kConstAttacks[2].offence = 1.0f;
-	kConstAttacks[2].operationTime = 0.1f;
-	kConstAttacks[2].afterTime = 0.45f;
+	kConstAttacks[2].operationTime = 0.3f;
+	kConstAttacks[2].afterTime = 0.8f;
 	kConstAttacks[2].motionTimeMax = 1.5f;
 	kConstAttacks[2].actionSpeed = 1.5f;
 
